@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
         localStorage.setItem('jwtToken', token); // Save the token in localStorage
 
         // Fetch user profile after login
-        const profileResponse = await fetch('https://localhost:7053/api/user-profile/authorized-user-info', {
+        const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

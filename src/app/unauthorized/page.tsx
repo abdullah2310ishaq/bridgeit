@@ -10,15 +10,16 @@ const Unauthorized: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
-      <div className="bg-gray-800 p-8 rounded-xl shadow-lg text-center">
-        <h1 className="text-4xl font-extrabold text-white mb-6">Access Denied</h1>
-        <p className="text-lg text-gray-300 mb-6">You do not have permission to view this page.</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold text-red-500 mb-4">Oops!</h1>
+        <p className="text-2xl text-gray-700 mb-4">You don't have permission to access this page.</p>
+        <p className="text-lg text-gray-500 mb-6">It looks like you're trying to enter a secret area!</p>
         <button
           onClick={handleGoBack}
-          className="py-3 px-6 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+          className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 transition duration-200"
         >
-          Go to Login Page
+          Back to Login
         </button>
       </div>
     </div>

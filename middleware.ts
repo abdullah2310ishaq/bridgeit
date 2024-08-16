@@ -17,26 +17,33 @@ export async function middleware(request: NextRequest) {
     '/uniadmin': 'UniversityAdmin',
   };
 
-  const roleResponse = fetch('https://localhost:7053/api/user-profile/authorized-user-info', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+  try {
+    // Fetch user profile information
+    const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
-  if (!(await roleResponse).ok) {
+    if (!profileResponse.ok) {
+      return NextResponse.redirect(new URL('/auth/login-user', request.url));
+    }
+
+    const { role } = await profileResponse.json();
+
+    // Check if the user's role matches the route they are trying to access
+    for (const [route, expectedRole] of Object.entries(allowedRoutes)) {
+      if (pathname.startsWith(route) && role !== expectedRole) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url));
+      }
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error('Error in middleware:', error);
     return NextResponse.redirect(new URL('/auth/login-user', request.url));
   }
-
-  const { role } = await (await roleResponse).json();
-
-  for (const [route, expectedRole] of Object.entries(allowedRoutes)) {
-    if (pathname.startsWith(route) && role !== expectedRole) {
-      return NextResponse.redirect(new URL('/unauthorized', request.url));
-    }
-  }
-
-  return NextResponse.next();
 }
 
 export const config = {

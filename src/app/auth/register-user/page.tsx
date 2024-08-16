@@ -80,7 +80,7 @@ const RegistrationPage: React.FC = () => {
     };
 
     fetchUniversities();
-    fetchCompanies();
+    //fetchCompanies();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

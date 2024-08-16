@@ -10,7 +10,7 @@ const FacultyPage: React.FC = () => {
   useEffect(() => {
     async function fetchProfile() {
       const token = localStorage.getItem('jwtToken');
-      const response = await fetch('https://localhost:7053/api/user-profile/authorized-user-info', {
+      const response = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
