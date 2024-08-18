@@ -85,6 +85,9 @@ const StudentPage: React.FC = () => {
   const goToEditProfile = () => {
     router.push('/student/profile/edit');
   };
+  const gotoProjects = () => {
+    router.push('/student/projects');
+  };
 
   if (!userProfile) {
     return <div className="text-center text-gray-400">Loading...</div>;
@@ -122,6 +125,7 @@ const StudentPage: React.FC = () => {
                 Logout
               </button>
             </li>
+            
           </ul>
         </div>
       </nav>
@@ -159,6 +163,14 @@ const StudentPage: React.FC = () => {
           >
             Edit Profile
           </button>
+
+          <button
+            onClick={gotoProjects}
+            className="w-full py-3 px-6 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200"
+          >
+            Projects
+          </button>
+
           <button
             onClick={handleLogout}
             className="w-full py-3 px-6 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200"
