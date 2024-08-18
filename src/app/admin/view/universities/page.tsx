@@ -7,7 +7,7 @@ const ManageUniversitiesPage: React.FC = () => {
   useEffect(() => {
     async function fetchUniversities() {
       try {
-        const response = await fetch('https://localhost:7053/api/get-university/all-universities');
+        const response = await fetch('https://localhost:7053/api/universities/get-all-universities');
         if (response.ok) {
           const data = await response.json();
           setUniversities(data);

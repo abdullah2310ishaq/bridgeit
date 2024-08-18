@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { motion } from 'framer-motion';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,9 +27,8 @@ const LoginPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
-        localStorage.setItem('jwtToken', token); // Save the token in localStorage
+        localStorage.setItem('jwtToken', token);
 
-        // Fetch user profile after login
         const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
@@ -40,7 +40,6 @@ const LoginPage: React.FC = () => {
           const profileData = await profileResponse.json();
           const role = profileData.role;
 
-          // Redirect based on role
           switch (role) {
             case 'Student':
               router.push('/student');
@@ -85,8 +84,14 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white">
-      <h1 className="text-4xl font-extrabold text-center mb-8">Login</h1>
-      <form onSubmit={handleLogin} className="space-y-6 w-full max-w-md">
+      <h1 className="text-5xl font-extrabold text-center mb-8">Welcome Back</h1>
+      <motion.form 
+        onSubmit={handleLogin} 
+        className="space-y-6 w-full max-w-md"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
         <div>
           <label className="block text-sm font-semibold">Email</label>
           <input
@@ -107,16 +112,33 @@ const LoginPage: React.FC = () => {
             required
           />
         </div>
-        <div className="flex justify-center">
-          <button
+        <div className="flex flex-col items-center">
+          <motion.button
             type="submit"
-            className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 transition duration-200"
+            className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
             disabled={loading}
+            whileHover={{ scale: 1.1 }}
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 0.5, repeat: Infinity, repeatType: 'loop' }}
           >
             {loading ? 'Logging in...' : 'Login'}
-          </button>
+          </motion.button>
+          <motion.p 
+            className="mt-6 text-sm text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 0.8 }}
+          >
+            Don't have an account? 
+            <a 
+              onClick={() => router.push('/auth/register-user')}
+              className="text-green-400 hover:text-green-500 cursor-pointer ml-1"
+            >
+              Sign up here
+            </a>.
+          </motion.p>
         </div>
-      </form>
+      </motion.form>
       <ToastContainer />
     </div>
   );

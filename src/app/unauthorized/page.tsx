@@ -6,18 +6,18 @@ const Unauthorized: React.FC = () => {
   const router = useRouter();
 
   const handleGoBack = () => {
-    router.push('/auth/login-user'); // Redirect to login page or another appropriate page
+    router.push('/auth/login-user');
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-red-500 mb-4">Oops!</h1>
-        <p className="text-2xl text-gray-700 mb-4">You don't have permission to access this page.</p>
-        <p className="text-lg text-gray-500 mb-6">It looks like you're trying to enter a secret area!</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-200">
+      <div className="text-center border-4 border-red-500 p-8 rounded-xl">
+        <h1 className="text-6xl font-extrabold text-red-400 mb-4">Access Denied</h1>
+        <p className="text-2xl mb-4">Please log in to access your profile.</p>
+       
         <button
           onClick={handleGoBack}
-          className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 transition duration-200"
+          className="py-2 px-6 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300"
         >
           Back to Login
         </button>

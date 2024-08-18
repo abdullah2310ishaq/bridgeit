@@ -4,34 +4,28 @@ import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-interface StudentData {
+interface FacultyData {
   firstName: string;
   lastName: string;
   email: string;
- 
-  rollNumber: string;
+  post: string;
+  interest: string[];
 }
 
-interface University {
-  id: string;
-  name: string;
-}
-
-const UpdateStudentPage: React.FC = () => {
-  const [studentData, setStudentData] = useState<StudentData>({
+const UpdateFacultyPage: React.FC = () => {
+  const [facultyData, setFacultyData] = useState<FacultyData>({
     firstName: "",
     lastName: "",
     email: "",
-    
-    rollNumber: "",
+    post: "",
+    interest: [],
   });
-  const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [studentId, setStudentId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null); // Use userId instead of facultyId
 
   useEffect(() => {
-    async function fetchStudentData() {
+    async function fetchFacultyData() {
       const token = localStorage.getItem("jwtToken");
 
       try {
@@ -46,10 +40,11 @@ const UpdateStudentPage: React.FC = () => {
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           const userId = profileData.userId; // Assuming userId corresponds to the authenticated user
-          
-          // Step 2: Fetch student data using userId (to get studentId)
-          const studentResponse = await fetch(
-            `https://localhost:7053/api/get-student/student-by-id/${userId}`, // Adjust the endpoint to retrieve student by userId
+          setUserId(userId);
+
+          // Step 2: Fetch faculty data using userId (to get facultyId)
+          const facultyResponse = await fetch(
+            `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`, // Adjust the endpoint to retrieve faculty by userId
             {
               method: "GET",
               headers: {
@@ -58,39 +53,17 @@ const UpdateStudentPage: React.FC = () => {
             }
           );
 
-          if (studentResponse.ok) {
-            const data = await studentResponse.json();
-            setStudentId(data.id); // Set the studentId from the fetched student data
-            setStudentData({
+          if (facultyResponse.ok) {
+            const data = await facultyResponse.json();
+            setFacultyData({
               firstName: data.firstName,
               lastName: data.lastName,
               email: data.email,
-            
-              rollNumber: data.rollNumber,
+              post: data.post,
+              interest: data.interest || [],
             });
           } else {
-            toast.error("Failed to load student data.", {
-              position: "top-center",
-              autoClose: 3000,
-            });
-          }
-
-          // Step 3: Fetch all universities
-          const universityResponse = await fetch(
-            `https://localhost:7053/api/universities/get-all-universities`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (universityResponse.ok) {
-            const universitiesData = await universityResponse.json();
-            setUniversities(universitiesData);
-          } else {
-            toast.error("Failed to load universities.", {
+            toast.error("Failed to load faculty data.", {
               position: "top-center",
               autoClose: 3000,
             });
@@ -109,22 +82,20 @@ const UpdateStudentPage: React.FC = () => {
       }
     }
 
-    fetchStudentData();
+    fetchFacultyData();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setStudentData({ ...studentData, [name]: value });
+    setFacultyData({ ...facultyData, [name]: value });
   };
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    if (!studentId) {
-      toast.error("Student ID not found. Please try again later.", {
+    if (!userId) {
+      toast.error("User ID not found. Please try again later.", {
         position: "top-center",
         autoClose: 3000,
       });
@@ -135,14 +106,14 @@ const UpdateStudentPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `https://localhost:7053/api/students/update-student/${studentId}`,
+        `https://localhost:7053/api/faculties/update-faculty/${userId}`, // Use userId here
         {
           method: "PUT", // Use PUT method to match the backend
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(studentData),
+          body: JSON.stringify(facultyData),
         }
       );
 
@@ -152,7 +123,7 @@ const UpdateStudentPage: React.FC = () => {
           autoClose: 3000,
         });
 
-        router.push("/student/profile");
+        router.push("/faculty/profile");
       } else {
         toast.error("Failed to update profile.", {
           position: "top-center",
@@ -179,7 +150,7 @@ const UpdateStudentPage: React.FC = () => {
             <input
               type="text"
               name="firstName"
-              value={studentData.firstName}
+              value={facultyData.firstName}
               onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -190,7 +161,7 @@ const UpdateStudentPage: React.FC = () => {
             <input
               type="text"
               name="lastName"
-              value={studentData.lastName}
+              value={facultyData.lastName}
               onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -201,24 +172,31 @@ const UpdateStudentPage: React.FC = () => {
             <input
               type="email"
               name="email"
-              value={studentData.email}
+              value={facultyData.email}
               onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-           
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Roll Number</label>
+            <label className="block text-sm font-semibold text-gray-300">Post</label>
             <input
               type="text"
-              name="rollNumber"
-              value={studentData.rollNumber}
+              name="post"
+              value={facultyData.post}
               onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-300">Interest</label>
+            <input
+              type="text"
+              name="interest"
+              value={facultyData.interest.join(', ')}
+              onChange={(e) => setFacultyData({ ...facultyData, interest: e.target.value.split(', ') })}
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex justify-center">
@@ -232,7 +210,7 @@ const UpdateStudentPage: React.FC = () => {
           </div>
         </form>
         <button
-          onClick={() => router.push("/student/profile")}
+          onClick={() => router.push("/faculty/profile")}
           className="mt-6 py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200"
         >
           Back to Profile
@@ -243,4 +221,4 @@ const UpdateStudentPage: React.FC = () => {
   );
 };
 
-export default UpdateStudentPage;
+export default UpdateFacultyPage;

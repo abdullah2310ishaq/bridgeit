@@ -90,7 +90,7 @@ export default function HomePage() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl text-gray-300 max-w-3xl mx-auto"
         >
-          At BridgeIT, we strive to connect the dots between academia and industry, enabling the next generation of professionals to collaborate and innovate.
+          At BridgeIT, we dont strive to connect the dots between academia and industry, enabling the next generation of professionals to collaborate and innovate.
         </motion.p>
       </section>
 
