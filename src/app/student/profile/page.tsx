@@ -85,35 +85,35 @@ const ProfilePage: React.FC = () => {
   };
 
   if (!studentProfile) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-gray-400">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 p-8 flex flex-col items-center">
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Student Profile</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 text-gray-200 p-8">
+      <h1 className="text-5xl font-bold mb-8 text-white">Student Profile</h1>
       <img
         src={`data:image/jpeg;base64,${studentProfile.imageData}`}
         alt={`${studentProfile.firstName}'s profile picture`}
-        className="w-40 h-40 rounded-full mb-6 shadow-lg border-4 border-white"
+        className="w-40 h-40 rounded-full mb-6 shadow-lg border-4 border-gray-700"
       />
-      <p className="text-2xl font-semibold text-gray-800 mb-2">{studentProfile.firstName} {studentProfile.lastName}</p>
-      <p className="text-lg text-gray-600 mb-4">{studentProfile.email}</p>
-      <div className="text-lg text-gray-700 mb-4">
+      <p className="text-3xl font-semibold mb-2 text-white">{studentProfile.firstName} {studentProfile.lastName}</p>
+      <p className="text-lg mb-4 text-gray-400">{studentProfile.email}</p>
+      <div className="text-lg space-y-2 text-gray-300 mb-8">
         <p><strong>University:</strong> {studentProfile.universityName}</p>
         <p><strong>Address:</strong> {studentProfile.address}</p>
         <p><strong>Roll Number:</strong> {studentProfile.rollNumber}</p>
         <p><strong>Skills:</strong> {studentProfile.skills.length > 0 ? studentProfile.skills.join(', ') : 'No skills available'}</p>
       </div>
-      <div className="flex space-x-4">
+      <div className="flex space-x-6">
         <button
           onClick={goBack}
-          className="py-2 px-6 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition duration-300"
+          className="py-2 px-8 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300"
         >
           Back
         </button>
         <button
           onClick={editProfile}
-          className="py-2 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
+          className="py-2 px-8 bg-blue-600 text-white rounded-full hover:bg-blue-500 transition duration-300"
         >
           Edit Profile
         </button>

@@ -39,7 +39,7 @@ const RegistrationPage: React.FC = () => {
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/get-university/all-universities');
+        const response = await fetch('https://localhost:7053/api/universities/get-all-universities');
         if (response.ok) {
           const data = await response.json();
           setUniversities(data);
@@ -60,7 +60,7 @@ const RegistrationPage: React.FC = () => {
 
     const fetchCompanies = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/get-companies/all-companies');
+        const response = await fetch('https://localhost:7053/api/companies/get-all-companies');
         if (response.ok) {
           const data = await response.json();
           setCompanies(data);

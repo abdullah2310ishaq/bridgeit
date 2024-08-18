@@ -7,7 +7,6 @@ interface UserProfile {
   firstName: string;
   lastName: string;
   role: string;
-  profileImage: string; // Base64 image data for the profile picture
 }
 
 const StudentPage: React.FC = () => {
@@ -23,22 +22,37 @@ const StudentPage: React.FC = () => {
       }
 
       try {
-        const response = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
+        const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUserProfile({
-            userId: data.userId,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            role: data.role,
-            profileImage: data.profileImage || '', // Assuming the API returns a Base64 image string
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          const userId = profileData.userId;
+          const role = profileData.role;
+
+          const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
           });
+
+          if (studentResponse.ok) {
+            const studentData = await studentResponse.json();
+            setUserProfile({
+              userId: studentData.userId,
+              firstName: studentData.firstName,
+              lastName: studentData.lastName,
+              role: role,
+            });
+          } else {
+            console.error('Failed to fetch student profile:', studentResponse.statusText);
+            router.push('/unauthorized');
+          }
         } else {
           router.push('/unauthorized');
         }
@@ -60,44 +74,99 @@ const StudentPage: React.FC = () => {
     router.push('/student/profile');
   };
 
-  const goToManagement = () => {
+  const goToChangePassword = () => {
     router.push('/student/profile/management');
   };
 
+  const goToUpdatePhoto = () => {
+    router.push('/student/profile/management');
+  };
+
+  const goToEditProfile = () => {
+    router.push('/student/profile/edit');
+  };
+
   if (!userProfile) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-gray-400">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gray-100">
-      <img
-        src={`data:image/jpeg;base64,${userProfile.profileImage}`}
-        alt={`${userProfile.firstName}'s profile picture`}
-        className="w-32 h-32 rounded-full mb-4"
-      />
-      <h1 className="text-2xl font-bold mb-4">
-        {userProfile.firstName} {userProfile.lastName}
-      </h1>
-      <p className="mb-2">Role: {userProfile.role}</p>
-      <p className="mb-4">User ID: {userProfile.userId}</p>
-      <button
-        onClick={goToProfile}
-        className="mb-4 py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
-      >
-        View Profile
-      </button>
-      <button
-        onClick={goToManagement}
-        className="mb-4 py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-200"
-      >
-        Go to Management
-      </button>
-      <button
-        onClick={handleLogout}
-        className="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-200"
-      >
-        Logout
-      </button>
+    <div className="min-h-screen flex flex-col bg-gray-800 text-gray-200">
+      {/* Navbar */}
+      <nav className="bg-gray-700 text-gray-100 w-full p-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-xl font-bold">Student Dashboard</h1>
+          <ul className="flex space-x-6">
+            <li>
+              <button onClick={goToProfile} className="hover:text-gray-400">
+                Profile
+              </button>
+            </li>
+            <li>
+              <button onClick={goToChangePassword} className="hover:text-gray-400">
+                Update Password
+              </button>
+            </li>
+            <li>
+              <button onClick={goToUpdatePhoto} className="hover:text-gray-400">
+                Update Photo
+              </button>
+            </li>
+            <li>
+              <button onClick={goToEditProfile} className="hover:text-gray-400">
+                Edit Profile
+              </button>
+            </li>
+            <li>
+              <button onClick={handleLogout} className="hover:text-gray-400">
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="flex-grow flex flex-col items-center justify-center p-8">
+        <h1 className="text-4xl font-bold mb-2">
+          Welcome, {userProfile.firstName} {userProfile.lastName}
+        </h1>
+        <p className="text-lg mb-4">Role: {userProfile.role}</p>
+        <p className="text-lg mb-6">User ID: {userProfile.userId}</p>
+        
+        <div className="flex flex-col space-y-4 w-full max-w-xs">
+          <button
+            onClick={goToProfile}
+            className="w-full py-3 px-6 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
+          >
+            View Profile
+          </button>
+          <button
+            onClick={goToChangePassword}
+            className="w-full py-3 px-6 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-200"
+          >
+            Update Password
+          </button>
+          <button
+            onClick={goToUpdatePhoto}
+            className="w-full py-3 px-6 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+          >
+            Update Photo
+          </button>
+          <button
+            onClick={goToEditProfile}
+            className="w-full py-3 px-6 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition duration-200"
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={handleLogout}
+            className="w-full py-3 px-6 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

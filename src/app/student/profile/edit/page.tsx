@@ -8,9 +8,13 @@ interface StudentData {
   firstName: string;
   lastName: string;
   email: string;
-  imageData: string;
   universityId: string;
   rollNumber: string;
+}
+
+interface University {
+  id: string;
+  name: string;
 }
 
 const UpdateStudentPage: React.FC = () => {
@@ -18,13 +22,13 @@ const UpdateStudentPage: React.FC = () => {
     firstName: "",
     lastName: "",
     email: "",
-    imageData: "",
     universityId: "",
     rollNumber: "",
   });
+  const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchStudentData() {
@@ -40,11 +44,11 @@ const UpdateStudentPage: React.FC = () => {
 
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
-          const userId = profileData.userId;
-          setUserId(userId);
+          const studentId = profileData.userId; // Assuming userId corresponds to studentId
+          setStudentId(studentId);
 
-          const response = await fetch(
-            `https://localhost:7053/api/get-student/student-by-id/${userId}`,
+          const studentResponse = await fetch(
+            `https://localhost:7053/api/get-student/student-by-id/${studentId}`,
             {
               method: "GET",
               headers: {
@@ -53,18 +57,37 @@ const UpdateStudentPage: React.FC = () => {
             }
           );
 
-          if (response.ok) {
-            const data = await response.json();
+          if (studentResponse.ok) {
+            const data = await studentResponse.json();
             setStudentData({
               firstName: data.firstName,
               lastName: data.lastName,
               email: data.email,
-              imageData: data.imageData,
               universityId: data.universityId,
               rollNumber: data.rollNumber,
             });
           } else {
             toast.error("Failed to load profile data.", {
+              position: "top-center",
+              autoClose: 3000,
+            });
+          }
+
+          const universityResponse = await fetch(
+            `https://localhost:7053/api/get-university/all-universities`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (universityResponse.ok) {
+            const universitiesData = await universityResponse.json();
+            setUniversities(universitiesData);
+          } else {
+            toast.error("Failed to load universities.", {
               position: "top-center",
               autoClose: 3000,
             });
@@ -91,23 +114,16 @@ const UpdateStudentPage: React.FC = () => {
     setStudentData({ ...studentData, [name]: value });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setStudentData({ ...studentData, imageData: reader.result as string });
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleUniversityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStudentData({ ...studentData, universityId: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    if (!userId) {
-      toast.error("User ID not found. Please try again later.", {
+    if (!studentId) {
+      toast.error("Student ID not found. Please try again later.", {
         position: "top-center",
         autoClose: 3000,
       });
@@ -118,7 +134,7 @@ const UpdateStudentPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `https://localhost:7053/api/students/update-student/${userId}`,
+        `https://localhost:7053/api/students/update-student/${studentId}`,
         {
           method: "PATCH",
           headers: {
@@ -134,21 +150,6 @@ const UpdateStudentPage: React.FC = () => {
           position: "top-center",
           autoClose: 3000,
         });
-
-        // Upload profile image separately
-        if (studentData.imageData) {
-          await fetch(
-            `https://localhost:7053/api/edit-user-profile/set-profile-image/${userId}`,
-            {
-              method: "PUT",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ base64ImageData: studentData.imageData.split(",")[1] }),
-            }
-          );
-        }
 
         router.push("/student/profile");
       } else {
@@ -168,77 +169,70 @@ const UpdateStudentPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 p-8 flex flex-col items-center">
-      <div className="bg-white w-full max-w-lg p-8 rounded-xl shadow-2xl">
-        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-6">Update Student Profile</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200 p-8">
+      <div className="w-full max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
+        <h1 className="text-4xl font-extrabold text-center mb-8 text-white">Update Profile</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-600">First Name</label>
+            <label className="block text-sm font-semibold text-gray-300">First Name</label>
             <input
               type="text"
               name="firstName"
               value={studentData.firstName}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-600">Last Name</label>
+            <label className="block text-sm font-semibold text-gray-300">Last Name</label>
             <input
               type="text"
               name="lastName"
               value={studentData.lastName}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-600">Email</label>
+            <label className="block text-sm font-semibold text-gray-300">Email</label>
             <input
               type="email"
               name="email"
               value={studentData.email}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-600">University ID</label>
-            <input
-              type="text"
+            <label className="block text-sm font-semibold text-gray-300">University</label>
+            <select
               name="universityId"
               value={studentData.universityId}
-              onChange={handleInputChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleUniversityChange}
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
-            />
+            >
+              <option value="" disabled>Select a University</option>
+              {universities.map((university) => (
+                <option key={university.id} value={university.id}>
+                  {university.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-600">Roll Number</label>
+            <label className="block text-sm font-semibold text-gray-300">Roll Number</label>
             <input
               type="text"
               name="rollNumber"
               value={studentData.rollNumber}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-600">Profile Image</label>
-            <input
-              type="file"
-              name="imageData"
-              onChange={handleImageChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              accept="image/*"
-            />
-            {studentData.imageData && (
-              <img src={studentData.imageData} alt="Profile" className="mt-4 w-32 h-32 rounded-full mx-auto shadow-lg" />
-            )}
           </div>
           <div className="flex justify-center">
             <button

@@ -130,55 +130,62 @@ const ProfileManagement: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-100">
-      <div className="bg-white w-full max-w-lg p-8 rounded-xl shadow-2xl">
-        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-6">Profile Management</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gradient-to-br from-gray-800 to-gray-900 text-gray-200 p-6">
+      <div className="w-full max-w-lg p-8 bg-gray-700 rounded-2xl shadow-xl">
+        <h1 className="text-4xl font-bold text-center mb-6 text-white">Profile Management</h1>
 
         <form onSubmit={handlePasswordChange} className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-600">Current Password</label>
+            <label className="block text-sm font-semibold text-gray-300">Current Password</label>
             <input
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-600">New Password</label>
+            <label className="block text-sm font-semibold text-gray-300">New Password</label>
             <input
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+              className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             >
               Change Password
             </button>
           </div>
         </form>
 
-        <form onSubmit={handleImageUpload} className="mt-6 space-y-6">
+        <form onSubmit={handleImageUpload} className="mt-8 space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-600">Upload Profile Image</label>
+            <label className="block text-sm font-semibold text-gray-300">Upload Profile Image</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
+            {imageData && (
+              <img
+                src={imageData}
+                alt="Profile Preview"
+                className="mt-4 w-32 h-32 rounded-full mx-auto border-4 border-gray-600 shadow-lg"
+              />
+            )}
           </div>
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200"
+              className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
             >
               Upload Image
             </button>

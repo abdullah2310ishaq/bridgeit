@@ -25,7 +25,7 @@ export default function RootLayout({
         {/* Add any additional meta tags here */}
       </head>
       <body className={inter.className}>
-     
+
         <main>{children}</main>
      
       </body>

@@ -84,41 +84,39 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full">
-      <div className="bg-white w-full max-w-lg p-8 rounded-xl shadow-2xl">
-        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-6">Login</h1>
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-600">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-600">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition duration-200"
-              disabled={loading}
-            >
-              {loading ? 'Logging in...' : 'Login'}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-900 text-white">
+      <h1 className="text-4xl font-extrabold text-center mb-8">Login</h1>
+      <form onSubmit={handleLogin} className="space-y-6 w-full max-w-md">
+        <div>
+          <label className="block text-sm font-semibold">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full p-4 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full p-4 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            required
+          />
+        </div>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 transition duration-200"
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </div>
+      </form>
       <ToastContainer />
     </div>
   );
