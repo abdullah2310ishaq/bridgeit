@@ -87,57 +87,56 @@ const LoginPage: React.FC = () => {
       <h1 className="text-5xl font-extrabold text-center mb-8">Welcome Back</h1>
       <motion.form 
         onSubmit={handleLogin} 
-        className="space-y-6 w-full max-w-md"
+        className="space-y-6 w-full max-w-md p-8 bg-gray-800 rounded-lg border border-gray-700 shadow-lg"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
         <div>
-          <label className="block text-sm font-semibold">Email</label>
+          <label className="block text-sm font-semibold text-gray-300">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold">Password</label>
+          <label className="block text-sm font-semibold text-gray-300">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
             required
           />
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex justify-center">
           <motion.button
             type="submit"
-            className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+            className="bg-sky-950 text-sky-400 border border-sky-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group"
             disabled={loading}
-            whileHover={{ scale: 1.1 }}
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 0.5, repeat: Infinity, repeatType: 'loop' }}
+            whileHover={{ scale: 1.05 }}
           >
+            <span className="bg-sky-400 shadow-sky-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
             {loading ? 'Logging in...' : 'Login'}
           </motion.button>
-          <motion.p 
-            className="mt-6 text-sm text-gray-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-          >
-            Don't have an account? 
-            <a 
-              onClick={() => router.push('/auth/register-user')}
-              className="text-green-400 hover:text-green-500 cursor-pointer ml-1"
-            >
-              Sign up here
-            </a>.
-          </motion.p>
         </div>
+        <motion.p 
+          className="mt-6 text-sm text-gray-400 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+        >
+          Don't have an account? 
+          <a 
+            onClick={() => router.push('/auth/register-user')}
+            className="text-sky-400 hover:text-sky-500 cursor-pointer ml-1"
+          >
+            Sign up here
+          </a>.
+        </motion.p>
       </motion.form>
       <ToastContainer />
     </div>

@@ -18,16 +18,42 @@ interface Project {
 const ProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<any>(null); // Replace `any` with the appropriate type for userProfile
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchProjects() {
-      const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        router.push("/auth/login-user");
-        return;
-      }
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      router.push("/auth/login-user");
+      return;
+    }
 
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const profileData = await response.json();
+        setUserProfile(profileData);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        router.push("/auth/login-user");
+      }
+    };
+
+    if (!userProfile) {
+      fetchProfile();
+    }
+
+    const fetchProjects = async () => {
       try {
         const response = await fetch("https://localhost:7053/api/projects/get-all-projects", {
           method: "GET",
@@ -53,17 +79,17 @@ const ProjectsPage: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchProjects();
-  }, [router]);
+  }, [router, userProfile]);
 
   if (loading) {
     return <div className="text-center text-gray-400">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-8">
       <div className="container mx-auto">
         <h1 className="text-5xl font-extrabold mb-10 text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
           Explore Our Projects
@@ -73,8 +99,12 @@ const ProjectsPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {projects.map((project) => (
               <Link key={project.id} href={`/projects/${project.id}`}>
-                <div className="relative bg-gray-800 p-6 rounded-xl shadow-lg transition-transform transform hover:-translate-y-2 hover:shadow-2xl cursor-pointer">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-500 opacity-10 rounded-xl"></div>
+                <div className="relative bg-gray-800 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+                  <div className="absolute top-2 left-2 flex gap-1">
+                    <span className="bg-red-500 inline-block w-3 h-3 rounded-full"></span>
+                    <span className="bg-yellow-500 inline-block w-3 h-3 rounded-full"></span>
+                    <span className="bg-green-500 inline-block w-3 h-3 rounded-full"></span>
+                  </div>
                   <div className="relative z-10">
                     <h2 className="text-3xl font-bold mb-4">{project.title}</h2>
                     <p className="text-gray-400 mb-6">{project.description}</p>
