@@ -1,8 +1,9 @@
 "use client";
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 const LogoutButton: React.FC = () => {
   const router = useRouter();
