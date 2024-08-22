@@ -55,7 +55,7 @@ const ProjectsPage: React.FC = () => {
 
     const fetchProjects = async () => {
       try {
-        const response = await fetch("https://localhost:7053/api/projects/get-all-projects", {
+        const response = await fetch("https://localhost:7053/api/projects/get-student-projects", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

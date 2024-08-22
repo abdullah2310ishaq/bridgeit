@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const Unauthorized: React.FC = () => {
   const router = useRouter();
@@ -10,18 +11,38 @@ const Unauthorized: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-200">
-      <div className="text-center border-4 border-red-500 p-8 rounded-xl">
-        <h1 className="text-6xl font-extrabold text-red-400 mb-4">Access Denied</h1>
-        <p className="text-2xl mb-4">Please log in to access your profile.</p>
-       
-        <button
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-gray-200">
+      <motion.div
+        className="text-center p-12 rounded-xl shadow-lg bg-gray-800/50 border border-gray-700"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+      >
+        <motion.h1
+          className="text-6xl font-extrabold text-red-400 mb-4"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          Access Denied
+        </motion.h1>
+        <motion.p
+          className="text-xl mb-8 text-gray-300"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+        >
+          You need to log in to access this page.
+        </motion.p>
+        <motion.button
           onClick={handleGoBack}
-          className="py-2 px-6 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300"
+          className="py-3 px-8 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Back to Login
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     </div>
   );
 };
