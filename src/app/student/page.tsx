@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ProfileDropdown from '../components/ProfileDropdown';
+import LogoutButton from '../components/Logout';
 
 interface UserProfile {
   userId: string;
@@ -72,20 +74,14 @@ const StudentPage: React.FC = () => {
     router.push('/auth/login-user');
   };
 
-  const goToProfile = () => {
-    router.push('/student/profile');
-  };
 
-  const ImageChange =()=>{
-router.push('/student/profile/management');
-  };
+ const goToEditProfile=()=>{
+  router.push('/student/profile/edit');
+ } 
 
-  const PasswordChange =()=>{
-    router.push('/student/profile/management');
-  };
-  const goToEditProfile = () => {
-    router.push('/student/profile/edit');
-  };
+ const gotoProfile=()=>{
+  router.push('/student/profile');
+ }
 
   if (!userProfile) {
     return <div className="text-center text-gray-400">Loading...</div>;
@@ -94,33 +90,27 @@ router.push('/student/profile/management');
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-200 p-6">
       {/* Navbar */}
-      <nav className="bg-gray-800 p-4 shadow-lg rounded-lg mb-6">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-extrabold text-green-400">Student Dashboard</h1>
-          <ul className="flex space-x-6">           
-<li>
-  <button onClick={ImageChange} className='hover:text-green-400 transition-colors duration-300'>
-    Update Image
+      <nav className="bg-gray-800 p-4 shadow-lg rounded-lg mb-6 flex justify-between items-center">
+  <h1 className="text-2xl font-extrabold text-green-400">Student Dashboard</h1>
+  
+  <div className="flex items-center space-x-4">
+    {/* Update Image Button */}
+    <button 
+      onClick={LogoutButton} 
+      className="hover:text-red-400 transition-colors duration-300"
+    >
+      Logout
     </button>
-</li>
-<li>
-  <button onClick={PasswordChange} className='hover:text-green-400 transition-colors duration-300'>
-    Update Password
-    </button>
-</li>
+    
+    {/* Profile Dropdown */}
+    <ProfileDropdown userProfile={userProfile} onLogout={handleLogout} />
+  </div>
+</nav>
 
-            <li>
-              <button onClick={handleLogout} className="hover:text-red-500 transition-colors duration-300">
-                Logout
-              </button>
-            </li>
-          </ul>
-        </div>
-      </nav>
 
       {/* Profile Section */}
       <div className="relative bg-cover bg-center rounded-lg p-6" style={{ backgroundImage: `url('/studenttop.jpg')`, height: '300px' }}>
-        <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div> {/* Overlay for contrast */}
+        <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
         <div className="relative flex items-center h-full">
           <div className="mr-6">
             <img
@@ -135,7 +125,6 @@ router.push('/student/profile/management');
             </h2>
             <p className="text-lg">Role : {userProfile.role}</p>
             <p className="text-lg">User Id : {userProfile.userId}</p>
-            
             <div className="mt-4 space-x-4">
               <button
                 onClick={goToEditProfile}
@@ -144,12 +133,14 @@ router.push('/student/profile/management');
                 Edit Profile
               </button>
               <button
-                onClick={goToProfile}
+                onClick={gotoProfile}
                 className="py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-500 transition duration-200"
               >
                 View Profile
               </button>
             </div>
+
+
           </div>
         </div>
       </div>

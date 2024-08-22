@@ -18,7 +18,7 @@ const CreateProjectPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchStudentDetails() {
+    async function authorizeUserAndFetchStudentId() {
       const token = localStorage.getItem('jwtToken');
       if (!token) {
         router.push('/auth/login-user');
@@ -26,7 +26,7 @@ const CreateProjectPage: React.FC = () => {
       }
 
       try {
-    //user authorize krwaya
+        // First, authorize the user
         const userResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
@@ -38,7 +38,7 @@ const CreateProjectPage: React.FC = () => {
           const userData = await userResponse.json();
           const userId = userData.userId;
 
-     // user id se studen tid leni ha
+          // Fetch the student details using the userId
           const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
             method: 'GET',
             headers: {
@@ -48,13 +48,13 @@ const CreateProjectPage: React.FC = () => {
 
           if (studentResponse.ok) {
             const studentData = await studentResponse.json();
-            setStudentId(studentData.Id); // Store the studentId in state
+            setStudentId(studentData.id); // Store the studentId in state
           } else {
             console.error('Failed to fetch student details.');
             router.push('/unauthorized');
           }
         } else {
-          console.error('Failed to fetch user details.');
+          console.error('Failed to authorize user.');
           router.push('/unauthorized');
         }
       } catch (error) {
@@ -65,11 +65,19 @@ const CreateProjectPage: React.FC = () => {
       }
     }
 
-    fetchStudentDetails();
+    authorizeUserAndFetchStudentId();
   }, [router]);
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!studentId) {
+      toast.error('Failed to create project. Student ID is missing.', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
+      return;
+    }
 
     try {
       const token = localStorage.getItem('jwtToken');
@@ -87,7 +95,7 @@ const CreateProjectPage: React.FC = () => {
           currentStatus: projectStatus,
           startDate: projectStartDate,
           endDate: projectEndDate,
-          studentId: studentId, ///stdid we got from user
+          studentId: studentId, // Use the stored studentId here
         }),
       });
 
@@ -121,6 +129,7 @@ const CreateProjectPage: React.FC = () => {
       <div className="w-full max-w-lg p-8 bg-gray-700 rounded-2xl shadow-xl">
         <h1 className="text-4xl font-bold text-center mb-6">Create Project</h1>
         <form onSubmit={handleCreateProject} className="space-y-6">
+          {/* Form fields for project details */}
           <div>
             <label className="block text-sm font-semibold text-gray-300">Project Title</label>
             <input
@@ -180,20 +189,6 @@ const CreateProjectPage: React.FC = () => {
               required
             />
           </div>
-
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">StdId</label>
-            <input
-              type="string"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-
           <div>
             <label className="block text-sm font-semibold text-gray-300">End Date</label>
             <input
