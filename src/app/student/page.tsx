@@ -5,6 +5,7 @@ import ProfileDropdown from "../components/ProfileDropdown";
 import LogoutButton from "../components/Logout";
 import ProjectCard from "../components/CompletedProjects";
 
+
 interface UserProfile {
   userId: string;
   firstName: string;
@@ -168,27 +169,28 @@ const StudentPage: React.FC = () => {
       </div>
 
       {/* Completed Projects Section */}
+     {/* Add the ProjectsBanner here */}
       <div className="mt-10 flex flex-col items-center px-6">
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
-    {projects.map((project) => (
-      <ProjectCard
-        key={project.id}
-        title={project.title}
-        description={project.description}
-      />
-    ))}
-  </div>
-  <div className="mt-8">
-    <button onClick={goToProjectsPage} className="py-3 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-500 transition duration-200">
-      See More Projects
-    </button>
-  </div>
-</div>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-6xl w-full">
+          {projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              title={project.title}
+              description={project.description}
+            />
+          ))}
+        </div>
+        <div className="mt-8">
+          <button onClick={goToProjectsPage} className="py-3 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-500 transition duration-200">
+            See More Projects
+          </button>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="bg-gray-900 p-4 text-center text-gray-500 mt-6 rounded-lg">
         <p>&copy; 2024 BridgeIT. All rights reserved.</p>
+        <p>&copy; Aesyem Institute Of Science & Technology</p>
       </footer>
     </div>
   );

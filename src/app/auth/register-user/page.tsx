@@ -11,28 +11,20 @@ interface University {
   estYear: number;
 }
 
-interface Company {
-  
-  id: string;
-  name: string;
-}
-
 const RegistrationPage: React.FC = () => {
   const [role, setRole] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [contact, setContact] = useState<string>('');
-  const [post, setPost] = useState<string>('');
-  const [companyId, setCompanyId] = useState<string>('');
   const [universityId, setUniversityId] = useState<string>('');
   const [universities, setUniversities] = useState<University[]>([]);
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [interest, setInterest] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [department, setDepartment] = useState<string>('');
   const [rollNumber, setRollNumber] = useState<number | ''>('');
+  const [post, setPost] = useState<string>('');
+  const [officeAddress, setOfficeAddress] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -58,30 +50,10 @@ const RegistrationPage: React.FC = () => {
       }
     };
 
-    const fetchCompanies = async () => {
-      try {
-        const response = await fetch('https://localhost:7053/api/companies/get-all-companies');
-        if (response.ok) {
-          const data = await response.json();
-          setCompanies(data);
-        } else {
-          toast.error('Failed to load companies.', {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching companies:', error);
-        toast.error('An error occurred while fetching companies.', {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
-    };
-
-    fetchUniversities();
-    //fetchCompanies();
-  }, []);
+    if (role === 'Student' || role === 'Faculty' || role === 'University Admin') {
+      fetchUniversities();
+    }
+  }, [role]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,18 +65,18 @@ const RegistrationPage: React.FC = () => {
       email,
       role,
       password,
-      contact,
-      post,
-      companyId,
       universityId,
       interest,
       skills,
       department,
       rollNumber,
+      post,
+      officeAddress,
     };
 
+    const apiUrl = `https://localhost:7053/api/register-user/${role.toLowerCase()}`;
+
     try {
-      const apiUrl = `https://localhost:7053/api/register-user/${role.toLowerCase()}`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -172,21 +144,14 @@ const RegistrationPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setRole('IndustryExpert')}
-              className={`py-3 rounded-lg font-semibold ${role === 'IndustryExpert' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300'} hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500`}
-            >
-              Industry Expert
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole('UniversityAdmin')}
-              className={`py-3 rounded-lg font-semibold ${role === 'UniversityAdmin' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300'} hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500`}
+              onClick={() => setRole('University Admin')}
+              className={`py-3 rounded-lg font-semibold ${role === 'University Admin' ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300'} hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500`}
             >
               University Admin
             </button>
           </div>
         </div>
-  
+
         {/* Common Fields */}
         <div>
           <label className="block text-sm font-semibold text-gray-300">First Name</label>
@@ -228,9 +193,9 @@ const RegistrationPage: React.FC = () => {
             required
           />
         </div>
-  
-        {/* University or Company Select */}
-        {role === 'Student' || role === 'Faculty' || role === 'UniversityAdmin' ? (
+
+        {/* University Select */}
+        {(role === 'Student' || role === 'Faculty' || role === 'University Admin') && (
           <div>
             <label className="block text-sm font-semibold text-gray-300">University</label>
             <select
@@ -247,27 +212,8 @@ const RegistrationPage: React.FC = () => {
               ))}
             </select>
           </div>
-        ) : null}
-  
-        {role === 'IndustryExpert' && (
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Company</label>
-            <select
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            >
-              <option value="" disabled>Select your company</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
-            </select>
-          </div>
         )}
-  
+
         {/* Role-specific Fields */}
         {role === 'Student' && (
           <>
@@ -278,6 +224,7 @@ const RegistrationPage: React.FC = () => {
                 value={skills.join(', ')}
                 onChange={(e) => setSkills(e.target.value.split(',').map(i => i.trim()))}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
             <div>
@@ -287,6 +234,7 @@ const RegistrationPage: React.FC = () => {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
             <div>
@@ -294,22 +242,24 @@ const RegistrationPage: React.FC = () => {
               <input
                 type="number"
                 value={rollNumber}
-                onChange={(e) => setRollNumber(Number(e.target.value))}
+                onChange={(e) => setRollNumber(e.target.value ? parseInt(e.target.value) : '')}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
           </>
         )}
-  
+
         {role === 'Faculty' && (
           <>
             <div>
-              <label className="block text-sm font-semibold text-gray-300">Interest (comma separated)</label>
+              <label className="block text-sm font-semibold text-gray-300">Interest Areas (comma separated)</label>
               <input
                 type="text"
                 value={interest.join(', ')}
                 onChange={(e) => setInterest(e.target.value.split(',').map(i => i.trim()))}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
             <div>
@@ -319,43 +269,22 @@ const RegistrationPage: React.FC = () => {
                 value={post}
                 onChange={(e) => setPost(e.target.value)}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
           </>
         )}
-  
-        {role === 'IndustryExpert' && (
+
+        {role === 'University Admin' && (
           <>
             <div>
-              <label className="block text-sm font-semibold text-gray-300">Skills (comma separated)</label>
+              <label className="block text-sm font-semibold text-gray-300">Office Address</label>
               <input
                 type="text"
-                value={skills.join(', ')}
-                onChange={(e) => setSkills(e.target.value.split(',').map(i => i.trim()))}
+                value={officeAddress}
+                onChange={(e) => setOfficeAddress(e.target.value)}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-300">Contact</label>
-              <input
-                type="text"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-          </>
-        )}
-  
-        {role === 'UniversityAdmin' && (
-          <>
-            <div>
-              <label className="block text-sm font-semibold text-gray-300">Contact</label>
-              <input
-                type="text"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
             <div>
@@ -365,16 +294,16 @@ const RegistrationPage: React.FC = () => {
                 value={post}
                 onChange={(e) => setPost(e.target.value)}
                 className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
               />
             </div>
           </>
         )}
-  
-        {/* Submit Button */}
+
         <div className="flex justify-center">
           <button
             type="submit"
-            className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition duration-200"
+            className={`py-4 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-white ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
             {loading ? 'Registering...' : 'Register'}
@@ -384,8 +313,6 @@ const RegistrationPage: React.FC = () => {
       <ToastContainer />
     </div>
   );
-  
-
 };
 
 export default RegistrationPage;
