@@ -9,7 +9,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ title, description }) => {
   const imageSrc = "/image.png"; 
 
   return (
-    <div className="flex items-center bg-white rounded-lg shadow-lg p-6 mb-4 w-full hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
+    <div className="flex items-center bg-white rounded-lg shadow-lg p-6 mb-4 w-full  transform hover:-translate-y-1">
       <div className="relative flex-1 text-center">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">{title}</h3>
         <p className="text-gray-700 mb-4">{description}</p>

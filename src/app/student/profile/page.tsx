@@ -13,7 +13,7 @@ interface StudentProfile {
   universityName: string;
   address: string;
   rollNumber: string;
-  skills: string[];
+  skills: string[]; // Array to store skills
 }
 
 const ProfilePage: React.FC = () => {
