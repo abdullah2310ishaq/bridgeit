@@ -15,7 +15,7 @@ const AdminPage: React.FC = () => {
         <h1 className="text-4xl font-extrabold">Admin Dashboard</h1>
         <p className="mt-4 text-lg text-gray-400">Manage all aspects of the platform</p>
       </header>
-      
+
       <div className="flex justify-around max-w-6xl mx-auto">
         {/* View Section */}
         <div className="flex flex-col space-y-4 max-w-xs">
@@ -105,44 +105,88 @@ const AdminPage: React.FC = () => {
         {/* Vertical Line */}
         <div className="border-r-2 border-gray-500"></div>
 
-        {/* Edit/Delete Section */}
+        {/* Edit Section */}
         <div className="flex flex-col space-y-4 max-w-xs">
-          <h2 className="text-2xl font-bold text-center mb-4">Edit/Delete</h2>
+          <h2 className="text-2xl font-bold text-center mb-4">Edit</h2>
           <button
             onClick={() => navigateTo('/admin/edit/students')}
             className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
           >
-            Edit/Delete Students
+            Edit Students
           </button>
           <button
             onClick={() => navigateTo('/admin/edit/universities')}
             className="w-full py-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-200"
           >
-            Edit/Delete Universities
+            Edit Universities
           </button>
           <button
             onClick={() => navigateTo('/admin/edit/industry-experts')}
             className="w-full py-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-200"
           >
-            Edit/Delete Industry Experts
+            Edit Industry Experts
           </button>
           <button
             onClick={() => navigateTo('/admin/edit/faculties')}
             className="w-full py-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-200"
           >
-            Edit/Delete Faculties
+            Edit Faculties
           </button>
           <button
             onClick={() => navigateTo('/admin/edit/uniadmins')}
             className="w-full py-4 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition duration-200"
           >
-            Edit/Delete Uni Admins
+            Edit Uni Admins
           </button>
           <button
             onClick={() => navigateTo('/admin/edit/companies')}
             className="w-full py-4 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-200"
           >
-            Edit/Delete Companies
+            Edit Companies
+          </button>
+        </div>
+
+        {/* Vertical Line */}
+        <div className="border-r-2 border-gray-500"></div>
+
+        {/* Delete Section */}
+        <div className="flex flex-col space-y-4 max-w-xs">
+          <h2 className="text-2xl font-bold text-center mb-4">Delete</h2>
+          <button
+            onClick={() => navigateTo('/admin/delete/students')}
+            className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
+          >
+            Delete Students
+          </button>
+          <button
+            onClick={() => navigateTo('/admin/delete/universities')}
+            className="w-full py-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-200"
+          >
+            Delete Universities
+          </button>
+          <button
+            onClick={() => navigateTo('/admin/delete/industry-experts')}
+            className="w-full py-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-200"
+          >
+            Delete Industry Experts
+          </button>
+          <button
+            onClick={() => navigateTo('/admin/delete/faculties')}
+            className="w-full py-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-200"
+          >
+            Delete Faculties
+          </button>
+          <button
+            onClick={() => navigateTo('/admin/delete/uniadmins')}
+            className="w-full py-4 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition duration-200"
+          >
+            Delete Uni Admins
+          </button>
+          <button
+            onClick={() => navigateTo('/admin/delete/companies')}
+            className="w-full py-4 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-200"
+          >
+            Delete Companies
           </button>
         </div>
       </div>

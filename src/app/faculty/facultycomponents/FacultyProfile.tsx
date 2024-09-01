@@ -33,7 +33,7 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ facultyProfile, onEditP
           </h2>
           <p className="text-lg">Role: {facultyProfile.role}</p>
           <p className="text-lg">User ID: {facultyProfile.userId}</p>
-          <div className="mt-4 space-x-4">
+          <div className="mt-4 space-x-6">
             <button onClick={onEditProfile} className="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200">
               Edit Profile
             </button>

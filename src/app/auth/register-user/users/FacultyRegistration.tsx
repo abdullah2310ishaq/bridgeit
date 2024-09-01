@@ -154,7 +154,8 @@ const FacultyRegistration: React.FC = () => {
       email,
       password,
       universityId,
-      interests, // Send selected interests
+      interests, 
+      role: "Faculty",
       post,
     };
 

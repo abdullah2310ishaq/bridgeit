@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface University {
   id: string;
@@ -22,17 +22,17 @@ interface Department {
 }
 
 const StudentRegistration: React.FC = () => {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [universityId, setUniversityId] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [universityId, setUniversityId] = useState<string>("");
   const [universities, setUniversities] = useState<University[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [departmentId, setDepartmentId] = useState<string>('');
-  const [rollNumber, setRollNumber] = useState<number | ''>('');
+  const [departmentId, setDepartmentId] = useState<string>("");
+  const [rollNumber, setRollNumber] = useState<number | "">("");
   const [registeredEmails, setRegisteredEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -42,19 +42,21 @@ const StudentRegistration: React.FC = () => {
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/universities/get-all-universities');
+        const response = await fetch(
+          "https://localhost:7053/api/universities/get-all-universities"
+        );
         if (response.ok) {
           const data = await response.json();
           setUniversities(data);
         } else {
-          toast.error('Failed to load universities.', {
+          toast.error("Failed to load universities.", {
             position: "top-center",
             autoClose: 3000,
           });
         }
       } catch (error) {
-        console.error('Error fetching universities:', error);
-        toast.error('An error occurred while fetching universities.', {
+        console.error("Error fetching universities:", error);
+        toast.error("An error occurred while fetching universities.", {
           position: "top-center",
           autoClose: 3000,
         });
@@ -63,19 +65,19 @@ const StudentRegistration: React.FC = () => {
 
     const fetchSkills = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/skills/get-skills');
+        const response = await fetch("https://localhost:7053/api/skills/get-skills");
         if (response.ok) {
           const data = await response.json();
           setAvailableSkills(data);
         } else {
-          toast.error('Failed to load skills.', {
+          toast.error("Failed to load skills.", {
             position: "top-center",
             autoClose: 3000,
           });
         }
       } catch (error) {
-        console.error('Error fetching skills:', error);
-        toast.error('An error occurred while fetching skills.', {
+        console.error("Error fetching skills:", error);
+        toast.error("An error occurred while fetching skills.", {
           position: "top-center",
           autoClose: 3000,
         });
@@ -84,19 +86,21 @@ const StudentRegistration: React.FC = () => {
 
     const fetchDepartments = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/Department/get-departments');
+        const response = await fetch(
+          "https://localhost:7053/api/Department/get-departments"
+        );
         if (response.ok) {
           const data = await response.json();
           setDepartments(data);
         } else {
-          toast.error('Failed to load departments.', {
+          toast.error("Failed to load departments.", {
             position: "top-center",
             autoClose: 3000,
           });
         }
       } catch (error) {
-        console.error('Error fetching departments:', error);
-        toast.error('An error occurred while fetching departments.', {
+        console.error("Error fetching departments:", error);
+        toast.error("An error occurred while fetching departments.", {
           position: "top-center",
           autoClose: 3000,
         });
@@ -105,19 +109,21 @@ const StudentRegistration: React.FC = () => {
 
     const fetchEmails = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/register-user/get-all-emails');
+        const response = await fetch(
+          "https://localhost:7053/api/register-user/get-all-emails"
+        );
         if (response.ok) {
           const data = await response.json();
           setRegisteredEmails(data);
         } else {
-          toast.error('Failed to load registered emails.', {
+          toast.error("Failed to load registered emails.", {
             position: "top-center",
             autoClose: 3000,
           });
         }
       } catch (error) {
-        console.error('Error fetching registered emails:', error);
-        toast.error('An error occurred while fetching registered emails.', {
+        console.error("Error fetching registered emails:", error);
+        toast.error("An error occurred while fetching registered emails.", {
           position: "top-center",
           autoClose: 3000,
         });
@@ -136,18 +142,28 @@ const StudentRegistration: React.FC = () => {
       lastName &&
       email &&
       password.length >= 8 &&
-      /[!@#$%^&*(),.?":{}|<>]/g.test(password) &&  // Special character check
+      /[!@#$%^&*(),.?":{}|<>]/g.test(password) && // Special character check
       universityId &&
       departmentId &&
       rollNumber &&
-      skills.length > 0 &&
+      skills.length > 0 && // Check if at least one skill is selected
       !emailError
     ) {
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [firstName, lastName, email, password, universityId, departmentId, rollNumber, skills, emailError]);
+  }, [
+    firstName,
+    lastName,
+    email,
+    password,
+    universityId,
+    departmentId,
+    rollNumber,
+    skills,
+    emailError,
+  ]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
@@ -155,7 +171,7 @@ const StudentRegistration: React.FC = () => {
 
     // Check if email is already registered
     if (registeredEmails.includes(enteredEmail)) {
-      setEmailError('This email is already registered.');
+      setEmailError("This email is already registered.");
       setIsSubmitDisabled(true);
     } else {
       setEmailError(null);
@@ -166,7 +182,7 @@ const StudentRegistration: React.FC = () => {
     e.preventDefault();
 
     if (emailError) {
-      toast.error('Please provide a unique email address.', {
+      toast.error("Please provide a unique email address.", {
         position: "top-center",
         autoClose: 3000,
       });
@@ -184,48 +200,49 @@ const StudentRegistration: React.FC = () => {
       skills,
       departmentId,
       rollNumber,
+      role: "Student", 
     };
 
     const apiUrl = `https://localhost:7053/api/register-user/student`;
 
     try {
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
       if (response.ok) {
-        toast.success('Registration successful! Redirecting to login page...', {
+        toast.success("Registration successful! Redirecting to login page...", {
           position: "top-center",
           autoClose: 2000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          onClose: () => router.push('/auth/login-user')
+          onClose: () => router.push("/auth/login-user"),
         });
       } else {
-        toast.error('Registration failed. Please try again.', {
+        toast.error("Registration failed. Please try again.", {
           position: "top-center",
           autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
-          draggable: true
+          draggable: true,
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error('An error occurred. Please try again later.', {
+      toast.error("An error occurred. Please try again later.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
-        draggable: true
+        draggable: true,
       });
     } finally {
       setLoading(false);
@@ -239,14 +256,22 @@ const StudentRegistration: React.FC = () => {
   };
 
   const removeSkill = (skill: string) => {
-    setSkills(skills.filter(s => s !== skill));
+    setSkills(skills.filter((s) => s !== skill));
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100">
-      <h1 className="text-4xl font-extrabold text-center text-green-500 mb-6">Student Registration</h1>
-      <form autoComplete="off" method="post" action="" onSubmit={handleSubmit} className="space-y-6 w-full max-w-md">
-        <input autoComplete="false" name="hidden" type="text" style={{ display: 'none' }} />
+      <h1 className="text-4xl font-extrabold text-center text-green-500 mb-6">
+        Student Registration
+      </h1>
+      <form
+        autoComplete="off"
+        method="post"
+        action=""
+        onSubmit={handleSubmit}
+        className="space-y-6 w-full max-w-md"
+      >
+        <input autoComplete="false" name="hidden" type="text" style={{ display: "none" }} />
         <div>
           <label className="block text-sm font-semibold text-gray-300">First Name</label>
           <input
@@ -279,9 +304,7 @@ const StudentRegistration: React.FC = () => {
             required
             autoComplete="off"
           />
-          {emailError && (
-            <p className="text-red-400 mt-2">{emailError}</p>
-          )}
+          {emailError && <p className="text-red-400 mt-2">{emailError}</p>}
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-300">Password</label>
@@ -303,7 +326,9 @@ const StudentRegistration: React.FC = () => {
             className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           >
-            <option value="" disabled>Select your university</option>
+            <option value="" disabled>
+              Select your university
+            </option>
             {universities.map((university) => (
               <option key={university.id} value={university.id}>
                 {university.name} ({university.estYear})
@@ -317,9 +342,10 @@ const StudentRegistration: React.FC = () => {
             value=""
             onChange={(e) => addSkill(e.target.value)}
             className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            required
           >
-            <option value="" disabled>Select a skill</option>
+            <option value="" disabled>
+              Select a skill
+            </option>
             {availableSkills.map((skill) => (
               <option key={skill.id} value={skill.skill}>
                 {skill.skill}
@@ -328,9 +354,16 @@ const StudentRegistration: React.FC = () => {
           </select>
           <div className="mt-4">
             {skills.map((skill) => (
-              <span key={skill} className="inline-flex items-center m-1 px-3 py-1 bg-green-600 text-white rounded-full">
+              <span
+                key={skill}
+                className="inline-flex items-center m-1 px-3 py-1 bg-green-600 text-white rounded-full"
+              >
                 {skill}
-                <button type="button" onClick={() => removeSkill(skill)} className="ml-2 text-sm text-red-400 hover:text-red-600">
+                <button
+                  type="button"
+                  onClick={() => removeSkill(skill)}
+                  className="ml-2 text-sm text-red-400 hover:text-red-600"
+                >
                   &times;
                 </button>
               </span>
@@ -345,7 +378,9 @@ const StudentRegistration: React.FC = () => {
             className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           >
-            <option value="" disabled>Select your department</option>
+            <option value="" disabled>
+              Select your department
+            </option>
             {departments.map((department) => (
               <option key={department.id} value={department.id}>
                 {department.department}
@@ -358,7 +393,7 @@ const StudentRegistration: React.FC = () => {
           <input
             type="number"
             value={rollNumber}
-            onChange={(e) => setRollNumber(e.target.value ? parseInt(e.target.value) : '')}
+            onChange={(e) => setRollNumber(e.target.value ? parseInt(e.target.value) : "")}
             className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             required
             autoComplete="off"
@@ -367,10 +402,12 @@ const StudentRegistration: React.FC = () => {
         <div className="flex justify-center">
           <button
             type="submit"
-            className={`py-4 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-white ${loading || isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`py-4 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-white ${
+              loading || isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={loading || isSubmitDisabled}
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? "Registering..." : "Register"}
           </button>
         </div>
       </form>

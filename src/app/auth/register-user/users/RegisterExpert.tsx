@@ -54,7 +54,7 @@ const RegisterIndustryExpert: React.FC = () => {
       firstName,
       lastName,
       email,
-      role: "IndustryExpert", // Directly setting the correct role format
+      role: "IndustryExpert", 
       password,
       contact,
       post,

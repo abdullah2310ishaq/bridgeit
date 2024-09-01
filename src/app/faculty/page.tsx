@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import FacultyProfile from './facultycomponents/FacultyProfile';
 import UpcomingEvents from '../student/stdcomps/UpComingEvents';
 import ResearchWork from './facultycomponents/ResearchWork';
+import FacultyEvents from './facultycomponents/FacultyEvents';
 
 interface FacultyProfile {
   userId: string;
@@ -150,17 +151,17 @@ const FacultyPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 text-gray-900 p-6">
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
       {/* Navbar */}
-      <nav className="bg-white shadow-md rounded-lg mb-6 p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-blue-700">Faculty Dashboard</h1>
+      <nav className="bg-gray-800 shadow-md rounded-lg mb-6 p-4 flex justify-between items-center">
+        <h1 className="text-2xl font-extrabold text-green-500">Faculty Dashboard</h1>
         <div className="flex items-center space-x-4">
-          <button onClick={handleLogout} className="hover:text-blue-500 transition-colors duration-300">
+          <button onClick={handleLogout} className="hover:text-green-400 transition-colors duration-300">
             Logout
           </button>
         </div>
       </nav>
-
+  
       {/* Profile Section */}
       {facultyProfile && (
         <FacultyProfile
@@ -169,14 +170,14 @@ const FacultyPage: React.FC = () => {
           onViewProfile={() => router.push('/faculty/profile')}
         />
       )}
-
+  
       {/* Research Work Section */}
       <div className="mt-8">
         <ResearchWork papers={researchPapers} />
         <div className="flex justify-center space-x-4 mt-4">
           <button
             onClick={goToResearchWorkPage}
-            className="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200"
+            className="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-500 transition duration-200"
           >
             See More Research Work
           </button>
@@ -188,14 +189,14 @@ const FacultyPage: React.FC = () => {
           </button>
         </div>
       </div>
-
+  
       {/* Upcoming Events Section */}
       <div className="mt-8">
-        <UpcomingEvents events={events} limit={3} />
+        <FacultyEvents events={events} limit={3} />
         <div className="flex justify-center space-x-4 mt-4">
           <button
             onClick={goToEventsPage}
-            className="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200"
+            className="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-500 transition duration-200"
           >
             See More Events
           </button>
@@ -209,6 +210,8 @@ const FacultyPage: React.FC = () => {
       </div>
     </div>
   );
+  
+  
 };
 
 export default FacultyPage;
