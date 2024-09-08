@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import IndustryProfile from './industrycomponents/IndustryProfile';
+import ProjectCard from './industrycomponents/OpenCard';
 
 interface IndustryExpertProfile {
   userId: string;
@@ -12,16 +14,27 @@ interface IndustryExpertProfile {
   companyName: string;
   address: string;
   contact: string;
-  imageData: string; // Base64 image data (can be empty)
-  post: string;      // Post of the expert (can be empty)
+  imageData: string;
+  post: string;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  endDate: string;
+  name: string;
 }
 
 const IndustryExpertPage: React.FC = () => {
   const [expertProfile, setExpertProfile] = useState<IndustryExpertProfile | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchProfile() {
+    const fetchProfile = async () => {
       const token = localStorage.getItem('jwtToken');
       if (!token) {
         router.push('/auth/login-user');
@@ -29,7 +42,6 @@ const IndustryExpertPage: React.FC = () => {
       }
 
       try {
-        // Fetch the user profile information
         const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
@@ -37,45 +49,57 @@ const IndustryExpertPage: React.FC = () => {
           },
         });
 
-        if (profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          const userId = profileData.userId;
+        if (!profileResponse.ok) throw new Error('Failed to fetch profile');
 
-          // Fetch the industry expert data using the userId
-          const expertResponse = await fetch(`https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+        const profileData = await profileResponse.json();
+        const userId = profileData.userId;
 
-          if (expertResponse.ok) {
-            const expertData = await expertResponse.json();
-            setExpertProfile({
-              userId: expertData.userId,
-              indExptId: expertData.indExptId,
-              companyId: expertData.companyId,
-              firstName: expertData.firstName,
-              lastName: expertData.lastName,
-              email: expertData.email,
-              companyName: expertData.companyName,
-              address: expertData.address,
-              contact: expertData.contact,
-              imageData: expertData.imageData,
-              post: expertData.post,
-            });
-          } else {
-            console.error('Failed to fetch industry expert profile:', expertResponse.statusText);
-            router.push('/unauthorized');
-          }
+        const expertResponse = await fetch(`https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!expertResponse.ok) throw new Error('Failed to fetch industry expert profile');
+        
+        const expertData = await expertResponse.json();
+        setExpertProfile({
+          userId: expertData.userId,
+          indExptId: expertData.indExptId,
+          companyId: expertData.companyId,
+          firstName: expertData.firstName,
+          lastName: expertData.lastName,
+          email: expertData.email,
+          companyName: expertData.companyName,
+          address: expertData.address,
+          contact: expertData.contact,
+          imageData: expertData.imageData,
+          post: expertData.post,
+        });
+
+        // Fetch projects for the industry expert
+        const projectsResponse = await fetch(`/api/projects/get-expert-projects-by-id/${expertData.indExptId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          setProjects(projectsData);
         } else {
-          router.push('/unauthorized');
+          console.error('Failed to fetch projects:', projectsResponse.statusText);
         }
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        setError('Failed to fetch data');
+        console.error('Failed to fetch data:', error);
         router.push('/unauthorized');
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
     fetchProfile();
   }, [router]);
@@ -89,20 +113,28 @@ const IndustryExpertPage: React.FC = () => {
     router.push('/industry-expert/profile');
   };
 
-  const goToChangePassword = () => {
-    router.push('/industry-expert/profile/manageexpert');
-  };
-
-  const goToUpdatePhoto = () => {
-    router.push('/industry-expert/profile/manageexpert');
-  };
-
   const goToEditProfile = () => {
     router.push('/industry-expert/profile/editexpert');
   };
 
-  if (!expertProfile) {
+  const goToAddProjects = () => {
+    router.push('/industry-expert/projects/add');
+  };
+
+  const goToProjects = () => {
+    router.push('/industry-expert/projects');
+  };
+
+  if (loading) {
     return <div className="text-center text-gray-400">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  if (!expertProfile) {
+    return <div className="text-center text-gray-400">No profile found</div>;
   }
 
   return (
@@ -118,21 +150,6 @@ const IndustryExpertPage: React.FC = () => {
               </button>
             </li>
             <li>
-              <button onClick={goToChangePassword} className="hover:text-gray-400">
-                Update Password
-              </button>
-            </li>
-            <li>
-              <button onClick={goToUpdatePhoto} className="hover:text-gray-400">
-                Update Photo
-              </button>
-            </li>
-            <li>
-              <button onClick={goToEditProfile} className="hover:text-gray-400">
-                Edit Profile
-              </button>
-            </li>
-            <li>
               <button onClick={handleLogout} className="hover:text-gray-400">
                 Logout
               </button>
@@ -142,45 +159,39 @@ const IndustryExpertPage: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center justify-center p-8">
-        <h1 className="text-4xl font-bold mb-2">
-          Welcome, {expertProfile.firstName} {expertProfile.lastName}
-        </h1>
-        <p className="text-lg mb-4">Company: {expertProfile.companyName}</p>
-        <p className="text-lg mb-4">Contact: {expertProfile.contact}</p>
-        <p className="text-lg mb-6">User ID: {expertProfile.userId}</p>
-        
-        <div className="flex flex-col space-y-4 w-full max-w-xs">
-          <button
-            onClick={goToProfile}
-            className="w-full py-3 px-6 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
-          >
-            View Profile
-          </button>
-          <button
-            onClick={goToChangePassword}
-            className="w-full py-3 px-6 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-200"
-          >
-            Update Password
-          </button>
-          <button
-            onClick={goToUpdatePhoto}
-            className="w-full py-3 px-6 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
-          >
-            Update Photo
-          </button>
-          <button
-            onClick={goToEditProfile}
-            className="w-full py-3 px-6 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition duration-200"
-          >
-            Edit Profile
-          </button>
-          <button
-            onClick={handleLogout}
-            className="w-full py-3 px-6 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200"
-          >
-            Logout
-          </button>
+      <div className="p-6">
+        <IndustryProfile
+          companyLogo={expertProfile.imageData}
+          companyName={expertProfile.companyName}
+          userId={expertProfile.userId}
+          indExptId={expertProfile.indExptId}
+          companyId={expertProfile.companyId}
+          firstName={expertProfile.firstName}
+          lastName={expertProfile.lastName}
+          email={expertProfile.email}
+          address={expertProfile.address}
+          contact={expertProfile.contact}
+          onViewProjects={goToProjects}
+          onEditProfile={goToEditProfile}
+          onAddProjects={goToAddProjects}
+        />
+
+        {/* Projects Section */}
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">Projects</h2>
+          {projects.length === 0 ? (
+            <p className="text-gray-400">No projects found</p>
+          ) : (
+            projects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                title={project.title}
+                description={project.description}
+                endDate={project.endDate}
+                name={project.name}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>

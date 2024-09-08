@@ -88,13 +88,13 @@ const FacultyResearchWorkPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center">
-      <div className="bg-white p-6 mb-6 rounded-lg shadow-lg max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold text-blue-700 mb-4">Research Work</h2>
+    <div className="min-h-screen bg-gray-600 p-8 flex flex-col items-center">
+      <div className="bg-gray-600 p-6 mb-6 rounded-lg shadow-lg max-w-6xl mx-auto">
+        <h2 className="text-2xl font-bold text-white mb-4">Research Work</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full">
           {researchPapers.length > 0 ? (
             researchPapers.map((paper) => (
-              <div key={paper.id} className="bg-white rounded-lg shadow-lg p-4">
+              <div key={paper.id} className="bg-gray-200 rounded-lg shadow-lg p-4">
                 <h3 className="text-lg font-bold text-blue-700 mb-2">{paper.paperName}</h3>
                 <p className="text-gray-700">{paper.category}</p>
                 <p className="text-gray-600 mt-2">Publish Channel: {paper.publishChannel}</p>

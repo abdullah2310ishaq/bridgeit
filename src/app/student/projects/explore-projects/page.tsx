@@ -185,7 +185,7 @@ const ExploreProjects: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-300">
-      {/* Navbar at the Top */}
+     
       <Navbar />
       
       {/* Main Container with padding to prevent overlap with Navbar */}

@@ -47,8 +47,8 @@ const UniversityEventsPage: React.FC = () => {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">All University Events</h1>
+    <div className="min-h-screen bg-gray-600 text-gray-900 p-6">
+      <h1 className="text-3xl text-white font-bold text-center mb-6">All University Events</h1>
       <UpcomingEvents events={events} />
     </div>
   );
