@@ -110,19 +110,19 @@ const IndustryExpertPage: React.FC = () => {
   };
 
   const goToProfile = () => {
-    router.push('/industry-expert/profile');
+    router.push('/industryexpert/profile');
   };
 
   const goToEditProfile = () => {
-    router.push('/industry-expert/profile/editexpert');
+    router.push('/industryexpert/profile/editexpert');
   };
 
   const goToAddProjects = () => {
-    router.push('/industry-expert/projects/add');
+    router.push('/industryexpert/projects/add');
   };
 
   const goToProjects = () => {
-    router.push('/industry-expert/projects');
+    router.push('/industryexpert/projects');
   };
 
   if (loading) {

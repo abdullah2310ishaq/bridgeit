@@ -16,8 +16,8 @@ const RegistrationPage: React.FC = () => {
         return <FacultyRegistration />;
       case 'IndustryExpert':
         return <RegisterExpert />;
-      case 'University Admin':
-        return <UniversityAdminRegistration />;
+      // case 'University Admin':
+      //   return <UniversityAdminRegistration />;
       default:
         return null;
     }
