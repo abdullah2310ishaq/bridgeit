@@ -110,7 +110,7 @@ const IndustryExpertPage: React.FC = () => {
   };
 
   const goToProfile = () => {
-    router.push('/industryexpert/profile');
+    router.push('/industryexpert/profile');7
   };
 
   const goToEditProfile = () => {

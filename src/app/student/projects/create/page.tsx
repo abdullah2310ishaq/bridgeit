@@ -104,7 +104,7 @@ const CreateProjectPage: React.FC = () => {
           position: 'top-center',
           autoClose: 3000,
         });
-        router.push('/student/projects');
+        router.push('/student');
       } else {
         toast.error('Failed to create project.', {
           position: 'top-center',
