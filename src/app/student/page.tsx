@@ -161,6 +161,10 @@ const StudentPage: React.FC = () => {
     router.push("/student/projects");
   };
 
+  const createEvents=()=>{
+router.push("/student/projects/create")
+  }
+
   if (!userProfile) {
     return <div className="text-center text-gray-400">Loading...</div>;
   }
@@ -182,27 +186,46 @@ const StudentPage: React.FC = () => {
           </div>
         </nav>
   
-        {/* Profile Section */}
-        <div className="relative bg-center p-8 mb-12 rounded-lg flex items-center justify-center" style={{ backgroundImage: `url('/studenttop.jpg')`, height: "320px", width: "100%" }}>
-          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
-          <div className="relative flex items-center w-full max-w-5xl mx-auto">
-            <img src={`data:image/jpeg;base64,${userProfile.imageData}`} alt={`${userProfile.firstName} ${userProfile.lastName}`} className="w-36 h-36 rounded-full object-cover border-4 border-green-500 shadow-lg mr-10" />
-            <div className="text-white flex-grow">
-              <h2 className="text-3xl font-bold">{userProfile.firstName} {userProfile.lastName}</h2>
-              <p className="text-lg mt-2">Computer Science - {userProfile.universityName}</p>
-              <p className="text-lg">Roll Number: {userProfile.rollNumber}</p>
-              <p className="text-lg">User ID: {userProfile.userId}</p>
-              <div className="mt-6 space-x-4">
-                <button onClick={goToEditProfile} className="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-500 transition duration-200">
-                  Edit Profile
-                </button>
-                <button onClick={gotoProfile} className="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-500 transition duration-200">
-                  View Profile
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+{/* Profile Section */}
+<div className="relative flex flex-col md:flex-row justify-between items-center bg-gray-800 bg-opacity-80 p-12 rounded-2xl shadow-2xl mb-8 overflow-hidden"
+     style={{ backgroundImage: `url('/studenttop.jpg')`, height: "450px", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+  <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm"></div> 
+  
+  <div className="relative flex items-center w-full z-10">
+    {/*Profile Info */}
+    <div className="text-white flex-grow pr-10">
+      <h2 className="text-5xl font-bold text-green-400 leading-tight drop-shadow-lg">
+        {userProfile.firstName} {userProfile.lastName}
+      </h2>
+      <p className="text-lg text-gray-300 mt-2 tracking-wide italic">
+        Computer Science - {userProfile.universityName}
+      </p>
+      <p className="text-lg mt-2">Roll Number: <span className="font-bold">{userProfile.rollNumber}</span></p>
+      <p className="text-lg">User ID: <span className="font-bold">{userProfile.userId}</span></p>
+      
+      {/* Buttons */}
+      <div className="mt-6 space-x-4">
+        <button onClick={goToEditProfile} 
+                className="py-2 px-6 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-blue-600 transition transform hover:scale-105">
+          Edit Profile
+        </button>
+        <button onClick={gotoProfile} 
+                className="py-2 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg shadow-md hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105">
+          View Profile
+        </button>
+      </div>
+    </div>
+
+    {/* Profile Image */}
+    <div className="elative z-10 mt-6 md:mt-0 md:w-1/2 flex justify-center">
+      <img src={`data:image/jpeg;base64,${userProfile.imageData}`} 
+           alt={`${userProfile.firstName} ${userProfile.lastName}`} 
+           className="w-60 h-60 rounded-full object-cover border-4 border-green-400 shadow-xl transition-transform duration-300 transform hover:scale-110" />
+    </div>
+  </div>
+</div>
+
+
   
         {/* Completed Projects Section */}
         <h2 className="text-2xl font-bold text-green-500 mt-12 mb-4 text-center">Completed Projects</h2>
@@ -218,6 +241,10 @@ const StudentPage: React.FC = () => {
         <div className="mt-8 text-center">
           <button onClick={goToProjectsPage} className="py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-500 transition duration-200">
             See More Projects
+          </button>
+
+          <button onClick={createEvents} className="py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-500 transition duration-200">
+            Create Projects
           </button>
         </div>
   

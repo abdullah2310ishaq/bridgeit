@@ -56,7 +56,8 @@ const StudentRegistration: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching universities:", error);
-        toast.error("An error occurred while fetching universities.", {
+        
+        toast.error("An error occurred while fetching universities. {error}", {
           position: "top-center",
           autoClose: 3000,
         });
