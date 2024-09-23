@@ -163,7 +163,7 @@ const FacultyPage: React.FC = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"></div>
 
           <div className="relative z-10 md:w-1/2 flex flex-col space-y-8 text-left text-white">
-            <h1 className="text-6xl font-bold text-green-300 leading-tight drop-shadow-2xl">Welcome, {facultyProfile.firstName} {facultyProfile.lastName}</h1>
+            <h1 className="text-6xl font-bold text-green-400 leading-tight drop-shadow-2xl">Welcome, {facultyProfile.firstName} {facultyProfile.lastName}</h1>
             <p className="text-lg text-gray-300 tracking-wide italic">{facultyProfile.role}</p>
             <div className="flex space-x-8 mt-4">
               <div className="text-center">
