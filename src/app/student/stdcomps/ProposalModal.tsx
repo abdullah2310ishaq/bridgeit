@@ -11,17 +11,18 @@ interface ProposalModalProps {
 }
 
 const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onClose }) => {
-  const [proposal, setProposal] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // To disable button during submission
+  const [proposal, setProposal] = useState<string>(""); // State to store the proposal
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Disable the submit button while submitting
   const router = useRouter(); // Initialize router for navigation
 
+  // Submit proposal to the API
   const handleSubmitProposal = async () => {
     if (!proposal) {
       toast.error("Please enter your proposal.");
       return;
     }
 
-    setIsSubmitting(true); // Disable the submit button while submitting
+    setIsSubmitting(true); // Disable the button while submitting
 
     try {
       const response = await fetch("https://localhost:7053/api/project-proposals/send-proposal", {
@@ -39,7 +40,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
       if (response.ok) {
         toast.success("Proposal submitted successfully!");
         
-        // After a short delay, redirect to the explore projects page
+        // Redirect to the explore projects page after a short delay
         setTimeout(() => {
           router.push("/student/projects/explore-projects"); // Adjust this route as needed
         }, 1500);
@@ -55,27 +56,31 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-gray-300 w-full max-w-lg">
-        <h2 className="text-2xl font-bold text-green-500 mb-4">Submit Your Proposal</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 p-8 rounded-lg shadow-xl text-gray-200 w-full max-w-xl transform transition-all duration-500 ease-in-out">
+        <h2 className="text-3xl font-bold text-green-400 mb-4">Submit Your Proposal</h2>
         
         <textarea
           value={proposal}
           onChange={(e) => setProposal(e.target.value)}
-          placeholder="Write your proposal..."
-          className="w-full p-3 rounded-lg bg-gray-700 text-gray-300 h-40"
+          placeholder="Write your proposal here..."
+          className="w-full p-4 rounded-lg bg-gray-700 text-gray-300 h-48 border-2 border-gray-600 focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-500 transition duration-300"
         />
 
-        <div className="mt-4 flex justify-between">
+        <div className="mt-6 flex justify-end space-x-4">
           <button
-            className={`bg-green-600 text-white px-4 py-2 rounded-lg ${isSubmitting ? "opacity-50" : "hover:bg-green-500"}`}
+            className={`px-6 py-2 rounded-lg font-semibold text-white shadow-lg transition-all duration-200 ${
+              isSubmitting
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-500"
+            }`}
             onClick={handleSubmitProposal}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting ? "Submitting..." : "Submit Proposal"}
           </button>
           <button
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500"
+            className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-500 shadow-lg transition-all duration-200"
             onClick={onClose}
           >
             Cancel

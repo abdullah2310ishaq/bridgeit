@@ -109,25 +109,6 @@ const IndustryExpertPage: React.FC = () => {
     router.push('/auth/login-user');
   };
 
-<<<<<<< HEAD
-=======
-  const goToProfile = () => {
-    router.push('/industryexpert/profile');7
-  };
-
-  const goToEditProfile = () => {
-    router.push('/industryexpert/profile/editexpert');
-  };
-
-  const goToAddProjects = () => {
-    router.push('/industryexpert/projects/add');
-  };
-
-  const goToProjects = () => {
-    router.push('/industryexpert/projects');
-  };
-
->>>>>>> 1f52bce1981ee9c9789922e962fe0c192c20b5a4
   if (loading) {
     return <div className="text-center text-gray-400">Loading...</div>;
   }

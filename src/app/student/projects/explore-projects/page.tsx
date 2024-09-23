@@ -274,7 +274,7 @@ const ExploreProjects: React.FC = () => {
       
       {/* Floating Button for AI Help */}
       <button
-        onClick={() => router.push("/ai-assist")} // This can be linked to a new AI recommendation page later
+        onClick={() => router.push("/student/ai-assist")} // This can be linked to a new AI recommendation page later
         className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center hover:bg-blue-700 transition-all duration-200"
       >
         <FaRobot className="mr-2 text-2xl" />

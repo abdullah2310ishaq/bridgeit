@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
-import { FaCheckCircle, FaTimesCircle, FaInfoCircle } from "react-icons/fa"; // Icons for status
-import ProposalDetailsModal from "../industrycomponents/PropossalDetails";
 import "react-toastify/dist/ReactToastify.css";
+import ProposalDetailsModal from "../industrycomponents/PropossalDetails";
 
 interface Proposal {
   id: string;
   projectTitle: string;
-  proposal: string;
   studentName: string;
+  studentUserId: string; // Ensure that this field is present in the API response
+  proposal: string;
   status: string;
 }
 
@@ -18,8 +18,8 @@ const NotificationsPage: React.FC = () => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null); // State for selected proposal
+  const [showModal, setShowModal] = useState<boolean>(false); // State to toggle modal
   const router = useRouter();
 
   useEffect(() => {
@@ -88,9 +88,29 @@ const NotificationsPage: React.FC = () => {
     fetchProposals();
   }, [router]);
 
+  if (loading) {
+    return <div className="text-center text-gray-400">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  if (proposals.length === 0) {
+    return <div className="text-center text-gray-400">No proposals found</div>;
+  }
+
   const handleSeeDetails = (proposal: Proposal) => {
     setSelectedProposal(proposal);
     setShowModal(true);
+  };
+
+  const handleSeeProfile = (studentUserId: string) => {
+    if (studentUserId) {
+      router.push(`/industryexpert/student-profile/${studentUserId}`);
+    } else {
+      toast.error("Student ID not available");
+    }
   };
 
   const handleAcceptProposal = async (proposalId: string) => {
@@ -109,9 +129,9 @@ const NotificationsPage: React.FC = () => {
       if (response.ok) {
         toast.success("Proposal accepted successfully!");
         setProposals((prev) =>
-          prev.filter((proposal) => proposal.id !== proposalId)
+          prev.filter((proposal) => proposal.id !== proposalId) // Remove proposal after accepting
         );
-        setShowModal(false);
+        setShowModal(false); // Close the modal
       } else {
         toast.error("Failed to accept proposal.");
       }
@@ -137,9 +157,9 @@ const NotificationsPage: React.FC = () => {
       if (response.ok) {
         toast.success("Proposal rejected successfully!");
         setProposals((prev) =>
-          prev.filter((proposal) => proposal.id !== proposalId)
+          prev.filter((proposal) => proposal.id !== proposalId) 
         );
-        setShowModal(false);
+        setShowModal(false); // Close the modal
       } else {
         toast.error("Failed to reject proposal.");
       }
@@ -149,54 +169,35 @@ const NotificationsPage: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-400">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
-
-  if (proposals.length === 0) {
-    return <div className="text-center text-gray-400">No proposals found</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-800 to-gray-900 text-gray-300 p-6">
+    <div className="min-h-screen bg-gray-900 text-gray-300 p-4">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold text-green-500 mb-8 text-center">
-          Notifications
-        </h1>
-        <div className="space-y-6">
+        <h1 className="text-3xl font-bold text-green-500 mb-6">Notifications</h1>
+        <div className="space-y-4">
           {proposals.map((proposal) => (
             <div
               key={proposal.id}
-              className="relative bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all duration-300"
+              className="bg-gray-800 rounded-lg p-4 shadow-md"
             >
-              <div className="absolute top-4 right-4">
-                {proposal.status === "Accepted" && (
-                  <FaCheckCircle className="text-green-400 text-2xl" />
-                )}
-                {proposal.status === "Rejected" && (
-                  <FaTimesCircle className="text-red-400 text-2xl" />
-                )}
-                {proposal.status !== "Accepted" && proposal.status !== "Rejected" && (
-                  <FaInfoCircle className="text-yellow-400 text-2xl" />
-                )}
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-lg font-semibold text-white mb-2">
                 {proposal.projectTitle}
               </h2>
-              <p className="text-gray-400 mb-4">From: {proposal.studentName}</p>
-              <p className="text-gray-300 mb-4">{proposal.proposal}</p>
-              <div className="flex justify-end space-x-4">
-                <button
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition duration-200"
-                  onClick={() => handleSeeDetails(proposal)}
-                >
-                  See Details
-                </button>
-              </div>
+              <p className="text-gray-400">From: {proposal.studentName}</p>
+              <p className="text-gray-300 mb-2">{proposal.proposal}</p>
+              <p className="text-gray-400">Status: {proposal.status}</p>
+              <button
+                className="mt-4 text-gray-900 bg-green-400 rounded py-2 px-4 hover:bg-green-500 transition duration-200"
+                onClick={() => handleSeeDetails(proposal)}
+              >
+                See Details
+              </button>
+              {/* New "See Profile" button */}
+              <button
+                className="mt-4 text-gray-900 bg-blue-400 rounded py-2 px-4 hover:bg-blue-500 transition duration-200 ml-4"
+                onClick={() => handleSeeProfile(proposal.studentUserId)} // Pass studentUserId here
+              >
+                See Profile
+              </button>
             </div>
           ))}
         </div>
@@ -211,7 +212,6 @@ const NotificationsPage: React.FC = () => {
           onClose={() => setShowModal(false)}
         />
       )}
-
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );

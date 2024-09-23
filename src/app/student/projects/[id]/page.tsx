@@ -81,31 +81,43 @@ const ProjectDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-4">
-      <div className="max-w-3xl mx-auto bg-gray-800 rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-green-500">{project.title}</h1>
-        <p className="text-sm text-gray-400">{project.description}</p>
-        <p className="text-sm text-gray-300">
-          <span className="font-semibold">Stack:</span> {project.stack}
-        </p>
-        <p className="text-sm text-gray-300">
-          <span className="font-semibold">Status:</span> {project.status}
-        </p>
-        {project.expertName && (
-          <p className="text-sm text-gray-300">
-            <span className="font-semibold">Expert:</span> {project.expertName}
-          </p>
-        )}
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 p-6">
+      <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+        {/* Project Header */}
+        <h1 className="text-4xl font-extrabold text-green-500 mb-6">{project.title}</h1>
+        <div className="border-b border-gray-700 mb-6"></div>
 
-        {/* Button to show modal for proposal submission */}
+        {/* Project Description */}
+        <div className="mb-6">
+          <p className="text-lg text-gray-400 leading-relaxed mb-4">
+            {project.description}
+          </p>
+          {project.stack && (
+            <p className="text-sm text-gray-300 mb-2">
+              <span className="font-semibold text-blue-400">Tech Stack:</span> {project.stack}
+            </p>
+          )}
+          {project.status && (
+            <p className="text-sm text-gray-300 mb-2">
+              <span className="font-semibold text-yellow-400">Status:</span> {project.status}
+            </p>
+          )}
+          {project.expertName && (
+            <p className="text-sm text-gray-300 mb-2">
+              <span className="font-semibold text-purple-400">Expert:</span> {project.expertName}
+            </p>
+          )}
+        </div>
+
+        {/* Proposal Button */}
         <button
-          className="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-500"
+          className="mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg shadow-md transition-all duration-300"
           onClick={() => setShowModal(true)}
         >
           Submit Proposal
         </button>
 
-        {/* Proposal submission modal */}
+        {/* Modal for Proposal Submission */}
         {showModal && (
           <ProposalModal
             projectId={Array.isArray(id) ? id[0] : id}
