@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import IndustryProfile from './industrycomponents/IndustryProfile';
-import ProjectCard from './industrycomponents/OpenCard';
+import CompanyProfile from './industrycomponents/CompanyProfile'; 
+import ProjectCard from './industrycomponents/ProjectsCardd';
 
 interface IndustryExpertProfile {
   userId: string;
@@ -15,7 +16,6 @@ interface IndustryExpertProfile {
   address: string;
   contact: string;
   imageData: string;
-  post: string;
 }
 
 interface Project {
@@ -34,7 +34,7 @@ const IndustryExpertPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndProjects = async () => {
       const token = localStorage.getItem('jwtToken');
       if (!token) {
         router.push('/auth/login-user');
@@ -54,6 +54,7 @@ const IndustryExpertPage: React.FC = () => {
         const profileData = await profileResponse.json();
         const userId = profileData.userId;
 
+        // Fetch industry expert profile
         const expertResponse = await fetch(`https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`, {
           method: 'GET',
           headers: {
@@ -75,11 +76,10 @@ const IndustryExpertPage: React.FC = () => {
           address: expertData.address,
           contact: expertData.contact,
           imageData: expertData.imageData,
-          post: expertData.post,
         });
 
         // Fetch projects for the industry expert
-        const projectsResponse = await fetch(`/api/projects/get-expert-projects-by-id/${expertData.indExptId}`, {
+        const projectsResponse = await fetch(`https://localhost:7053/api/projects/get-expert-projects-by-id/${expertData.indExptId}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -88,7 +88,7 @@ const IndustryExpertPage: React.FC = () => {
 
         if (projectsResponse.ok) {
           const projectsData = await projectsResponse.json();
-          setProjects(projectsData);
+          setProjects(projectsData); // Save the projects
         } else {
           console.error('Failed to fetch projects:', projectsResponse.statusText);
         }
@@ -101,28 +101,12 @@ const IndustryExpertPage: React.FC = () => {
       }
     };
 
-    fetchProfile();
+    fetchProfileAndProjects();
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('jwtToken');
     router.push('/auth/login-user');
-  };
-
-  const goToProfile = () => {
-    router.push('/industryexpert/profile');7
-  };
-
-  const goToEditProfile = () => {
-    router.push('/industryexpert/profile/editexpert');
-  };
-
-  const goToAddProjects = () => {
-    router.push('/industryexpert/projects/add');
-  };
-
-  const goToProjects = () => {
-    router.push('/industryexpert/projects');
   };
 
   if (loading) {
@@ -138,19 +122,22 @@ const IndustryExpertPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-800 text-gray-200">
+    <div className="min-h-screen bg-gray-100 text-gray-900">
       {/* Navbar */}
-      <nav className="bg-gray-700 text-gray-100 w-full p-4 shadow-md">
+      <nav className="bg-white p-6 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Industry Expert Dashboard</h1>
+          <h1 className="text-xl font-bold text-gray-700">Industry Expert Dashboard</h1>
           <ul className="flex space-x-6">
             <li>
-              <button onClick={goToProfile} className="hover:text-gray-400">
-                Profile
+              <button 
+                onClick={() => router.push("/industryexpert/notifications")} 
+                className="text-gray-500 hover:text-blue-600 transition"
+              >
+                Notifications
               </button>
             </li>
             <li>
-              <button onClick={handleLogout} className="hover:text-gray-400">
+              <button onClick={handleLogout} className="text-gray-500 hover:text-red-600 transition">
                 Logout
               </button>
             </li>
@@ -159,7 +146,8 @@ const IndustryExpertPage: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="container mx-auto p-6 space-y-8">
+        {/* Industry Expert Profile Section */}
         <IndustryProfile
           companyLogo={expertProfile.imageData}
           companyName={expertProfile.companyName}
@@ -171,26 +159,36 @@ const IndustryExpertPage: React.FC = () => {
           email={expertProfile.email}
           address={expertProfile.address}
           contact={expertProfile.contact}
-          onViewProjects={goToProjects}
-          onEditProfile={goToEditProfile}
-          onAddProjects={goToAddProjects}
+          onViewProjects={() => {}}
+          onEditProfile={() => {}}
+          onAddProjects={() => {}}
+        />
+
+        {/* Company Profile Section */}
+        <CompanyProfile
+          companyName={expertProfile.companyName}
+          address={expertProfile.address}
+          contact={expertProfile.contact}
+          onEditCompany={() => {}}
         />
 
         {/* Projects Section */}
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">Projects</h2>
+        <div>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Projects</h2>
           {projects.length === 0 ? (
-            <p className="text-gray-400">No projects found</p>
+            <p className="text-gray-500">No projects found</p>
           ) : (
-            projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                title={project.title}
-                description={project.description}
-                endDate={project.endDate}
-                name={project.name}
-              />
-            ))
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  title={project.title}
+                  description={project.description}
+                  endDate={project.endDate}
+                  name={project.name}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>

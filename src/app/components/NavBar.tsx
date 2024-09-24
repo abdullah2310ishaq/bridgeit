@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Navbar: React.FC = () => {
   const router = useRouter();
@@ -29,6 +30,16 @@ const Navbar: React.FC = () => {
           alt="Profile Logo"
           className="h-8 w-8"
         />
+<ul className="flex space-x-4">
+        <li>
+          <Link href="/student/projects/history" className="text-white hover:text-green-500">
+            Proposal History
+          </Link>
+        </li>
+        {/* Other navigation links */}
+      </ul>
+
+
         <button
           onClick={handleLogout}
           className="text-white bg-red-600 px-4 py-2 rounded-lg hover:bg-red-500 transition duration-200"
