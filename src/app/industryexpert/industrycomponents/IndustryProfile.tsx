@@ -21,6 +21,7 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
   companyName,
   firstName,
   lastName,
+  indExptId,
   email,
   address,
   contact,
@@ -41,6 +42,7 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
         <p className="text-sm text-gray-500">Email: {email}</p>
         <p className="text-sm text-gray-500">Address: {address}</p>
         <p className="text-sm text-gray-500">Contact: {contact}</p>
+        <p className="text-sm text-gray-500">Expert id: {indExptId}</p>
         <div className="flex space-x-4 mt-4">
           <button onClick={onViewProjects} className="py-2 px-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-500 transition">
             View Projects
