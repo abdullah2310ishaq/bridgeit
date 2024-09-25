@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Image from 'next/image'; // For logo and images
 
 const ProfileManagement: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState<string>('');
@@ -130,10 +131,42 @@ const ProfileManagement: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gradient-to-br from-gray-800 to-gray-900 text-gray-200 p-6">
-      <div className="w-full max-w-lg p-8 bg-gray-700 rounded-2xl shadow-xl">
-        <h1 className="text-4xl font-bold text-center mb-6 text-white">Profile Management</h1>
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-gray-900 text-gray-200 p-8 space-x-8">
+      {/* Left Side with Gradient Text, Logo, and Edit Image */}
+      <div className="flex flex-col items-center lg:items-start lg:ml-16">
+        <h1 className="text-6xl font-extrabold text-white mb-4 flex items-center">
+           {/* Logo Image */}
+           <Image
+            src="/logo.jpg" 
+            alt="Logo"
+            width={100}
+            height={100}
+            className="mx-4"
+          />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+            Manage
+          </span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+            Profile
+          </span>
+        </h1>
+        {/* Optional Profile Image */}
+        <div className="mt-6">
+          <Image
+            src="/editpr.png"  
+            alt="Edit Profile"
+            width={400}
+            height={300}
+            className="rounded-lg"
+          />
+        </div>
+      </div>
 
+      {/* Right Side with Form */}
+      <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
+        <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">Profile Management</h1>
+        
+        {/* Password Change Form */}
         <form onSubmit={handlePasswordChange} className="space-y-6">
           <div>
             <label className="block text-sm font-semibold text-gray-300">Current Password</label>
@@ -141,7 +174,7 @@ const ProfileManagement: React.FC = () => {
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -151,20 +184,21 @@ const ProfileManagement: React.FC = () => {
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-gradient-to-r hover:from-purple-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             >
               Change Password
             </button>
           </div>
         </form>
 
+        {/* Image Upload Form */}
         <form onSubmit={handleImageUpload} className="mt-8 space-y-6">
           <div>
             <label className="block text-sm font-semibold text-gray-300">Upload Profile Image</label>
@@ -172,7 +206,7 @@ const ProfileManagement: React.FC = () => {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="mt-1 block w-full p-4 bg-gray-600 text-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             {imageData && (
               <img
@@ -185,7 +219,7 @@ const ProfileManagement: React.FC = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full py-4 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+              className="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-gradient-to-r hover:from-green-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
             >
               Upload Image
             </button>
