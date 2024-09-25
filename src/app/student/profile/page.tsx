@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FaEdit, FaArrowLeft } from 'react-icons/fa';
+import Image from 'next/image'; // Next.js Image component
 
 interface StudentProfile {
   userId: string;
@@ -13,7 +14,7 @@ interface StudentProfile {
   universityName: string;
   address: string;
   rollNumber: string;
-  skills: string[]; // Array to store skills
+  skills: string[];
 }
 
 const ProfilePage: React.FC = () => {
@@ -91,79 +92,108 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-6">
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-900 p-6 overflow-hidden">
+      
+      {/* Prominent Image on the Right */}
+      <div className="absolute bottom-0 right-0 z-0">
+        <Image
+          src="/Saly-22.png"
+          alt="Decorative Image"
+          width={600}
+          height={600}
+          className="opacity-90" // Make the image slightly transparent to blend better
+        />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, x: -80 }} // Shifted card to left
+        animate={{ opacity: 1, x: -80 }} // Keep the card moved to the left for balance
         transition={{ duration: 0.5 }}
-        className="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-4xl"
+        className="relative z-10 bg-gray-800/60 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-md h-auto lg:max-w-lg" // Adjusted max width for a more vertical layout
       >
+        {/* Header with Navigation and Edit */}
         <div className="flex justify-between items-center mb-6">
           <button onClick={goBack} className="text-gray-400 hover:text-white transition-colors duration-300">
             <FaArrowLeft size={20} />
           </button>
-          <h1 className="text-3xl font-bold text-white">Student Profile</h1>
+
+          {/* Gradient Heading */}
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+            Student Profile
+          </h1>
+
           <button onClick={editProfile} className="text-blue-500 hover:text-blue-400 transition-colors duration-300">
             <FaEdit size={20} />
           </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center lg:items-start">
+        {/* Profile Picture and Details */}
+        <div className="flex flex-col items-center lg:items-start">
           <motion.img
             src={`data:image/jpeg;base64,${studentProfile.imageData}`}
             alt={`${studentProfile.firstName}'s profile picture`}
-            className="w-36 h-36 rounded-full mb-6 lg:mb-0 lg:mr-8 border-4 border-gray-700 object-cover shadow-lg"
+            className="w-36 h-36 rounded-full mb-6 lg:mb-0 lg:mr-8 border-4 border-blue-500 object-cover shadow-2xl"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5 }}
           />
 
-          <div className="flex-grow">
-            <p className="text-xl font-semibold text-white mb-2">
+          <div className="flex-grow text-center lg:text-left">
+            <p className="text-3xl font-semibold text-white mb-2">
               {studentProfile.firstName} {studentProfile.lastName}
             </p>
-            <p className="text-gray-400 mb-4">{studentProfile.email}</p>
+            <p className="text-gray-400 mb-4 text-lg">{studentProfile.email}</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+            <div className="grid grid-cols-1 gap-4 text-gray-300">
               <div>
-                <p className="font-medium">University:</p>
+                <p className="font-medium text-white">University:</p>
                 <p className="text-gray-400">{studentProfile.universityName}</p>
               </div>
               <div>
-                <p className="font-medium">Address:</p>
+                <p className="font-medium text-white">Address:</p>
                 <p className="text-gray-400">{studentProfile.address}</p>
               </div>
               <div>
-                <p className="font-medium">Roll Number:</p>
+                <p className="font-medium text-white">Roll Number:</p>
                 <p className="text-gray-400">{studentProfile.rollNumber}</p>
               </div>
               <div>
-                <p className="font-medium">Skills:</p>
-                <p className="text-gray-400">
-                  {studentProfile.skills.length > 0 ? studentProfile.skills.join(', ') : 'No skills available'}
-                </p>
+                <p className="font-medium text-white">Skills:</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {studentProfile.skills.length > 0 ? (
+                    studentProfile.skills.map((skill, index) => (
+                      <span key={index} className="bg-blue-500 text-white py-1 px-3 rounded-full text-sm">
+                        {skill}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-gray-400">No skills available</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 flex justify-end space-x-4">
+         {/* Action Buttons with Gradient */}
+         <div className="mt-8 flex justify-end space-x-4">
           <button
             onClick={goBack}
-            className="py-2 px-6 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition duration-300"
+            className="py-2 px-6 bg-gradient-to-r from-indigo-400 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"
           >
             Back
           </button>
           <button
             onClick={editProfile}
-            className="py-2 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition duration-300"
+            className="py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"
           >
             Edit Profile
           </button>
         </div>
       </motion.div>
 
-      <footer className="mt-12 text-gray-500 text-sm">
+      {/* Footer */}
+      <footer className="mt-12 text-gray-500 text-sm relative z-10">
         <p>&copy; 2024 BridgeIT. All rights reserved.</p>
       </footer>
     </div>

@@ -3,18 +3,13 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image"; // For logo and edit images
 
 interface StudentData {
   firstName: string;
   lastName: string;
   email: string;
- 
   rollNumber: string;
-}
-
-interface University {
-  id: string;
-  name: string;
 }
 
 const UpdateStudentPage: React.FC = () => {
@@ -22,10 +17,8 @@ const UpdateStudentPage: React.FC = () => {
     firstName: "",
     lastName: "",
     email: "",
-    
     rollNumber: "",
   });
-  const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [studentId, setStudentId] = useState<string | null>(null);
@@ -35,7 +28,6 @@ const UpdateStudentPage: React.FC = () => {
       const token = localStorage.getItem("jwtToken");
 
       try {
-        // Step 1: Fetch authorized user info
         const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
@@ -45,11 +37,10 @@ const UpdateStudentPage: React.FC = () => {
 
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
-          const userId = profileData.userId; // Assuming userId corresponds to the authenticated user
-          
-          // Step 2: Fetch student data using userId (to get studentId)
+          const userId = profileData.userId;
+
           const studentResponse = await fetch(
-            `https://localhost:7053/api/get-student/student-by-id/${userId}`, // Adjust the endpoint to retrieve student by userId
+            `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -60,37 +51,15 @@ const UpdateStudentPage: React.FC = () => {
 
           if (studentResponse.ok) {
             const data = await studentResponse.json();
-            setStudentId(data.id); // Set the studentId from the fetched student data
+            setStudentId(data.id);
             setStudentData({
               firstName: data.firstName,
               lastName: data.lastName,
               email: data.email,
-            
               rollNumber: data.rollNumber,
             });
           } else {
             toast.error("Failed to load student data.", {
-              position: "top-center",
-              autoClose: 3000,
-            });
-          }
-
-          // Step 3: Fetch all universities
-          const universityResponse = await fetch(
-            `https://localhost:7053/api/universities/get-all-universities`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (universityResponse.ok) {
-            const universitiesData = await universityResponse.json();
-            setUniversities(universitiesData);
-          } else {
-            toast.error("Failed to load universities.", {
               position: "top-center",
               autoClose: 3000,
             });
@@ -117,8 +86,6 @@ const UpdateStudentPage: React.FC = () => {
     setStudentData({ ...studentData, [name]: value });
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -137,7 +104,7 @@ const UpdateStudentPage: React.FC = () => {
       const response = await fetch(
         `https://localhost:7053/api/students/update-student/${studentId}`,
         {
-          method: "PUT", // Use PUT method to match the backend
+          method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -151,7 +118,6 @@ const UpdateStudentPage: React.FC = () => {
           position: "top-center",
           autoClose: 3000,
         });
-
         router.push("/student/profile");
       } else {
         toast.error("Failed to update profile.", {
@@ -170,9 +136,41 @@ const UpdateStudentPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200 p-8">
-      <div className="w-full max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
-        <h1 className="text-4xl font-extrabold text-center mb-8 text-white">Update Profile</h1>
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-gray-900 text-gray-200 p-8 space-x-8">
+      {/* Left Side with Gradient Text, Logo, and Edit Image */}
+      <div className="flex flex-col items-center lg:items-start lg:ml-16">
+        <h1 className="text-6xl font-extrabold text-white mb-4 flex items-center">
+           {/* Logo Image */}
+           <Image
+            src="/logo.jpg" 
+            alt="Logo"
+            width={100}
+            height={100}
+            className="mx-4"
+          />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+            Edit
+          </span>
+         
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+            Profile
+          </span>
+        </h1>
+        {/* Edit Profile Image */}
+        <div className="mt-6">
+          <Image
+            src="/editpr.png"  
+            alt="Edit Profile"
+            width={400}
+            height={300}
+            className="rounded-lg"
+          />
+        </div>
+      </div>
+
+      {/* Right Side with Form */}
+      <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
+        <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">Update Profile</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-semibold text-gray-300">First Name</label>
@@ -208,9 +206,6 @@ const UpdateStudentPage: React.FC = () => {
             />
           </div>
           <div>
-           
-          </div>
-          <div>
             <label className="block text-sm font-semibold text-gray-300">Roll Number</label>
             <input
               type="text"
@@ -224,7 +219,7 @@ const UpdateStudentPage: React.FC = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition duration-200"
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-gradient-to-r hover:from-purple-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
               disabled={loading}
             >
               {loading ? "Updating..." : "Update Profile"}
@@ -233,7 +228,7 @@ const UpdateStudentPage: React.FC = () => {
         </form>
         <button
           onClick={() => router.push("/student/profile")}
-          className="mt-6 py-2 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200"
+          className="mt-6 py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"
         >
           Back to Profile
         </button>
