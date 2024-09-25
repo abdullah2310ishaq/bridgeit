@@ -47,6 +47,7 @@ const StudentRegistration: React.FC = () => {
         );
         if (response.ok) {
           const data = await response.json();
+          
           setUniversities(data);
         } else {
           toast.error("Failed to load universities.", {
