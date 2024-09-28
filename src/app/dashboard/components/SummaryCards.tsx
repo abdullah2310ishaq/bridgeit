@@ -1,44 +1,39 @@
 "use client";
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FaUniversity, FaUserGraduate, FaIndustry, FaChalkboardTeacher, FaBuilding } from 'react-icons/fa'; // Icons for each category
 
 interface SummaryCardProps {
   title: string;
   count: number;
   description: string;
-  isLoading: boolean;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ title, count, description, isLoading }) => {
+const SummaryCard: React.FC<SummaryCardProps> = ({ title, count, description }) => {
+  // Map title to icons (customize as needed)
+  const iconMap: { [key: string]: JSX.Element } = {
+    Universities: <FaUniversity className="text-6xl text-blue-500" />,
+    Students: <FaUserGraduate className="text-6xl text-green-500" />,
+    "Industry Experts": <FaIndustry className="text-6xl text-purple-500" />,
+    Faculties: <FaChalkboardTeacher className="text-6xl text-pink-500" />,
+    Companies: <FaBuilding className="text-6xl text-yellow-500" />,
+  };
+
   return (
     <motion.div
-      className="bg-white shadow-sm rounded-xl overflow-hidden transition-transform transform hover:scale-105 hover:shadow-md duration-300"
+      className="bg-white rounded-3xl shadow-lg p-8 transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
       whileHover={{ scale: 1.05 }}
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col items-center p-6">
-        <div className="mb-4 p-3 bg-gradient-to-r from-blue-400 to-purple-400 text-white rounded-full shadow-md">
-          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-          </svg>
-        </div>
-        <div className="text-center">
-          {isLoading ? (
-            <div className="flex flex-col items-center space-y-2">
-              {/* Tailwind CSS Circular Progress Indicator */}
-              <div className="w-12 h-12 border-4 border-t-4 border-gray-300 rounded-full animate-spin border-t-blue-500"></div>
-              <span className="text-lg text-gray-500">Loading...</span>
-            </div>
-          ) : (
-            <>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{title}</h3>
-              <p className="text-3xl font-bold text-gray-800 mb-1">{count}</p>
-              <p className="text-gray-500 text-sm">{description}</p>
-            </>
-          )}
-        </div>
+      <div className="flex flex-col items-center text-center">
+        {/* Dynamic Icon based on title */}
+        <div className="mb-6">{iconMap[title]}</div>
+        
+        <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
+        <p className="text-4xl font-extrabold text-gray-900 mb-2">{count}</p>
+        <p className="text-gray-500">{description}</p>
       </div>
     </motion.div>
   );

@@ -46,25 +46,28 @@ const OverviewPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Overview</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {loading ? (
-          <div className="col-span-1 md:col-span-3 flex justify-center items-center">
-            <div className="flex flex-col items-center">
-              
-              <span className="text-lg text-gray-500 mt-4">Fetching data...</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 p-10">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-gray-900 text-center mb-12">Impact Overview</h1>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+          {loading ? (
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-center items-center">
+              <div className="text-center">
+                <div className="w-16 h-16 border-4 border-t-4 border-gray-300 rounded-full animate-spin border-t-blue-500"></div>
+                <span className="block text-lg text-gray-500 mt-4">Fetching data...</span>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            <SummaryCard title="Universities" count={universitiesCount} description="Total number of universities" isLoading={false} />
-            <SummaryCard title="Students" count={studentsCount} description="Total number of students" isLoading={false} />
-            <SummaryCard title="Industry Experts" count={industryExpertsCount} description="Total number of industry experts" isLoading={false} />
-            <SummaryCard title="Faculties" count={facultiesCount} description="Total number of faculties" isLoading={false} />
-            <SummaryCard title="Companies" count={companiesCount} description="Total number of companies" isLoading={false} />
-          </>
-        )}
+          ) : (
+            <>
+              <SummaryCard title="Universities" count={universitiesCount} description="Total number of universities" />
+              <SummaryCard title="Students" count={studentsCount} description="Total number of students" />
+              <SummaryCard title="Industry Experts" count={industryExpertsCount} description="Total number of industry experts" />
+              <SummaryCard title="Faculties" count={facultiesCount} description="Total number of faculties" />
+              <SummaryCard title="Companies" count={companiesCount} description="Total number of companies" />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

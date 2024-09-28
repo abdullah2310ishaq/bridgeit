@@ -1,9 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ProfileDropdown from "../components/ProfileDropdown";
-import OngoingProject from "./stdcomps/Ongoing"
 import { motion } from "framer-motion";
+import ProfileDropdown from "../components/ProfileDropdown";
 
 interface UserProfile {
   userId: string;
@@ -16,6 +15,13 @@ interface UserProfile {
   rollNumber: string;
   imageData: string;
 }
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+}
+
 interface Event {
   id: string;
   title: string;
@@ -24,27 +30,9 @@ interface Event {
   venue: string;
 }
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-}
-
-interface OngoingProject {
-  title: string;
-  progress: number;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-}
-
 const StudentPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [ongoingProject, setOngoingProject] = useState<OngoingProject | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const router = useRouter();
 
@@ -90,7 +78,6 @@ const StudentPage: React.FC = () => {
               imageData: studentData.imageData,
             });
 
-            // Fetch projects associated with the student
             const projectsResponse = await fetch(`https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`, {
               method: "GET",
               headers: {
@@ -100,12 +87,9 @@ const StudentPage: React.FC = () => {
 
             if (projectsResponse.ok) {
               const projectsData = await projectsResponse.json();
-              setProjects(projectsData.slice(0, 3)); 
-            } else {
-              setProjects([]); // Handle case where no projects are returned
+              setProjects(projectsData.slice(0, 3));
             }
 
-            // Fetch events from the API
             const eventsResponse = await fetch("https://localhost:7053/api/Events/get-events", {
               method: "GET",
               headers: {
@@ -116,20 +100,10 @@ const StudentPage: React.FC = () => {
             if (eventsResponse.ok) {
               const eventsData = await eventsResponse.json();
               setEvents(eventsData);
-            } else {
-              setEvents([]); // Handle case where no events are returned
             }
-
-          } else {
-            console.error("Failed to fetch student profile.");
-            router.push("/unauthorized");
           }
-        } else {
-          console.error("Failed to fetch user profile.");
-          router.push("/unauthorized");
         }
       } catch (error) {
-        console.error("An error occurred:", error);
         router.push("/unauthorized");
       }
     }
@@ -145,208 +119,166 @@ const StudentPage: React.FC = () => {
   const goToEditProfile = () => {
     router.push("/student/profile/edit");
   };
-  const goToEventsPage = () => {
-    router.push("/student/events");
-  };
-
-  const gotoProfile = () => {
-    router.push("/student/profile");
-  };
 
   const goToProjectsPage = () => {
     router.push("/student/projects");
   };
 
-  const createEvents = () => {
-    router.push("/student/projects/create");
+  const goToEventsPage = () => {
+    router.push("/student/events");
   };
-
-  const gradientStyles = [
-    'bg-gradient-to-r from-green-400 to-blue-500',
-    'bg-gradient-to-r from-purple-400 to-pink-500',
-    'bg-gradient-to-r from-yellow-400 to-red-500',
-    'bg-gradient-to-r from-indigo-400 to-purple-600',
-    'bg-gradient-to-r from-orange-400 to-pink-500',
-  ];
 
   if (!userProfile) {
     return <div className="text-center text-gray-400">Loading...</div>;
   }
-  
+
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6"> {/* Central flex layout */}
+    <div className="min-h-screen bg-gradient-to-bl from-green-100 via-white to-blue-100">
       {/* Navbar */}
-      <nav className="bg-gray-800 shadow-lg rounded-lg mb-6 p-4 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-green-500">Student Profile</h1>
-        <div className="hidden md:flex space-x-8">
-          <button onClick={handleLogout} className="hover:text-green-400 transition-colors duration-300">
+      <nav className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 p-6 shadow-lg rounded-b-lg flex justify-between items-center">
+        <motion.h1
+          className="text-4xl font-extrabold text-white tracking-wider"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          Student Dashboard
+        </motion.h1>
+        <div className="flex space-x-8">
+          <motion.button
+            onClick={handleLogout}
+            className="text-white font-semibold hover:text-red-400 transition duration-300"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
             Logout
-          </button>
-          <button onClick={() => router.push("/student/projects/explore-projects")} className="hover:text-green-400 transition-colors duration-300">
-            Explore Projects
-          </button>
+          </motion.button>
           <ProfileDropdown userProfile={userProfile} onLogout={handleLogout} />
         </div>
       </nav>
-  
-      {/* Profile Section */}
-      <div className="relative flex flex-col md:flex-row justify-between items-center bg-gray-800 bg-opacity-80 p-12 rounded-2xl shadow-2xl mb-8 overflow-hidden"
-           style={{ backgroundImage: "url('/studentbg.jpg')", height: "600px", backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm"></div>
-        <div className="relative flex items-center w-full z-10">
-          {/*Profile Info */}
-          <div className="text-white flex-grow pr-10">
-            <h2 className="text-6xl font-bold text-green-400 leading-tight drop-shadow-2xl">
-             Welcome, {userProfile.firstName} {userProfile.lastName}
-            </h2>
-            <p className="text-lg text-gray-300 mt-2 tracking-wide italic">
-              Computer Science - {userProfile.universityName}
-            </p>
-            <p className="text-lg mt-2">Roll Number: <span className="font-bold">{userProfile.rollNumber}</span></p>
-            <p className="text-lg">User ID: <span className="font-bold">{userProfile.userId}</span></p>
-            
-            {/* Buttons */}
-            <div className="mt-6 space-x-4">
-              <button onClick={goToEditProfile} 
-                      className="px-10 py-4 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:scale-105">
-                Edit Profile
-              </button>
-              <button onClick={gotoProfile} 
-                      className="px-10 py-4 bg-purple-500 text-white font-bold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:scale-105">
-                View Profile
-              </button>
-            </div>
-          </div>
 
-          {/* Profile Image */}
-          <div className="relative z-10 mt-6 md:mt-0 md:w-1/2 flex justify-center">
-            <img src={`data:image/jpeg;base64,${userProfile.imageData}`} 
-                alt={`${userProfile.firstName} ${userProfile.lastName}`} 
-                className="w-80 h-80 rounded-full border-4 border-green-400 object-cover shadow-2xl transform hover:scale-110 transition duration-300" />
-          </div>
-        </div>
-      </div>
-
-{/* Completed Projects Section */}
-<section className="relative py-16 bg-gray-900">
-  <div
-    className="absolute inset-y-0 right-0 w-1/2 bg-cover bg-center opacity-20"
-    style={{ backgroundImage: `url('/projectBG.png')`, backgroundSize: "contain", backgroundRepeat: "no-repeat" }}
-  ></div>
-
-  <div className="relative max-w-7xl mx-auto flex justify-between items-center mb-16">
-    {/* Heading on the Left */}
-    <div className="text-left">
-      <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
-        Completed Projects
-      </h2>
-    </div>
-  </div>
-
-  {/* Project Boxes */}
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 px-4 md:px-12">
-    {projects.length > 0 ? (
-      projects.map((project) => (
-        <motion.div
-          key={project.id}
-          whileHover={{ scale: 1.05 }}
-          className="bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"  // Changed the box to solid background
-        >
-          {/* Title */}
-          <h3 className="text-2xl font-bold text-green-300 mb-4">{project.title}</h3>
-          
-          {/* Description */}
-          <p className="text-gray-400 mb-4">{project.description}</p>
-        
-
-          {/* Additional Project Info */}
-          <div className="text-left mt-4">
-            <p className="text-sm text-gray-400">
-              <span className="font-bold text-gray-300">Status:</span> Completed
-            </p>
-            <p className="text-sm text-gray-400">
-              <span className="font-bold text-gray-300">Duration:</span> 6 months
-            </p>
-
-          </div>
-
-          {/* Click for More Button */}
-          <div className="mt-6 text-right">
-            <button
-              onClick={goToProjectsPage}
-              className="text-blue-400 hover:text-blue-600 underline text-sm font-semibold transition-colors"
-            >
-              Click for More
-            </button>
-          </div>
-        </motion.div>
-      ))
-    ) : (
-      <p className="text-gray-400 text-center col-span-3">No completed projects available.</p>
-    )}
-  </div>
-
-  {/* Buttons Below the Section */}
-  <div className="mt-12 text-center space-x-6">
-    <button
-      onClick={goToProjectsPage}
-      className="px-8 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-full shadow-md hover:from-green-600 hover:to-teal-600 transition transform hover:scale-105"
-    >
-      See More Projects
-    </button>
-    <button
-      onClick={createEvents}
-      className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-md hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105"
-    >
-      Create Projects
-    </button>
-  </div>
-</section>
-
-{/* Upcoming University Events Section */}
-<section className="py-16 bg-gray-900">
-  {/* Event Heading */}
-  <div className="w-full md:w-1/2 text-left mb-12">
-    <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
-      Upcoming University Events
-    </h1>
-  </div>
-
-  {/* Event Cards */}
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-    {events.map((event, index) => (
-      <div
-        key={event.id}
-        className={`relative p-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all overflow-hidden ${gradientStyles[index % gradientStyles.length]}`}
+      {/* Hero Section */}
+      <motion.section
+        className="bg-white shadow-lg rounded-xl p-10 mt-8 mx-6 lg:mx-auto max-w-7xl flex flex-col lg:flex-row items-center justify-between"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
       >
-        <div className="absolute inset-0 opacity-20 bg-cover bg-center"></div>
-        <div className="relative z-10">
-          <h2 className="text-xl font-semibold text-white mb-4">{event.title}</h2>
-          <p className="text-gray-200 mb-2">Speaker: {event.speakerName}</p>
-          <p className="text-gray-300 mb-4">
-            Date: {new Date(event.eventDate).toLocaleDateString()} | Venue: {event.venue}
+        <div className="lg:w-1/2 space-y-6 text-center lg:text-left">
+          <h2 className="text-5xl font-bold tracking-wider leading-tight text-purple-600">
+            Welcome, {userProfile.firstName} {userProfile.lastName}
+          </h2>
+          <p className="text-xl text-gray-700">
+            {userProfile.universityName} <br /> Roll Number: {userProfile.rollNumber}
           </p>
+          <div className="space-x-4 mt-6">
+            <motion.button
+              onClick={goToEditProfile}
+              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full text-lg font-bold text-white hover:shadow-lg transition-transform transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+            >
+              Edit Profile
+            </motion.button>
+            <motion.button
+              onClick={() => router.push("/student/profile")}
+              className="px-8 py-4 bg-gradient-to-r from-green-400 to-blue-400 rounded-full text-lg font-bold text-white hover:shadow-lg transition-transform transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+            >
+              View Profile
+            </motion.button>
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
+        <div className="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
+          <motion.img
+            src={`data:image/jpeg;base64,${userProfile.imageData}`}
+            alt={`${userProfile.firstName} ${userProfile.lastName}`}
+            className="w-64 h-64 rounded-full object-cover shadow-2xl"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7, duration: 0.7 }}
+          />
+        </div>
+      </motion.section>
 
-  {/* Buttons */}
-  <div className="flex justify-center space-x-6 mt-12">
-    <button
-      onClick={goToEventsPage}
-      className="px-10 py-4 bg-green-400 text-white font-bold rounded-full shadow-lg hover:shadow-green-400/50 transition duration-300 ease-in-out transform hover:scale-105"
-    >
-      See More Events
-    </button>
-  </div>
-</section>
+      {/* Projects Section */}
+      <section className="py-16 px-6">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+        >
+          <h2 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-green-500">
+            Your Projects
+          </h2>
+        </motion.div>
 
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+        >
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <motion.div
+                key={project.id}
+                className="bg-gradient-to-r from-pink-300 via-purple-400 to-blue-500 rounded-2xl p-8 shadow-xl hover:shadow-2xl transform hover:scale-105 transition duration-300"
+                whileHover={{ scale: 1.05 }}
+              >
+                <h3 className="text-3xl font-bold text-white mb-4">{project.title}</h3>
+                <p className="text-gray-100">{project.description}</p>
+                <div className="mt-4 text-right">
+                  <button
+                    onClick={goToProjectsPage}
+                    className="text-white hover:underline font-semibold"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-gray-400">No projects found.</p>
+          )}
+        </motion.div>
+      </section>
+
+      {/* Events Section */}
+      <section className="py-16 px-6 bg-gradient-to-br from-yellow-300 to-orange-400 text-white">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.3 }}
+        >
+          <h2 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-red-500">
+            Upcoming Events
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {events.map((event) => (
+            <motion.div
+              key={event.id}
+              className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+            >
+              <h3 className="text-xl font-semibold text-yellow-500 mb-4">{event.title}</h3>
+              <p className="text-gray-800 mb-2">Speaker: {event.speakerName}</p>
+              <p className="text-gray-600">
+                Date: {new Date(event.eventDate).toLocaleDateString()}
+              </p>
+              <p className="text-gray-600">Venue: {event.venue}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-gray-400 py-4 text-center rounded-lg shadow-lg mt-12">
+      <footer className="py-8 bg-gradient-to-r from-indigo-600 to-blue-500 text-white text-center">
         <p>&copy; 2024 BridgeIT. All rights reserved.</p>
-        <p>&copy; Aesyem Institute Of Science & Technology</p>
       </footer>
     </div>
   );

@@ -1,5 +1,6 @@
-"use client";// Make sure the path is correct
+"use client";
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import SearchResultCard from '../components/SearchResultard';
 
 interface SearchResult {
@@ -44,7 +45,7 @@ const SearchComponent: React.FC = () => {
       }
 
       if (!response.ok) {
-        throw new Error('Not Found!! Try Creating One');
+        throw new Error('Not Found! Try Creating One');
       }
 
       const data = await response.json();
@@ -63,48 +64,63 @@ const SearchComponent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-900">
-      <h1 className="text-4xl font-bold mb-6 text-center text-white">Search</h1>
-      <div className="mb-4 flex justify-center items-center space-x-4">
+    <div className="min-h-screen p-6 bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col items-center">
+      <motion.h1
+        className="text-5xl font-extrabold mb-10 text-center text-white"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        Advanced Search
+      </motion.h1>
+
+      <div className="flex flex-col items-center justify-center w-full max-w-2xl space-y-4">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Enter name"
-          className="p-2 border rounded shadow-md w-64 bg-gray-800 text-white placeholder-gray-400"
+          className="p-4 w-full bg-gray-700 text-white placeholder-gray-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <select
-          value={searchType}
-          onChange={(e) => setSearchType(e.target.value)}
-          className="p-2 border rounded shadow-md bg-gray-800 text-white"
-        >
-          <option value="student">Student</option>
-          <option value="faculty">Faculty</option>
-          <option value="industry">Industry Expert</option>
-        </select>
-        <button
-          onClick={handleSearch}
-          className="bg-gray-700 text-white p-2 rounded shadow-md"
-        >
-          Search
-        </button>
+
+        <div className="flex justify-between w-full">
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+            className="p-3 bg-gray-700 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+            <option value="industry">Industry Expert</option>
+          </select>
+          <button
+            onClick={handleSearch}
+            className="p-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+          >
+            Search
+          </button>
+        </div>
       </div>
 
-      {loading && <p className="text-gray-300 text-center">Loading...</p>}
-      {error && <p className="text-red-400 text-center">{error}</p>}
+      {/* Search Results */}
+      <div className="mt-8 w-full max-w-5xl">
+        {loading && <p className="text-gray-400 text-center">Loading...</p>}
+        {error && <p className="text-red-500 text-center">{error}</p>}
 
-      <div className="mt-6">
-        {results.length === 0 && !loading && !error && <p className="text-center text-gray-300">No results found</p>}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {!loading && !error && results.length === 0 && (
+          <p className="text-gray-400 text-center">No results found</p>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
           {results.map((result) => (
             <SearchResultCard
-              key={result.userId} // Use userId here
-              userId={result.userId} // Pass userId here
+              key={result.userId}
+              userId={result.userId}
               firstName={result.firstName}
               lastName={result.lastName}
               email={result.email}
               imageData={result.imageData}
-              type={searchType} // Pass search type to the card
+              type={searchType}
             />
           ))}
         </div>
