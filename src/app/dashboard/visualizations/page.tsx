@@ -1,26 +1,12 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement, ArcElement } from 'chart.js';
 import BarChart from '../components/BarChart';
 import LineChart from '../components/LineChart';
 import PieChart from '../components/PieChart';
 import DoughnutChart from '../components/DoughnutChart';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  PointElement,
-  ArcElement
-);
+import { motion } from 'framer-motion';
 
 const VisualizationsPage: React.FC = () => {
-  // State for counts and loading
   const [universitiesCount, setUniversitiesCount] = useState<number>(0);
   const [studentsCount, setStudentsCount] = useState<number>(0);
   const [industryExpertsCount, setIndustryExpertsCount] = useState<number>(0);
@@ -81,7 +67,6 @@ const VisualizationsPage: React.FC = () => {
     if (loading) {
       return (
         <div className="flex justify-center items-center h-96">
-          
           <span className="text-lg text-gray-500 ml-4">Loading...</span>
         </div>
       );
@@ -102,37 +87,32 @@ const VisualizationsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Data Visualizations</h1>
-      <div className="mb-4 flex flex-wrap justify-center gap-4">
-        <button
-          onClick={() => setSelectedChart('bar')}
-          className={`p-3 border rounded shadow-md ${selectedChart === 'bar' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'} transition-colors`}
-        >
-          Bar Chart
-        </button>
-        <button
-          onClick={() => setSelectedChart('line')}
-          className={`p-3 border rounded shadow-md ${selectedChart === 'line' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'} transition-colors`}
-        >
-          Line Chart
-        </button>
-        <button
-          onClick={() => setSelectedChart('pie')}
-          className={`p-3 border rounded shadow-md ${selectedChart === 'pie' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'} transition-colors`}
-        >
-          Pie Chart
-        </button>
-        <button
-          onClick={() => setSelectedChart('doughnut')}
-          className={`p-3 border rounded shadow-md ${selectedChart === 'doughnut' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'} transition-colors`}
-        >
-          Doughnut Chart
-        </button>
+    <div className="min-h-screen p-8 bg-gradient-to-r from-gray-800 via-purple-800 to-gray-900 flex flex-col items-center">
+      <h1 className="text-4xl font-bold text-white mb-10 drop-shadow-lg">Data Visualizations</h1>
+      <div className="mb-6 flex justify-center space-x-4">
+        {['bar', 'line', 'pie', 'doughnut'].map((chartType) => (
+          <motion.button
+            key={chartType}
+            onClick={() => setSelectedChart(chartType)}
+            className={`px-6 py-3 rounded-lg shadow-lg text-white font-bold transition-transform duration-200 ${
+              selectedChart === chartType ? 'bg-blue-500 scale-105' : 'bg-gray-700'
+            }`}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart
+          </motion.button>
+        ))}
       </div>
-      <div className="w-full max-w-4xl h-96">
+
+      <motion.div
+        className="w-full max-w-4xl h-96 bg-white rounded-xl shadow-2xl p-4"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
         {renderChart()}
-      </div>
+      </motion.div>
     </div>
   );
 };
