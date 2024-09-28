@@ -61,13 +61,13 @@ const RegistrationPage: React.FC = () => {
               >
                 Industry Expert
               </button>
-              <button
+              {/* <button
                 type="button"
-                onClick={() => setRole('University Admin')}
+                onClick={() => setRole('UniversityAdmin')}
                 className={`py-3 rounded-lg font-semibold transition-colors duration-300 ${role === 'University Admin' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400'} hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500`}
               >
                 University Admin
-              </button>
+              </button> */}
             </div>
           </div>
 

@@ -19,6 +19,9 @@ export default function HomePage() {
           <Link href="/about" className="text-lg text-gray-200 hover:text-green-300 transition-colors duration-300">
             About
           </Link>
+          <Link href="/dashboard" className="text-lg text-gray-200 hover:text-green-300 transition-colors duration-300">
+           Analytics
+          </Link>
         </div>
         <div>
           <Link href="/auth/login-user">
