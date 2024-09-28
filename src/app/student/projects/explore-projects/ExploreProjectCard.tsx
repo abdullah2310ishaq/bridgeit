@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import { FaCheckCircle, FaExclamationCircle, FaUserTie, FaUserGraduate } from "react-icons/fa"; // Icons for better UI
+import { FaCheckCircle, FaExclamationCircle, FaBuilding } from "react-icons/fa";
 
 interface ProjectCardProps {
   id: string;
@@ -9,7 +9,7 @@ interface ProjectCardProps {
   stack?: string;
   status?: string;
   expertName?: string;
-  studentName?: string;
+  companyName?: string;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -19,42 +19,50 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   stack,
   status,
   expertName,
-  studentName,
+  companyName,
 }) => {
   const router = useRouter();
 
-  // Navigate to project details page
   const handleViewDetails = () => {
     router.push(`/student/projects/${id}`);
   };
 
-  // Status badge with dynamic colors
   const renderStatusBadge = (status: string | undefined) => {
     if (!status) return null;
 
-    const statusClass =
-      status.toLowerCase() === "completed"
-        ? "bg-green-500 text-green-100"
-        : status.toLowerCase() === "pending"
-        ? "bg-yellow-500 text-yellow-100"
-        : "bg-red-500 text-red-100";
+    let statusClass = "";
+    let StatusIcon = null;
 
-    const statusIcon =
-      status.toLowerCase() === "completed" ? (
-        <FaCheckCircle className="mr-1" />
-      ) : status.toLowerCase() === "pending" ? (
-        <FaExclamationCircle className="mr-1" />
-      ) : null;
+    switch (status.toLowerCase()) {
+      case "completed":
+        statusClass = "bg-green-500 text-green-100";
+        StatusIcon = FaCheckCircle;
+        break;
+      case "pending":
+        statusClass = "bg-yellow-500 text-yellow-100";
+        StatusIcon = FaExclamationCircle;
+        break;
+      case "featured":
+        statusClass = "bg-purple-500 text-purple-100";
+        StatusIcon = FaBuilding;
+        break;
+      default:
+        statusClass = "bg-gray-500 text-gray-100";
+        StatusIcon = FaExclamationCircle;
+    }
 
     return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}>
-        {statusIcon} {status}
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
+      >
+        <StatusIcon className="mr-1" />
+        {status}
       </span>
     );
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-900 via-gray-800 to-gray-900 text-gray-100 rounded-lg shadow-xl p-6 w-full mb-8 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105">
+    <div className="bg-gradient-to-br from-blue-900 via-gray-800 to-gray-900 text-gray-100 rounded-3xl shadow-xl p-6 w-full mb-8 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105">
       <h3 className="font-extrabold text-2xl text-green-400 mb-4 tracking-tight">
         {title}
       </h3>
@@ -67,26 +75,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <span className="text-sm text-gray-200">{stack}</span>
         </div>
       )}
-      {status && (
-        <div className="mb-4">
-          {renderStatusBadge(status)}
-        </div>
-      )}
-      {expertName && (
-        <div className="flex items-center mb-2 text-sm text-gray-400">
-          <FaUserTie className="text-blue-400 mr-2" />
+      {status && <div className="mb-4">{renderStatusBadge(status)}</div>}
+      {expertName && companyName && (
+        <div className="flex items-center mb-4 text-sm text-gray-400">
+          <FaBuilding className="text-purple-400 mr-2" />
           <span>
-            <span className="font-semibold text-blue-300">Expert:</span>{" "}
-            {expertName}
-          </span>
-        </div>
-      )}
-      {studentName && (
-        <div className="flex items-center mb-2 text-sm text-gray-400">
-          <FaUserGraduate className="text-green-400 mr-2" />
-          <span>
-            <span className="font-semibold text-green-300">Student:</span>{" "}
-            {studentName}
+            <span className="font-semibold text-purple-300">Industry Expert:</span>{" "}
+            {expertName} @ {companyName}
           </span>
         </div>
       )}
