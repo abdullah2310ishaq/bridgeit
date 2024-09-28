@@ -66,7 +66,7 @@ const DashboardHomePage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
       >
-        &copy; {new Date().getFullYear()} Impact on Society Dashboard. All rights reserved.
+        &copy; {new Date().getFullYear()} BridgeIT.
       </motion.footer>
     </div>
   );

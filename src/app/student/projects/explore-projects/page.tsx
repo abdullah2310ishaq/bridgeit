@@ -1,12 +1,11 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaRobot, FaProjectDiagram, FaUser, FaSun, FaMoon, FaSearch, FaCheckCircle, FaExclamationCircle, FaUserTie, FaUserGraduate, FaCode, FaLinkedin, FaTwitter } from "react-icons/fa";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import ProfileCard from "./ProfileCard";
+import Navbar from "@/app/components/NavBar";
+import { FaRobot } from "react-icons/fa"; // Import an AI-related icon
+import ProjectCard from "./ExploreProjectCard";
 
-// Interface Definitions
 interface UserProfile {
   userId: string;
   firstName: string;
@@ -19,11 +18,17 @@ interface UserProfile {
   imageData: string;
 }
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+}
+
 interface ExpertProject {
-  studentName?: string;
-  expertName?: string;
-  status?: string;
-  stack?: string;
+  studentName: string | undefined;
+  expertName: string | undefined;
+  status: string | undefined;
+  stack: string | undefined;
   id: string;
   title: string;
   description: string;
@@ -37,9 +42,9 @@ interface Proposal {
   projectId: string; // The ID of the project for which a proposal is submitted
 }
 
-// Main Component
 const ExploreProjects: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [expertProjects, setExpertProjects] = useState<ExpertProject[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ExpertProject[]>([]);
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -48,7 +53,6 @@ const ExploreProjects: React.FC = () => {
 
   const router = useRouter();
 
-  // Fetch User Profile and Projects
   useEffect(() => {
     async function fetchProfileAndProjects() {
       const token = localStorage.getItem("jwtToken");
@@ -148,10 +152,8 @@ const ExploreProjects: React.FC = () => {
     fetchProfileAndProjects();
   }, [router]);
 
-  // Filter Projects based on Search, Filter, and Proposals
   useEffect(() => {
     filterProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilter, expertProjects, searchQuery, proposals]);
 
   const filterProjects = () => {
@@ -174,21 +176,14 @@ const ExploreProjects: React.FC = () => {
     switch (selectedFilter) {
       case "Most Recent":
         sortedProjects.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );
         break;
-      case "Best Matches":
+      case "Best Matched":
         sortedProjects.sort((a, b) => b.matchScore - a.matchScore);
         break;
       case "Featured":
         sortedProjects = sortedProjects.filter((project) => project.isFeatured);
-        break;
-      case "Completed":
-      case "Pending":
-      case "Ongoing":
-        sortedProjects = sortedProjects.filter(
-          (project) => project.status?.toLowerCase() === selectedFilter.toLowerCase()
-        );
         break;
       default:
         break;
@@ -197,278 +192,64 @@ const ExploreProjects: React.FC = () => {
     setFilteredProjects(sortedProjects);
   };
 
-  // Internal Components
-
-  // Navbar Component
-  const Navbar: React.FC = () => {
-    const [darkMode, setDarkMode] = useState(false);
-
-    useEffect(() => {
-      if (darkMode) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    }, [darkMode]);
-
-    return (
-      <nav className="bg-white dark:bg-gray-900 shadow-lg fixed w-full z-20">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              ProjectExplorer
-            </span>
-            <button
-              onClick={() => router.push("/student/explore-projects")}
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-            >
-              <FaProjectDiagram className="mr-1" /> Explore Projects
-            </button>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => router.push("/student/profile")}
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-            >
-              <FaUser className="mr-1" /> Profile
-            </button>
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-              aria-label="Toggle Dark Mode"
-            >
-              {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
-          </div>
-        </div>
-      </nav>
-    );
-  };
-
-  // ProfileCard Component
-  const ProfileCard: React.FC<{ user: UserProfile }> = ({ user }) => {
-    return (
-      <motion.div
-        className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex flex-col items-center w-full lg:w-1/4 mb-6 lg:mb-0"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Image
-          src={`data:image/jpeg;base64,${user.imageData}`}
-          alt={`${user.firstName} ${user.lastName}`}
-          width={150}
-          height={150}
-          className="rounded-full mb-4 object-cover"
-        />
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{`${user.firstName} ${user.lastName}`}</h2>
-        <p className="text-gray-600 dark:text-gray-400">{user.role}</p>
-        <div className="mt-4 w-full">
-          <div className="flex items-center mb-2">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">Email:</span>
-            <span className="ml-2 text-gray-600 dark:text-gray-400">{user.email}</span>
-          </div>
-          <div className="flex items-center mb-2">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">University:</span>
-            <span className="ml-2 text-gray-600 dark:text-gray-400">{user.universityName}</span>
-          </div>
-          <div className="flex items-center mb-2">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">Address:</span>
-            <span className="ml-2 text-gray-600 dark:text-gray-400">{user.address}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">Roll Number:</span>
-            <span className="ml-2 text-gray-600 dark:text-gray-400">{user.rollNumber}</span>
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
-
-  // SearchBar Component
-  const SearchBar: React.FC<{ searchQuery: string; setSearchQuery: (query: string) => void }> = ({ searchQuery, setSearchQuery }) => {
-    return (
-      <motion.div
-        className="relative w-full max-w-md"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
-        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search projects..."
-          className="w-full pl-10 pr-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
-        />
-      </motion.div>
-    );
-  };
-
-  // FilterPanel Component
-  const FilterPanel: React.FC<{ selectedFilter: string; setSelectedFilter: (filter: string) => void; availableFilters: string[] }> = ({
-    selectedFilter,
-    setSelectedFilter,
-    availableFilters,
-  }) => {
-    return (
-      <motion.div
-        className="flex space-x-2 overflow-x-auto"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
-        {availableFilters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setSelectedFilter(filter)}
-            className={`px-4 py-2 rounded-full text-sm font-medium focus:outline-none transition ${
-              selectedFilter === filter
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white"
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </motion.div>
-    );
-  };
-
-  // ProjectCard Component
-  const ProjectCard: React.FC<ExpertProject> = ({
-    id,
-    title,
-    description,
-    stack,
-    status,
-    expertName,
-    studentName,
-  }) => {
-    const handleViewDetails = () => {
-      router.push(`/student/projects/${id}`);
-    };
-
-    const renderStatusBadge = (status: string | undefined) => {
-      if (!status) return null;
-
-      const statusClass =
-        status.toLowerCase() === "completed"
-          ? "bg-green-500 text-green-100"
-          : status.toLowerCase() === "pending"
-          ? "bg-yellow-500 text-yellow-100"
-          : "bg-red-500 text-red-100";
-
-      const statusIcon =
-        status.toLowerCase() === "completed" ? (
-          <FaCheckCircle className="mr-1" />
-        ) : status.toLowerCase() === "pending" ? (
-          <FaExclamationCircle className="mr-1" />
-        ) : null;
-
-      return (
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}>
-          {statusIcon} {status}
-        </span>
-      );
-    };
-
-    return (
-      <motion.div
-        className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <div>
-          <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">{title}</h3>
-          <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">{description}</p>
-          {stack && (
-            <div className="flex items-center mb-2">
-              <FaCode className="text-gray-500 mr-2" />
-              <span className="text-gray-600 dark:text-gray-400">{stack}</span>
-            </div>
-          )}
-          {status && <div className="mb-2">{renderStatusBadge(status)}</div>}
-          {expertName && (
-            <div className="flex items-center mb-2">
-              <FaUserTie className="text-blue-400 mr-2" />
-              <span className="text-gray-600 dark:text-gray-400">Expert: {expertName}</span>
-            </div>
-          )}
-          {studentName && (
-            <div className="flex items-center">
-              <FaUserGraduate className="text-green-400 mr-2" />
-              <span className="text-gray-600 dark:text-gray-400">Student: {studentName}</span>
-            </div>
-          )}
-        </div>
-        <button
-          onClick={handleViewDetails}
-          className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition-colors duration-200"
-        >
-          View Details
-        </button>
-      </motion.div>
-    );
-  };
-
-  // AIButton Component
-  const AIButton: React.FC = () => {
-    const handleClick = () => {
-      router.push("/student/ai-assist");
-    };
-
-    return (
-      <motion.button
-        onClick={handleClick}
-        className="fixed bottom-8 right-8 bg-purple-600 text-white p-4 rounded-full shadow-lg flex items-center space-x-2 hover:bg-purple-700 transition-colors duration-200"
-        aria-label="AI Assistance"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 1 }}
-      >
-        <FaRobot className="text-2xl" />
-        <span className="hidden sm:inline">AI Assist</span>
-      </motion.button>
-    );
-  };
-
-  // Main Render
   if (!userProfile) {
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-500">
-        Loading...
-      </div>
-    );
+    return <div className="text-center text-gray-400">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300">
       <Navbar />
-      <div className="pt-20 max-w-7xl mx-auto px-4">
-        <div className="flex flex-col lg:flex-row gap-6">
-          <ProfileCard user={userProfile} />
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
-              <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-              <FilterPanel
-                selectedFilter={selectedFilter}
-                setSelectedFilter={setSelectedFilter}
-                availableFilters={[
-                  "Most Recent",
-                  "Best Matches",
-                  "Featured",
-                 
-                ]}
+      <div className="flex flex-col items-center w-full max-w-7xl mx-auto px-4 pt-10">
+        <div className="flex flex-col lg:flex-row w-full mt-4 relative">
+          <ProfileCard 
+            imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
+            firstName={userProfile.firstName}
+            lastName={userProfile.lastName}
+            role={userProfile.role}
+          />
+          <div className="flex flex-col w-full lg:w-3/4 pr-6">
+            <div className="flex flex-col sm:flex-row items-start gap-4 justify-between mb-8">
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-3/4 lg:w-2/3 p-3 rounded-lg bg-gray-800 text-gray-300 shadow-md placeholder-gray-400"
               />
+              <div className="flex space-x-4 sm:mt-0">
+                <button
+                  onClick={() => setSelectedFilter("Best Matched")}
+                  className={`p-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                    selectedFilter === "Best Matched"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-700 text-gray-300"
+                  }`}
+                >
+                  Best Matches
+                </button>
+                <button
+                  onClick={() => setSelectedFilter("Featured")}
+                  className={`p-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                    selectedFilter === "Featured"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-700 text-gray-300"
+                  }`}
+                >
+                  Featured
+                </button>
+                <button
+                  onClick={() => setSelectedFilter("Most Recent")}
+                  className={`p-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                    selectedFilter === "Most Recent"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-700 text-gray-300"
+                  }`}
+                >
+                  Most Recent
+                </button>
+              </div>
             </div>
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
+            <div className="flex flex-col gap-4">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map((project) => (
                   <ProjectCard
@@ -479,16 +260,26 @@ const ExploreProjects: React.FC = () => {
                     stack={project.stack}
                     status={project.status}
                     expertName={project.expertName}
-                    studentName={project.studentName} type={""} createdAt={""} isFeatured={false} matchScore={0}                  />
+                    studentName={project.studentName}
+                  />
                 ))
               ) : (
-                <p className="text-center text-gray-500 col-span-full">No projects found.</p>
+                <p className="text-gray-400">No projects available.</p>
               )}
-            </motion.div>
+            </div>
           </div>
+          <div className="hidden lg:flex lg:w-1/4"></div>
         </div>
       </div>
-      <AIButton />
+      
+      {/* Floating Button for AI Help */}
+      <button
+        onClick={() => router.push("/student/ai-assist")} // This can be linked to a new AI recommendation page later
+        className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center hover:bg-blue-700 transition-all duration-200"
+      >
+        <FaRobot className="mr-2 text-2xl" />
+        Need AI Help?
+      </button>
     </div>
   );
 };
