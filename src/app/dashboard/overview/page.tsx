@@ -49,7 +49,7 @@ const OverviewPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 p-10">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-extrabold text-gray-900 text-center mb-12">Impact Overview</h1>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {loading ? (
             <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-center items-center">

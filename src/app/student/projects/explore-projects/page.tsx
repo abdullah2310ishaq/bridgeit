@@ -7,6 +7,7 @@ import Navbar from "@/app/components/NavBar";
 import { FaRobot } from "react-icons/fa";
 import { FiSearch, FiFilter } from "react-icons/fi";
 import ProjectCard from "./ExploreProjectCard";
+import { motion } from "framer-motion"; // For animations
 
 interface UserProfile {
   userId: string;
@@ -26,12 +27,12 @@ interface ExpertProject {
   description: string;
   stack?: string;
   status?: string;
-  expertId?: string; // Add expertId to the project
   expertName?: string;
   companyName?: string;
   isFeatured?: boolean;
   matchScore?: number;
   createdAt?: string;
+  expertImageData?: string; // Image data for the expert
 }
 
 const ExploreProjects: React.FC = () => {
@@ -108,24 +109,21 @@ const ExploreProjects: React.FC = () => {
             if (expertProjectsResponse.ok) {
               const expertProjectsData = await expertProjectsResponse.json();
 
-              // Loop through projects and fetch the expert's name for each project
-              const projectsWithExpertNames = await Promise.all(
+              // Format projects to include necessary fields
+              const formattedProjects: ExpertProject[] = await Promise.all(
                 expertProjectsData.map(async (project: any) => {
-                  let expertName = "";
-                  let companyName = "";
-
-                  if (project.indExpertId) {
-                    // Fetch expert details using the expertId
-                    const expertResponse = await fetch(
-                      `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${project.indExpertId}`
-                    );
-
-                    if (expertResponse.ok) {
-                      const expertData = await expertResponse.json();
-                      expertName = `${expertData.firstName} ${expertData.lastName}`;
-                      companyName = expertData.companyName;
+                  // Fetch the industry expert's details by their userId
+                  const expertUserResponse = await fetch(
+                    `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${project.userId}`, // Assume 'userId' is present in project data
+                    {
+                      method: "GET",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
                     }
-                  }
+                  );
+
+                  const expertData = await expertUserResponse.json();
 
                   return {
                     id: project.id,
@@ -133,18 +131,18 @@ const ExploreProjects: React.FC = () => {
                     description: project.description,
                     stack: project.stack,
                     status: project.currentStatus,
-                    expertId: project.indExpertId, // Keep track of the expertId
-                    expertName, // Add expertName from the fetched data
-                    companyName, // Add companyName from the fetched data
+                    expertName: `${expertData.firstName} ${expertData.lastName}`, // Combine first and last names
+                    companyName: expertData.companyName, // Ensure 'companyName' exists
                     isFeatured: project.isFeatured,
                     matchScore: project.matchScore,
                     createdAt: project.createdAt,
+                    expertImageData: expertData.imageData, // Expert's image data
                   };
                 })
               );
 
-              setExpertProjects(projectsWithExpertNames);
-              setFilteredProjects(projectsWithExpertNames);
+              setExpertProjects(formattedProjects);
+              setFilteredProjects(formattedProjects);
             } else {
               setExpertProjects([]);
               setFilteredProjects([]);
@@ -168,7 +166,6 @@ const ExploreProjects: React.FC = () => {
 
   useEffect(() => {
     filterProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilter, searchQuery, expertProjects]);
 
   const filterProjects = () => {
@@ -222,43 +219,57 @@ const ExploreProjects: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300">
+      {/* Navbar */}
       <Navbar />
+
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6">
+        <aside className="hidden lg:flex lg:flex-col lg:w-1/5 xl:w-1/6 bg-gray-800 p-6 space-y-6">
           {userProfile && (
-            <ProfileCard
-              imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
-              firstName={userProfile.firstName}
-              lastName={userProfile.lastName}
-              role={userProfile.role}
-            />
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ProfileCard
+                imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
+                firstName={userProfile.firstName}
+                lastName={userProfile.lastName}
+                role={userProfile.role}
+              />
+            </motion.div>
           )}
         </aside>
 
         {/* Main Content */}
         <main className="flex-1 p-6">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-white">Explore Projects</h1>
+            <p className="text-gray-400 mt-2">Discover and engage with exciting projects.</p>
+          </div>
+
           {/* Search and Filters */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 space-y-4 lg:space-y-0">
             {/* Search Bar */}
-            <div className="relative w-full lg:w-2/3 mb-4 lg:mb-0">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="relative w-full lg:w-2/3">
+              <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full pl-12 pr-4 py-3 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300"
               />
             </div>
 
             {/* Filter Options */}
-            <div className="flex space-x-3 items-center">
-              <FiFilter className="text-gray-400" />
+            <div className="flex items-center space-x-3">
+              <FiFilter className="text-gray-400 text-xl" />
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="bg-gray-700 text-gray-200 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300"
               >
                 <option value="Most Recent">Most Recent</option>
                 <option value="Best Matches">Best Matches</option>
@@ -267,44 +278,54 @@ const ExploreProjects: React.FC = () => {
             </div>
           </div>
 
-          {/* Add Project Button */}
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={() => router.push("/student/add-project")}
-              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full shadow-md hover:from-green-600 hover:to-green-700 transition-colors duration-300"
-            >
-              Add New Project
-            </button>
-          </div>
-
           {/* Projects Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.2,
+                },
+              },
+            }}
+          >
             {filteredProjects.length > 0 ? (
               filteredProjects.map((project) => (
-                <ProjectCard
+                <motion.div
                   key={project.id}
-                  id={project.id}
-                  title={project.title}
-                  description={project.description}
-                  stack={project.stack}
-                  status={project.status}
-                  expertName={project.expertName} // Pass expertName from fetched data
-                  companyName={project.companyName} // Pass companyName from fetched data
-                />
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                >
+                  <ProjectCard
+                    id={project.id}
+                    title={project.title}
+                    description={project.description}
+                    stack={project.stack}
+                    status={project.status}
+                    expertName={project.expertName} // Expert name
+                    studentName={project.companyName}
+                    expertImageData={project.expertImageData} // Expert image
+                  />
+                </motion.div>
               ))
             ) : (
               <div className="col-span-full text-center text-gray-400">
                 No projects available.
               </div>
             )}
-          </div>
+          </motion.div>
         </main>
       </div>
 
       {/* Floating AI Help Button */}
       <button
         onClick={() => router.push("/student/ai-assist")}
-        className="fixed bottom-8 right-8 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4 rounded-full shadow-lg flex items-center space-x-2 animate-bounce hover:scale-110 transition-transform duration-300"
+        className="fixed bottom-8 right-8 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4 rounded-full shadow-lg flex items-center space-x-2 hover:scale-110 transition-transform duration-300"
       >
         <FaRobot className="text-2xl" />
         <span className="hidden sm:inline-block">AI Help?</span>
