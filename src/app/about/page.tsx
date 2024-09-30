@@ -1,8 +1,7 @@
 "use client";
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
+import { FaLinkedin, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Image from "next/image";
 
 const AboutPage: React.FC = () => {
@@ -13,50 +12,71 @@ const AboutPage: React.FC = () => {
     imgSrc: string;
   }>(null);
 
+  const [result, setResult] = useState<string>("");
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setResult("Sending....");
+    const formData = new FormData(event.target as HTMLFormElement);
+    formData.append("access_key", "8b4dd709-b9d0-48ee-8de7-8cd44ea8764d");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setResult(data.message);
+      }
+    } catch (error) {
+      setResult("An error occurred while submitting the form.");
+    }
+  };
+
   const team = [
     {
       name: "Muhammad Faizan Asghar",
-      role: "Backend Developer",
+      role: "Backend Guy",
       imgSrc: "/faizi.jpg",
       funFact: "I Love Ice Cream Shakes 🥳",
       linkedin: "https://linkedin.com/in/muhammad-faizan-asghar",
-   
       github: "https://github.com/MfaizanA21",
     },
     {
       name: "Warda Butt",
-      role: "Mockups and FrontEnd Developer",
+      role: "Mockups and FrontEnd Lady",
       imgSrc: "/warda.png",
-      funFact: "Expecting a timely response? Good Luck Though!",
+      funFact: "",
       linkedin: "https://linkedin.com/warda",
-
       github: "https://github.com/warda",
     },
     {
       name: "Warda Aslam",
-      role: "Project Manager",
+      role: "Project Supervisor",
       imgSrc: "/madam.png",
       funFact: "I am not kharoos as I seem on first interaction",
       linkedin: "https://linkedin.com/warda-aslam",
-
       github: "https://github.com/warda-aslam",
     },
     {
       name: "Abdullah Ishaq",
       role: "Documentation Guy",
       imgSrc: "/heroimage.png",
-      funFact: "I sketch designs on everything, even napkins.",
+      funFact: "I chatgpt everything and I dont know how to code",
       linkedin: "https://linkedin.com/ahmed",
-
       github: "https://github.com/ahmed",
     },
     {
       name: "Aesyem Ali Fayyaz",
       role: "Co - Supervisor",
       imgSrc: "/aesyem.png",
-      funFact: "I debug in my dreams and wake up with solutions!",
+      funFact: "Need a Sponsor? Aesyem Institute of Research is at your service",
       linkedin: "https://linkedin.com/zain",
-  
       github: "https://github.com/zain",
     },
   ];
@@ -107,7 +127,7 @@ const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Redesigned Team Section */}
+      {/* Team Section */}
       <section className="py-16 px-4 bg-gray-900">
         <div className="max-w-7xl mx-auto text-center mb-12">
           <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 mb-4">
@@ -150,7 +170,6 @@ const AboutPage: React.FC = () => {
                 >
                   <FaLinkedin size={24} />
                 </a>
-            
                 <a
                   href={member.github}
                   target="_blank"
@@ -165,7 +184,7 @@ const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Redesigned Popup for Fun Facts */}
+      {/* Popup for Fun Facts */}
       {popupContent && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -192,7 +211,7 @@ const AboutPage: React.FC = () => {
               {popupContent.name}
             </h2>
             <p className="text-lg text-gray-300 mb-2">{popupContent.role}</p>
-            <p className="text-lg text-gray-400 italic mb-4">"{popupContent.funFact}"</p>
+            <p className="text-lg text-gray-400 bold mb-4">"{popupContent.funFact}"</p>
             <button
               onClick={handlePopupClose}
               className="mt-6 py-2 px-6 bg-gradient-to-r from-green-500 to-blue-600 hover:from-blue-600 hover:to-green-500 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out"
@@ -218,7 +237,7 @@ const AboutPage: React.FC = () => {
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
               <FaEnvelope className="text-green-400 text-xl" />
-              <a href="mailto:abdullahishaq2310@gmail.com" className="text-gray-300 hover:text-green-400">
+              <a href="mailto:contact@bridgeit.com" className="text-gray-300 hover:text-green-400">
                 contact@bridgeit.com
               </a>
             </div>
@@ -235,20 +254,23 @@ const AboutPage: React.FC = () => {
           </div>
 
           {/* Contact Form */}
-          <form className="flex flex-col space-y-4">
+          <form onSubmit={onSubmit} className="flex flex-col space-y-4">
             <input
               type="text"
+              name="name"
               placeholder="Your Name"
               className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
               required
             />
             <input
               type="email"
+              name="email"
               placeholder="Your Email"
               className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
               required
             />
             <textarea
+              name="message"
               placeholder="Your Message"
               className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
               rows={5}
@@ -261,6 +283,7 @@ const AboutPage: React.FC = () => {
               Send Message
             </button>
           </form>
+          <span className="text-gray-400 mt-4">{result}</span>
         </div>
       </section>
 

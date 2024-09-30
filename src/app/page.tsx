@@ -90,86 +90,119 @@ export default function HomePage() {
         </div>
       </section>
 
-{/* Key Features Section */}
-<section className="py-20 bg-gray-900">
-  <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
-    <motion.div
-      whileHover={{ scale: 1.1, rotateY: 5, rotateX: 5 }}
-      className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg rounded-xl p-10 text-center transition-all duration-300 transform hover:shadow-2xl relative"
-    >
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 rounded-full p-3 shadow-lg">
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 7l16 0M4 12l16 0M4 17l16 0"
-          ></path>
-        </svg>
-      </div>
-      <h3 className="text-2xl font-bold text-green-300 mb-4 mt-10">Seamless Collaboration</h3>
-      <p className="text-gray-400">
-        Collaborate with industry experts and academia to create impactful projects.
-      </p>
-    </motion.div>
-    <motion.div
-      whileHover={{ scale: 1.1, rotateY: -5, rotateX: -5 }}
-      className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg rounded-xl p-10 text-center transition-all duration-300 transform hover:shadow-2xl relative"
-    >
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 rounded-full p-3 shadow-lg">
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 12 6 6 6 18z"
-          ></path>
-        </svg>
-      </div>
-      <h3 className="text-2xl font-bold text-green-300 mb-4 mt-10">Resource Sharing</h3>
-      <p className="text-gray-400">
-        Access a wide range of resources to support your academic and professional growth.
-      </p>
-    </motion.div>
-    <motion.div
-      whileHover={{ scale: 1.1, rotateY: 5, rotateX: -5 }}
-      className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg rounded-xl p-10 text-center transition-all duration-300 transform hover:shadow-2xl relative"
-    >
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 rounded-full p-3 shadow-lg">
-        <svg
-          className="w-8 h-8 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M8 12l6-6M8 12l6 6"
-          ></path>
-        </svg>
-      </div>
-      <h3 className="text-2xl font-bold text-green-300 mb-4 mt-10">Expert Mentorship</h3>
-      <p className="text-gray-400">
-        Get guidance from industry experts who are leaders in their fields.
-      </p>
-    </motion.div>
-  </div>
-</section>
+      {/* Our Impact Section */}
+      <section className="bg-gray-900 py-16">
+        <div className="max-w-screen-xl mx-auto text-center px-8">
+          <motion.h2
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-6"
+          >
+            Our Impact on Society and Technology
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-lg text-gray-300 max-w-4xl mx-auto mb-12"
+          >
+            BridgeIT is making waves across industries and academia, facilitating collaboration and driving innovation that positively impacts both society and the tech field. 
+            Explore the projects that are changing the world!
+          </motion.p>
+          
+          {/* Unique Button for Dashboard */}
+          <Link href="/dashboard">
+            <motion.button
+              whileHover={{ scale: 1.15, rotate: 5 }}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-2xl active:opacity-75 outline-none duration-300 transition-all"
+            >
+              <span className="mr-2">&#128202;</span> View Dashboard Stats
+            </motion.button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Key Features Section */}
+      <section className="py-20 bg-gray-900">
+        <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
+          <motion.div
+            whileHover={{ scale: 1.1, rotateY: 5, rotateX: 5 }}
+            className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg rounded-xl p-10 text-center transition-all duration-300 transform hover:shadow-2xl relative"
+          >
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 rounded-full p-3 shadow-lg">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 7l16 0M4 12l16 0M4 17l16 0"
+                ></path>
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-green-300 mb-4 mt-10">Seamless Collaboration</h3>
+            <p className="text-gray-400">
+              Collaborate with industry experts and academia to create impactful projects.
+            </p>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.1, rotateY: -5, rotateX: -5 }}
+            className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg rounded-xl p-10 text-center transition-all duration-300 transform hover:shadow-2xl relative"
+          >
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 rounded-full p-3 shadow-lg">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 12 6 6 6 18z"
+                ></path>
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-green-300 mb-4 mt-10">Resource Sharing</h3>
+            <p className="text-gray-400">
+              Access a wide range of resources to support your academic and professional growth.
+            </p>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.1, rotateY: 5, rotateX: -5 }}
+            className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg rounded-xl p-10 text-center transition-all duration-300 transform hover:shadow-2xl relative"
+          >
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 rounded-full p-3 shadow-lg">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 12l6-6M8 12l6 6"
+                ></path>
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-green-300 mb-4 mt-10">Expert Mentorship</h3>
+            <p className="text-gray-400">
+              Get guidance from industry experts who are leaders in their fields.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-200 py-8 px-8 text-center">
