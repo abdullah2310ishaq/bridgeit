@@ -1,6 +1,12 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import { FaCheckCircle, FaExclamationCircle, FaUserTie, FaUserGraduate } from "react-icons/fa"; // Icons for better UI
+import {
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaUserTie,
+  FaUserGraduate,
+} from "react-icons/fa";
+import { motion } from "framer-motion";
 
 interface ProjectCardProps {
   id: string;
@@ -10,6 +16,7 @@ interface ProjectCardProps {
   status?: string;
   expertName?: string;
   studentName?: string;
+  expertImageData?: string; // Image data in Base64
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -20,24 +27,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   status,
   expertName,
   studentName,
+  expertImageData, // Image data for expert
 }) => {
   const router = useRouter();
 
-  // Navigate to project details page
   const handleViewDetails = () => {
     router.push(`/student/projects/${id}`);
   };
 
-  // Status badge with dynamic colors
   const renderStatusBadge = (status: string | undefined) => {
     if (!status) return null;
 
     const statusClass =
       status.toLowerCase() === "completed"
-        ? "bg-green-500 text-green-100"
+        ? "bg-green-500 text-white"
         : status.toLowerCase() === "pending"
-        ? "bg-yellow-500 text-yellow-100"
-        : "bg-red-500 text-red-100";
+        ? "bg-yellow-500 text-white"
+        : "bg-red-500 text-white";
 
     const statusIcon =
       status.toLowerCase() === "completed" ? (
@@ -47,56 +53,85 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       ) : null;
 
     return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}>
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
+      >
         {statusIcon} {status}
       </span>
     );
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-900 via-gray-800 to-gray-900 text-gray-100 rounded-lg shadow-xl p-6 w-full mb-8 hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105">
-      <h3 className="font-extrabold text-2xl text-green-400 mb-4 tracking-tight">
-        {title}
-      </h3>
-      <p className="text-base text-gray-300 mb-4 line-clamp-3 leading-relaxed">
-        {description}
-      </p>
-      {stack && (
-        <div className="mb-4">
-          <span className="text-sm font-semibold text-blue-300">Tech Stack:</span>{" "}
-          <span className="text-sm text-gray-200">{stack}</span>
+    <motion.div
+      className="bg-gray-900 text-gray-200 shadow-xl rounded-2xl p-6 flex items-start space-x-6 hover:shadow-2xl transition-shadow duration-300 max-w-3xl transform hover:scale-105"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {/* Image on the Left */}
+      <div className="flex-shrink-0">
+        {expertImageData ? (
+          <img
+            src={`data:image/jpeg;base64,${expertImageData}`} // Base64 encoded image
+            alt={`${expertName}'s photo`}
+            className="w-20 h-20 rounded-full object-cover border-4 border-gray-800 shadow-lg"
+          />
+        ) : (
+          <img
+            src="/heroimage.png" // Placeholder image if no imageData is available
+            alt="Default Avatar"
+            className="w-20 h-20 rounded-full object-cover border-4 border-gray-800 shadow-lg"
+          />
+        )}
+      </div>
+
+      {/* Right Side Content */}
+      <div className="flex-1">
+        <div className="flex justify-between items-start">
+          {/* Title */}
+          <h3 className="text-xl font-bold text-blue-400">{title}</h3>
+          {/* Optional Close Button or other action */}
+          <button className="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
-      )}
-      {status && (
-        <div className="mb-4">
-          {renderStatusBadge(status)}
-        </div>
-      )}
-      {expertName && (
-        <div className="flex items-center mb-2 text-sm text-gray-400">
-          <FaUserTie className="text-blue-400 mr-2" />
-          <span>
-            <span className="font-semibold text-blue-300">Expert:</span>{" "}
-            {expertName}
-          </span>
-        </div>
-      )}
-      {studentName && (
-        <div className="flex items-center mb-2 text-sm text-gray-400">
-          <FaUserGraduate className="text-green-400 mr-2" />
-          <span>
-            <span className="font-semibold text-green-300">Student:</span>{" "}
-            {studentName}
-          </span>
-        </div>
-      )}
-      <button
-        className="mt-4 text-white bg-gradient-to-r from-green-500 to-green-600 rounded-full py-2 px-6 hover:from-green-600 hover:to-green-700 transition-transform duration-200 ease-in-out shadow-lg"
-        onClick={handleViewDetails}
-      >
-        View Details
-      </button>
-    </div>
+
+        {/* Expert Name */}
+        {expertName && (
+          <div className="flex items-center mt-2 text-sm text-gray-300">
+            <FaUserTie className="text-blue-500 mr-2" />
+            <span>Expert: {expertName}</span>
+          </div>
+        )}
+
+        {/* Student/Company Name */}
+        {studentName && (
+          <div className="flex items-center mt-2 text-sm text-gray-300">
+            <FaUserGraduate className="text-green-400 mr-2" />
+            <span>Company: {studentName}</span>
+          </div>
+        )}
+
+        {/* Description */}
+        <p className="text-sm text-gray-400 mt-4 line-clamp-2">{description}</p>
+
+        {/* Tech Stack */}
+        {stack && (
+          <div className="mt-4">
+            <span className="font-medium text-blue-400">Tech Stack:</span>{" "}
+            <span>{stack}</span>
+          </div>
+        )}
+
+        {/* Status Badge */}
+        {status && <div className="mt-4">{renderStatusBadge(status)}</div>}
+
+        {/* View Details Button */}
+        <button
+          className="mt-6 py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full hover:from-blue-400 hover:to-purple-500 transition-all duration-300 shadow-lg transform hover:scale-105"
+          onClick={handleViewDetails}
+        >
+          View Details
+        </button>
+      </div>
+    </motion.div>
   );
 };
 
