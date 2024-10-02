@@ -34,7 +34,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ imageData, firstName, lastNam
         <h3 className="text-lg font-bold text-white">{`${firstName} ${lastName}`}</h3>
         <p className="text-sm text-gray-200 mb-4">{role}</p>
 
-        {/* Modern View Profile Button */}
+        {/* View Profile Button */}
         <button
           onClick={handleProfileRedirect}
           className="py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"

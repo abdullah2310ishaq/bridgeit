@@ -189,53 +189,65 @@ const StudentPage: React.FC = () => {
         </div>
       </nav>
   
-      {/* Profile Section */}
-      <div className="relative flex flex-col md:flex-row justify-between items-center bg-gray-800 bg-opacity-80 p-12 rounded-2xl shadow-2xl mb-8 overflow-hidden"
-           style={{ backgroundImage: "url('/studentbg.jpg')", height: "600px", backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm"></div>
-        <div className="relative flex items-center w-full z-10">
-          {/*Profile Info */}
-          <div className="text-white flex-grow pr-10">
-            <h2 className="text-6xl font-bold text-green-400 leading-tight drop-shadow-2xl">
-             Welcome, {userProfile.firstName} {userProfile.lastName}
-            </h2>
-            <p className="text-lg text-gray-300 mt-2 tracking-wide italic">
-              Computer Science - {userProfile.universityName}
-            </p>
-            <p className="text-lg mt-2">Roll Number: <span className="font-bold">{userProfile.rollNumber}</span></p>
-            <p className="text-lg">User ID: <span className="font-bold">{userProfile.userId}</span></p>
-            
-            {/* Buttons */}
-            <div className="mt-6 space-x-4">
-              <button onClick={goToEditProfile} 
-                      className="px-10 py-4 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:scale-105">
-                Edit Profile
-              </button>
-              <button onClick={gotoProfile} 
-                      className="px-10 py-4 bg-purple-500 text-white font-bold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:scale-105">
-                View Profile
-              </button>
-            </div>
-          </div>
+     {/* Profile Section Following Layout from Image */}
+<div className="relative flex flex-col md:flex-row items-center p-12 mb-8 bg-gray-900 rounded-xl ">
+  
+  {/* Profile Image on the Left */}
+  <motion.div 
+    initial={{ x: -100, opacity: 0 }} 
+    animate={{ x: 0, opacity: 1 }} 
+    transition={{ duration: 1 }}
+    className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0">
+    
+    <img src={`data:image/jpeg;base64,${userProfile.imageData}`} 
+         alt={`${userProfile.firstName} ${userProfile.lastName}`} 
+         className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-green-400" />
+  </motion.div>
 
-          {/* Profile Image */}
-          <div className="relative z-10 mt-6 md:mt-0 md:w-1/2 flex justify-center">
-            <img src={`data:image/jpeg;base64,${userProfile.imageData}`} 
-                alt={`${userProfile.firstName} ${userProfile.lastName}`} 
-                className="w-80 h-80 rounded-full border-4 border-green-400 object-cover shadow-2xl transform hover:scale-110 transition duration-300" />
-          </div>
-        </div>
-      </div>
+  {/* Profile Info on the Right */}
+  <motion.div 
+    initial={{ x: 100, opacity: 0 }} 
+    animate={{ x: 0, opacity: 1 }} 
+    transition={{ duration: 1 }}
+    className="text-white flex-grow text-center md:text-left md:pl-10">
+    
+    <h2 className="text-4xl font-bold text-green-400 leading-tight drop-shadow-lg">
+      Welcome, {userProfile.firstName} {userProfile.lastName}
+    </h2>
+    <p className="text-lg text-gray-300 mt-2 tracking-wide italic">
+      Computer Science - {userProfile.universityName}
+    </p>
+    <p className="text-lg mt-2">Roll Number: <span className="font-bold">{userProfile.rollNumber}</span></p>
+    <p className="text-lg">User ID: <span className="font-bold">{userProfile.userId}</span></p>
+
+    {/* Divider Line */}
+    <div className="w-full h-1 bg-gray-400 my-6"></div>
+
+    {/* Buttons */}
+    <div className="flex justify-center md:justify-start space-x-4">
+      <button onClick={goToEditProfile}
+              className="px-8 py-3 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-500 hover:shadow-blue-500/50 transition duration-300 transform hover:scale-105">
+        Edit Profile
+      </button>
+      <button onClick={gotoProfile}
+              className="px-8 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-500 hover:shadow-purple-500/50 transition duration-300 transform hover:scale-105">
+        View Profile
+      </button>
+    </div>
+  </motion.div>
+</div>
+
 
 {/* Completed Projects Section */}
 <section className="relative py-16 bg-gray-900">
+  {/* Smaller Background Image on the Right */}
   <div
-    className="absolute inset-y-0 right-0 w-1/2 bg-cover bg-center opacity-20"
+    className="absolute inset-y-0 right-0 w-1/3 bg-cover bg-center opacity-20"
     style={{ backgroundImage: `url('/projectBG.png')`, backgroundSize: "contain", backgroundRepeat: "no-repeat" }}
   ></div>
 
-  <div className="relative max-w-7xl mx-auto flex justify-between items-center mb-16">
-    {/* Heading on the Left */}
+  {/* Heading Section */}
+  <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
     <div className="text-left">
       <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
         Completed Projects
@@ -243,21 +255,20 @@ const StudentPage: React.FC = () => {
     </div>
   </div>
 
-  {/* Project Boxes */}
+  {/* Project Boxes Section */}
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 px-4 md:px-12">
     {projects.length > 0 ? (
       projects.map((project) => (
         <motion.div
           key={project.id}
           whileHover={{ scale: 1.05 }}
-          className="bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"  // Changed the box to solid background
+          className="bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"
         >
-          {/* Title */}
+          {/* Project Title */}
           <h3 className="text-2xl font-bold text-green-300 mb-4">{project.title}</h3>
           
-          {/* Description */}
+          {/* Project Description */}
           <p className="text-gray-400 mb-4">{project.description}</p>
-        
 
           {/* Additional Project Info */}
           <div className="text-left mt-4">
@@ -267,7 +278,6 @@ const StudentPage: React.FC = () => {
             <p className="text-sm text-gray-400">
               <span className="font-bold text-gray-300">Duration:</span> 6 months
             </p>
-
           </div>
 
           {/* Click for More Button */}
@@ -303,17 +313,18 @@ const StudentPage: React.FC = () => {
   </div>
 </section>
 
+
 {/* Upcoming University Events Section */}
 <section className="py-16 bg-gray-900">
   {/* Event Heading */}
-  <div className="w-full md:w-1/2 text-left mb-12">
+  <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
     <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
       Upcoming University Events
     </h1>
   </div>
 
   {/* Event Cards */}
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 px-4 md:px-12">
     {events.map((event, index) => (
       <div
         key={event.id}
