@@ -12,6 +12,7 @@ interface ProjectCardProps {
   expertName?: string;
   studentName?: string;
   expertImageData?: string; // Image data in Base64
+  expertImageData?: string; // Image data in Base64
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -22,6 +23,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   status,
   expertName,
   studentName,
+  expertImageData, // Image data for expert
   expertImageData, // Image data for expert
 }) => {
   const router = useRouter();
@@ -36,7 +38,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     const statusClass =
       status.toLowerCase() === "completed"
         ? "bg-green-500 text-white"
+        ? "bg-green-500 text-white"
         : status.toLowerCase() === "pending"
+        ? "bg-yellow-500 text-white"
+        : "bg-red-500 text-white";
         ? "bg-yellow-500 text-white"
         : "bg-red-500 text-white";
 
@@ -48,6 +53,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       ) : null;
 
     return (
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
+      >
       <span
         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
       >

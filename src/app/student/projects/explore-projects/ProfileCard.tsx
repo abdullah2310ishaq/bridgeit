@@ -1,4 +1,3 @@
-// components/ProfileCard.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
 
@@ -17,20 +16,32 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ imageData, firstName, lastNam
   };
 
   return (
-    <div className="bg-gradient-to-t from-gray-700 to-gray-800 text-gray-200 rounded-3xl shadow-xl p-6 flex flex-col items-center">
-      <img
-        src={imageData || "/default-profile.png"}
-        alt="Profile Picture"
-        className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-green-500"
-      />
-      <h3 className="text-xl font-semibold">{`${firstName} ${lastName}`}</h3>
-      <p className="text-sm text-gray-400 mb-4">{role}</p>
-      <button
-        onClick={handleProfileRedirect}
-        className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-full hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-md flex items-center justify-center"
-      >
-        View Profile
-      </button>
+    <div className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl shadow-lg overflow-hidden w-60 text-center transform hover:scale-105 transition-transform duration-300">
+      {/* Upper Section with Image */}
+      <div className="bg-gradient-to-t from-green-400 to-blue-500 h-20"></div>
+
+      {/* Profile Image */}
+      <div className="relative -mt-12">
+        <img
+          src={imageData || "/default-profile.png"}
+          alt="Profile Picture"
+          className="mx-auto h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg transform hover:scale-110 transition-transform duration-300"
+        />
+      </div>
+
+      {/* Name and Role */}
+      <div className="p-4">
+        <h3 className="text-lg font-bold text-white">{`${firstName} ${lastName}`}</h3>
+        <p className="text-sm text-gray-200 mb-4">{role}</p>
+
+        {/* Modern View Profile Button */}
+        <button
+          onClick={handleProfileRedirect}
+          className="py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"
+        >
+          View Profile
+        </button>
+      </div>
     </div>
   );
 };
