@@ -40,6 +40,10 @@ const StudentRegistration: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
+
+
+
+    
     const fetchUniversities = async () => {
       try {
         const response = await fetch(

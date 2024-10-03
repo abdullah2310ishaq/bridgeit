@@ -121,7 +121,7 @@ const ProjectDetails = () => {
         {showModal && (
           <ProposalModal
             projectId={Array.isArray(id) ? id[0] : id}
-            studentId={studentId} // Ensure the correct studentId is passed
+            studentId={studentId} 
             onClose={() => setShowModal(false)} // Close modal on cancel
           />
         )}

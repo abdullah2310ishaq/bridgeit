@@ -54,6 +54,7 @@ export default function ExploreProjects() {
       }
 
       try {
+        // Fetch User Profile
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
@@ -68,6 +69,7 @@ export default function ExploreProjects() {
           const profileData = await profileResponse.json();
           const userId = profileData.userId;
 
+          // Fetch student data by user ID
           const studentResponse = await fetch(
             `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
