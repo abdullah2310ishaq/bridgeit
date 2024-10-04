@@ -1,6 +1,6 @@
+"use client";
 import React from "react";
-import { useRouter } from "next/navigation";
-import { FaCheckCircle, FaExclamationCircle, FaUserTie, FaUserGraduate } from "react-icons/fa";
+import { FaUserTie, FaUserGraduate } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 interface ProjectCardProps {
@@ -8,10 +8,10 @@ interface ProjectCardProps {
   title: string;
   description: string;
   stack?: string;
-
   expertName?: string;
   studentName?: string;
   expertImageData?: string; // Image data in Base64
+  onClick: () => void; // Added onClick prop
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -19,85 +19,61 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
   description,
   stack,
-
   expertName,
   studentName,
-  expertImageData, // Image data for expert
+  expertImageData,
+  onClick,
 }) => {
-  const router = useRouter();
-
-  const handleViewDetails = () => {
-    router.push(`/student/projects/${id}`);
-  };
-
-  const renderStatusBadge = (status: string | undefined) => {
-    if (!status) return null;
-
-    const statusClass =
-      status.toLowerCase() === "completed"
-        ? "bg-green-500 text-white"
-        : status.toLowerCase() === "pending"
-        ? "bg-yellow-500 text-white"
-        : "bg-red-500 text-white";
-
-    const statusIcon =
-      status.toLowerCase() === "completed" ? (
-        <FaCheckCircle className="mr-1" />
-      ) : status.toLowerCase() === "pending" ? (
-        <FaExclamationCircle className="mr-1" />
-      ) : null;
-
-    return (
-      <span
-        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
-      >
-        {statusIcon} {status}
-      </span>
-    );
-  };
-
   return (
     <motion.div
-      className="bg-white shadow-lg rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      className="bg-gray-800 shadow-lg rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
-      {/* Check if expert image data exists and display the image */}
-      {expertImageData ? (
-  <img
-    src={`data:image/jpeg;base64,${expertImageData}`} // Base64 encoded image
-    alt={`${expertName}'s photo`}
-    className="w-12 h-12 rounded-full mb-4"
-  />
-) : (
-  <img
-    src="/heroimage.png" // Placeholder image if no imageData is available
-    alt="Default Avatar"
-    className="w-12 h-12 rounded-full mb-4"
-  />
-)}
+      {/* Expert Image */}
+      <div className="flex items-center mb-4">
+        {expertImageData ? (
+          <img
+            src={`data:image/jpeg;base64,${expertImageData}`}
+            alt={`${expertName}'s photo`}
+            className="w-12 h-12 rounded-full mr-4"
+          />
+        ) : (
+          <img
+            src="/default-avatar.png"
+            alt="Default Avatar"
+            className="w-12 h-12 rounded-full mr-4"
+          />
+        )}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-200">{expertName}</h3>
+          {studentName && (
+            <div className="flex items-center text-gray-400">
+              <FaUserGraduate className="mr-1" />
+              <span>{studentName}</span>
+            </div>
+          )}
+        </div>
+      </div>
 
+      {/* Project Title */}
+      <h2 className="text-2xl font-bold text-green-400 mb-2">{title}</h2>
 
-      <h3 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h3>
-      <p className="text-gray-500 mb-4 line-clamp-3">{description}</p>
+      {/* Project Description */}
+      <p className="text-gray-300 mb-4 line-clamp-3">{description}</p>
 
+      {/* Tech Stack */}
       {stack && (
         <div className="mb-4">
-          <span className="font-medium text-blue-500">Tech Stack:</span> <span>{stack}</span>
+          <span className="font-medium text-blue-400">Tech Stack:</span>{" "}
+          <span>{stack}</span>
         </div>
       )}
 
- 
-      {studentName && (
-        <div className="flex items-center mb-4 text-gray-600">
-          <FaUserGraduate className="text-green-500 mr-2" />
-          <span>Company: {studentName}</span>
-        </div>
-      )}
-
+      {/* View Details Button */}
       <button
         className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition-colors duration-300"
-        onClick={handleViewDetails}
+        onClick={onClick}
       >
         View Details
       </button>

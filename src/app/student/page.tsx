@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfileDropdown from "../components/ProfileDropdown";
-import OngoingProject from "./stdcomps/Ongoing"
 import { motion } from "framer-motion";
 import Loading from "../loading/page";
 

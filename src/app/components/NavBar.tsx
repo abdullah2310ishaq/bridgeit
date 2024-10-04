@@ -25,11 +25,7 @@ const Navbar: React.FC = () => {
 
       {/* Right Section with Logo and Logout */}
       <div className="flex items-center space-x-4">
-        <img
-          src="/path-to-your-profile-logo.png" // Replace with the actual path to your profile logo or user icon
-          alt="Profile Logo"
-          className="h-8 w-8"
-        />
+     
 <ul className="flex space-x-4">
         <li>
           <Link href="/student/projects/history" className="text-white hover:text-green-500">

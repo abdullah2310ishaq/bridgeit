@@ -1,18 +1,46 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { FaEnvelope, FaLock, FaExclamationCircle } from 'react-icons/fa';
+import toast, { Toaster } from 'react-hot-toast';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: '', password: '' });
   const router = useRouter();
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { email: '', password: '' };
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setLoading(true);
 
     try {
@@ -54,101 +82,107 @@ const LoginPage: React.FC = () => {
               router.push('/unidmin');
               break;
             default:
-              toast.error('Invalid role. Please contact support.', {
-                position: 'top-center',
-                autoClose: 3000,
-              });
+              toast.error('Invalid role. Please contact support.');
               break;
           }
         } else {
-          toast.error('Failed to fetch user profile.', {
-            position: 'top-center',
-            autoClose: 3000,
-          });
+          toast.error('Failed to fetch user profile.');
         }
       } else {
-        toast.error('Login failed. Please check your credentials.', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
-      toast.error('An error occurred. Please try again later.', {
-        position: 'top-center',
-        autoClose: 3000,
-      });
+      toast.error('An error occurred. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 bg-black flex flex-col justify-center p-8 md:p-16 text-white">
-        <h1 className="text-5xl font-extrabold text-center mb-8">Welcome Back</h1>
-        <motion.form 
-          onSubmit={handleLogin} 
-          className="space-y-6 w-full max-w-md p-8 bg-gray-800 rounded-lg border border-gray-700 shadow-lg mx-auto"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4">
+      <div className="w-full max-w-4xl bg-white bg-opacity-10 rounded-2xl shadow-xl overflow-hidden flex">
+        <div className="w-1/2 p-8">
+          <h2 className="text-4xl font-bold text-white mb-6">Welcome Back</h2>
+          <p className="text-gray-300 mb-8">Enter your credentials to access your account</p>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="relative">
+              <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full py-2 pl-10 pr-4 text-gray-700 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+                placeholder="Email"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1 flex items-center">
+                  <FaExclamationCircle className="mr-1" /> {errors.email}
+                </p>
+              )}
+            </div>
+            <div className="relative">
+              <FaLock className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full py-2 pl-10 pr-4 text-gray-700 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+                placeholder="Password"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1 flex items-center">
+                  <FaExclamationCircle className="mr-1" /> {errors.password}
+                </p>
+              )}
+            </div>
+            <div className="flex justify-center">
+              <motion.button
+                type="submit"
+                className="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300"
+                disabled={loading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                    Logging in...
+                  </div>
+                ) : (
+                  'Login'
+                )}
+              </motion.button>
+            </div>
+          </form>
+          <div className="mt-6 text-center">
+            <a href="#" className="text-sm text-blue-400 hover:underline">Forgot password?</a>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
-          </div>
-          <div className="flex justify-center">
-            <motion.button
-              type="submit"
-              className="bg-sky-950 text-sky-400 border border-sky-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group"
-              disabled={loading}
-              whileHover={{ scale: 1.05 }}
-            >
-              <span className="bg-sky-400 shadow-sky-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
-              {loading ? 'Logging in...' : 'Login'}
-            </motion.button>
-          </div>
-          <motion.p 
-            className="mt-6 text-sm text-gray-400 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-          >
-            Don't have an account? 
-            <a 
+          <p className="mt-8 text-center text-gray-300">
+            Don't have an account?{' '}
+            <a
               onClick={() => router.push('/auth/register-user')}
-              className="text-sky-400 hover:text-sky-500 cursor-pointer ml-1"
+              className="text-blue-400 hover:underline cursor-pointer"
             >
               Sign up here
-            </a>.
-          </motion.p>
-        </motion.form>
-      </div>
-      
-      {/* Right Side - Illustration */}
-      <div className="hidden md:block md:w-1/2 bg-black text-white flex items-center justify-center p-4">
-        <div className="relative rounded-lg w-[90%] h-[90%] flex items-center">
-          <img src="/cartoon.jpg" alt="Login Illustration" className="absolute top-0 left-0 w-full h-full object-cover rounded-lg" />
+            </a>
+          </p>
+        </div>
+        <div className="w-1/2 relative">
+          <Image
+            src="/heroimage.png?height=600&width=400"
+            alt="Login Illustration"
+            layout="fill"
+            objectFit="cover"
+          />
         </div>
       </div>
-      <ToastContainer />
+      <Toaster position="top-center" toastOptions={{
+        style: {
+          background: '#333',
+          color: '#fff',
+        },
+      }} />
     </div>
   );
 };

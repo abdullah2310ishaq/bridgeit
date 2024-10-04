@@ -1,12 +1,12 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProfileCard from "./ProfileCard";
 import Navbar from "@/app/components/NavBar";
 import { FaRobot } from "react-icons/fa";
 import { FiSearch, FiFilter } from "react-icons/fi";
 import ProjectCard from "./ExploreProjectCard";
+import ProjectDetailsPanel from "../[id]/page";
 
 interface UserProfile {
   userId: string;
@@ -31,6 +31,7 @@ interface ExpertProject {
   isFeatured?: boolean;
   matchScore?: number;
   createdAt?: string;
+  isRequested?: boolean;
 }
 
 const ExploreProjects: React.FC = () => {
@@ -42,7 +43,11 @@ const ExploreProjects: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectDetails, setSelectedProjectDetails] = useState<ExpertProject | null>(null);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     async function fetchProfileAndProjects() {
@@ -116,11 +121,12 @@ const ExploreProjects: React.FC = () => {
                   description: project.description,
                   stack: project.stack,
                   status: project.currentStatus,
-                  expertName: project.name, // Ensure 'name' is the Industry Expert's full name
-                  companyName: project.companyName, // Ensure 'companyName' exists
+                  expertName: project.name,
+                  companyName: project.companyName,
                   isFeatured: project.isFeatured,
                   matchScore: project.matchScore,
                   createdAt: project.createdAt,
+                  isRequested: project.isRequested,
                 })
               );
 
@@ -151,6 +157,7 @@ const ExploreProjects: React.FC = () => {
     filterProjects();
   }, [selectedFilter, searchQuery, expertProjects]);
 
+  // Function to filter projects based on search and filters
   const filterProjects = () => {
     let sortedProjects = [...expertProjects];
 
@@ -164,6 +171,7 @@ const ExploreProjects: React.FC = () => {
       );
     }
 
+    // Apply filters based on selected criteria
     switch (selectedFilter) {
       case "Most Recent":
         sortedProjects.sort(
@@ -181,7 +189,40 @@ const ExploreProjects: React.FC = () => {
         break;
     }
 
-    setFilteredProjects(sortedProjects);
+    // Filter out projects that the user has already requested
+    const filteredByRequestStatus = sortedProjects.filter(
+      (project) => !project.isRequested
+    );
+
+    setFilteredProjects(filteredByRequestStatus);
+  };
+
+  // Handle project selection
+  useEffect(() => {
+    const projectIdFromUrl = searchParams.get("projectId");
+    if (projectIdFromUrl) {
+      setSelectedProjectId(projectIdFromUrl);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (selectedProjectId) {
+      const project = expertProjects.find((p) => p.id === selectedProjectId);
+      if (project) {
+        setSelectedProjectDetails(project);
+      } else {
+        // If not found, you might want to fetch the project details from API
+        // For now, we'll just set it to null
+        setSelectedProjectDetails(null);
+      }
+    } else {
+      setSelectedProjectDetails(null);
+    }
+  }, [selectedProjectId, expertProjects]);
+
+  const handleProjectClick = (id: string) => {
+    setSelectedProjectId(id);
+    router.push(`?projectId=${id}`, undefined);
   };
 
   if (loading) {
@@ -267,8 +308,8 @@ const ExploreProjects: React.FC = () => {
                   title={project.title}
                   description={project.description}
                   stack={project.stack}
-                  status={project.status}
                   expertName={project.expertName}
+                  onClick={() => handleProjectClick(project.id)}
                 />
               ))
             ) : (
@@ -279,6 +320,17 @@ const ExploreProjects: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Project Details Panel */}
+      {selectedProjectDetails && (
+        <ProjectDetailsPanel
+          project={selectedProjectDetails}
+          onClose={() => {
+            setSelectedProjectId(null);
+            router.push("", undefined);
+          }}
+        />
+      )}
 
       {/* Floating AI Help Button */}
       <button
