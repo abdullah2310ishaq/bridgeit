@@ -10,8 +10,8 @@ interface ProjectCardProps {
   stack?: string;
   expertName?: string;
   studentName?: string;
-  expertImageData?: string; // Image data in Base64
-  onClick: () => void; // Added onClick prop
+  expertImageData?: string;
+  onClick: () => void;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -26,9 +26,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   return (
     <motion.div
-      className="bg-gray-800 shadow-lg rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300"
+      className="bg-gray-800 shadow-lg rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      onClick={onClick}
     >
       {/* Expert Image */}
       <div className="flex items-center mb-4">
@@ -69,14 +70,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <span>{stack}</span>
         </div>
       )}
-
-      {/* View Details Button */}
-      <button
-        className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition-colors duration-300"
-        onClick={onClick}
-      >
-        View Details
-      </button>
     </motion.div>
   );
 };

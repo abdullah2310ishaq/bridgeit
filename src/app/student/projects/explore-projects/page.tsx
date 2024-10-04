@@ -197,7 +197,7 @@ const ExploreProjects: React.FC = () => {
     setFilteredProjects(filteredByRequestStatus);
   };
 
-  // Handle project selection
+  // Handle project selection from URL
   useEffect(() => {
     const projectIdFromUrl = searchParams.get("projectId");
     if (projectIdFromUrl) {
@@ -205,6 +205,7 @@ const ExploreProjects: React.FC = () => {
     }
   }, [searchParams]);
 
+  // Update selected project details
   useEffect(() => {
     if (selectedProjectId) {
       const project = expertProjects.find((p) => p.id === selectedProjectId);
@@ -212,7 +213,6 @@ const ExploreProjects: React.FC = () => {
         setSelectedProjectDetails(project);
       } else {
         // If not found, you might want to fetch the project details from API
-        // For now, we'll just set it to null
         setSelectedProjectDetails(null);
       }
     } else {
@@ -258,79 +258,90 @@ const ExploreProjects: React.FC = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          {/* Search and Filters */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
-            {/* Search Bar */}
-            <div className="relative w-full lg:w-2/3 mb-4 lg:mb-0">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search projects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+        <main className="flex-1 flex">
+          {/* Project List */}
+          <div
+            className={`p-6 ${
+              selectedProjectDetails ? "w-full lg:w-1/2" : "w-full"
+            }`}
+          >
+            {/* Search and Filters */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+              {/* Search Bar */}
+              <div className="relative w-full lg:w-2/3 mb-4 lg:mb-0">
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              {/* Filter Options */}
+              <div className="flex space-x-3 items-center">
+                <FiFilter className="text-gray-400" />
+                <select
+                  value={selectedFilter}
+                  onChange={(e) => setSelectedFilter(e.target.value)}
+                  className="bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="Most Recent">Most Recent</option>
+                  <option value="Best Matches">Best Matches</option>
+                  <option value="Featured">Featured</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Add Project Button */}
+            <div className="flex justify-end mb-6">
+              <button
+                onClick={() => router.push("/student/add-project")}
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full shadow-md hover:from-green-600 hover:to-green-700 transition-colors duration-300"
+              >
+                Add New Project
+              </button>
+            </div>
+
+            {/* Projects Grid */}
+            <div
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6`}
+            >
+              {filteredProjects.length > 0 ? (
+                filteredProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    id={project.id}
+                    title={project.title}
+                    description={project.description}
+                    stack={project.stack}
+                    expertName={project.expertName}
+                    onClick={() => handleProjectClick(project.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center text-gray-400">
+                  No projects available.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Project Details Panel */}
+          {selectedProjectDetails && (
+            <div className="w-full lg:w-1/2 p-6 bg-gray-800 overflow-auto">
+              <ProjectDetailsPanel
+                project={selectedProjectDetails}
+                onClose={() => {
+                  setSelectedProjectId(null);
+                  router.push("", undefined);
+                }}
               />
             </div>
-
-            {/* Filter Options */}
-            <div className="flex space-x-3 items-center">
-              <FiFilter className="text-gray-400" />
-              <select
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="Most Recent">Most Recent</option>
-                <option value="Best Matches">Best Matches</option>
-                <option value="Featured">Featured</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Add Project Button */}
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={() => router.push("/student/add-project")}
-              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full shadow-md hover:from-green-600 hover:to-green-700 transition-colors duration-300"
-            >
-              Add New Project
-            </button>
-          </div>
-
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  id={project.id}
-                  title={project.title}
-                  description={project.description}
-                  stack={project.stack}
-                  expertName={project.expertName}
-                  onClick={() => handleProjectClick(project.id)}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-400">
-                No projects available.
-              </div>
-            )}
-          </div>
+          )}
         </main>
       </div>
-
-      {/* Project Details Panel */}
-      {selectedProjectDetails && (
-        <ProjectDetailsPanel
-          project={selectedProjectDetails}
-          onClose={() => {
-            setSelectedProjectId(null);
-            router.push("", undefined);
-          }}
-        />
-      )}
 
       {/* Floating AI Help Button */}
       <button
