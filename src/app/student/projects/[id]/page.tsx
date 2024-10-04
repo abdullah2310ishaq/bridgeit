@@ -111,23 +111,22 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
           )}
         </div>
 
-{/* Submit Proposal Button */}
-<button
-  className="mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg shadow-md transition-all duration-300"
-  onClick={() => setShowProposalModal(true)}
->
-  Submit Proposal
-</button>
+        {/* Submit Proposal Button */}
+        <button
+          className="mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg shadow-md transition-all duration-300"
+          onClick={() => setShowProposalModal(true)}
+        >
+          Submit Proposal
+        </button>
 
-{/* Proposal Modal */}
-{showProposalModal && (
-  <ProposalModal
-    projectId={project.id}
-    studentId={studentId}
-    onClose={() => setShowProposalModal(false)}
-  />
-)}
-
+        {/* Proposal Modal */}
+        {showProposalModal && (
+          <ProposalModal
+            projectId={project.id}
+            studentId={studentId}
+            onClose={() => setShowProposalModal(false)}
+          />
+        )}
       </div>
     </div>
   );
