@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import ProfileDropdown from "../components/ProfileDropdown";
 import OngoingProject from "./stdcomps/Ongoing"
 import { motion } from "framer-motion";
+import Loading from "../loading/page";
 
 interface UserProfile {
   userId: string;
@@ -170,13 +171,16 @@ const StudentPage: React.FC = () => {
   ];
 
   if (!userProfile) {
-    return <div className="text-center text-gray-400">Loading...</div>;
+    return <div className="text-center text-gray-400">
+        < Loading/>
+
+    </div>;
   }
   
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6"> {/* Central flex layout */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-6"> {/* Central flex layout */}
       {/* Navbar */}
-      <nav className="bg-gray-800 shadow-lg rounded-lg mb-6 p-4 flex justify-between items-center">
+      <nav className="bg-bg-gradient-to-br from-gray-100 to-gray-300 shadow-lg rounded-lg mb-6 p-4 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-green-500">Student Profile</h1>
         <div className="hidden md:flex space-x-8">
           <button onClick={handleLogout} className="hover:text-green-400 transition-colors duration-300">
@@ -228,7 +232,7 @@ const StudentPage: React.FC = () => {
       </div>
 
 {/* Completed Projects Section */}
-<section className="relative py-16 bg-gray-900">
+<section className="relative py-16 bg-gradient-to-br from-gray-100 to-gray-300">
   <div
     className="absolute inset-y-0 right-0 w-1/2 bg-cover bg-center opacity-20"
     style={{ backgroundImage: `url('/projectBG.png')`, backgroundSize: "contain", backgroundRepeat: "no-repeat" }}
@@ -304,7 +308,7 @@ const StudentPage: React.FC = () => {
 </section>
 
 {/* Upcoming University Events Section */}
-<section className="py-16 bg-gray-900">
+<section className="py-16 bg-gradient-to-br from-gray-100 to-gray-300">
   {/* Event Heading */}
   <div className="w-full md:w-1/2 text-left mb-12">
     <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">

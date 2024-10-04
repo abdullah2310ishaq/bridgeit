@@ -8,7 +8,7 @@ interface ProjectCardProps {
   title: string;
   description: string;
   stack?: string;
-  status?: string;
+
   expertName?: string;
   studentName?: string;
   expertImageData?: string; // Image data in Base64
@@ -19,7 +19,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
   description,
   stack,
-  status,
+
   expertName,
   studentName,
   expertImageData, // Image data for expert
@@ -87,15 +87,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       )}
 
-      {status && <div className="mb-4">{renderStatusBadge(status)}</div>}
-
-      {expertName && (
-        <div className="flex items-center mb-2 text-gray-600">
-          <FaUserTie className="text-blue-500 mr-2" />
-          <span>Expert: {expertName}</span>
-        </div>
-      )}
-
+ 
       {studentName && (
         <div className="flex items-center mb-4 text-gray-600">
           <FaUserGraduate className="text-green-500 mr-2" />

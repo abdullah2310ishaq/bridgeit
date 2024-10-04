@@ -7,6 +7,7 @@ interface ProfileCardProps {
   firstName: string;
   lastName: string;
   role: string;
+  
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ imageData, firstName, lastName, role }) => {
