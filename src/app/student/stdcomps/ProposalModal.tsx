@@ -1,28 +1,24 @@
-"use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import styles for Toast
+import "react-toastify/dist/ReactToastify.css";
 
 interface ProposalModalProps {
   projectId: string;
   studentId: string;
-  onClose: () => void; // To close the modal
+  onClose: () => void;
 }
 
 const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onClose }) => {
-  const [proposal, setProposal] = useState<string>(""); // State to store the proposal
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Disable the submit button while submitting
-  const router = useRouter(); // Initialize router for navigation
+  const [proposal, setProposal] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Submit proposal to the API
   const handleSubmitProposal = async () => {
     if (!proposal) {
       toast.error("Please enter your proposal.");
       return;
     }
 
-    setIsSubmitting(true); // Disable the button while submitting
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("https://localhost:7053/api/project-proposals/send-proposal", {
@@ -39,11 +35,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
 
       if (response.ok) {
         toast.success("Proposal submitted successfully!");
-        
-        // Redirect to the explore projects page after a short delay
-        setTimeout(() => {
-          router.push("/student/projects/explore-projects"); // Adjust this route as needed
-        }, 1500);
+        onClose();
       } else {
         toast.error("Failed to submit proposal. Please try again.");
       }
@@ -51,7 +43,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
       console.error("Error submitting proposal:", error);
       toast.error("Error occurred while submitting the proposal.");
     } finally {
-      setIsSubmitting(false); // Re-enable the button after submission
+      setIsSubmitting(false);
     }
   };
 

@@ -11,7 +11,7 @@ interface ProjectCardProps {
   expertName?: string;
   studentName?: string;
   expertImageData?: string;
-  onSelectProject: () => void; // Callback to handle project selection
+  onSelectProject: () => void;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -29,7 +29,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     if (!status) return null;
 
     const statusClass =
-      status.toLowerCase() === "completed"
+      status.toLowerCase()
+ === "completed"
         ? "bg-green-500 text-white"
         : status.toLowerCase() === "pending"
         ? "bg-yellow-500 text-white"

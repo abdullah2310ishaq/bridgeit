@@ -1,12 +1,13 @@
-'use client'
+"use client"
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProfileCard from "./ProfileCard";
 import Navbar from "@/app/components/NavBar";
 import { FaRobot } from "react-icons/fa";
 import { FiSearch, FiFilter } from "react-icons/fi";
 import ProjectCard from "./ExploreProjectCard";
+import ProposalModal from "../../stdcomps/ProposalModal";
 
 interface UserProfile {
   userId: string;
@@ -31,9 +32,10 @@ interface ExpertProject {
   isFeatured?: boolean;
   matchScore?: number;
   createdAt?: string;
+  expertImageData?: string;
 }
 
-export default function ExploreProjects() {
+const ExploreProjects: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [expertProjects, setExpertProjects] = useState<ExpertProject[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ExpertProject[]>([]);
@@ -42,8 +44,11 @@ export default function ExploreProjects() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<ExpertProject | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('id');
 
   useEffect(() => {
     async function fetchProfileAndProjects() {
@@ -95,6 +100,7 @@ export default function ExploreProjects() {
               imageData: studentData.imageData,
             });
 
+            // Fetch Expert Projects
             const expertProjectsResponse = await fetch(
               "https://localhost:7053/api/projects/get-expert-projects",
               {
@@ -108,6 +114,7 @@ export default function ExploreProjects() {
             if (expertProjectsResponse.ok) {
               const expertProjectsData = await expertProjectsResponse.json();
 
+              // Format projects to include necessary fields
               const formattedProjects: ExpertProject[] = expertProjectsData.map(
                 (project: any) => ({
                   id: project.id,
@@ -120,11 +127,20 @@ export default function ExploreProjects() {
                   isFeatured: project.isFeatured,
                   matchScore: project.matchScore,
                   createdAt: project.createdAt,
+                  expertImageData: project.expertImageData,
                 })
               );
 
               setExpertProjects(formattedProjects);
               setFilteredProjects(formattedProjects);
+
+              // If there's a project ID in the URL, set it as the selected project
+              if (projectId) {
+                const selectedProject = formattedProjects.find(p => p.id === projectId);
+                if (selectedProject) {
+                  setSelectedProject(selectedProject);
+                }
+              }
             } else {
               setExpertProjects([]);
               setFilteredProjects([]);
@@ -144,7 +160,7 @@ export default function ExploreProjects() {
     }
 
     fetchProfileAndProjects();
-  }, [router]);
+  }, [router, projectId]);
 
   useEffect(() => {
     filterProjects();
@@ -166,7 +182,8 @@ export default function ExploreProjects() {
     switch (selectedFilter) {
       case "Most Recent":
         sortedProjects.sort(
-          (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          (a, b) =>
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
         );
         break;
       case "Best Matches":
@@ -184,12 +201,18 @@ export default function ExploreProjects() {
 
   const handleProjectSelect = (project: ExpertProject) => {
     setSelectedProject(project);
+    router.push(`/student/projects/explore-projects?id=${project.id}`);
+  };
+
+  const handleCloseProjectDetails = () => {
+    setSelectedProject(null);
+    router.push('/student/projects/explore-projects');
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-500"></div>
+        <p className="text-gray-400 text-xl">Loading projects...</p>
       </div>
     );
   }
@@ -197,7 +220,7 @@ export default function ExploreProjects() {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-        <p className="text-red-500 text-xl bg-gray-800 p-4 rounded-lg shadow-lg">{error}</p>
+        <p className="text-red-500 text-xl">{error}</p>
       </div>
     );
   }
@@ -205,12 +228,9 @@ export default function ExploreProjects() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300">
       <Navbar />
-      
-      {/* Main Layout */}
       <div className="flex flex-1">
-        
-        {/* Profile Card at Top-Left */}
-        <div className="p-6">
+        {/* Sidebar */}
+        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6">
           {userProfile && (
             <ProfileCard
               imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
@@ -219,12 +239,12 @@ export default function ExploreProjects() {
               role={userProfile.role}
             />
           )}
-        </div>
+        </aside>
 
         {/* Main Content */}
         <main className="flex-1 flex overflow-hidden">
           {/* Left Side - Projects List */}
-          <div className="w-1/2 p-6 overflow-y-auto">
+          <div className={`w-1/2 p-6 overflow-y-auto ${selectedProject ? 'hidden md:block' : 'w-full'}`}>
             {/* Search and Filters */}
             <div className="flex flex-col mb-8 space-y-4">
               {/* Search Bar */}
@@ -242,31 +262,20 @@ export default function ExploreProjects() {
               {/* Filter Options */}
               <div className="flex items-center space-x-3">
                 <FiFilter className="text-gray-400" />
-                <div className="flex space-x-3">
-                  <button
-                    className={`px-4 py-2 rounded-full ${selectedFilter === "Most Recent" ? "bg-green-500 text-white" : "bg-gray-700 text-gray-200"}`}
-                    onClick={() => setSelectedFilter("Most Recent")}
-                  >
-                    Most Recent
-                  </button>
-                  <button
-                    className={`px-4 py-2 rounded-full ${selectedFilter === "Best Matches" ? "bg-green-500 text-white" : "bg-gray-700 text-gray-200"}`}
-                    onClick={() => setSelectedFilter("Best Matches")}
-                  >
-                    Best Matches
-                  </button>
-                  <button
-                    className={`px-4 py-2 rounded-full ${selectedFilter === "Featured" ? "bg-green-500 text-white" : "bg-gray-700 text-gray-200"}`}
-                    onClick={() => setSelectedFilter("Featured")}
-                  >
-                    Featured
-                  </button>
-                </div>
+                <select
+                  value={selectedFilter}
+                  onChange={(e) => setSelectedFilter(e.target.value)}
+                  className="bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="Most Recent">Most Recent</option>
+                  <option value="Best Matches">Best Matches</option>
+                  <option value="Featured">Featured</option>
+                </select>
               </div>
             </div>
 
-            {/* Projects List - Scrollable */}
-            <div className="space-y-6 overflow-y-scroll h-[calc(100vh-300px)]">
+            {/* Projects List */}
+            <div className="space-y-6 overflow-y-auto h-[calc(100vh-300px)]">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map((project) => (
                   <ProjectCard
@@ -277,7 +286,9 @@ export default function ExploreProjects() {
                     stack={project.stack}
                     status={project.status}
                     expertName={project.expertName}
-                    onSelectProject={() => handleProjectSelect(project)} // Pass project selection handler
+                    studentName={project.companyName}
+                    expertImageData={project.expertImageData}
+                    onSelectProject={() => handleProjectSelect(project)}
                   />
                 ))
               ) : (
@@ -290,8 +301,8 @@ export default function ExploreProjects() {
           </div>
 
           {/* Right Side - Project Details */}
-          <div className="w-1/2 p-6 overflow-y-auto bg-gray-800">
-            {selectedProject ? (
+          {selectedProject && (
+            <div className="w-1/2 p-6 overflow-y-auto bg-gray-800">
               <div className="bg-gray-700 rounded-lg p-6 shadow-lg">
                 <h2 className="text-2xl font-bold text-green-500 mb-4">{selectedProject.title}</h2>
                 <p className="text-gray-300 mb-4">{selectedProject.description}</p>
@@ -315,19 +326,23 @@ export default function ExploreProjects() {
                     <span className="font-semibold">Company:</span> {selectedProject.companyName}
                   </p>
                 )}
-                <button
-                  className="py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"
-                  onClick={() => {/* Implement submit proposal logic */}}
-                >
-                  Submit Proposal
-                </button>
+                <div className="mt-6 space-x-4">
+                  <button
+                    className="py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition-colors duration-300"
+                    onClick={() => setShowModal(true)}
+                  >
+                    Submit Proposal
+                  </button>
+                  <button
+                    className="py-2 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors duration-300"
+                    onClick={handleCloseProjectDetails}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">
-                <p>Select a project to view details</p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </main>
       </div>
 
@@ -339,6 +354,17 @@ export default function ExploreProjects() {
         <FaRobot className="text-2xl group-hover:animate-bounce" />
         <span className="hidden sm:inline-block">AI Help</span>
       </button>
+
+      {/* Proposal Modal */}
+      {showModal && selectedProject && userProfile && (
+        <ProposalModal
+          projectId={selectedProject.id}
+          studentId={userProfile.userId}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default ExploreProjects;
