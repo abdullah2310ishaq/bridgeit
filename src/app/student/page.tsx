@@ -9,12 +9,14 @@ interface UserProfile {
   userId: string;
   firstName: string;
   lastName: string;
+  description: string;
   role: string;
   email: string;
   universityName: string;
   address: string;
   rollNumber: string;
   imageData: string;
+  uniImage: string;
 }
 
 interface Event {
@@ -88,6 +90,9 @@ const StudentPage: React.FC = () => {
               address: studentData.address,
               rollNumber: studentData.rollNumber,
               imageData: studentData.imageData,
+              description: studentData.description || "Add your description by going to edit profile section."   ,
+            uniImage: studentData.uniImage,
+
             });
 
             // Fetch completed projects
@@ -197,56 +202,77 @@ const StudentPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6">
-      {/* Profile Section */}
-      <div className="relative flex flex-col md:flex-row items-center p-12 mb-8 bg-gray-900 rounded-xl">
-        {/* Profile Image */}
-        <motion.div 
-          initial={{ x: -100, opacity: 0 }} 
-          animate={{ x: 0, opacity: 1 }} 
-          transition={{ duration: 1 }}
-          className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0">
-          
-          <img src={`data:image/jpeg;base64,${userProfile.imageData}`} 
-               alt={`${userProfile.firstName} ${userProfile.lastName}`} 
-               className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-green-400" />
-        </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-6">
+{/* Profile Section */}
+<div
+  className="relative flex flex-col md:flex-row items-center p-12 mb-8 rounded-xl"
+  style={{
+    backgroundImage: `url('data:image/jpeg;base64,${userProfile.uniImage}')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+  {/* Overlay to Dim Background for Better Readability */}
+  <div className="absolute inset-0 bg-black opacity-70"></div>  {/* Increased opacity for dimming effect */}
 
-        {/* Profile Info */}
-        <motion.div 
-          initial={{ x: 100, opacity: 0 }} 
-          animate={{ x: 0, opacity: 1 }} 
-          transition={{ duration: 1 }}
-          className="text-white flex-grow text-center md:text-left md:pl-10">
-          
-          <h2 className="text-4xl font-bold text-green-400 leading-tight drop-shadow-lg">
-            Welcome, {userProfile.firstName} {userProfile.lastName}
-          </h2>
-          <p className="text-lg text-gray-300 mt-2 tracking-wide italic">
-            Computer Science - {userProfile.universityName}
-          </p>
-          <p className="text-lg mt-2">Roll Number: <span className="font-bold">{userProfile.rollNumber}</span></p>
-          <p className="text-lg">User ID: <span className="font-bold">{userProfile.userId}</span></p>
+  {/* Profile Image */}
+  <motion.div 
+    initial={{ x: -100, opacity: 0 }} 
+    animate={{ x: 0, opacity: 1 }} 
+    transition={{ duration: 1 }}
+    className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0"
+  >
+    <img src={`data:image/jpeg;base64,${userProfile.imageData}`} 
+         alt={`${userProfile.firstName} ${userProfile.lastName}`} 
+         className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-green-400" />
+  </motion.div>
 
-          {/* Divider Line */}
-          <div className="w-full h-1 bg-gray-400 my-6"></div>
+  {/* Profile Info */}
+  <motion.div
+    initial={{ x: 100, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    transition={{ duration: 1 }}
+    className="relative z-10 text-white flex-grow text-center md:text-left md:pl-10"
+  >
+    <h2 className="text-5xl font-bold text-green-400 leading-tight drop-shadow-lg">
+      Welcome, {userProfile.firstName} {userProfile.lastName}
+    </h2>
+    
+    <p className="text-lg mt-2">
+      Roll Number: <span className="font-bold">{userProfile.rollNumber}</span>
+    </p>
 
-          {/* Buttons */}
-          <div className="flex justify-center md:justify-start space-x-4">
-            <button onClick={goToEditProfile}
-                    className="px-8 py-3 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-500 hover:shadow-blue-500/50 transition duration-300 transform hover:scale-105">
-              Edit Profile
-            </button>
-            <button onClick={gotoProfile}
-                    className="px-8 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-500 hover:shadow-purple-500/50 transition duration-300 transform hover:scale-105">
-              View Profile
-            </button>
-          </div>
-        </motion.div>
-      </div>
+    {/* Description */}
+    <div className="mt-4">
+      <h3 className="text-xl font-semibold text-white">About Me:</h3>
+      <p className="text-gray-300 mt-2">{userProfile.description}</p>
+    </div>
+
+    {/* Divider Line */}
+    <div className="w-full h-1 bg-gradient-to-r from-green-400 to-blue-500 my-6"></div>
+
+    {/* Buttons */}
+    <div className="flex justify-center md:justify-start space-x-4">
+      <button
+        onClick={goToEditProfile}
+        className="px-8 py-3 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-500 hover:shadow-blue-500/50 transition duration-300 transform hover:scale-105"
+      >
+        Edit Profile
+      </button>
+      <button
+        onClick={gotoProfile}
+        className="px-8 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-500 hover:shadow-purple-500/50 transition duration-300 transform hover:scale-105"
+      >
+        View Profile
+      </button>
+    </div>
+  </motion.div>
+</div>
+
 
       {/* Ongoing Projects */}
-      <section className="py-16 bg-gray-900">
+      <section className="py-16 bg-gradient-to-br from-gray-100 to-gray-300">
         <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
           <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
             Ongoing Projects
@@ -293,7 +319,7 @@ const StudentPage: React.FC = () => {
       </section>
 
       {/* Completed Projects Section */}
-      <section className="relative py-16 bg-gray-900">
+      <section className="relative py-16 bg-gradient-to-br from-gray-100 to-gray-300 ">
         {/* Heading Section */}
         <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
           <div className="text-left">
@@ -362,7 +388,7 @@ const StudentPage: React.FC = () => {
       </section>
 
       {/* Upcoming University Events Section */}
-      <section className="py-16 bg-gray-900">
+      <section className="py-16 bg-gradient-to-br from-gray-100 to-gray-300 color scheme">
         {/* Event Heading */}
         <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
