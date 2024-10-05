@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfileDropdown from "../components/ProfileDropdown";
-
+import OngoingProject from "./stdcomps/Ongoing"
 import { motion } from "framer-motion";
 
 interface UserProfile {
@@ -174,8 +174,21 @@ const StudentPage: React.FC = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6"> 
-    {/* Central flex layout */}
+    <div className="min-h-screen bg-gray-900 text-gray-300 p-6"> {/* Central flex layout */}
+      {/* Navbar */}
+      <nav className="bg-gray-800 shadow-lg rounded-lg mb-6 p-4 flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-green-500">Student Profile</h1>
+        <div className="hidden md:flex space-x-8">
+          <button onClick={handleLogout} className="hover:text-green-400 transition-colors duration-300">
+            Logout
+          </button>
+          <button onClick={() => router.push("/student/projects/explore-projects")} className="hover:text-green-400 transition-colors duration-300">
+            Explore Projects
+          </button>
+          <ProfileDropdown userProfile={userProfile} onLogout={handleLogout} />
+        </div>
+      </nav>
+  
      {/* Profile Section Following Layout from Image */}
 <div className="relative flex flex-col md:flex-row items-center p-12 mb-8 bg-gray-900 rounded-xl ">
   

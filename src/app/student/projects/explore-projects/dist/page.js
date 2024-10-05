@@ -59,6 +59,7 @@ function ExploreProjects() {
     var _e = react_1.useState(""), searchQuery = _e[0], setSearchQuery = _e[1];
     var _f = react_1.useState(true), loading = _f[0], setLoading = _f[1];
     var _g = react_1.useState(""), error = _g[0], setError = _g[1];
+    var _h = react_1.useState(null), selectedProject = _h[0], setSelectedProject = _h[1];
     var router = navigation_1.useRouter();
     react_1.useEffect(function () {
         function fetchProfileAndProjects() {
@@ -181,9 +182,7 @@ function ExploreProjects() {
         }
         switch (selectedFilter) {
             case "Most Recent":
-                sortedProjects.sort(function (a, b) {
-                    return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-                });
+                sortedProjects.sort(function (a, b) { return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); });
                 break;
             case "Best Matches":
                 sortedProjects.sort(function (a, b) { return (b.matchScore || 0) - (a.matchScore || 0); });
@@ -196,6 +195,9 @@ function ExploreProjects() {
         }
         setFilteredProjects(sortedProjects);
     };
+    var handleProjectSelect = function (project) {
+        setSelectedProject(project);
+    };
     if (loading) {
         return (react_1["default"].createElement("div", { className: "flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800" },
             react_1["default"].createElement("div", { className: "animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-500" })));
@@ -207,24 +209,43 @@ function ExploreProjects() {
     return (react_1["default"].createElement("div", { className: "flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300" },
         react_1["default"].createElement(NavBar_1["default"], null),
         react_1["default"].createElement("div", { className: "flex flex-1" },
-            react_1["default"].createElement("aside", { className: "hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6 shadow-lg" }, userProfile && (react_1["default"].createElement(ProfileCard_1["default"], { imageData: "data:image/jpeg;base64," + userProfile.imageData, firstName: userProfile.firstName, lastName: userProfile.lastName, role: userProfile.role }))),
-            react_1["default"].createElement("main", { className: "flex-1 p-6 overflow-y-auto" },
-                react_1["default"].createElement("div", { className: "max-w-7xl mx-auto" },
-                    react_1["default"].createElement("div", { className: "flex flex-col md:flex-row items-center justify-between mb-8 space-y-4 md:space-y-0" },
-                        react_1["default"].createElement("div", { className: "relative w-full md:w-2/3" },
+            react_1["default"].createElement("div", { className: "p-6" }, userProfile && (react_1["default"].createElement(ProfileCard_1["default"], { imageData: "data:image/jpeg;base64," + userProfile.imageData, firstName: userProfile.firstName, lastName: userProfile.lastName, role: userProfile.role }))),
+            react_1["default"].createElement("main", { className: "flex-1 flex overflow-hidden" },
+                react_1["default"].createElement("div", { className: "w-1/2 p-6 overflow-y-auto" },
+                    react_1["default"].createElement("div", { className: "flex flex-col mb-8 space-y-4" },
+                        react_1["default"].createElement("div", { className: "relative w-full" },
                             react_1["default"].createElement(fi_1.FiSearch, { className: "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" }),
                             react_1["default"].createElement("input", { type: "text", placeholder: "Search projects...", value: searchQuery, onChange: function (e) { return setSearchQuery(e.target.value); }, className: "w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300" })),
                         react_1["default"].createElement("div", { className: "flex items-center space-x-3" },
                             react_1["default"].createElement(fi_1.FiFilter, { className: "text-gray-400" }),
-                            react_1["default"].createElement("select", { value: selectedFilter, onChange: function (e) { return setSelectedFilter(e.target.value); }, className: "bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300" },
-                                react_1["default"].createElement("option", { value: "Most Recent" }, "Most Recent"),
-                                react_1["default"].createElement("option", { value: "Best Matches" }, "Best Matches"),
-                                react_1["default"].createElement("option", { value: "Featured" }, "Featured")))),
-                    react_1["default"].createElement("div", { className: "flex justify-end mb-8" },
-                        react_1["default"].createElement("button", { onClick: function () { return router.push("/student/add-project"); }, className: "px-8 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-full shadow-md hover:from-green-600 hover:to-teal-600 transition transform hover:scale-105" }, "Add New Project")),
-                    react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" }, filteredProjects.length > 0 ? (filteredProjects.map(function (project) { return (react_1["default"].createElement(ExploreProjectCard_1["default"], { key: project.id, id: project.id, title: project.title, description: project.description, stack: project.stack, status: project.status, expertName: project.expertName })); })) : (react_1["default"].createElement("div", { className: "col-span-full text-center text-gray-400 bg-gray-800 p-8 rounded-lg shadow-lg" },
+                            react_1["default"].createElement("div", { className: "flex space-x-3" },
+                                react_1["default"].createElement("button", { className: "px-4 py-2 rounded-full " + (selectedFilter === "Most Recent" ? "bg-green-500 text-white" : "bg-gray-700 text-gray-200"), onClick: function () { return setSelectedFilter("Most Recent"); } }, "Most Recent"),
+                                react_1["default"].createElement("button", { className: "px-4 py-2 rounded-full " + (selectedFilter === "Best Matches" ? "bg-green-500 text-white" : "bg-gray-700 text-gray-200"), onClick: function () { return setSelectedFilter("Best Matches"); } }, "Best Matches"),
+                                react_1["default"].createElement("button", { className: "px-4 py-2 rounded-full " + (selectedFilter === "Featured" ? "bg-green-500 text-white" : "bg-gray-700 text-gray-200"), onClick: function () { return setSelectedFilter("Featured"); } }, "Featured")))),
+                    react_1["default"].createElement("div", { className: "space-y-6 overflow-y-scroll h-[calc(100vh-300px)]" }, filteredProjects.length > 0 ? (filteredProjects.map(function (project) { return (react_1["default"].createElement(ExploreProjectCard_1["default"], { key: project.id, id: project.id, title: project.title, description: project.description, stack: project.stack, status: project.status, expertName: project.expertName, onSelectProject: function () { return handleProjectSelect(project); } })); })) : (react_1["default"].createElement("div", { className: "text-center text-gray-400 bg-gray-800 p-8 rounded-lg shadow-lg" },
                         react_1["default"].createElement("p", { className: "text-xl mb-4" }, "No projects available."),
-                        react_1["default"].createElement("p", null, "Try adjusting your search or filters."))))))),
+                        react_1["default"].createElement("p", null, "Try adjusting your search or filters."))))),
+                react_1["default"].createElement("div", { className: "w-1/2 p-6 overflow-y-auto bg-gray-800" }, selectedProject ? (react_1["default"].createElement("div", { className: "bg-gray-700 rounded-lg p-6 shadow-lg" },
+                    react_1["default"].createElement("h2", { className: "text-2xl font-bold text-green-500 mb-4" }, selectedProject.title),
+                    react_1["default"].createElement("p", { className: "text-gray-300 mb-4" }, selectedProject.description),
+                    selectedProject.stack && (react_1["default"].createElement("p", { className: "text-sm text-gray-400 mb-2" },
+                        react_1["default"].createElement("span", { className: "font-semibold" }, "Tech Stack:"),
+                        " ",
+                        selectedProject.stack)),
+                    selectedProject.status && (react_1["default"].createElement("p", { className: "text-sm text-gray-400 mb-2" },
+                        react_1["default"].createElement("span", { className: "font-semibold" }, "Status:"),
+                        " ",
+                        selectedProject.status)),
+                    selectedProject.expertName && (react_1["default"].createElement("p", { className: "text-sm text-gray-400 mb-2" },
+                        react_1["default"].createElement("span", { className: "font-semibold" }, "Expert:"),
+                        " ",
+                        selectedProject.expertName)),
+                    selectedProject.companyName && (react_1["default"].createElement("p", { className: "text-sm text-gray-400 mb-2" },
+                        react_1["default"].createElement("span", { className: "font-semibold" }, "Company:"),
+                        " ",
+                        selectedProject.companyName)),
+                    react_1["default"].createElement("button", { className: "py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300", onClick: function () { } }, "Submit Proposal"))) : (react_1["default"].createElement("div", { className: "flex items-center justify-center h-full text-gray-400" },
+                    react_1["default"].createElement("p", null, "Select a project to view details")))))),
         react_1["default"].createElement("button", { onClick: function () { return router.push("/student/ai-assist"); }, className: "fixed bottom-8 right-8 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4 rounded-full shadow-lg flex items-center space-x-2 hover:scale-110 transition-all duration-300 group" },
             react_1["default"].createElement(fa_1.FaRobot, { className: "text-2xl group-hover:animate-bounce" }),
             react_1["default"].createElement("span", { className: "hidden sm:inline-block" }, "AI Help"))));
