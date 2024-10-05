@@ -1,5 +1,8 @@
+"use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
+import { FaTimes } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 
 interface ProposalModalProps {
@@ -11,9 +14,10 @@ interface ProposalModalProps {
 const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onClose }) => {
   const [proposal, setProposal] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSubmitProposal = async () => {
-    if (!proposal) {
+    if (!proposal.trim()) {
       toast.error("Please enter your proposal.");
       return;
     }
@@ -35,13 +39,18 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
 
       if (response.ok) {
         toast.success("Proposal submitted successfully!");
+
+        // Close the modal after submission
         onClose();
+
+        // Optionally, you can refresh the page or update the state to reflect the submission
       } else {
-        toast.error("Failed to submit proposal. Please try again.");
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to submit proposal. Please try again.");
       }
     } catch (error) {
       console.error("Error submitting proposal:", error);
-      toast.error("Error occurred while submitting the proposal.");
+      toast.error("An error occurred while submitting the proposal.");
     } finally {
       setIsSubmitting(false);
     }
@@ -49,9 +58,19 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 p-8 rounded-lg shadow-xl text-gray-200 w-full max-w-xl transform transition-all duration-500 ease-in-out">
+      <div className="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 p-8 rounded-lg shadow-xl w-full max-w-lg relative">
+        {/* Close Button */}
+        <button
+          className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          onClick={onClose}
+        >
+          <FaTimes size={24} />
+        </button>
+
+        {/* Modal Title */}
         <h2 className="text-3xl font-bold text-green-400 mb-4">Submit Your Proposal</h2>
-        
+
+        {/* Proposal Textarea */}
         <textarea
           value={proposal}
           onChange={(e) => setProposal(e.target.value)}
@@ -59,6 +78,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
           className="w-full p-4 rounded-lg bg-gray-700 text-gray-300 h-48 border-2 border-gray-600 focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-500 transition duration-300"
         />
 
+        {/* Action Buttons */}
         <div className="mt-6 flex justify-end space-x-4">
           <button
             className={`px-6 py-2 rounded-lg font-semibold text-white shadow-lg transition-all duration-200 ${
@@ -80,6 +100,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
         </div>
       </div>
 
+      {/* Toast Notifications */}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );

@@ -1,3 +1,4 @@
+"use client";
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -37,25 +38,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var react_1 = require("react");
+var navigation_1 = require("next/navigation");
 var react_toastify_1 = require("react-toastify");
+var fa_1 = require("react-icons/fa");
 require("react-toastify/dist/ReactToastify.css");
 var ProposalModal = function (_a) {
     var projectId = _a.projectId, studentId = _a.studentId, onClose = _a.onClose;
     var _b = react_1.useState(""), proposal = _b[0], setProposal = _b[1];
     var _c = react_1.useState(false), isSubmitting = _c[0], setIsSubmitting = _c[1];
+    var router = navigation_1.useRouter();
     var handleSubmitProposal = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response, error_1;
+        var response, errorData, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!proposal) {
+                    if (!proposal.trim()) {
                         react_toastify_1.toast.error("Please enter your proposal.");
                         return [2 /*return*/];
                     }
                     setIsSubmitting(true);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 3, 4, 5]);
+                    _a.trys.push([1, 6, 7, 8]);
                     return [4 /*yield*/, fetch("https://localhost:7053/api/project-proposals/send-proposal", {
                             method: "POST",
                             headers: {
@@ -69,28 +73,33 @@ var ProposalModal = function (_a) {
                         })];
                 case 2:
                     response = _a.sent();
-                    if (response.ok) {
-                        react_toastify_1.toast.success("Proposal submitted successfully!");
-                        onClose();
-                    }
-                    else {
-                        react_toastify_1.toast.error("Failed to submit proposal. Please try again.");
-                    }
+                    if (!response.ok) return [3 /*break*/, 3];
+                    react_toastify_1.toast.success("Proposal submitted successfully!");
+                    // Close the modal after submission
+                    onClose();
                     return [3 /*break*/, 5];
-                case 3:
+                case 3: return [4 /*yield*/, response.json()];
+                case 4:
+                    errorData = _a.sent();
+                    react_toastify_1.toast.error(errorData.message || "Failed to submit proposal. Please try again.");
+                    _a.label = 5;
+                case 5: return [3 /*break*/, 8];
+                case 6:
                     error_1 = _a.sent();
                     console.error("Error submitting proposal:", error_1);
-                    react_toastify_1.toast.error("Error occurred while submitting the proposal.");
-                    return [3 /*break*/, 5];
-                case 4:
+                    react_toastify_1.toast.error("An error occurred while submitting the proposal.");
+                    return [3 /*break*/, 8];
+                case 7:
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 5: return [2 /*return*/];
+                case 8: return [2 /*return*/];
             }
         });
     }); };
     return (react_1["default"].createElement("div", { className: "fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50" },
-        react_1["default"].createElement("div", { className: "bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 p-8 rounded-lg shadow-xl text-gray-200 w-full max-w-xl transform transition-all duration-500 ease-in-out" },
+        react_1["default"].createElement("div", { className: "bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 p-8 rounded-lg shadow-xl w-full max-w-lg relative" },
+            react_1["default"].createElement("button", { className: "absolute top-4 right-4 text-gray-400 hover:text-white", onClick: onClose },
+                react_1["default"].createElement(fa_1.FaTimes, { size: 24 })),
             react_1["default"].createElement("h2", { className: "text-3xl font-bold text-green-400 mb-4" }, "Submit Your Proposal"),
             react_1["default"].createElement("textarea", { value: proposal, onChange: function (e) { return setProposal(e.target.value); }, placeholder: "Write your proposal here...", className: "w-full p-4 rounded-lg bg-gray-700 text-gray-300 h-48 border-2 border-gray-600 focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-500 transition duration-300" }),
             react_1["default"].createElement("div", { className: "mt-6 flex justify-end space-x-4" },

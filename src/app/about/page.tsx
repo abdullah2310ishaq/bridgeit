@@ -96,40 +96,58 @@ const AboutPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-cover bg-center h-screen" style={{ backgroundImage: 'url("/images/hero-bg.jpg")' }}>
-        <div className="absolute inset-0 bg-black opacity-60"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-          <motion.h1
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 mb-4"
+<section className="relative bg-cover bg-center h-[80vh]" style={{ backgroundImage: 'url("/images/hero-bg.jpg")' }}>
+      <div className="absolute inset-0 bg-gray-900 opacity-60"></div>
+      <div className="relative z-10 flex items-center justify-center h-full px-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute left-4 lg:left-20 z-0"
           >
-            Welcome to BridgeIT
-          </motion.h1>
-          <motion.p
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="text-xl md:text-2xl max-w-3xl mx-auto mb-8"
-          >
-            Bridging the gap between academia and students through innovative collaborations and interactive learning environments.
-          </motion.p>
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-blue-500 hover:to-green-400 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
-          >
-            Get in Touch
-          </motion.a>
+            <Image
+              src="/abouthero.png"
+              alt="BridgeIT"
+              width={500}
+              height={400}
+            />
+          </motion.div>
+          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 space-y-8 w-full">
+            <motion.h1
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500"
+            >
+              Welcome to BridgeIT
+            </motion.h1>
+            <motion.p
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="text-lg md:text-xl max-w-3xl mx-auto text-white"
+            >
+              Bridging the gap between academia and students through innovative collaborations and interactive learning environments.
+            </motion.p>
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              // initial={{ y: 50, opacity: 0 }}
+              // animate={{ y: 0, opacity: 1 }}
+              // transition={{ duration: 1 }}
+              className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-blue-500 hover:to-green-400 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 text-lg"
+            >
+              Get in Touch
+            </motion.a>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* Team Section */}
-      <section className="py-16 px-4 bg-gray-900">
-        <div className="max-w-7xl mx-auto text-center mb-12">
+      <section className="py-12 px-4 bg-gray-900">
+        <div className="max-w-7xl mx-auto text-center mb-8">
           <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 mb-4">
             Meet Our Dynamic Team
           </h2>
@@ -222,70 +240,81 @@ const AboutPage: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Contact Section */}
-      <section id="contact" className="py-16 px-4 bg-gray-900">
-        <div className="max-w-7xl mx-auto text-center mb-12">
-          <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 mb-4">
-            Get in Touch
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Whether you have questions, feedback, or partnership inquiries, we'd love to hear from you.
-          </p>
-        </div>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Contact Info */}
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-2">
-              <FaEnvelope className="text-green-400 text-xl" />
-              <a href="mailto:contact@bridgeit.com" className="text-gray-300 hover:text-green-400">
-                contact@bridgeit.com
-              </a>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FaPhone className="text-green-400 text-xl" />
-              <a href="tel:+92-346-2207429" className="text-gray-300 hover:text-green-400">
-                +92-346-2207429
-              </a>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FaMapMarkerAlt className="text-green-400 text-xl" />
-              <span className="text-gray-300">Air University, Islamabad</span>
-            </div>
-          </div>
+     <section id="contact" className="py-16 px-4 bg-gray-900">
+      <div className="max-w-7xl mx-auto text-center mb-12">
+        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 mb-4">
+          Get in Touch
+        </h2>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          Whether you have questions, feedback, or partnership inquiries, we'd love to hear from you.
+        </p>
+      </div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+       
 
-          {/* Contact Form */}
-          <form onSubmit={onSubmit} className="flex flex-col space-y-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Your Email"
-              className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
-            <textarea
-              name="message"
-              placeholder="Your Message"
-              className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
-              rows={5}
-              required
-            ></textarea>
-            <button
-              type="submit"
-              className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-blue-500 hover:to-green-400 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
-            >
-              Send Message
-            </button>
-          </form>
-          <span className="text-gray-400 mt-4">{result}</span>
+        {/* Contact Info */}
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center space-x-2">
+            <FaEnvelope className="text-green-400 text-xl" />
+            <a href="mailto:contact@bridgeit.com" className="text-gray-300 hover:text-green-400 transition-colors duration-300">
+              contact@bridgeit.com
+            </a>
+          </div>
+          <div className="flex items-center space-x-2">
+            <FaPhone className="text-green-400 text-xl" />
+            <a href="tel:+92-346-2207429" className="text-gray-300 hover:text-green-400 transition-colors duration-300">
+              +92-346-2207429
+            </a>
+          </div>
+          <div className="flex items-center space-x-2">
+            <FaMapMarkerAlt className="text-green-400 text-xl" />
+            <span className="text-gray-300">Air University, Islamabad</span>
+          </div>
         </div>
-      </section>
+       
+        {/* Contact Form */}
+        <form onSubmit={onSubmit} className="flex flex-col space-y-4">
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <input
+            type-="email"
+            name="email"
+            placeholder="Your Email"
+            className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <textarea
+            name="message"
+            placeholder="Your Message"
+            className="p-3 rounded-lg bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+            rows={5}
+            required
+          ></textarea>
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-blue-500 hover:to-green-400 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all duration-300"
+          >
+            Send Message
+          </button>
+        </form>
+         {/* Image */}
+         <div className="hidden lg:block">
+          <Image
+            src="/getintouch.png"
+            alt="Get in touch"
+            width={300}
+            height={300}
+           // className="rounded-lg shadow-lg"
+          />
+        </div>
+
+      </div>
+    </section>
 
       {/* Footer */}
       <footer className="py-6 px-4 bg-gray-800">

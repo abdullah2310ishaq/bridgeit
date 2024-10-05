@@ -8,7 +8,7 @@ var ProfileCard = function (_a) {
     var handleProfileRedirect = function () {
         router.push("/student");
     };
-    return (react_1["default"].createElement("div", { className: "bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl shadow-lg overflow-hidden w-60 text-center transform hover:scale-105 transition-transform duration-300" },
+    return (react_1["default"].createElement("div", { className: "bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl shadow-lg overflow-hidden w-50 text-center transform hover:scale-105 transition-transform duration-300" },
         react_1["default"].createElement("div", { className: "bg-gradient-to-t from-green-400 to-blue-500 h-20" }),
         react_1["default"].createElement("div", { className: "relative -mt-12" },
             react_1["default"].createElement("img", { src: imageData || "/default-profile.png", alt: "Profile Picture", className: "mx-auto h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg transform hover:scale-110 transition-transform duration-300" })),

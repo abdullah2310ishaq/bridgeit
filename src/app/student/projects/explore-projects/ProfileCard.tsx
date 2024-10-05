@@ -16,7 +16,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ imageData, firstName, lastNam
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl shadow-lg overflow-hidden w-60 text-center transform hover:scale-105 transition-transform duration-300">
+    <div className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl shadow-lg overflow-hidden w-50 text-center transform hover:scale-105 transition-transform duration-300">
       {/* Upper Section with Image */}
       <div className="bg-gradient-to-t from-green-400 to-blue-500 h-20"></div>
 
