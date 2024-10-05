@@ -9,15 +9,15 @@ import ProjectCard from "./ExploreProjectCard";
 import ProjectDetailsPanel from "../[id]/page";
 
 interface UserProfile {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  email: string;
-  universityName: string;
-  address: string;
-  rollNumber: string;
-  imageData: string;
+  userId: string
+  firstName: string
+  lastName: string
+  role: string
+  email: string
+  universityName: string
+  address: string
+  rollNumber: string
+  imageData: string
 }
 
 interface ExpertProject {
@@ -51,10 +51,10 @@ const ExploreProjects: React.FC = () => {
 
   useEffect(() => {
     async function fetchProfileAndProjects() {
-      const token = localStorage.getItem("jwtToken");
+      const token = localStorage.getItem("jwtToken")
       if (!token) {
-        router.push("/auth/login-user");
-        return;
+        router.push("/auth/login-user")
+        return
       }
 
       try {
@@ -67,11 +67,11 @@ const ExploreProjects: React.FC = () => {
               Authorization: `Bearer ${token}`,
             },
           }
-        );
+        )
 
         if (profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          const userId = profileData.userId;
+          const profileData = await profileResponse.json()
+          const userId = profileData.userId
 
           const studentResponse = await fetch(
             `https://localhost:7053/api/get-student/student-by-id/${userId}`,
@@ -81,10 +81,10 @@ const ExploreProjects: React.FC = () => {
                 Authorization: `Bearer ${token}`,
               },
             }
-          );
+          )
 
           if (studentResponse.ok) {
-            const studentData = await studentResponse.json();
+            const studentData = await studentResponse.json()
 
             setUserProfile({
               userId: studentData.userId,
@@ -96,7 +96,7 @@ const ExploreProjects: React.FC = () => {
               address: studentData.address,
               rollNumber: studentData.rollNumber,
               imageData: studentData.imageData,
-            });
+            })
 
             const expertProjectsResponse = await fetch(
               "https://localhost:7053/api/projects/get-expert-projects",
@@ -106,10 +106,10 @@ const ExploreProjects: React.FC = () => {
                   Authorization: `Bearer ${token}`,
                 },
               }
-            );
+            )
 
             if (expertProjectsResponse.ok) {
-              const expertProjectsData = await expertProjectsResponse.json();
+              const expertProjectsData = await expertProjectsResponse.json()
 
             
               const formattedProjects: ExpertProject[] = expertProjectsData.map(
@@ -121,35 +121,37 @@ const ExploreProjects: React.FC = () => {
                   status: project.currentStatus,
                   expertName: project.name,
                   companyName: project.companyName,
+                  expertName: project.name,
+                  companyName: project.companyName,
                   isFeatured: project.isFeatured,
                   matchScore: project.matchScore,
                   createdAt: project.createdAt,
                   isRequested: project.isRequested,
                 })
-              );
+              )
 
-              setExpertProjects(formattedProjects);
-              setFilteredProjects(formattedProjects);
+              setExpertProjects(formattedProjects)
+              setFilteredProjects(formattedProjects)
             } else {
-              setExpertProjects([]);
-              setFilteredProjects([]);
+              setExpertProjects([])
+              setFilteredProjects([])
             }
           } else {
-            router.push("/unauthorized");
+            router.push("/unauthorized")
           }
         } else {
-          router.push("/unauthorized");
+          router.push("/unauthorized")
         }
       } catch (error) {
-        console.error("An error occurred:", error);
-        setError("Failed to load projects.");
+        console.error("An error occurred:", error)
+        setError("Failed to load projects.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchProfileAndProjects();
-  }, [router]);
+    fetchProfileAndProjects()
+  }, [router])
 
   useEffect(() => {
     filterProjects();
@@ -157,7 +159,7 @@ const ExploreProjects: React.FC = () => {
 
 
   const filterProjects = () => {
-    let sortedProjects = [...expertProjects];
+    let sortedProjects = [...expertProjects]
 
     if (searchQuery) {
       sortedProjects = sortedProjects.filter(
@@ -166,7 +168,7 @@ const ExploreProjects: React.FC = () => {
           project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (project.companyName &&
             project.companyName.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      )
     }
 
     switch (selectedFilter) {
@@ -174,16 +176,16 @@ const ExploreProjects: React.FC = () => {
         sortedProjects.sort(
           (a, b) =>
             new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-        );
-        break;
+        )
+        break
       case "Best Matches":
-        sortedProjects.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
-        break;
+        sortedProjects.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0))
+        break
       case "Featured":
-        sortedProjects = sortedProjects.filter((project) => project.isFeatured);
-        break;
+        sortedProjects = sortedProjects.filter((project) => project.isFeatured)
+        break
       default:
-        break;
+        break
     }
 
   // those requested not shown again to user 
@@ -223,17 +225,17 @@ const ExploreProjects: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-        <p className="text-gray-400 text-xl">Loading projects...</p>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-500"></div>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-        <p className="text-red-500 text-xl">{error}</p>
+        <p className="text-red-500 text-xl bg-gray-800 p-4 rounded-lg shadow-lg">{error}</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -241,7 +243,7 @@ const ExploreProjects: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6">
+        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6 shadow-lg">
           {userProfile && (
             <ProfileCard
               imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
@@ -329,7 +331,5 @@ const ExploreProjects: React.FC = () => {
         </main>
       </div>
     </div>
-  );
-};
-
-export default ExploreProjects;
+  )
+}

@@ -165,16 +165,20 @@ const IndustryExpertPage: React.FC = () => {
         />
 
         {/* Company Profile Section */}
-        <CompanyProfile
-          companyName={expertProfile.companyName}
-          address={expertProfile.address}
-          contact={expertProfile.contact}
-          onEditCompany={() => {}}
-        />
+        <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-pink-500 mb-6">
+  Industry Information
+</h2>
+<CompanyProfile
+  companyName={expertProfile.companyName}
+  address={expertProfile.address}
+  contact={expertProfile.contact}
+  onEditCompany={() => {}}
+/>
+
 
         {/* Projects Section */}
         <div>
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Projects</h2>
+          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-6">Projects</h2>
           {projects.length === 0 ? (
             <p className="text-gray-500">No projects found</p>
           ) : (

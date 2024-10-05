@@ -10,7 +10,7 @@ interface Proposal {
   projectTitle: string;
   proposal: string;
   status: string;
-  read: boolean; // New property to track if the notification is read
+  read: boolean;
 }
 
 const StudentNotificationsPage: React.FC = () => {
@@ -83,7 +83,7 @@ const StudentNotificationsPage: React.FC = () => {
         const proposalsData = await proposalsResponse.json();
         const proposalsWithRead = proposalsData.map((proposal: Proposal) => ({
           ...proposal,
-          read: false, // Initially mark all proposals as unread
+          read: false,
         }));
 
         setProposals(proposalsWithRead);
@@ -104,7 +104,6 @@ const StudentNotificationsPage: React.FC = () => {
         proposal.id === id ? { ...proposal, read: true } : proposal
       )
     );
-
     toast.success("Notification dismissed!");
   };
 
@@ -128,20 +127,22 @@ const StudentNotificationsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-300 p-4">
       <div className="max-w-5xl mx-auto">
+        {/* Header with Gradient */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-green-500">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-600 text-transparent bg-clip-text">
             <FaBell className="inline-block mr-2" />
             Your Notifications
           </h1>
           {unreadProposals.length > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200"
+              className="py-2 px-4 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold rounded-lg hover:opacity-80 transition-opacity duration-300"
             >
               Mark All as Read
             </button>
           )}
         </div>
+
         {unreadProposals.length === 0 ? (
           <div className="text-center text-gray-400">
             <FaEnvelopeOpenText className="inline-block text-5xl mb-4" />
@@ -152,7 +153,7 @@ const StudentNotificationsPage: React.FC = () => {
             {unreadProposals.map((proposal) => (
               <div
                 key={proposal.id}
-                className="bg-gray-800 rounded-lg p-4 shadow-md relative hover:shadow-xl transition-shadow duration-200 ease-in-out"
+                className="bg-gray-800 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
               >
                 <button
                   className="absolute top-2 right-2 text-gray-300 hover:text-red-500 transition-colors"

@@ -30,30 +30,55 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
   onAddProjects,
 }) => {
   return (
-    <div className="bg-white shadow-lg rounded-lg p-8 flex flex-col items-center md:flex-row md:items-start">
-      <img
-        src={`data:image/jpeg;base64,${companyLogo}`}
-        alt={companyName}
-        className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-lg mr-8 mb-4 md:mb-0"
-      />
-      <div className="text-center md:text-left flex-grow">
-        <h2 className="text-2xl font-bold text-gray-700">{companyName}</h2>
-        <p className="text-sm text-gray-600">By {firstName} {lastName}</p>
+    <div
+      className="relative flex flex-col md:flex-row justify-between items-center bg-gray-800 bg-opacity-80 p-12 rounded-2xl shadow-2xl mb-8 overflow-hidden"
+      style={{ backgroundImage: "url('/Air_University_BCKG.jpg')", backgroundSize: 'cover', backgroundPosition: 'center', minHeight: '600px' }}
+    >
+      <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"></div>
+
+      {/* Profile Information */}
+      <div className="relative z-10 md:w-1/2 flex flex-col space-y-8 text-left text-white">
+        <h1 className="text-6xl font-bold text-green-400 leading-tight drop-shadow-2xl">
+          {companyName}
+        </h1>
+        <p className="text-lg text-gray-300 tracking-wide italic">
+          By {firstName} {lastName}
+        </p>
         <p className="text-sm text-gray-500">Email: {email}</p>
         <p className="text-sm text-gray-500">Address: {address}</p>
         <p className="text-sm text-gray-500">Contact: {contact}</p>
-        <p className="text-sm text-gray-500">Expert id: {indExptId}</p>
-        <div className="flex space-x-4 mt-4">
-          <button onClick={onViewProjects} className="py-2 px-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-500 transition">
+        <p className="text-sm text-gray-500">Expert ID: {indExptId}</p>
+
+        {/* Buttons */}
+        <div className="flex space-x-6 mt-10">
+          <button
+            onClick={onViewProjects}
+            className="px-10 py-4 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:scale-105"
+          >
             View Projects
           </button>
-          <button onClick={onEditProfile} className="py-2 px-4 bg-gray-600 text-white rounded-lg shadow-md hover:bg-gray-500 transition">
+          <button
+            onClick={onEditProfile}
+            className="px-10 py-4 bg-purple-500 text-white font-bold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:scale-105"
+          >
             Edit Profile
           </button>
-          <button onClick={onAddProjects} className="py-2 px-4 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-500 transition">
+          <button
+            onClick={onAddProjects}
+            className="px-10 py-4 bg-green-600 text-white font-bold rounded-full shadow-lg hover:shadow-green-500/50 transition duration-300 transform hover:scale-105"
+          >
             Add Projects
           </button>
         </div>
+      </div>
+
+      {/* Profile Image */}
+      <div className="relative z-10 mt-6 md:mt-0 md:w-1/2 flex justify-center">
+        <img
+          src={`data:image/jpeg;base64,${companyLogo}`}
+          alt={companyName}
+          className="w-80 h-80 rounded-full border-4 border-green-300 object-cover shadow-2xl transform hover:scale-110 transition duration-300"
+        />
       </div>
     </div>
   );
