@@ -8,7 +8,8 @@ var ProjectCard = function (_a) {
     var renderStatusBadge = function (status) {
         if (!status)
             return null;
-        var statusClass = status.toLowerCase() === "completed"
+        var statusClass = status.toLowerCase()
+            === "completed"
             ? "bg-green-500 text-white"
             : status.toLowerCase() === "pending"
                 ? "bg-yellow-500 text-white"

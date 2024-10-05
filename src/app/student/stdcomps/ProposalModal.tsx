@@ -1,8 +1,5 @@
-"use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
-import { FaTimes } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 
 interface ProposalModalProps {
@@ -14,7 +11,6 @@ interface ProposalModalProps {
 const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onClose }) => {
   const [proposal, setProposal] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const router = useRouter();
 
   const handleSubmitProposal = async () => {
     if (!proposal.trim()) {
@@ -39,11 +35,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
 
       if (response.ok) {
         toast.success("Proposal submitted successfully!");
-
-        // Close the modal after submission
         onClose();
-
-        // Optionally, you can refresh the page or update the state to reflect the submission
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || "Failed to submit proposal. Please try again.");

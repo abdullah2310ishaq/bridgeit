@@ -11,7 +11,7 @@ interface ProjectCardProps {
   expertName?: string;
   studentName?: string;
   expertImageData?: string;
-  onClick: () => void;
+  onSelectProject: () => void;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -24,6 +24,33 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   expertImageData,
   onClick,
 }) => {
+  const renderStatusBadge = (status: string | undefined) => {
+    if (!status) return null;
+
+    const statusClass =
+      status.toLowerCase()
+ === "completed"
+        ? "bg-green-500 text-white"
+        : status.toLowerCase() === "pending"
+        ? "bg-yellow-500 text-white"
+        : "bg-red-500 text-white";
+
+    const statusIcon =
+      status.toLowerCase() === "completed" ? (
+        <FaCheckCircle className="mr-1" />
+      ) : status.toLowerCase() === "pending" ? (
+        <FaExclamationCircle className="mr-1" />
+      ) : null;
+
+    return (
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
+      >
+        {statusIcon} {status}
+      </span>
+    );
+  };
+
   return (
     <motion.div
       className="bg-gray-800 shadow-lg rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
