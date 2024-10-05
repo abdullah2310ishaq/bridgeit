@@ -27,7 +27,7 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
   const [studentId, setStudentId] = useState<string>("");
 
   useEffect(() => {
-    // Fetch studentId when the panel is opened
+  
     async function fetchStudentId() {
       try {
         const token = localStorage.getItem("jwtToken");

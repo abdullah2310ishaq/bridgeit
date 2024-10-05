@@ -73,7 +73,6 @@ const ExploreProjects: React.FC = () => {
           const profileData = await profileResponse.json();
           const userId = profileData.userId;
 
-          // Fetch student data by user ID
           const studentResponse = await fetch(
             `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
@@ -99,7 +98,6 @@ const ExploreProjects: React.FC = () => {
               imageData: studentData.imageData,
             });
 
-            // Fetch Expert Projects
             const expertProjectsResponse = await fetch(
               "https://localhost:7053/api/projects/get-expert-projects",
               {
@@ -113,7 +111,7 @@ const ExploreProjects: React.FC = () => {
             if (expertProjectsResponse.ok) {
               const expertProjectsData = await expertProjectsResponse.json();
 
-              // Format projects to include necessary fields
+            
               const formattedProjects: ExpertProject[] = expertProjectsData.map(
                 (project: any) => ({
                   id: project.id,
@@ -157,7 +155,7 @@ const ExploreProjects: React.FC = () => {
     filterProjects();
   }, [selectedFilter, searchQuery, expertProjects]);
 
-  // Function to filter projects based on search and filters
+
   const filterProjects = () => {
     let sortedProjects = [...expertProjects];
 
@@ -171,7 +169,6 @@ const ExploreProjects: React.FC = () => {
       );
     }
 
-    // Apply filters based on selected criteria
     switch (selectedFilter) {
       case "Most Recent":
         sortedProjects.sort(
@@ -189,15 +186,13 @@ const ExploreProjects: React.FC = () => {
         break;
     }
 
-    // Filter out projects that the user has already requested
+  // those requested not shown again to user 
     const filteredByRequestStatus = sortedProjects.filter(
       (project) => !project.isRequested
     );
 
     setFilteredProjects(filteredByRequestStatus);
   };
-
-  // Handle project selection from URL
   useEffect(() => {
     const projectIdFromUrl = searchParams.get("projectId");
     if (projectIdFromUrl) {
@@ -205,14 +200,14 @@ const ExploreProjects: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Update selected project details
+ 
   useEffect(() => {
     if (selectedProjectId) {
       const project = expertProjects.find((p) => p.id === selectedProjectId);
       if (project) {
         setSelectedProjectDetails(project);
       } else {
-        // If not found, you might want to fetch the project details from API
+     
         setSelectedProjectDetails(null);
       }
     } else {
@@ -294,15 +289,6 @@ const ExploreProjects: React.FC = () => {
               </div>
             </div>
 
-            {/* Add Project Button */}
-            <div className="flex justify-end mb-6">
-              <button
-                onClick={() => router.push("/student/add-project")}
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full shadow-md hover:from-green-600 hover:to-green-700 transition-colors duration-300"
-              >
-                Add New Project
-              </button>
-            </div>
 
             {/* Projects Grid */}
             <div
@@ -342,15 +328,6 @@ const ExploreProjects: React.FC = () => {
           )}
         </main>
       </div>
-
-      {/* Floating AI Help Button */}
-      <button
-        onClick={() => router.push("/student/ai-assist")}
-        className="fixed bottom-8 right-8 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-4 rounded-full shadow-lg flex items-center space-x-2 animate-bounce hover:scale-110 transition-transform duration-300"
-      >
-        <FaRobot className="text-2xl" />
-        <span className="hidden sm:inline-block">AI Help?</span>
-      </button>
     </div>
   );
 };

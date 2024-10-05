@@ -178,20 +178,7 @@ const StudentPage: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-6"> {/* Central flex layout */}
-      {/* Navbar */}
-      <nav className="bg-bg-gradient-to-br from-gray-100 to-gray-300 shadow-lg rounded-lg mb-6 p-4 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-green-500">Student Profile</h1>
-        <div className="hidden md:flex space-x-8">
-          <button onClick={handleLogout} className="hover:text-green-400 transition-colors duration-300">
-            Logout
-          </button>
-          <button onClick={() => router.push("/student/projects/explore-projects")} className="hover:text-green-400 transition-colors duration-300">
-            Explore Projects
-          </button>
-          <ProfileDropdown userProfile={userProfile} onLogout={handleLogout} />
-        </div>
-      </nav>
-  
+   
       {/* Profile Section */}
       <div className="relative flex flex-col md:flex-row justify-between items-center bg-gray-800 bg-opacity-80 p-12 rounded-2xl shadow-2xl mb-8 overflow-hidden"
            style={{ backgroundImage: "url('/studentbg.jpg')", height: "600px", backgroundSize: 'cover', backgroundPosition: 'center' }}>
