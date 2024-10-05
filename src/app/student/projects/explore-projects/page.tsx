@@ -22,6 +22,7 @@ interface UserProfile {
 }
 
 interface ExpertProject {
+  isRequested: any;
   id: string;
   title: string;
   description: string;
