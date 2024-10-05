@@ -15,6 +15,7 @@ interface StudentProfile {
   address: string;
   rollNumber: string;
   skills: string[];
+  description: string; // Added description field
 }
 
 const ProfilePage: React.FC = () => {
@@ -61,6 +62,7 @@ const ProfilePage: React.FC = () => {
               address: studentData.address || 'N/A',
               rollNumber: studentData.rollNumber || 'N/A',
               skills: studentData.skills || [],
+              description: studentData.description || 'No description provided.', // Fetch description
             });
           } else {
             console.error('Failed to fetch student profile:', studentResponse.statusText);
@@ -93,7 +95,6 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-900 p-6 overflow-hidden">
-      
       {/* Prominent Image on the Right */}
       <div className="absolute bottom-0 right-0 z-0">
         <Image
@@ -109,7 +110,7 @@ const ProfilePage: React.FC = () => {
         initial={{ opacity: 0, x: -80 }} // Shifted card to left
         animate={{ opacity: 1, x: -80 }} // Keep the card moved to the left for balance
         transition={{ duration: 0.5 }}
-        className="relative z-10 bg-gray-800/60 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-md h-auto lg:max-w-lg" // Adjusted max width for a more vertical layout
+        className="relative z-10 bg-gray-800/60 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-md h-auto lg:max-w-lg"
       >
         {/* Header with Navigation and Edit */}
         <div className="flex justify-between items-center mb-6">
@@ -144,6 +145,12 @@ const ProfilePage: React.FC = () => {
             </p>
             <p className="text-gray-400 mb-4 text-lg">{studentProfile.email}</p>
 
+            {/* Description Section */}
+            <div className="mb-6">
+              <p className="font-medium text-white">About Me:</p>
+              <p className="text-gray-300 mt-2">{studentProfile.description}</p>
+            </div>
+
             <div className="grid grid-cols-1 gap-4 text-gray-300">
               <div>
                 <p className="font-medium text-white">University:</p>
@@ -175,8 +182,8 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-         {/* Action Buttons with Gradient */}
-         <div className="mt-8 flex justify-end space-x-4">
+        {/* Action Buttons with Gradient */}
+        <div className="mt-8 flex justify-end space-x-4">
           <button
             onClick={goBack}
             className="py-2 px-6 bg-gradient-to-r from-indigo-400 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"

@@ -109,7 +109,7 @@ const ExploreProjects: React.FC = () => {
             );
 
             if (expertProjectsResponse.ok) {
-              const expertProjectsData = await expertProjectsResponse.json()
+              const expertProjectsData = await expertProjectsResponse.json();
 
             
               const formattedProjects: ExpertProject[] = expertProjectsData.map(
@@ -119,8 +119,6 @@ const ExploreProjects: React.FC = () => {
                   description: project.description,
                   stack: project.stack,
                   status: project.currentStatus,
-                  expertName: project.name,
-                  companyName: project.companyName,
                   expertName: project.name,
                   companyName: project.companyName,
                   isFeatured: project.isFeatured,
@@ -174,7 +172,8 @@ const ExploreProjects: React.FC = () => {
     switch (selectedFilter) {
       case "Most Recent":
         sortedProjects.sort(
-          (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          (a, b) =>
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
         );
         break;
       case "Best Matches":
@@ -224,7 +223,7 @@ const ExploreProjects: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-green-500"></div>
+        <p className="text-gray-400 text-xl">Loading projects...</p>
       </div>
     );
   }
@@ -232,7 +231,7 @@ const ExploreProjects: React.FC = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-        <p className="text-red-500 text-xl bg-gray-800 p-4 rounded-lg shadow-lg">{error}</p>
+        <p className="text-red-500 text-xl">{error}</p>
       </div>
     );
   }
@@ -240,12 +239,9 @@ const ExploreProjects: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300">
       <Navbar />
-      
-      {/* Main Layout */}
       <div className="flex flex-1">
-        
-        {/* Profile Card at Top-Left */}
-        <div className="p-6">
+        {/* Sidebar */}
+        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6">
           {userProfile && (
             <ProfileCard
               imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
@@ -254,7 +250,7 @@ const ExploreProjects: React.FC = () => {
               role={userProfile.role}
             />
           )}
-        </div>
+        </aside>
 
         {/* Main Content */}
         <main className="flex-1 flex">
@@ -334,4 +330,6 @@ const ExploreProjects: React.FC = () => {
       </div>
     </div>
   );
-}
+};
+
+export default ExploreProjects;
