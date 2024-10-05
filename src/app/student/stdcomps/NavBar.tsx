@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { Transition, Dialog } from "@headlessui/react";
-import ProfileDropdown from "@/app/components/ProfileDropdown";
+import ProfileDropdown from "./ProfileDropdown";
 
 interface UserProfile {
   userId: string;
@@ -37,14 +37,44 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
 
   const navigationLinks = [
     { name: "Home", href: "/student" },
-    { name: "Explore Projects", href: "/student/projects/explore-projects" },
-    { name: "My Projects", href: "/student/projects" },
-    { name: "Events", href: "/student/events" },
-    // Add more links as needed
+    {
+      name: "Projects",
+      href: "#",
+      children: [
+        { name: "My Projects", href: "/student/projects" },
+        { name: "Explore Projects", href: "/student/projects/explore-projects" },
+      ],
+    },
+    {
+      name: "Update",
+      href: "#",
+      children: [
+        { name: "Image", href: "/student/profile/management" },
+        { name: "Password", href: "/student/profile/management" },
+      ],
+    },
+    {
+      name: "Profile",
+      href: "#",
+      children: [
+        { name: "View", href: "/student/profile" },
+        { name: "Edit", href: "/student/profile/edit" },
+      ],
+    },
+    {
+      name: "Notifications",
+      href: "/student/std_notifications",
+    },
   ];
 
-  const isActiveLink = (href: string) => {
-    return activePage === href || activePage.startsWith(href);
+  // Updated isActiveLink function
+  const isActiveLink = (link: { href: string; children?: any[] }) => {
+    if (link.href === "#" && link.children) {
+      // Check if any child link is active
+      return link.children.some((child) => activePage.startsWith(child.href));
+    } else {
+      return activePage === link.href || activePage.startsWith(link.href);
+    }
   };
 
   // Function to handle logout click from ProfileDropdown
@@ -75,22 +105,54 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex md:ml-10 space-x-4">
+          <div className="hidden md:flex md:ml-10 space-x-4 items-center">
             {navigationLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`relative px-3 py-2 text-sm font-medium transition duration-300 ${
-                  isActiveLink(link.href)
-                    ? "text-blue-600"
-                    : "text-gray-600 hover:text-blue-600"
-                }`}
-              >
-                {link.name}
-                {isActiveLink(link.href) && (
-                  <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-600 animate-slideIn" />
+              <div key={link.name} className="relative group">
+                {link.children ? (
+                  // Render parent link with dropdown
+                  <>
+                    <button
+                      className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+                        isActiveLink(link)
+                          ? "text-blue-600 border-b-2 border-blue-600"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
+                    >
+                      {link.name}
+                    </button>
+                    <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          className={`block px-4 py-2 text-sm hover:bg-gray-100 ${
+                            activePage.startsWith(child.href)
+                              ? "text-blue-600 bg-gray-100"
+                              : "text-gray-600 hover:text-blue-600"
+                          }`}
+                        >
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  // Render normal link
+                  <Link
+                    href={link.href}
+                    className={`relative px-3 py-2 text-sm font-medium transition duration-300 ${
+                      isActiveLink(link)
+                        ? "text-blue-600 border-b-2 border-blue-600"
+                        : "text-gray-600 hover:text-blue-600"
+                    }`}
+                  >
+                    {link.name}
+                    {isActiveLink(link) && (
+                      <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-600 animate-slideIn" />
+                    )}
+                  </Link>
                 )}
-              </Link>
+              </div>
             ))}
           </div>
 
@@ -127,18 +189,52 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
         <div className="md:hidden bg-white shadow-md">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navigationLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
-                  isActiveLink(link.href)
-                    ? "text-blue-600"
-                    : "text-gray-600 hover:text-blue-600"
-                }`}
-              >
-                {link.name}
-              </Link>
+              <div key={link.name}>
+                {link.children ? (
+                  // Render parent link with collapsible children
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => setMobileMenuOpen((prev) => !prev)}
+                      className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+                        isActiveLink(link)
+                          ? "text-blue-600 bg-gray-100"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
+                    >
+                      {link.name}
+                    </button>
+                    <div className="pl-4">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+                            activePage.startsWith(child.href)
+                              ? "text-blue-600 bg-gray-100"
+                              : "text-gray-600 hover:text-blue-600"
+                          }`}
+                        >
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  // Render normal link
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+                      isActiveLink(link)
+                        ? "text-blue-600 bg-gray-100"
+                        : "text-gray-600 hover:text-blue-600"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                )}
+              </div>
             ))}
 
             {/* Profile Options */}
