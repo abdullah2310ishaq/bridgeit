@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaTimes } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
