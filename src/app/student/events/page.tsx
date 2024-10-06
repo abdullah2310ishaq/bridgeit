@@ -87,11 +87,6 @@ const UniversityEventsPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-
-              {/* Call-to-Action */}
-              <button className="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg hover:bg-gradient-to-r hover:from-blue-400 hover:to-purple-400 transition-colors duration-300">
-                Learn More
-              </button>
             </div>
           ))
         ) : (
