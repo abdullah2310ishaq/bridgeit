@@ -19,8 +19,8 @@ const EventsSection: React.FC<Props> = ({ events, gradientStyles, goToEventsPage
   return (
     <section className="py-16 bg-gradient-to-br from-gray-100 to-gray-300">
       {/* Event Heading */}
-      <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
-        <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
+      <div className="max-w-7xl mx-auto mb-16 px-4 md:px-6 lg:px-8">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-700">
           Upcoming University Events
         </h1>
       </div>
@@ -32,7 +32,7 @@ const EventsSection: React.FC<Props> = ({ events, gradientStyles, goToEventsPage
             key={event.id}
             className={`relative p-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all overflow-hidden ${gradientStyles[index % gradientStyles.length]}`}
           >
-            <div className="absolute inset-0 opacity-20 bg-cover bg-center"></div>
+            {/* Original Card Color Preserved */}
             <div className="relative z-10">
               <h2 className="text-xl font-semibold text-white mb-4">{event.title}</h2>
               <p className="text-gray-200 mb-2">Speaker: {event.speakerName}</p>
@@ -45,10 +45,10 @@ const EventsSection: React.FC<Props> = ({ events, gradientStyles, goToEventsPage
       </div>
 
       {/* Buttons */}
-      <div className="flex justify-center space-x-6 mt-12">
+      <div className="mt-12 flex justify-center space-x-6">
         <button
           onClick={goToEventsPage}
-          className="px-10 py-4 bg-green-400 text-white font-bold rounded-full shadow-lg hover:shadow-green-400/50 transition duration-300 ease-in-out transform hover:scale-105"
+          className="px-10 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-medium rounded-full shadow-md hover:from-gray-700 hover:to-gray-800 transition-transform"
         >
           See More Events
         </button>

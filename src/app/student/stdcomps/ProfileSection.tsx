@@ -30,7 +30,7 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
       }}
     >
       {/* Overlay to Dim Background for Better Readability */}
-      <div className="absolute inset-0 bg-black opacity-80"></div>
+      <div className="absolute inset-0 bg-black opacity-70"></div>
 
       {/* Profile Image in Rectangle */}
       <motion.div 

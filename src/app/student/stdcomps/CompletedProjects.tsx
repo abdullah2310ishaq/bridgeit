@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { motion } from "framer-motion";
 
 interface Project {
@@ -10,44 +11,52 @@ interface Project {
 
 interface Props {
   projects: Project[];
-  goToProjectsPage: () => void;
-  createProjects: () => void;
 }
 
-const CompletedProjectsSection: React.FC<Props> = ({ projects, goToProjectsPage, createProjects }) => {
+const CompletedProjectsSection: React.FC<Props> = ({ projects }) => {
+  const router = useRouter(); // Initialize the router
+
+  const goToProjectsPage = () => {
+    router.push("/student/projects"); // Navigate to the 'view projects' page
+  };
+
+  const createProjects = () => {
+    router.push("/student/projects/create"); // Navigate to the 'create projects' page
+  };
+
   return (
-    <section className="relative py-16 bg-gradient-to-br from-gray-100 to-gray-300">
+    <section className="py-16 bg-gradient-to-br from-gray-100 to-gray-300">
       {/* Heading Section */}
-      <div className="relative max-w-7xl mx-auto mb-16 px-4 md:px-0">
-        <div className="text-left">
-          <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
-            Completed Projects
-          </h2>
-        </div>
+      <div className="max-w-7xl mx-auto mb-16 px-4 md:px-6 lg:px-8">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-700">
+          Completed Projects
+        </h2>
       </div>
 
       {/* Project Boxes Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 px-4 md:px-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-6 lg:px-8">
         {projects.length > 0 ? (
           projects.map((project) => (
             <motion.div
               key={project.id}
               whileHover={{ scale: 1.05 }}
-              className="bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"
+              className="bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-transform"
             >
               {/* Project Title */}
-              <h3 className="text-2xl font-bold text-green-300 mb-4">{project.title}</h3>
-              
+              <h3 className="text-2xl font-bold text-green-300 mb-4">
+                {project.title}
+              </h3>
+
               {/* Project Description */}
               <p className="text-gray-400 mb-4">{project.description}</p>
 
               {/* Additional Project Info */}
               <div className="text-left mt-4">
                 <p className="text-sm text-gray-400">
-                  <span className="font-bold text-gray-300">Status:</span> Completed
+                  <span className="font-bold">Status:</span> Completed
                 </p>
                 <p className="text-sm text-gray-400">
-                  <span className="font-bold text-gray-300">Duration:</span> 6 months
+                  <span className="font-bold">Duration:</span> 6 months
                 </p>
               </div>
 
@@ -63,21 +72,23 @@ const CompletedProjectsSection: React.FC<Props> = ({ projects, goToProjectsPage,
             </motion.div>
           ))
         ) : (
-          <p className="text-gray-400 text-center col-span-3">No completed projects available.</p>
+          <p className="text-gray-500 text-center col-span-full">
+            No completed projects available.
+          </p>
         )}
       </div>
 
       {/* Buttons Below the Section */}
-      <div className="mt-12 text-center space-x-6">
+      <div className="mt-12 flex justify-center space-x-4">
         <button
-          onClick={goToProjectsPage}
-          className="px-8 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-full shadow-md hover:from-green-600 hover:to-teal-600 transition transform hover:scale-105"
+          onClick={goToProjectsPage} // Navigate to 'view' page
+          className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-medium rounded-full shadow-md hover:from-gray-700 hover:to-gray-800 transition-transform"
         >
           See More Projects
         </button>
         <button
-          onClick={createProjects}
-          className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-md hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105"
+          onClick={createProjects} // Navigate to 'create' page
+          className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium rounded-full shadow-md hover:from-gray-600 hover:to-gray-700 transition-transform"
         >
           Create Projects
         </button>
