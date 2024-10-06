@@ -272,59 +272,86 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
 
       {/* Logout Confirmation Dialog */}
       <Transition appear show={isLogoutDialogOpen} as={React.Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={handleCancelLogout}>
-          <Transition.Child
-            as={React.Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
+  <Dialog as="div" className="relative z-50" onClose={handleCancelLogout}>
+    {/* Overlay transition */}
+    <Transition.Child
+      as={React.Fragment}
+      enter="ease-out duration-300"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="ease-in duration-200"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+    >
+      <div className="fixed inset-0 bg-gray-900 bg-opacity-50" />
+    </Transition.Child>
 
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-full p-4 text-center">
-              <Transition.Child
-                as={React.Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="max-w-md w-full bg-white rounded-lg p-6 shadow-lg">
-                  <Dialog.Title className="text-lg font-medium text-gray-900">
-                    Confirm Logout
-                  </Dialog.Title>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Are you sure you want to logout?
-                    </p>
-                  </div>
-                  <div className="mt-4 flex justify-end space-x-4">
-                    <button
-                      onClick={handleCancelLogout}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleConfirmLogout}
-                      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
+    {/* Dialog panel */}
+    <div className="fixed inset-0 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-full p-4 text-center">
+        <Transition.Child
+          as={React.Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
+        >
+          <Dialog.Panel className="max-w-md w-full bg-white rounded-lg p-6 shadow-lg transform transition-all">
+            <div className="flex items-center space-x-4">
+              {/* Icon to enhance dialog appearance */}
+              <div className="bg-red-100 p-3 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 17v2a2 2 0 002 2h2a2 2 0 002-2v-2m4-10V7a2 2 0 00-2-2H9a2 2 0 00-2 2v4m12 5v-5m-4 0a2 2 0 01-2 2h-4a2 2 0 01-2-2v5m2 2H7"
+                  />
+                </svg>
+              </div>
+              <Dialog.Title className="text-xl font-semibold text-gray-900">
+                Confirm Logout
+              </Dialog.Title>
             </div>
-          </div>
-        </Dialog>
-      </Transition>
+
+            {/* Description */}
+            <div className="mt-4">
+              <p className="text-sm text-gray-500">
+                Are you sure you want to log out? You will need to log back in
+                to access your account.
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="mt-6 flex justify-end space-x-4">
+              <button
+                onClick={handleCancelLogout}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmLogout}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition"
+              >
+                Logout
+              </button>
+            </div>
+          </Dialog.Panel>
+        </Transition.Child>
+      </div>
+    </div>
+  </Dialog>
+</Transition>
+
     </nav>
   );
 };

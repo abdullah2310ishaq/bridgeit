@@ -1,9 +1,7 @@
-// components/ProfileDropdown.tsx
-
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown, FaUserEdit, FaSignOutAlt, FaImage, FaLock } from "react-icons/fa";
 
 interface ProfileDropdownProps {
   userProfile: {
@@ -41,11 +39,10 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     setDropdownOpen(false);
   };
 
-  const updatePassword =()=>{
+  const updatePassword = () => {
     router.push("student/profile/edit");
     setDropdownOpen(false);
-  }
-
+  };
 
   const handleLogoutClickLocal = () => {
     setDropdownOpen(false);
@@ -83,46 +80,51 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         <FaChevronDown className="ml-2 text-gray-600 hover:text-blue-600 transition duration-300" />
       </button>
       {dropdownOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-1" role="menu" aria-orientation="vertical">
-            <div className="px-4 py-2 border-b">
+            <div className="px-4 py-2 border-b bg-gray-100 rounded-t-md">
               <p className="text-sm font-medium text-gray-700">
                 {userProfile.firstName} {userProfile.lastName}
               </p>
             </div>
+
             <button
               onClick={handleViewProfile}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
             >
-              View Profile
+              <FaUserEdit className="mr-2" /> View Profile
             </button>
+
             <button
               onClick={handleEditProfile}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
             >
-              Edit Profile
-            </button>
-            <button
-              onClick={handleLogoutClickLocal}
-              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-            >
-              Logout
+              <FaUserEdit className="mr-2" /> Edit Profile
             </button>
 
             <button
               onClick={updateImage}
-              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
             >
-              Upload Image
+              <FaImage className="mr-2" /> Upload Image
             </button>
 
             <button
               onClick={updatePassword}
-              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
             >
-              Update Password
+              <FaLock className="mr-2" /> Update Password
             </button>
 
+            <div className="border-t my-2"></div>
+
+            {/* Beautified Logout Button */}
+            <button
+              onClick={handleLogoutClickLocal}
+              className="flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-gray-100 transition duration-300 bg-red-50 rounded-b-md"
+            >
+              <FaSignOutAlt className="mr-2" /> Logout
+            </button>
           </div>
         </div>
       )}
