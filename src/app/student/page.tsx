@@ -266,10 +266,7 @@ const StudentPage: React.FC = () => {
 
       {/* Completed Projects */}
       <CompletedProjectsSection
-        projects={projects}
-        goToProjectsPage={goToProjectsPage}
-        createProjects={createProjects}
-      />
+        projects={projects} />
 
       {/* Events Section */}
       <EventsSection

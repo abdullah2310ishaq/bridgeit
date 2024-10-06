@@ -10,12 +10,13 @@ interface Project {
 }
 
 interface Props {
-  projects: Project[];
+  projects: Project[]; // Only passing projects as a prop
 }
 
 const CompletedProjectsSection: React.FC<Props> = ({ projects }) => {
   const router = useRouter(); // Initialize the router
 
+  // Navigation handlers directly inside the component
   const goToProjectsPage = () => {
     router.push("/student/projects"); // Navigate to the 'view projects' page
   };
