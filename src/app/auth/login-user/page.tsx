@@ -1,25 +1,54 @@
 "use client";
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { motion } from 'framer-motion';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { FaEnvelope, FaLock, FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const router = useRouter();
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { email: "", password: "" };
+
+    if (!email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email is invalid";
+      isValid = false;
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setLoading(true);
 
     try {
-      const response = await fetch('https://localhost:7053/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("https://localhost:7053/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -27,128 +56,168 @@ const LoginPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
-        localStorage.setItem('jwtToken', token);
+        localStorage.setItem("jwtToken", token);
 
-        const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const profileResponse = await fetch(
+          "https://localhost:7053/api/auth/authorized-user-info",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           const role = profileData.role;
 
           switch (role) {
-            case 'Student':
-              router.push('/student');
+            case "Student":
+              router.push("/student");
               break;
-            case 'Faculty':
-              router.push('/faculty');
+            case "Faculty":
+              router.push("/faculty");
               break;
-            case 'IndustryExpert':
-              router.push('/industryexpert');
+            case "IndustryExpert":
+              router.push("/industryexpert");
               break;
-            case 'UniversityAdmin':
-              router.push('/unidmin');
+            case "UniversityAdmin":
+              router.push("/unidmin");
               break;
             default:
-              toast.error('Invalid role. Please contact support.', {
-                position: 'top-center',
-                autoClose: 3000,
-              });
+              toast.error("Invalid role. Please contact support.");
               break;
           }
         } else {
-          toast.error('Failed to fetch user profile.', {
-            position: 'top-center',
-            autoClose: 3000,
-          });
+          toast.error("Failed to fetch user profile.");
         }
       } else {
-        toast.error('Login failed. Please check your credentials.', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
+        const errorData = await response.json();
+        toast.error(
+          errorData.message || "Login failed. Please check your credentials."
+        );
       }
     } catch (error) {
-      toast.error('An error occurred. Please try again later.', {
-        position: 'top-center',
-        autoClose: 3000,
-      });
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 bg-black flex flex-col justify-center p-8 md:p-16 text-white">
-        <h1 className="text-5xl font-extrabold text-center mb-8">Welcome Back</h1>
-        <motion.form 
-          onSubmit={handleLogin} 
-          className="space-y-6 w-full max-w-md p-8 bg-gray-800 rounded-lg border border-gray-700 shadow-lg mx-auto"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-4">
+      <div className="w-full max-w-5xl bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden flex">
+        {/* Form Section */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 bg-gray-00 bg-opacity-90">
+          <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-4">
+            Sign In
+          </h2>
+          <p className="text-gray-400 mb-6">
+            Welcome back! Please enter your details to continue.
+          </p>
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* Email Input */}
+            <div className="relative">
+              <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full py-3 pl-12 pr-4 text-gray-200 bg-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Email"
+              />
+              {errors.email && (
+                <p className="text-red-400 text-xs mt-1 flex items-center">
+                  <FaExclamationCircle className="mr-1" /> {errors.email}
+                </p>
+              )}
+            </div>
+
+            {/* Password Input with Eye Icon */}
+            <div className="relative">
+              <FaLock className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full py-3 pl-12 pr-10 text-gray-200 bg-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Password"
+              />
+              <div
+                className="absolute top-3 right-3 cursor-pointer text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
+              {errors.password && (
+                <p className="text-red-400 text-xs mt-1 flex items-center">
+                  <FaExclamationCircle className="mr-1" /> {errors.password}
+                </p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <motion.button
+                type="submit"
+                className="px-8 py-3 w-full text-white bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
+                disabled={loading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                    Logging in...
+                  </div>
+                ) : (
+                  "Login"
+                )}
+              </motion.button>
+            </div>
+          </form>
+
+          {/* Forgot Password */}
+          <div className="mt-6 text-center">
+            <a href="#" className="text-sm text-blue-400 hover:underline">
+              Forgot password?
+            </a>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
-          </div>
-          <div className="flex justify-center">
-            <motion.button
-              type="submit"
-              className="bg-sky-950 text-sky-400 border border-sky-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group"
-              disabled={loading}
-              whileHover={{ scale: 1.05 }}
-            >
-              <span className="bg-sky-400 shadow-sky-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
-              {loading ? 'Logging in...' : 'Login'}
-            </motion.button>
-          </div>
-          <motion.p 
-            className="mt-6 text-sm text-gray-400 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-          >
-            Don't have an account? 
-            <a 
-              onClick={() => router.push('/auth/register-user')}
-              className="text-sky-400 hover:text-sky-500 cursor-pointer ml-1"
+
+          {/* Signup Link */}
+          <p className="mt-8 text-center text-gray-400">
+            Don't have an account?{" "}
+            <a
+              onClick={() => router.push("/auth/register-user")}
+              className="text-blue-400 hover:underline cursor-pointer"
             >
               Sign up here
-            </a>.
-          </motion.p>
-        </motion.form>
-      </div>
-      
-      {/* Right Side - Illustration */}
-      <div className="hidden md:block md:w-1/2 bg-black text-white flex items-center justify-center p-4">
-        <div className="relative rounded-lg w-[90%] h-[90%] flex items-center">
-          <img src="/cartoon.jpg" alt="Login Illustration" className="absolute top-0 left-0 w-full h-full object-cover rounded-lg" />
+            </a>
+          </p>
+        </div>
+
+        {/* Illustration Section */}
+        <div className="hidden md:block w-1/2 relative">
+          <Image
+            src="/heroimage.png"
+            alt="Login Illustration"
+            layout="fill"
+            objectFit="cover"
+          />
         </div>
       </div>
-      <ToastContainer />
+
+      {/* Toast Notification */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: "#1a1a1a",
+            color: "#fff",
+          },
+        }}
+      />
     </div>
   );
 };

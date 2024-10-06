@@ -110,3 +110,4 @@ var ProposalModal = function (_a) {
         react_1["default"].createElement(react_toastify_1.ToastContainer, { position: "top-right", autoClose: 3000, hideProgressBar: true })));
 };
 exports["default"] = ProposalModal;
+

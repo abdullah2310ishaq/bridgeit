@@ -148,7 +148,7 @@ const StudentRegistration: React.FC = () => {
       lastName &&
       email &&
       password.length >= 8 &&
-      /[!@#$%^&*(),.?":{}|<>]/g.test(password) && // Special character check
+      /[!@#$%^&*(),.?":{}|<>]/g.test(password) && 
       universityId &&
       departmentId &&
       rollNumber &&
