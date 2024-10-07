@@ -21,7 +21,6 @@ interface UserProfile {
 }
 
 interface ExpertProject {
-  isRequested: any;
   id: string;
   title: string;
   description: string;
@@ -44,8 +43,11 @@ const ExploreProjects: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [selectedProjectDetails, setSelectedProjectDetails] = useState<ExpertProject | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null
+  );
+  const [selectedProjectDetails, setSelectedProjectDetails] =
+    useState<ExpertProject | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -112,9 +114,8 @@ const ExploreProjects: React.FC = () => {
             if (expertProjectsResponse.ok) {
               const expertProjectsData = await expertProjectsResponse.json();
 
-            
-              const formattedProjects: ExpertProject[] = expertProjectsData.map(
-                (project: any) => ({
+              const formattedProjects: ExpertProject[] =
+                expertProjectsData.map((project: any) => ({
                   id: project.id,
                   title: project.title,
                   description: project.description,
@@ -126,8 +127,7 @@ const ExploreProjects: React.FC = () => {
                   matchScore: project.matchScore,
                   createdAt: project.createdAt,
                   isRequested: project.isRequested,
-                })
-              );
+                }));
 
               setExpertProjects(formattedProjects);
               setFilteredProjects(formattedProjects);
@@ -156,8 +156,6 @@ const ExploreProjects: React.FC = () => {
     filterProjects();
   }, [selectedFilter, searchQuery, expertProjects]);
 
-
-
   const filterProjects = () => {
     let sortedProjects = [...expertProjects];
 
@@ -165,9 +163,13 @@ const ExploreProjects: React.FC = () => {
       sortedProjects = sortedProjects.filter(
         (project) =>
           project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          project.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
           (project.companyName &&
-            project.companyName.toLowerCase().includes(searchQuery.toLowerCase()))
+            project.companyName
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()))
       );
     }
 
@@ -175,11 +177,14 @@ const ExploreProjects: React.FC = () => {
       case "Most Recent":
         sortedProjects.sort(
           (a, b) =>
-            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime()
         );
         break;
       case "Best Matches":
-        sortedProjects.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+        sortedProjects.sort(
+          (a, b) => (b.matchScore || 0) - (a.matchScore || 0)
+        );
         break;
       case "Featured":
         sortedProjects = sortedProjects.filter((project) => project.isFeatured);
@@ -188,19 +193,14 @@ const ExploreProjects: React.FC = () => {
         break;
     }
 
-  // those requested not shown again to user 
-    const filteredByRequestStatus = sortedProjects.filter(
-      (project) => !project.isRequested
-    );
-
-    setFilteredProjects(filteredByRequestStatus);
-  // those requested not shown again to user 
+    // Exclude requested projects
     const filteredByRequestStatus = sortedProjects.filter(
       (project) => !project.isRequested
     );
 
     setFilteredProjects(filteredByRequestStatus);
   };
+
   useEffect(() => {
     const projectIdFromUrl = searchParams.get("projectId");
     if (projectIdFromUrl) {
@@ -208,14 +208,12 @@ const ExploreProjects: React.FC = () => {
     }
   }, [searchParams]);
 
- 
   useEffect(() => {
     if (selectedProjectId) {
       const project = expertProjects.find((p) => p.id === selectedProjectId);
       if (project) {
         setSelectedProjectDetails(project);
       } else {
-     
         setSelectedProjectDetails(null);
       }
     } else {
@@ -225,7 +223,7 @@ const ExploreProjects: React.FC = () => {
 
   const handleProjectClick = (id: string) => {
     setSelectedProjectId(id);
-    router.push(`?projectId=${id}`, undefined);
+    router.push(`?projectId=${id}`);
   };
 
   if (loading) {
@@ -270,9 +268,7 @@ const ExploreProjects: React.FC = () => {
           >
             {/* Search and Filters */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
               {/* Search Bar */}
-              <div className="relative w-full lg:w-2/3 mb-4 lg:mb-0">
               <div className="relative w-full lg:w-2/3 mb-4 lg:mb-0">
                 <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -281,12 +277,10 @@ const ExploreProjects: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
               {/* Filter Options */}
-              <div className="flex space-x-3 items-center">
               <div className="flex space-x-3 items-center">
                 <FiFilter className="text-gray-400" />
                 <select
@@ -300,7 +294,6 @@ const ExploreProjects: React.FC = () => {
                 </select>
               </div>
             </div>
-
 
             {/* Projects Grid */}
             <div
@@ -321,8 +314,6 @@ const ExploreProjects: React.FC = () => {
               ) : (
                 <div className="col-span-full text-center text-gray-400">
                   No projects available.
-                <div className="col-span-full text-center text-gray-400">
-                  No projects available.
                 </div>
               )}
             </div>
@@ -335,7 +326,7 @@ const ExploreProjects: React.FC = () => {
                 project={selectedProjectDetails}
                 onClose={() => {
                   setSelectedProjectId(null);
-                  router.push("", undefined);
+                  router.push("");
                 }}
               />
             </div>

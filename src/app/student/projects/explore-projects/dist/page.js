@@ -178,15 +178,20 @@ var ExploreProjects = function () {
         if (searchQuery) {
             sortedProjects = sortedProjects.filter(function (project) {
                 return project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    project.description
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
                     (project.companyName &&
-                        project.companyName.toLowerCase().includes(searchQuery.toLowerCase()));
+                        project.companyName
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase()));
             });
         }
         switch (selectedFilter) {
             case "Most Recent":
                 sortedProjects.sort(function (a, b) {
-                    return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+                    return new Date(b.createdAt || 0).getTime() -
+                        new Date(a.createdAt || 0).getTime();
                 });
                 break;
             case "Best Matches":
@@ -198,7 +203,7 @@ var ExploreProjects = function () {
             default:
                 break;
         }
-        // those requested not shown again to user 
+        // Exclude requested projects
         var filteredByRequestStatus = sortedProjects.filter(function (project) { return !project.isRequested; });
         setFilteredProjects(filteredByRequestStatus);
     };
@@ -224,7 +229,7 @@ var ExploreProjects = function () {
     }, [selectedProjectId, expertProjects]);
     var handleProjectClick = function (id) {
         setSelectedProjectId(id);
-        router.push("?projectId=" + id, undefined);
+        router.push("?projectId=" + id);
     };
     if (loading) {
         return (react_1["default"].createElement("div", { className: "flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800" },
@@ -254,8 +259,7 @@ var ExploreProjects = function () {
                 selectedProjectDetails && (react_1["default"].createElement("div", { className: "w-full lg:w-1/2 p-6 bg-gray-800 overflow-auto" },
                     react_1["default"].createElement(page_1["default"], { project: selectedProjectDetails, onClose: function () {
                             setSelectedProjectId(null);
-                            router.push("", undefined);
+                            router.push("");
                         } })))))));
 };
 exports["default"] = ExploreProjects;
-

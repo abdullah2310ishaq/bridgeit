@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import UpcomingEvents from '@/app/student/stdcomps/UpComingEvents';
+import FacultyEvents from '../facultycomponents/FacultyEvents';
 
 const UniversityEventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -49,7 +49,7 @@ const UniversityEventsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-600 text-gray-900 p-6">
       <h1 className="text-3xl text-white font-bold text-center mb-6">All University Events</h1>
-      <UpcomingEvents events={events} />
+      <FacultyEvents events={events} />
     </div>
   );
 };
