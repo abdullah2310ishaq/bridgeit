@@ -41,6 +41,8 @@ var react_1 = require("react");
 var navigation_1 = require("next/navigation");
 var react_toastify_1 = require("react-toastify");
 require("react-toastify/dist/ReactToastify.css");
+var framer_motion_1 = require("framer-motion");
+var fa_1 = require("react-icons/fa");
 var ProjectsPage = function () {
     var _a = react_1.useState([]), projects = _a[0], setProjects = _a[1];
     var _b = react_1.useState(true), loading = _b[0], setLoading = _b[1];
@@ -134,22 +136,28 @@ var ProjectsPage = function () {
         fetchProjects();
     }, [router]);
     if (loading) {
-        return react_1["default"].createElement("div", { className: "text-center text-gray-400" }, "Loading...");
+        return (react_1["default"].createElement("div", { className: "min-h-screen flex items-center justify-center bg-gray-900" },
+            react_1["default"].createElement(framer_motion_1.motion.div, { animate: { rotate: 360 }, transition: { duration: 2, repeat: Infinity, ease: "linear" }, className: "text-6xl text-blue-500" },
+                react_1["default"].createElement(fa_1.FaSpinner, null))));
     }
-    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-900 text-white p-8" },
-        react_1["default"].createElement("div", { className: "container mx-auto" },
-            react_1["default"].createElement("h1", { className: "text-3xl font-bold mb-8 text-center" }, "My Projects"),
-            projects.length > 0 ? (react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" }, projects.map(function (project) { return (react_1["default"].createElement("div", { key: project.id, className: "bg-gray-800 p-6 rounded-lg shadow-lg" },
-                react_1["default"].createElement("h2", { className: "text-xl font-semibold mb-2" }, project.title),
+    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 text-white p-8 relative overflow-hidden" },
+        react_1["default"].createElement("div", { className: "container mx-auto relative z-10" },
+            react_1["default"].createElement(framer_motion_1.motion.h1, { initial: { opacity: 0, y: -50 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5 }, className: "text-5xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600" }, "My Innovative Projects"),
+            projects.length > 0 ? (react_1["default"].createElement(framer_motion_1.motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.5, delay: 0.2 }, className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" }, projects.map(function (project, index) { return (react_1["default"].createElement(framer_motion_1.motion.div, { key: project.id, initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, delay: index * 0.1 }, className: "bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden group" },
+                react_1["default"].createElement("div", { className: "absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-sm rounded-bl-lg" }, project.status),
+                react_1["default"].createElement("h2", { className: "text-2xl font-semibold mb-3 group-hover:text-blue-400 transition-colors duration-300" }, project.title),
                 react_1["default"].createElement("p", { className: "text-gray-400 mb-4" }, project.description),
-                react_1["default"].createElement("p", { className: "text-gray-500" },
-                    react_1["default"].createElement("strong", null, "Stack:"),
-                    " ",
-                    project.stack),
-                react_1["default"].createElement("p", { className: "text-gray-500" },
-                    react_1["default"].createElement("strong", null, "Status:"),
-                    " ",
-                    project.status))); }))) : (react_1["default"].createElement("p", { className: "text-gray-300 text-center" }, "No projects found."))),
+                react_1["default"].createElement("div", { className: "flex items-center text-gray-500 mb-2" },
+                    react_1["default"].createElement(fa_1.FaCode, { className: "mr-2" }),
+                    react_1["default"].createElement("span", null, project.stack)),
+                react_1["default"].createElement("div", { className: "flex items-center text-gray-500" },
+                    react_1["default"].createElement(fa_1.FaCheckCircle, { className: "mr-2" }),
+                    react_1["default"].createElement("span", null, project.status)),
+                react_1["default"].createElement("div", { className: "absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300" }))); }))) : (react_1["default"].createElement(framer_motion_1.motion.p, { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.5 }, className: "text-gray-300 text-center text-xl" }, "No projects found. Start creating your innovative projects!"))),
+        react_1["default"].createElement("div", { className: "absolute top-20 right-10 text-blue-400 opacity-20 animate-pulse" },
+            react_1["default"].createElement(fa_1.FaRocket, { size: 100 })),
+        react_1["default"].createElement("div", { className: "absolute bottom-20 left-10 text-purple-400 opacity-20 animate-pulse" },
+            react_1["default"].createElement(fa_1.FaCode, { size: 100 })),
         react_1["default"].createElement(react_toastify_1.ToastContainer, null)));
 };
 exports["default"] = ProjectsPage;

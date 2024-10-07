@@ -1,8 +1,12 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
+import { FaRocket, FaCode, FaCheckCircle, FaSpinner } from "react-icons/fa";
+import Image from "next/image";
 
 interface Project {
   id: string;
@@ -25,7 +29,6 @@ const ProjectsPage: React.FC = () => {
         return;
       }
       try {
-        // Step 1: Fetch the authorized user info to get the userId
         const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
@@ -37,7 +40,6 @@ const ProjectsPage: React.FC = () => {
           const userData = await userResponse.json();
           const userId = userData.userId;
 
-          // Step 2: Fetch the student's projects using the studentId
           const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
             method: "GET",
             headers: {
@@ -88,33 +90,85 @@ const ProjectsPage: React.FC = () => {
   }, [router]);
 
   if (loading) {
-    return <div className="text-center text-gray-400">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          className="text-6xl text-blue-500"
+        >
+          <FaSpinner />
+        </motion.div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center">My Projects</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 text-white p-8 relative overflow-hidden">
+      <div className="container mx-auto relative z-10">
+        <motion.h1
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-5xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
+        >
+          My Innovative Projects
+        </motion.h1>
 
         {projects.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <div key={project.id} className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {projects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden group"
+              >
+                <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-sm rounded-bl-lg">
+                  {project.status}
+                </div>
+                <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-400 transition-colors duration-300">
+                  {project.title}
+                </h2>
                 <p className="text-gray-400 mb-4">{project.description}</p>
-                <p className="text-gray-500">
-                  <strong>Stack:</strong> {project.stack}
-                </p>
-                <p className="text-gray-500">
-                  <strong>Status:</strong> {project.status}
-                </p>
-              </div>
+                <div className="flex items-center text-gray-500 mb-2">
+                  <FaCode className="mr-2" />
+                  <span>{project.stack}</span>
+                </div>
+                <div className="flex items-center text-gray-500">
+                  <FaCheckCircle className="mr-2" />
+                  <span>{project.status}</span>
+                </div>
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <p className="text-gray-300 text-center">No projects found.</p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-gray-300 text-center text-xl"
+          >
+            No projects found. Start creating your innovative projects!
+          </motion.p>
         )}
       </div>
+
+      {/* Decorative elements */}
+      <div className="absolute top-20 right-10 text-blue-400 opacity-20 animate-pulse">
+        <FaRocket size={100} />
+      </div>
+      <div className="absolute bottom-20 left-10 text-purple-400 opacity-20 animate-pulse">
+        <FaCode size={100} />
+      </div>
+
       <ToastContainer />
     </div>
   );

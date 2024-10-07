@@ -1,9 +1,12 @@
 "use client";
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
+import { FaEnvelope, FaLock, FaUserGraduate, FaChalkboardTeacher, FaBriefcase, FaUniversity } from 'react-icons/fa';
+import Image from 'next/image';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -83,70 +86,111 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 bg-black flex flex-col justify-center p-8 md:p-16 text-white">
-        <h1 className="text-5xl font-extrabold text-center mb-8">Welcome Back</h1>
-        <motion.form 
-          onSubmit={handleLogin} 
-          className="space-y-6 w-full max-w-md p-8 bg-gray-800 rounded-lg border border-gray-700 shadow-lg mx-auto"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 to-black text-white p-8">
+        {/* Left Side - Hero Image and Description */}
+        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: -50 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-8"
+          >
+            <Image 
+              src="/heroimage.png" 
+              alt="Hero Image" 
+              width={500} 
+              height={500} 
+              className="rounded-lg mb-6"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full p-4 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
-          </div>
-          <div className="flex justify-center">
+          </motion.div>
+        </div>
+        
+        {/* Right Side - Login Form */}
+        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-8 flex items-center justify-center"
+          >
+            <Image src="/logo.jpg" alt="BridgeIT Logo" width={60} height={60} className="mr-4 " />
+            <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+              Welcome Back
+            </h1>
+          </motion.div>
+          <motion.form 
+            onSubmit={handleLogin} 
+            className="space-y-6 w-full max-w-md mx-auto"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="relative">
+              <FaEnvelope className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-4 pl-12 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div className="relative">
+              <FaLock className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-4 pl-12 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+                placeholder="Password"
+                required
+              />
+            </div>
             <motion.button
               type="submit"
-              className="bg-sky-950 text-sky-400 border border-sky-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition duration-300"
               disabled={loading}
               whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <span className="bg-sky-400 shadow-sky-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
               {loading ? 'Logging in...' : 'Login'}
             </motion.button>
-          </div>
-          <motion.p 
-            className="mt-6 text-sm text-gray-400 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-          >
-            Don't have an account? 
-            <a 
-              onClick={() => router.push('/auth/register-user')}
-              className="text-sky-400 hover:text-sky-500 cursor-pointer ml-1"
+            <motion.p 
+              className="mt-6 text-sm text-gray-400 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
             >
-              Sign up here
-            </a>.
-          </motion.p>
-        </motion.form>
-      </div>
-      
-      {/* Right Side - Illustration */}
-      <div className="hidden md:block md:w-1/2 bg-black text-white flex items-center justify-center p-4">
-        <div className="relative rounded-lg w-[90%] h-[90%] flex items-center">
-          <img src="/cartoon.jpg" alt="Login Illustration" className="absolute top-0 left-0 w-full h-full object-cover rounded-lg" />
-        </div>
+              Don't have an account? 
+              <a 
+                onClick={() => router.push('/auth/register-user')}
+                className="text-blue-400 hover:text-blue-300 cursor-pointer ml-1 transition duration-300"
+              >
+                Sign up here
+              </a>
+            </motion.p>
+            <motion.div 
+            className="flex justify-center space-x-8 mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="flex flex-col items-center">
+              <FaUserGraduate className="text-3xl text-blue-400 mb-2" />
+            </div>
+            <div className="flex flex-col items-center">
+              <FaChalkboardTeacher className="text-3xl text-purple-400 mb-2" />
+            </div>
+            <div className="flex flex-col items-center">
+              <FaBriefcase className="text-3xl text-green-400 mb-2" />
+            </div>
+            <div className="flex flex-col items-center">
+              <FaUniversity className="text-3xl text-yellow-400 mb-2" />
+            </div>
+          </motion.div>
+          </motion.form>
+       
       </div>
       <ToastContainer />
     </div>

@@ -16,92 +16,99 @@ const RegistrationPage: React.FC = () => {
         return <FacultyRegistration />;
       case 'IndustryExpert':
         return <RegisterExpert />;
-      // case 'University Admin':
-      //   return <UniversityAdminRegistration />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-gray-100">
-      <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-lg">
-        <div className="text-center mb-8">
-          <img src="/logo.jpg" alt="BridgeIT" className="h-16 w-16 mx-auto mb-4" />
-          <h2 className="text-4xl font-extrabold text-gray-800">Join BridgeIT</h2>
-          <p className="text-gray-500 mt-2">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100 space-y-12">
+      {/* Main container */}
+        {/* Header */}
+        <div className="flex items-center justify-center mb-8">
+  <img src="/logo.jpg" alt="BridgeIT Logo" width={80} height={80} className="mr-4" />
+  <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+    Join BridgeIT
+  </h1>
+</div>
+
+        <div className="text-center">
+          <p className="text-gray-300">
             Already have an account?{' '}
-            <a href="/auth/login-user" className="text-green-600 font-semibold hover:underline">Login here!</a>
+            <a href="/auth/login-user" className="text-teal-400 font-semibold hover:underline">
+              Login here!
+            </a>
           </p>
         </div>
 
-        <div className="space-y-6">
-          {/* Role Selection */}
-          <div>
-            <label className="block text-lg font-semibold text-gray-700 mb-4 text-center">
-              Choose Your Role
-            </label>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <button
-                type="button"
-                onClick={() => setRole('Student')}
-                className={`py-3 px-4 rounded-lg font-semibold flex items-center justify-center transition-colors duration-300 ${
-                  role === 'Student' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'
-                } hover:bg-green-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-500`}
-              >
-                <span className="mr-2">🎓</span>
-                Student
-              </button>
+        {/* Role selection */}
+        <div>
+          <label className="block text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-green-400 mb-6 text-center">
+            Choose Your Role
+          </label>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <button
+              type="button"
+              onClick={() => setRole('Student')}
+              className={`py-4 px-6 rounded-xl font-semibold flex items-center justify-center text-lg transition-colors duration-300 shadow-lg ${
+                role === 'Student'
+                  ? 'bg-teal-500 text-white'
+                  : 'bg-gray-600 text-gray-300 hover:bg-teal-600 hover:text-white'
+              } focus:outline-none focus:ring-4 focus:ring-teal-400`}
+            >
+              <span className="mr-3">🎓</span> Student
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setRole('Faculty')}
-                className={`py-3 px-4 rounded-lg font-semibold flex items-center justify-center transition-colors duration-300 ${
-                  role === 'Faculty' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'
-                } hover:bg-green-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-500`}
-              >
-                <span className="mr-2">👨‍🏫</span>
-                Faculty
-              </button>
+            <button
+              type="button"
+              onClick={() => setRole('Faculty')}
+              className={`py-4 px-6 rounded-xl font-semibold flex items-center justify-center text-lg transition-colors duration-300 shadow-lg ${
+                role === 'Faculty'
+                  ? 'bg-teal-500 text-white'
+                  : 'bg-gray-600 text-gray-300 hover:bg-teal-600 hover:text-white'
+              } focus:outline-none focus:ring-4 focus:ring-teal-400`}
+            >
+              <span className="mr-3">👨‍🏫</span> Faculty
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setRole('IndustryExpert')}
-                className={`py-3 px-4 rounded-lg font-semibold flex items-center justify-center transition-colors duration-300 ${
-                  role === 'IndustryExpert' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'
-                } hover:bg-green-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-500`}
-              >
-                <span className="mr-2">💼</span>
-                Expert
-              </button>
+            <button
+              type="button"
+              onClick={() => setRole('IndustryExpert')}
+              className={`py-4 px-6 rounded-xl font-semibold flex items-center justify-center text-lg transition-colors duration-300 shadow-lg ${
+                role === 'IndustryExpert'
+                  ? 'bg-teal-500 text-white'
+                  : 'bg-gray-600 text-gray-300 hover:bg-teal-600 hover:text-white'
+              } focus:outline-none focus:ring-4 focus:ring-teal-400`}
+            >
+              <span className="mr-3">💼</span> Expert
+            </button>
 
-              {/* Uncomment if needed */}
-              {/* <button
-                type="button"
-                onClick={() => setRole('UniversityAdmin')}
-                className={`py-3 px-4 rounded-lg font-semibold flex items-center justify-center transition-colors duration-300 ${
-                  role === 'UniversityAdmin' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'
-                } hover:bg-green-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-500`}
-              >
-                <span className="mr-2">🏢</span>
-                Admin
-              </button> */}
-            </div>
-          </div>
-
-          {/* Render the form based on selected role */}
-          <div className="mt-8">
-            {renderRegistrationForm() ? (
-              <div className="p-6 bg-gray-100 rounded-lg shadow-inner">
-                {renderRegistrationForm()}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-center">Please select a role to continue.</p>
-            )}
+            {/* Uncomment when necessary */}
+            <button
+              type="button"
+              onClick={() => setRole('UniversityAdmin')}
+              className={`py-4 px-6 rounded-xl font-semibold flex items-center justify-center text-lg transition-colors duration-300 shadow-lg ${
+                role === 'UniversityAdmin'
+                  ? 'bg-teal-500 text-white'
+                  : 'bg-gray-600 text-gray-300 hover:bg-teal-600 hover:text-white'
+              } focus:outline-none focus:ring-4 focus:ring-teal-400`}
+            >
+              <span className="mr-3">🏢</span> Admin
+            </button>
           </div>
         </div>
+
+        {/* Form display */}
+        <div className="mt-8">
+          {renderRegistrationForm() ? (
+            <div className="p-8 bg-gray-800 rounded-lg shadow-inner">
+              {renderRegistrationForm()}
+            </div>
+          ) : (
+            <p className="text-gray-400 text-center text-lg">Please select a role to continue.</p>
+          )}
+        </div>
       </div>
-    </div>
   );
 };
 
