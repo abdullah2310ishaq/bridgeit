@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { FaEnvelope, FaLock, FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { motion } from 'framer-motion';
+import { FaEnvelope, FaLock, FaUserGraduate, FaChalkboardTeacher, FaBriefcase, FaUniversity } from 'react-icons/fa';
+import Image from 'next/image';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -106,109 +108,114 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-4">
-      <div className="w-full max-w-5xl bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden flex">
-        {/* Form Section */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 bg-gray-00 bg-opacity-90">
-          <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-4">
-            Sign In
-          </h2>
-          <p className="text-gray-400 mb-6">
-            Welcome back! Please enter your details to continue.
-          </p>
-          <form onSubmit={handleLogin} className="space-y-6">
-            {/* Email Input */}
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 to-black text-white p-8">
+        {/* Left Side - Hero Image and Description */}
+        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: -50 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-8"
+          >
+            <Image 
+              src="/heroimage.png" 
+              alt="Hero Image" 
+              width={500} 
+              height={500} 
+              className="rounded-lg mb-6"
+            />
+          </motion.div>
+        </div>
+        
+        {/* Right Side - Login Form */}
+        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-8 flex items-center justify-center"
+          >
+            <Image src="/logo.jpg" alt="BridgeIT Logo" width={60} height={60} className="mr-4 " />
+            <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+              Welcome Back
+            </h1>
+          </motion.div>
+          <motion.form 
+            onSubmit={handleLogin} 
+            className="space-y-6 w-full max-w-md mx-auto"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <div className="relative">
-              <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
+              <FaEnvelope className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full py-3 pl-12 pr-4 text-gray-200 bg-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-4 pl-12 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                 placeholder="Email"
+                required
               />
-              {errors.email && (
-                <p className="text-red-400 text-xs mt-1 flex items-center">
-                  <FaExclamationCircle className="mr-1" /> {errors.email}
-                </p>
-              )}
             </div>
-
-            {/* Password Input with Eye Icon */}
             <div className="relative">
-              <FaLock className="absolute top-3 left-3 text-gray-400" />
+              <FaLock className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400" />
               <input
-                type={showPassword ? "text" : "password"}
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full py-3 pl-12 pr-10 text-gray-200 bg-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-4 pl-12 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                 placeholder="Password"
+                required
               />
-              <div
-                className="absolute top-3 right-3 cursor-pointer text-gray-400"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </div>
-              {errors.password && (
-                <p className="text-red-400 text-xs mt-1 flex items-center">
-                  <FaExclamationCircle className="mr-1" /> {errors.password}
-                </p>
-              )}
             </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-center">
-              <motion.button
-                type="submit"
-                className="px-8 py-3 w-full text-white bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
-                disabled={loading}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
-                    Logging in...
-                  </div>
-                ) : (
-                  "Login"
-                )}
-              </motion.button>
-            </div>
-          </form>
-
-          {/* Forgot Password */}
-          <div className="mt-6 text-center">
-            <a href="#" className="text-sm text-blue-400 hover:underline">
-              Forgot password?
-            </a>
-          </div>
-
-          {/* Signup Link */}
-          <p className="mt-8 text-center text-gray-400">
-            Don't have an account?{" "}
-            <a
-              onClick={() => router.push("/auth/register-user")}
-              className="text-blue-400 hover:underline cursor-pointer"
+            <motion.button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition duration-300"
+              disabled={loading}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Sign up here
-            </a>
-          </p>
-        </div>
-
-        {/* Illustration Section */}
-        <div className="hidden md:block w-1/2 relative">
-          <Image
-            src="/heroimage.png"
-            alt="Login Illustration"
-            layout="fill"
-            objectFit="cover"
-          />
-        </div>
+              {loading ? 'Logging in...' : 'Login'}
+            </motion.button>
+            <motion.p 
+              className="mt-6 text-sm text-gray-400 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+            >
+              Don't have an account? 
+              <a 
+                onClick={() => router.push('/auth/register-user')}
+                className="text-blue-400 hover:text-blue-300 cursor-pointer ml-1 transition duration-300"
+              >
+                Sign up here
+              </a>
+            </motion.p>
+            <motion.div 
+            className="flex justify-center space-x-8 mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="flex flex-col items-center">
+              <FaUserGraduate className="text-3xl text-blue-400 mb-2" />
+            </div>
+            <div className="flex flex-col items-center">
+              <FaChalkboardTeacher className="text-3xl text-purple-400 mb-2" />
+            </div>
+            <div className="flex flex-col items-center">
+              <FaBriefcase className="text-3xl text-green-400 mb-2" />
+            </div>
+            <div className="flex flex-col items-center">
+              <FaUniversity className="text-3xl text-yellow-400 mb-2" />
+            </div>
+          </motion.div>
+          </motion.form>
+       
       </div>
 
-      {/* Toast Notification */}
+      {/* Toast Notification
       <Toaster
         position="top-center"
         toastOptions={{
@@ -217,7 +224,7 @@ const LoginPage: React.FC = () => {
             color: "#fff",
           },
         }}
-      />
+      /> */}
     </div>
   );
 };

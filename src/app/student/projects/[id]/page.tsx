@@ -103,7 +103,7 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
 
       {/* Submit Proposal Button */}
       <button
-        className="py-2 px-6 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg hover:from-green-500 hover:to-blue-400 transition duration-300"
+        className="mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg shadow-md transition-all duration-300"
         onClick={() => setShowProposalModal(true)}
       >
         Submit Proposal
