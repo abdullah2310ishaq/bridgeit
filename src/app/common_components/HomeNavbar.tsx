@@ -7,7 +7,7 @@ export default function Navbar() {
   return (
     <nav className="flex justify-between items-center px-8 py-4 bg-gray-900 bg-opacity-90 shadow-md fixed w-full z-50 backdrop-filter backdrop-blur-lg">
       <div className="flex items-center">
-        <Image src="/logo.jpg" alt="BridgeIT Logo" width={50} height={50} />
+        {/* <Image src="/logo.jpg" alt="BridgeIT Logo" width={50} height={50} /> */}
         <span className="ml-3 text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
           BridgeIT
         </span>

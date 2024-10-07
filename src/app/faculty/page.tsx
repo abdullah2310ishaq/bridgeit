@@ -143,18 +143,7 @@ const FacultyPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-      {/* Navbar */}
-      <nav className="bg-gray-800 shadow-md rounded-lg mb-6 p-4 flex justify-between items-center">
-        <div className="flex items-center space-x-6">
-          <h1 className="text-2xl font-extrabold text-green-500">Faculty Dashboard</h1>
-          <div className="hidden md:flex space-x-8">
-            <button onClick={() => router.push('/faculty/profile')} className="text-gray-100 hover:text-green-400 transition-colors duration-300">Profile</button>
-            <button onClick={() => router.push('/faculty/events')} className="text-gray-100 hover:text-green-400 transition-colors duration-300">Events</button>
-            <button onClick={() => router.push('/faculty/researchpaper')} className="text-gray-100 hover:text-green-400 transition-colors duration-300">Research Work</button>
-          </div>
-        </div>
-        <button onClick={handleLogout} className="py-2 px-4 bg-green-400 text-white font-semibold rounded-lg hover:bg-red-500 transition duration-200 shadow-md">Logout</button>
-      </nav>
+    
 
       {/* Profile Section */}
       {facultyProfile && (
