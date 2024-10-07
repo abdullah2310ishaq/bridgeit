@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import { Edit, User } from "lucide-react"
 
 interface ProfileCardProps {
   imageData: string;
@@ -37,9 +38,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ imageData, firstName, lastNam
         {/* View Profile Button */}
         <button
           onClick={handleProfileRedirect}
-          className="py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300"
-        >
-          View Profile
+          className="group px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          >
+            <span className="flex items-center justify-center">
+              <User className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+              View Profile
+            </span>
         </button>
       </div>
     </div>
