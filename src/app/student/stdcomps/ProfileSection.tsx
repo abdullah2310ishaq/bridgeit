@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import { Edit, User } from "lucide-react"
 
 interface UserProfile {
   userId: string;
@@ -30,7 +31,7 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
       }}
     >
       {/* Overlay to Dim Background for Better Readability */}
-      <div className="absolute inset-0 bg-black opacity-70"></div>
+      <div className="absolute inset-0 bg-gray-900 opacity-70"></div>
 
       {/* Profile Image in Rectangle */}
       <motion.div 
@@ -53,7 +54,7 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
         transition={{ duration: 1 }}
         className="relative z-10 text-white flex-grow text-center md:text-left md:pl-12"
       >
-        <h2 className="text-5xl font-bold text-green-300 leading-tight drop-shadow-lg">
+        <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
           Welcome, {userProfile.firstName} {userProfile.lastName}
         </h2>
         
@@ -63,8 +64,7 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
 
         {/* Description */}
         <div className="mt-6">
-          <h3 className="text-2xl font-semibold text-white">About Me:</h3>
-          <p className="text-gray-300 mt-2 text-lg leading-relaxed">
+          <p className="text-gray-200 mt-2 text-lg leading-relaxed">
             {userProfile.description}
           </p>
         </div>
@@ -73,20 +73,26 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
         <div className="w-full h-1 bg-gradient-to-r from-green-400 to-blue-500 my-8"></div>
 
         {/* Buttons */}
-        <div className="flex justify-center md:justify-start space-x-6 mt-4">
-          <button
-            onClick={goToEditProfile}
-            className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
-          >
-            Edit Profile
-          </button>
-          <button
-            onClick={gotoProfile}
-            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-full shadow-lg hover:bg-purple-600 transition duration-300 transform hover:scale-105"
-          >
-            View Profile
-          </button>
-        </div>
+        <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-6 mt-8">
+      <button
+        onClick={goToEditProfile}
+        className="group px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <Edit className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform duration-300" />
+          Edit Profile
+        </span>
+      </button>
+      <button
+        onClick={gotoProfile}
+        className="group px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <User className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+          View Profile
+        </span>
+      </button>
+    </div>
       </motion.div>
     </div>
   );

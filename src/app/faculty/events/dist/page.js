@@ -39,7 +39,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var react_1 = require("react");
 var navigation_1 = require("next/navigation");
-var fa_1 = require("react-icons/fa"); // Icons for date and venue
+var FacultyEvents_1 = require("../facultycomponents/FacultyEvents");
 var UniversityEventsPage = function () {
     var _a = react_1.useState([]), events = _a[0], setEvents = _a[1];
     var router = navigation_1.useRouter();
@@ -61,7 +61,7 @@ var UniversityEventsPage = function () {
                             return [4 /*yield*/, fetch('https://localhost:7053/api/Events/get-events', {
                                     method: 'GET',
                                     headers: {
-                                        Authorization: "Bearer " + token
+                                        'Authorization': "Bearer " + token
                                     }
                                 })];
                         case 2:
@@ -87,26 +87,8 @@ var UniversityEventsPage = function () {
         }
         fetchEvents();
     }, [router]);
-    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-900 text-white p-8" },
-        react_1["default"].createElement("h1", { className: "text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-center mb-10" }, "All University Events"),
-        react_1["default"].createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" }, events.length > 0 ? (events.map(function (event) { return (react_1["default"].createElement("div", { key: event.id, className: "bg-gray-800/80 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300" },
-            react_1["default"].createElement("h2", { className: "text-2xl font-semibold text-white mb-2" }, event.title),
-            react_1["default"].createElement("p", { className: "text-lg text-gray-400 mb-4" },
-                react_1["default"].createElement("span", { className: "font-bold" }, "Speaker:"),
-                " ",
-                event.speakerName),
-            react_1["default"].createElement("div", { className: "flex flex-col gap-2 mb-4" },
-                react_1["default"].createElement("div", { className: "flex items-center text-gray-300" },
-                    react_1["default"].createElement(fa_1.FaCalendarAlt, { className: "mr-2 text-blue-500" }),
-                    react_1["default"].createElement("p", { className: "text-sm" },
-                        react_1["default"].createElement("span", { className: "font-bold" }, "Date:"),
-                        " ",
-                        new Date(event.eventDate).toLocaleDateString())),
-                react_1["default"].createElement("div", { className: "flex items-center text-gray-300" },
-                    react_1["default"].createElement(fa_1.FaMapMarkerAlt, { className: "mr-2 text-red-500" }),
-                    react_1["default"].createElement("p", { className: "text-sm" },
-                        react_1["default"].createElement("span", { className: "font-bold" }, "Venue:"),
-                        " ",
-                        event.venue))))); })) : (react_1["default"].createElement("p", { className: "col-span-full text-center text-xl font-semibold text-gray-400" }, "No events available at the moment.")))));
+    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-600 text-gray-900 p-6" },
+        react_1["default"].createElement("h1", { className: "text-3xl text-white font-bold text-center mb-6" }, "All University Events"),
+        react_1["default"].createElement(FacultyEvents_1["default"], { events: events })));
 };
 exports["default"] = UniversityEventsPage;

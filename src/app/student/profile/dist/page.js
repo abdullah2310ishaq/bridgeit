@@ -41,7 +41,7 @@ var react_1 = require("react");
 var navigation_1 = require("next/navigation");
 var framer_motion_1 = require("framer-motion");
 var fa_1 = require("react-icons/fa");
-var image_1 = require("next/image");
+var image_1 = require("next/image"); // Next.js Image component
 var ProfilePage = function () {
     var _a = react_1.useState(null), studentProfile = _a[0], setStudentProfile = _a[1];
     var router = navigation_1.useRouter();
@@ -94,7 +94,8 @@ var ProfilePage = function () {
                                 universityName: studentData.universityName || 'N/A',
                                 address: studentData.address || 'N/A',
                                 rollNumber: studentData.rollNumber || 'N/A',
-                                skills: studentData.skills || []
+                                skills: studentData.skills || [],
+                                description: studentData.description || 'No description provided.'
                             });
                             return [3 /*break*/, 7];
                         case 6:
@@ -126,45 +127,46 @@ var ProfilePage = function () {
         router.push('/student/profile/edit');
     };
     if (!studentProfile) {
-        return react_1["default"].createElement("div", { className: "flex justify-center items-center min-h-screen bg-gray-900 text-white" },
-            react_1["default"].createElement("div", { className: "text-center" },
-                react_1["default"].createElement("p", { className: "text-xl font-semibold mb-4" }, "Loading your profile..."),
-                react_1["default"].createElement("div", { className: "spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-blue-500" })));
+        return react_1["default"].createElement("div", { className: "text-center text-gray-400" }, "Loading...");
     }
-    return (react_1["default"].createElement("div", { className: "relative min-h-screen flex flex-col items-start justify-center bg-gray-900 p-6 overflow-hidden" },
+    return (react_1["default"].createElement("div", { className: "relative min-h-screen flex flex-col items-center justify-center bg-gray-900 p-6 overflow-hidden" },
         react_1["default"].createElement("div", { className: "absolute bottom-0 right-0 z-0" },
-            react_1["default"].createElement(image_1["default"], { src: "/Saly-22.png", alt: "Decorative Image", width: 600, height: 600, className: "opacity-80" })),
-        react_1["default"].createElement(framer_motion_1.motion.div, { initial: { opacity: 0, y: 50 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8 }, className: "relative z-10 bg-gray-800/80 backdrop-blur-lg p-10 rounded-3xl shadow-2xl w-full max-w-md lg:max-w-2xl" },
-            react_1["default"].createElement("div", { className: "flex justify-between items-center mb-8" },
+            react_1["default"].createElement(image_1["default"], { src: "/Saly-22.png", alt: "Decorative Image", width: 600, height: 600, className: "opacity-90" // Make the image slightly transparent to blend better
+             })),
+        react_1["default"].createElement(framer_motion_1.motion.div, { initial: { opacity: 0, x: -80 }, animate: { opacity: 1, x: -80 }, transition: { duration: 0.5 }, className: "relative z-10 bg-gray-800/60 backdrop-blur-sm p-8 rounded-xl shadow-lg w-full max-w-md h-auto lg:max-w-lg" },
+            react_1["default"].createElement("div", { className: "flex justify-between items-center mb-6" },
                 react_1["default"].createElement("button", { onClick: goBack, className: "text-gray-400 hover:text-white transition-colors duration-300" },
-                    react_1["default"].createElement(fa_1.FaArrowLeft, { size: 22 })),
-                react_1["default"].createElement("h1", { className: "text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500" }, "Student Profile"),
+                    react_1["default"].createElement(fa_1.FaArrowLeft, { size: 20 })),
+                react_1["default"].createElement("h1", { className: "text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500" }, "Student Profile"),
                 react_1["default"].createElement("button", { onClick: editProfile, className: "text-blue-500 hover:text-blue-400 transition-colors duration-300" },
-                    react_1["default"].createElement(fa_1.FaEdit, { size: 22 }))),
-            react_1["default"].createElement("div", { className: "flex flex-col items-center lg:flex-row lg:items-start lg:space-x-8" },
-                react_1["default"].createElement(framer_motion_1.motion.img, { src: "data:image/jpeg;base64," + studentProfile.imageData, alt: studentProfile.firstName + "'s profile picture", className: "w-40 h-40 rounded-full border-4 border-blue-600 object-cover shadow-xl mb-6 lg:mb-0 lg:mr-8", initial: { scale: 0.8 }, animate: { scale: 1 }, transition: { duration: 0.5 } }),
-                react_1["default"].createElement("div", { className: "text-center lg:text-left space-y-6" },
-                    react_1["default"].createElement("p", { className: "text-3xl font-bold text-white" },
+                    react_1["default"].createElement(fa_1.FaEdit, { size: 20 }))),
+            react_1["default"].createElement("div", { className: "flex flex-col items-center lg:items-start" },
+                react_1["default"].createElement(framer_motion_1.motion.img, { src: "data:image/jpeg;base64," + studentProfile.imageData, alt: studentProfile.firstName + "'s profile picture", className: "w-36 h-36 rounded-full mb-6 lg:mb-0 lg:mr-8 border-4 border-blue-500 object-cover shadow-2xl", initial: { scale: 0.8 }, animate: { scale: 1 }, transition: { duration: 0.5 } }),
+                react_1["default"].createElement("div", { className: "flex-grow text-center lg:text-left" },
+                    react_1["default"].createElement("p", { className: "text-3xl font-semibold text-white mb-2" },
                         studentProfile.firstName,
                         " ",
                         studentProfile.lastName),
-                    react_1["default"].createElement("p", { className: "text-xl text-gray-400" }, studentProfile.email),
-                    react_1["default"].createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6 text-gray-300" },
+                    react_1["default"].createElement("p", { className: "text-gray-400 mb-4 text-lg" }, studentProfile.email),
+                    react_1["default"].createElement("div", { className: "mb-6" },
+                        react_1["default"].createElement("p", { className: "font-medium text-white" }, "About Me:"),
+                        react_1["default"].createElement("p", { className: "text-gray-300 mt-2" }, studentProfile.description)),
+                    react_1["default"].createElement("div", { className: "grid grid-cols-1 gap-4 text-gray-300" },
                         react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("p", { className: "text-lg font-semibold text-white" }, "University"),
+                            react_1["default"].createElement("p", { className: "font-medium text-white" }, "University:"),
                             react_1["default"].createElement("p", { className: "text-gray-400" }, studentProfile.universityName)),
                         react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("p", { className: "text-lg font-semibold text-white" }, "Address"),
+                            react_1["default"].createElement("p", { className: "font-medium text-white" }, "Address:"),
                             react_1["default"].createElement("p", { className: "text-gray-400" }, studentProfile.address)),
                         react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("p", { className: "text-lg font-semibold text-white" }, "Roll Number"),
+                            react_1["default"].createElement("p", { className: "font-medium text-white" }, "Roll Number:"),
                             react_1["default"].createElement("p", { className: "text-gray-400" }, studentProfile.rollNumber)),
                         react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("p", { className: "text-lg font-semibold text-white" }, "Skills"),
-                            react_1["default"].createElement("div", { className: "flex flex-wrap gap-2 mt-2" }, studentProfile.skills.length > 0 ? (studentProfile.skills.map(function (skill, index) { return (react_1["default"].createElement("span", { key: index, className: "bg-gradient-to-r from-blue-500 to-purple-500 text-white py-1 px-4 rounded-full text-sm shadow-lg" }, skill)); })) : (react_1["default"].createElement("p", { className: "text-gray-400" }, "No skills available"))))))),
-            react_1["default"].createElement("div", { className: "mt-8 flex justify-end space-x-6" },
-                react_1["default"].createElement("button", { onClick: goBack, className: "py-3 px-8 bg-gradient-to-r from-indigo-500 to-purple-700 text-white rounded-lg hover:from-blue-500 hover:to-purple-600 transition duration-300 shadow-lg" }, "Back"),
-                react_1["default"].createElement("button", { onClick: editProfile, className: "py-3 px-8 bg-gradient-to-r from-blue-600 to-purple-800 text-white rounded-lg hover:from-blue-500 hover:to-purple-600 transition duration-300 shadow-lg" }, "Edit Profile"))),
+                            react_1["default"].createElement("p", { className: "font-medium text-white" }, "Skills:"),
+                            react_1["default"].createElement("div", { className: "flex flex-wrap gap-2 mt-2" }, studentProfile.skills.length > 0 ? (studentProfile.skills.map(function (skill, index) { return (react_1["default"].createElement("span", { key: index, className: "bg-blue-500 text-white py-1 px-3 rounded-full text-sm" }, skill)); })) : (react_1["default"].createElement("p", { className: "text-gray-400" }, "No skills available"))))))),
+            react_1["default"].createElement("div", { className: "mt-8 flex justify-end space-x-4" },
+                react_1["default"].createElement("button", { onClick: goBack, className: "py-2 px-6 bg-gradient-to-r from-indigo-400 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300" }, "Back"),
+                react_1["default"].createElement("button", { onClick: editProfile, className: "py-2 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300" }, "Edit Profile"))),
         react_1["default"].createElement("footer", { className: "mt-12 text-gray-500 text-sm relative z-10" },
             react_1["default"].createElement("p", null, "\u00A9 2024 BridgeIT. All rights reserved."))));
 };

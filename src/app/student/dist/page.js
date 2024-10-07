@@ -230,10 +230,10 @@ var StudentPage = function () {
         return (react_1["default"].createElement("div", { className: "text-center text-gray-400" },
             react_1["default"].createElement(Loading, null)));
     }
-    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-6" },
+    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 text-gray-300 p-6" },
         react_1["default"].createElement(ProfileSection_1["default"], { userProfile: userProfile, goToEditProfile: goToEditProfile, gotoProfile: gotoProfile }),
         react_1["default"].createElement(OngoingProjectsSection, { ongoingProjects: ongoingProjects, goToProjectsPage: goToProjectsPage, createProjects: createProjects }),
         react_1["default"].createElement(CompletedProjectsSection, { projects: projects }),
-        react_1["default"].createElement(EventsSection, { events: events, gradientStyles: gradientStyles, goToEventsPage: goToEventsPage })));
+        react_1["default"].createElement(EventsSection, { events: events, gradientStyles: gradientStyles })));
 };
 exports["default"] = StudentPage;
