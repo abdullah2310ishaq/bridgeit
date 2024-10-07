@@ -45,24 +45,50 @@ var framer_motion_1 = require("framer-motion");
 var fa_1 = require("react-icons/fa");
 var image_1 = require("next/image");
 var LoginPage = function () {
-    var _a = react_1.useState(''), email = _a[0], setEmail = _a[1];
-    var _b = react_1.useState(''), password = _b[0], setPassword = _b[1];
-    var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
+    var _a = react_1.useState(""), email = _a[0], setEmail = _a[1];
+    var _b = react_1.useState(""), password = _b[0], setPassword = _b[1];
+    var _c = react_1.useState(false), showPassword = _c[0], setShowPassword = _c[1]; // State for toggling password visibility
+    var _d = react_1.useState(false), loading = _d[0], setLoading = _d[1];
+    var _e = react_1.useState({ email: "", password: "" }), errors = _e[0], setErrors = _e[1];
     var router = navigation_1.useRouter();
+    var validateForm = function () {
+        var isValid = true;
+        var newErrors = { email: "", password: "" };
+        if (!email) {
+            newErrors.email = "Email is required";
+            isValid = false;
+        }
+        else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = "Email is invalid";
+            isValid = false;
+        }
+        if (!password) {
+            newErrors.password = "Password is required";
+            isValid = false;
+        }
+        else if (password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
     var handleLogin = function (e) { return __awaiter(void 0, void 0, void 0, function () {
-        var response, data, token, profileResponse, profileData, role, error_1;
+        var response, data, token, profileResponse, profileData, role, errorData, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     e.preventDefault();
+                    if (!validateForm())
+                        return [2 /*return*/];
                     setLoading(true);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 10, 11, 12]);
-                    return [4 /*yield*/, fetch('https://localhost:7053/api/auth/login', {
-                            method: 'POST',
+                    _a.trys.push([1, 11, 12, 13]);
+                    return [4 /*yield*/, fetch("https://localhost:7053/api/auth/login", {
+                            method: "POST",
                             headers: {
-                                'Content-Type': 'application/json'
+                                "Content-Type": "application/json"
                             },
                             body: JSON.stringify({ email: email, password: password })
                         })];
@@ -73,11 +99,11 @@ var LoginPage = function () {
                 case 3:
                     data = _a.sent();
                     token = data.token;
-                    localStorage.setItem('jwtToken', token);
-                    return [4 /*yield*/, fetch('https://localhost:7053/api/auth/authorized-user-info', {
-                            method: 'GET',
+                    localStorage.setItem("jwtToken", token);
+                    return [4 /*yield*/, fetch("https://localhost:7053/api/auth/authorized-user-info", {
+                            method: "GET",
                             headers: {
-                                'Authorization': "Bearer " + token
+                                Authorization: "Bearer " + token
                             }
                         })];
                 case 4:
@@ -88,51 +114,41 @@ var LoginPage = function () {
                     profileData = _a.sent();
                     role = profileData.role;
                     switch (role) {
-                        case 'Student':
-                            router.push('/student');
+                        case "Student":
+                            router.push("/student");
                             break;
-                        case 'Faculty':
-                            router.push('/faculty');
+                        case "Faculty":
+                            router.push("/faculty");
                             break;
-                        case 'IndustryExpert':
-                            router.push('/industryexpert');
+                        case "IndustryExpert":
+                            router.push("/industryexpert");
                             break;
-                        case 'UniversityAdmin':
-                            router.push('/unidmin');
+                        case "UniversityAdmin":
+                            router.push("/unidmin");
                             break;
                         default:
-                            react_toastify_1.toast.error('Invalid role. Please contact support.', {
-                                position: 'top-center',
-                                autoClose: 3000
-                            });
+                            react_toastify_1.toast.error("Invalid role. Please contact support.");
                             break;
                     }
                     return [3 /*break*/, 7];
                 case 6:
-                    react_toastify_1.toast.error('Failed to fetch user profile.', {
-                        position: 'top-center',
-                        autoClose: 3000
-                    });
+                    react_toastify_1.toast.error("Failed to fetch user profile.");
                     _a.label = 7;
-                case 7: return [3 /*break*/, 9];
-                case 8:
-                    react_toastify_1.toast.error('Login failed. Please check your credentials.', {
-                        position: 'top-center',
-                        autoClose: 3000
-                    });
-                    _a.label = 9;
-                case 9: return [3 /*break*/, 12];
-                case 10:
-                    error_1 = _a.sent();
-                    react_toastify_1.toast.error('An error occurred. Please try again later.', {
-                        position: 'top-center',
-                        autoClose: 3000
-                    });
-                    return [3 /*break*/, 12];
+                case 7: return [3 /*break*/, 10];
+                case 8: return [4 /*yield*/, response.json()];
+                case 9:
+                    errorData = _a.sent();
+                    react_toastify_1.toast.error(errorData.message || "Login failed. Please check your credentials.");
+                    _a.label = 10;
+                case 10: return [3 /*break*/, 13];
                 case 11:
+                    error_1 = _a.sent();
+                    react_toastify_1.toast.error("An error occurred. Please try again later.");
+                    return [3 /*break*/, 13];
+                case 12:
                     setLoading(false);
                     return [7 /*endfinally*/];
-                case 12: return [2 /*return*/];
+                case 13: return [2 /*return*/];
             }
         });
     }); };
@@ -163,7 +179,6 @@ var LoginPage = function () {
                     react_1["default"].createElement("div", { className: "flex flex-col items-center" },
                         react_1["default"].createElement(fa_1.FaBriefcase, { className: "text-3xl text-green-400 mb-2" })),
                     react_1["default"].createElement("div", { className: "flex flex-col items-center" },
-                        react_1["default"].createElement(fa_1.FaUniversity, { className: "text-3xl text-yellow-400 mb-2" }))))),
-        react_1["default"].createElement(react_toastify_1.ToastContainer, null)));
+                        react_1["default"].createElement(fa_1.FaUniversity, { className: "text-3xl text-yellow-400 mb-2" })))))));
 };
 exports["default"] = LoginPage;

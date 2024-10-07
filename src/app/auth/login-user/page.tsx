@@ -215,7 +215,7 @@ const LoginPage: React.FC = () => {
        
       </div>
 
-      {/* Toast Notification */}
+      {/* Toast Notification
       <Toaster
         position="top-center"
         toastOptions={{
@@ -224,7 +224,7 @@ const LoginPage: React.FC = () => {
             color: "#fff",
           },
         }}
-      />
+      /> */}
     </div>
   );
 };

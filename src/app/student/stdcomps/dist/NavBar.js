@@ -6,8 +6,8 @@ var link_1 = require("next/link");
 var navigation_1 = require("next/navigation");
 var react_1 = require("react");
 var fa_1 = require("react-icons/fa");
-var ProfileDroptown_1 = require("./ProfileDroptown");
 var react_2 = require("@headlessui/react");
+var ProfileDropdown_1 = require("./ProfileDropdown");
 var NavBar = function (_a) {
     var userProfile = _a.userProfile, onLogout = _a.onLogout;
     var pathname = navigation_1.usePathname();
@@ -95,7 +95,7 @@ var NavBar = function (_a) {
                     link.name,
                     isActiveLink(link) && (react_1["default"].createElement("span", { className: "absolute left-0 bottom-0 w-full h-0.5 bg-blue-600 animate-slideIn" })))))); })),
                 react_1["default"].createElement("div", { className: "hidden md:flex items-center" },
-                    react_1["default"].createElement(ProfileDroptown_1["default"], { userProfile: userProfile, onLogoutClick: handleLogoutClick })),
+                    react_1["default"].createElement(ProfileDropdown_1["default"], { userProfile: userProfile, onLogoutClick: handleLogoutClick })),
                 react_1["default"].createElement("div", { className: "md:hidden flex items-center" },
                     react_1["default"].createElement("button", { onClick: function () { return setMobileMenuOpen(!mobileMenuOpen); }, className: "text-gray-600 hover:text-blue-600 focus:outline-none" },
                         react_1["default"].createElement(fa_1.FaBars, { size: 24 }))))),

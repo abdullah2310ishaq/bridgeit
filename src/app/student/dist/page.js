@@ -39,11 +39,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var react_1 = require("react");
 var navigation_1 = require("next/navigation");
+var dynamic_1 = require("next/dynamic");
 var ProfileSection_1 = require("./stdcomps/ProfileSection");
-var OngoingProjects_1 = require("./stdcomps/OngoingProjects");
-var CompletedProjects_1 = require("./stdcomps/CompletedProjects");
-var UpComingEvents_1 = require("./stdcomps/UpComingEvents");
-var page_1 = require("../loading/page");
+//lazy loading
+var Loading = dynamic_1["default"](function () { return Promise.resolve().then(function () { return require("../loading/page"); }); }, {
+    loading: function () { return react_1["default"].createElement("p", null, "Loading..."); },
+    ssr: false
+});
+var OngoingProjectsSection = dynamic_1["default"](function () { return Promise.resolve().then(function () { return require('./stdcomps/OngoingProjects'); }); }, {
+    loading: function () { return react_1["default"].createElement("p", null, "Loading ongoing projects..."); },
+    ssr: false
+});
+var CompletedProjectsSection = dynamic_1["default"](function () { return Promise.resolve().then(function () { return require('./stdcomps/CompletedProjects'); }); }, {
+    loading: function () { return react_1["default"].createElement("p", null, "Loading completed projects..."); },
+    ssr: false
+});
+var EventsSection = dynamic_1["default"](function () { return Promise.resolve().then(function () { return require('./stdcomps/Events'); }); }, {
+    loading: function () { return react_1["default"].createElement("p", null, "Loading events..."); },
+    ssr: false
+});
 var StudentPage = function () {
     var _a = react_1.useState(null), userProfile = _a[0], setUserProfile = _a[1];
     var _b = react_1.useState([]), projects = _b[0], setProjects = _b[1];
@@ -214,12 +228,12 @@ var StudentPage = function () {
     ];
     if (loading || !userProfile) {
         return (react_1["default"].createElement("div", { className: "text-center text-gray-400" },
-            react_1["default"].createElement(page_1["default"], null)));
+            react_1["default"].createElement(Loading, null)));
     }
     return (react_1["default"].createElement("div", { className: "min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-6" },
         react_1["default"].createElement(ProfileSection_1["default"], { userProfile: userProfile, goToEditProfile: goToEditProfile, gotoProfile: gotoProfile }),
-        react_1["default"].createElement(OngoingProjects_1["default"], { ongoingProjects: ongoingProjects, goToProjectsPage: goToProjectsPage, createProjects: createProjects }),
-        react_1["default"].createElement(CompletedProjects_1["default"], { projects: projects }),
-        react_1["default"].createElement(UpComingEvents_1["default"], { events: events })));
+        react_1["default"].createElement(OngoingProjectsSection, { ongoingProjects: ongoingProjects, goToProjectsPage: goToProjectsPage, createProjects: createProjects }),
+        react_1["default"].createElement(CompletedProjectsSection, { projects: projects }),
+        react_1["default"].createElement(EventsSection, { events: events, gradientStyles: gradientStyles, goToEventsPage: goToEventsPage })));
 };
 exports["default"] = StudentPage;
