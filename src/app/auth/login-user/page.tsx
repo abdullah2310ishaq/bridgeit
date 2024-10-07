@@ -9,20 +9,48 @@ import { FaEnvelope, FaLock, FaUserGraduate, FaChalkboardTeacher, FaBriefcase, F
 import Image from 'next/image';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const router = useRouter();
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { email: "", password: "" };
+
+    if (!email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email is invalid";
+      isValid = false;
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setLoading(true);
 
     try {
-      const response = await fetch('https://localhost:7053/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("https://localhost:7053/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -30,56 +58,50 @@ const LoginPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
-        localStorage.setItem('jwtToken', token);
+        localStorage.setItem("jwtToken", token);
 
-        const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const profileResponse = await fetch(
+          "https://localhost:7053/api/auth/authorized-user-info",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           const role = profileData.role;
 
           switch (role) {
-            case 'Student':
-              router.push('/student');
+            case "Student":
+              router.push("/student");
               break;
-            case 'Faculty':
-              router.push('/faculty');
+            case "Faculty":
+              router.push("/faculty");
               break;
-            case 'IndustryExpert':
-              router.push('/industryexpert');
+            case "IndustryExpert":
+              router.push("/industryexpert");
               break;
-            case 'UniversityAdmin':
-              router.push('/unidmin');
+            case "UniversityAdmin":
+              router.push("/unidmin");
               break;
             default:
-              toast.error('Invalid role. Please contact support.', {
-                position: 'top-center',
-                autoClose: 3000,
-              });
+              toast.error("Invalid role. Please contact support.");
               break;
           }
         } else {
-          toast.error('Failed to fetch user profile.', {
-            position: 'top-center',
-            autoClose: 3000,
-          });
+          toast.error("Failed to fetch user profile.");
         }
       } else {
-        toast.error('Login failed. Please check your credentials.', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
+        const errorData = await response.json();
+        toast.error(
+          errorData.message || "Login failed. Please check your credentials."
+        );
       }
     } catch (error) {
-      toast.error('An error occurred. Please try again later.', {
-        position: 'top-center',
-        autoClose: 3000,
-      });
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -192,7 +214,17 @@ const LoginPage: React.FC = () => {
           </motion.form>
        
       </div>
-      <ToastContainer />
+
+      {/* Toast Notification */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: "#1a1a1a",
+            color: "#fff",
+          },
+        }}
+      />
     </div>
   );
 };

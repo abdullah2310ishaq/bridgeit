@@ -2,39 +2,35 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from 'next/dynamic';
-import ProfileSection from "./stdcomps/ProfileSection";
-import OngoingProjectsSection from "./stdcomps/OngoingProjects";
-import CompletedProjectsSection from "./stdcomps/CompletedProjects";
-import UpComingEvents from "./stdcomps/UpComingEvents";
-import Loading from "../loading/page";
 
+import ProfileSection from "./stdcomps/ProfileSection";
 
 //lazy loading
-// const Loading = dynamic(() => import("../loading/page"), {
-//   loading: () => <p>Loading...</p>,
-//   ssr: false,
-// // });
+const Loading = dynamic(() => import("../loading/page"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
 
-// const OngoingProjectsSection = dynamic(
-//   () => import('./stdcomps/OngoingProjects'),
-//   {
-//     loading: () => <p>Loading ongoing projects...</p>,
-//     ssr: false,
-//   }
-// );
+const OngoingProjectsSection = dynamic(
+  () => import('./stdcomps/OngoingProjects'),
+  {
+    loading: () => <p>Loading ongoing projects...</p>,
+    ssr: false,
+  }
+);
 
-// const CompletedProjectsSection = dynamic(
-//   () => import('./stdcomps/CompletedProjects'),
-//   {
-//     loading: () => <p>Loading completed projects...</p>,
-//     ssr: false,
-//   }
-// );
+const CompletedProjectsSection = dynamic(
+  () => import('./stdcomps/CompletedProjects'),
+  {
+    loading: () => <p>Loading completed projects...</p>,
+    ssr: false,
+  }
+);
 
-// const EventsSection = dynamic(() => import('./stdcomps/Events'), {
-//   loading: () => <p>Loading events...</p>,
-//   ssr: false,
-// });
+const EventsSection = dynamic(() => import('./stdcomps/Events'), {
+  loading: () => <p>Loading events...</p>,
+  ssr: false,
+});
 
 interface UserProfile {
   userId: string;
@@ -273,9 +269,10 @@ const StudentPage: React.FC = () => {
         projects={projects} />
 
       {/* Events Section */}
-      <UpComingEvents
+      <EventsSection
         events={events}
-      
+        gradientStyles={gradientStyles}
+        goToEventsPage={goToEventsPage}
       />
     </div>
   );

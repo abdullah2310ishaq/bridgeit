@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
-import ProfileDropdown from "./ProfileDroptown";
 import { Transition, Dialog } from "@headlessui/react";
+import ProfileDropdown from "./ProfileDropdown";
 
 interface UserProfile {
   userId: string;
