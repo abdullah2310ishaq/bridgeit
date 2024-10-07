@@ -7,9 +7,9 @@ var framer_motion_1 = require("framer-motion");
 var OngoingProjectsSection = function (_a) {
     var ongoingProjects = _a.ongoingProjects;
     var router = navigation_1.useRouter(); // Initialize the useRouter hook
-    return (react_1["default"].createElement("section", { className: "py-16 bg-gradient-to-br from-gray-100 to-gray-300" },
+    return (react_1["default"].createElement("section", { className: "py-16 bg-gradient-to-br from-gray-900 to-gray-900" },
         react_1["default"].createElement("div", { className: "max-w-7xl mx-auto mb-16 px-4 md:px-6 lg:px-8" },
-            react_1["default"].createElement("h2", { className: "text-4xl md:text-5xl font-extrabold text-gray-700" }, "Ongoing Projects")),
+            react_1["default"].createElement("h2", { className: "text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-300", style: { padding: '0.6rem 0', marginLeft: '-7rem' } }, "Ongoing Projects")),
         react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-6 lg:px-8" }, ongoingProjects.length > 0 ? (ongoingProjects.map(function (project) { return (react_1["default"].createElement(framer_motion_1.motion.div, { key: project.id, whileHover: { scale: 1.05 }, className: "bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-transform" },
             react_1["default"].createElement("h3", { className: "text-2xl font-bold text-green-300 mb-4" }, project.title),
             react_1["default"].createElement("p", { className: "text-gray-400 mb-4" }, project.description),

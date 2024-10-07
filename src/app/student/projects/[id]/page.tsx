@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaProjectDiagram, FaCode, FaCheckCircle, FaUserTie, FaBuilding, FaPaperPlane } from "react-icons/fa";
 import ProposalModal from "../../stdcomps/ProposalModal";
+
 
 interface ExpertProject {
   id: string;
@@ -64,51 +65,71 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
   }, []);
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 rounded-lg shadow-lg overflow-y-auto max-h-screen relative p-6">
-      {/* Close Button */}
-      <button
-        className="absolute top-4 right-4 text-gray-400 hover:text-white"
-        onClick={onClose}
-      >
-        <FaTimes size={24} />
-      </button>
+<div className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-gray-300 rounded-lg shadow-2xl overflow-y-auto max-h-screen p-6">
+  {/* Background Accent with a vibrant gradient */}
+  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-20 blur-2xl -z-10"></div>
 
-      {/* Project Title */}
-      <h1 className="text-3xl font-bold text-green-400 mb-4">{project.title}</h1>
+  {/* Close Button with Icon */}
+  <button
+    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-300"
+    onClick={onClose}
+  >
+    <FaTimes size={24} />
+  </button>
 
-      {/* Project Information */}
-      <div className="mb-6">
-        <p className="text-lg text-gray-400 leading-relaxed mb-4">{project.description}</p>
-        {project.stack && (
-          <p className="text-sm text-gray-300 mb-2">
-            <span className="font-semibold text-blue-400">Tech Stack:</span> {project.stack}
-          </p>
-        )}
-        {project.status && (
-          <p className="text-sm text-gray-300 mb-2">
-            <span className="font-semibold text-yellow-400">Status:</span> {project.status}
-          </p>
-        )}
-        {project.expertName && (
-          <p className="text-sm text-gray-300 mb-2">
-            <span className="font-semibold text-purple-400">Expert:</span> {project.expertName}
-          </p>
-        )}
-        {project.companyName && (
-          <p className="text-sm text-gray-300 mb-2">
-            <span className="font-semibold text-teal-400">Company:</span> {project.companyName}
-          </p>
-        )}
-      </div>
+  {/* Project Title */}
+  <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400 mb-6 tracking-wide flex items-center">
+    {project.title}
+    <FaProjectDiagram className="ml-3 text-green-400" size={30} />
+  </h1>
 
-      {/* Submit Proposal Button */}
-      <button
-        className="mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg shadow-md transition-all duration-300"
-        onClick={() => setShowProposalModal(true)}
-      >
-        Submit Proposal
-      </button>
+  {/* Project Information */}
+  <div className="mb-8 ">
+    <p className="text-lg text-gray-300 leading-relaxed mb-4">{project.description}</p>
 
+    {/* Tech Stack with Icon */}
+    {project.stack && (
+      <p className="text-sm text-gray-300 mb-4 flex items-center">
+        <FaCode className="mr-2 text-blue-400" />
+        <span className="font-semibold text-blue-400">Tech Stack:</span> {project.stack}
+      </p>
+    )}
+
+    {/* Status*/}
+    {project.status && (
+      <p className="text-sm text-gray-300 mb-4 flex items-center">
+        <FaCheckCircle className="mr-2 text-yellow-400" />
+        <span className="font-semibold text-yellow-400">Status:</span> {project.status}
+      </p>
+    )}
+
+    {/* Expert*/}
+    {project.expertName && (
+      <p className="text-sm text-gray-300 mb-4 flex items-center">
+        <FaUserTie className="mr-2 text-purple-400" />
+        <span className="font-semibold text-purple-400">Expert:</span> {project.expertName}
+      </p>
+    )}
+
+    {/* Company*/}
+    {project.companyName && (
+      <p className="text-sm text-gray-300 mb-4 flex items-center">
+        <FaBuilding className="mr-2 text-teal-400" />
+        <span className="font-semibold text-teal-400">Company:</span> {project.companyName}
+      </p>
+    )}
+  </div>
+
+  {/* Submit*/}
+  <button
+    className="group px-6 py-3 bg-gradient-to-r from-gray-800 to-gray-700 text-white font-medium rounded-full shadow-lg hover:shadow-gray-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+    onClick={() => setShowProposalModal(true)}
+  >
+    <span className="flex items-center justify-center">
+          <FaPaperPlane className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+          Submit Proposal
+        </span>
+  </button>
       {/* Proposal Modal */}
       {showProposalModal && (
         <ProposalModal

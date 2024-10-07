@@ -249,7 +249,7 @@ const StudentPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 text-gray-300 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 text-gray-300 p-6">
       {/* Profile Section */}
       <ProfileSection
         userProfile={userProfile}
@@ -272,7 +272,7 @@ const StudentPage: React.FC = () => {
       <EventsSection
         events={events}
         gradientStyles={gradientStyles}
-        goToEventsPage={goToEventsPage}
+        //goToEventsPage={goToEventsPage}
       />
     </div>
   );

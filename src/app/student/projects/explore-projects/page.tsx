@@ -7,6 +7,7 @@ import { FaRobot } from "react-icons/fa";
 import { FiSearch, FiFilter } from "react-icons/fi";
 import ProjectCard from "./ExploreProjectCard";
 import ProjectDetailsPanel from "../[id]/page";
+import { Search, Filter, ChevronDown } from "lucide-react"
 
 interface UserProfile {
   userId: string;
@@ -243,11 +244,11 @@ const ExploreProjects: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300">
+    <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-900 text-gray-300">
       <Navbar />
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6">
+        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-900 p-6">
           {userProfile && (
             <ProfileCard
               imageData={`data:image/jpeg;base64,${userProfile.imageData}`}
@@ -267,37 +268,45 @@ const ExploreProjects: React.FC = () => {
             }`}
           >
             {/* Search and Filters */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
-              {/* Search Bar */}
-              <div className="relative w-full lg:w-2/3 mb-4 lg:mb-0">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search projects..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
+<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+  {/* Search Bar */}
+  <div className="relative w-full lg:w-2/3">
+    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <Search className="h-5 w-5 text-gray-400" />
+    </div>
+    <input
+      type="text"
+      placeholder="Search projects..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full pl-10 pr-4 py-3 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out hover:bg-gray-600"
+    />
+  </div>
 
-              {/* Filter Options */}
-              <div className="flex space-x-3 items-center">
-                <FiFilter className="text-gray-400" />
-                <select
-                  value={selectedFilter}
-                  onChange={(e) => setSelectedFilter(e.target.value)}
-                  className="bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="Most Recent">Most Recent</option>
-                  <option value="Best Matches">Best Matches</option>
-                  <option value="Featured">Featured</option>
-                </select>
-              </div>
-            </div>
+  {/* Filter Options */}
+  <div className="relative w-full lg:w-1/3">
+    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <Filter className="h-5 w-5 text-gray-400" />
+    </div>
+    <select
+      value={selectedFilter}
+      onChange={(e) => setSelectedFilter(e.target.value)}
+      className="w-full pl-10 pr-10 py-3 rounded-full bg-gray-700 text-gray-200 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out hover:bg-gray-600"
+    >
+      <option value="Most Recent">Most Recent</option>
+      <option value="Best Matches">Best Matches</option>
+      <option value="Featured">Featured</option>
+    </select>
+    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <ChevronDown className="h-5 w-5 text-gray-400" />
+    </div>
+  </div>
+</div>
+
 
             {/* Projects Grid */}
             <div
-              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6`}
+              className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6"
             >
               {filteredProjects.length > 0 ? (
                 filteredProjects.map((project) => (
@@ -321,7 +330,7 @@ const ExploreProjects: React.FC = () => {
 
           {/* Project Details Panel */}
           {selectedProjectDetails && (
-            <div className="w-full lg:w-1/2 p-6 bg-gray-800 overflow-auto">
+            <div className="w-full lg:w-1/2 p-6 bg-gray-900 overflow-auto">
               <ProjectDetailsPanel
                 project={selectedProjectDetails}
                 onClose={() => {

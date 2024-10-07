@@ -124,33 +124,35 @@ var StudentNotificationsPage = function () {
     }
     var unreadProposals = proposals.filter(function (proposal) { return !proposal.read; });
     var readProposals = proposals.filter(function (proposal) { return proposal.read; });
-    return (react_1["default"].createElement("div", { className: "min-h-screen p-8 bg-gray-100" },
-        react_1["default"].createElement("div", { className: "max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6" },
-            react_1["default"].createElement("h1", { className: "text-3xl font-bold mb-4" }, "Notifications"),
-            react_1["default"].createElement("div", { className: "mb-4" },
-                react_1["default"].createElement("button", { className: "py-2 px-4 " + (activeTab === 'unread'
-                        ? 'border-b-2 border-blue-500 text-blue-500'
-                        : 'text-gray-500'), onClick: function () { return setActiveTab('unread'); } },
+    return (react_1["default"].createElement("div", { className: "min-h-screen p-8 bg-gradient-to-b from-gray-900 to-gray-900" },
+        react_1["default"].createElement("div", { className: "max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8 text-white" },
+            react_1["default"].createElement("h1", { className: "text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500" }, "Notifications"),
+            react_1["default"].createElement("div", { className: "flex space-x-6 mb-6 border-b border-gray-600" },
+                react_1["default"].createElement("button", { className: "py-2 px-4 focus:outline-none text-lg transition-colors duration-300 " + (activeTab === 'unread'
+                        ? 'border-b-4 border-blue-500 text-blue-400'
+                        : 'text-gray-400 hover:text-white'), onClick: function () { return setActiveTab('unread'); } },
                     "Unread (",
                     unreadProposals.length,
                     ")"),
-                react_1["default"].createElement("button", { className: "py-2 px-4 " + (activeTab === 'read' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'), onClick: function () { return setActiveTab('read'); } },
+                react_1["default"].createElement("button", { className: "py-2 px-4 focus:outline-none text-lg transition-colors duration-300 " + (activeTab === 'read'
+                        ? 'border-b-4 border-blue-500 text-blue-400'
+                        : 'text-gray-400 hover:text-white'), onClick: function () { return setActiveTab('read'); } },
                     "Read (",
                     readProposals.length,
                     ")")),
-            react_1["default"].createElement("div", { className: "h-[400px] overflow-y-auto" },
-                react_1["default"].createElement(framer_motion_1.AnimatePresence, null, (activeTab === 'unread' ? unreadProposals : readProposals).map(function (proposal) { return (react_1["default"].createElement(framer_motion_1.motion.div, { key: proposal.id, initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 }, className: "bg-gray-50 p-4 rounded-lg shadow-sm mb-4" },
-                    react_1["default"].createElement("div", { className: "flex items-center" },
-                        proposal.expertImageData ? (react_1["default"].createElement("img", { src: proposal.expertImageData, alt: proposal.expertFirstName + " " + proposal.expertLastName, className: "w-10 h-10 rounded-full mr-4" })) : (react_1["default"].createElement("div", { className: "bg-gray-300 w-10 h-10 rounded-full mr-4" })),
+            react_1["default"].createElement("div", { className: "h-[400px] overflow-y-auto space-y-4" },
+                react_1["default"].createElement(framer_motion_1.AnimatePresence, null, (activeTab === 'unread' ? unreadProposals : readProposals).map(function (proposal) { return (react_1["default"].createElement(framer_motion_1.motion.div, { key: proposal.id, initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 }, className: "bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-60 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" },
+                    react_1["default"].createElement("div", { className: "flex items-center mb-4" },
+                        proposal.expertImageData ? (react_1["default"].createElement("img", { src: proposal.expertImageData, alt: proposal.expertFirstName + " " + proposal.expertLastName, className: "w-12 h-12 rounded-full mr-4 border-2 border-gray-600" })) : (react_1["default"].createElement("div", { className: "bg-gray-600 w-12 h-12 rounded-full mr-4" })),
                         react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("p", { className: "font-bold" }, proposal.projectTitle),
-                            react_1["default"].createElement("p", null,
+                            react_1["default"].createElement("p", { className: "text-lg font-semibold text-green-400" }, proposal.projectTitle),
+                            react_1["default"].createElement("p", { className: "text-sm text-gray-300" },
                                 proposal.expertFirstName,
                                 " ",
                                 proposal.expertLastName))),
-                    react_1["default"].createElement("p", { className: "text-gray-700 mt-2" }, proposal.proposal),
-                    react_1["default"].createElement("div", { className: "flex justify-between mt-2" },
-                        react_1["default"].createElement("span", { className: "text-sm text-gray-500" }, proposal.status),
-                        activeTab === 'unread' && (react_1["default"].createElement("button", { onClick: function () { return handleDismissProposal(proposal.id); }, className: "text-sm text-blue-500" }, "Dismiss"))))); }))))));
+                    react_1["default"].createElement("p", { className: "text-gray-300 mb-4" }, proposal.proposal),
+                    react_1["default"].createElement("div", { className: "flex justify-between items-center" },
+                        react_1["default"].createElement("span", { className: "text-sm text-gray-500 italic" }, proposal.status),
+                        activeTab === 'unread' && (react_1["default"].createElement("button", { onClick: function () { return handleDismissProposal(proposal.id); }, className: "text-sm text-blue-500 hover:underline" }, "Dismiss"))))); }))))));
 };
 exports["default"] = StudentNotificationsPage;

@@ -48,9 +48,9 @@ var react_1 = require("react");
 var navigation_1 = require("next/navigation");
 var ProfileCard_1 = require("./ProfileCard");
 var NavBar_1 = require("@/app/components/NavBar");
-var fi_1 = require("react-icons/fi");
 var ExploreProjectCard_1 = require("./ExploreProjectCard");
 var page_1 = require("../[id]/page");
+var lucide_react_1 = require("lucide-react");
 var ExploreProjects = function () {
     var _a = react_1.useState(null), userProfile = _a[0], setUserProfile = _a[1];
     var _b = react_1.useState([]), expertProjects = _b[0], setExpertProjects = _b[1];
@@ -239,24 +239,28 @@ var ExploreProjects = function () {
         return (react_1["default"].createElement("div", { className: "flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800" },
             react_1["default"].createElement("p", { className: "text-red-500 text-xl" }, error)));
     }
-    return (react_1["default"].createElement("div", { className: "flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300" },
+    return (react_1["default"].createElement("div", { className: "flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-900 text-gray-300" },
         react_1["default"].createElement(NavBar_1["default"], null),
         react_1["default"].createElement("div", { className: "flex flex-1" },
-            react_1["default"].createElement("aside", { className: "hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-800 p-6" }, userProfile && (react_1["default"].createElement(ProfileCard_1["default"], { imageData: "data:image/jpeg;base64," + userProfile.imageData, firstName: userProfile.firstName, lastName: userProfile.lastName, role: userProfile.role }))),
+            react_1["default"].createElement("aside", { className: "hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-900 p-6" }, userProfile && (react_1["default"].createElement(ProfileCard_1["default"], { imageData: "data:image/jpeg;base64," + userProfile.imageData, firstName: userProfile.firstName, lastName: userProfile.lastName, role: userProfile.role }))),
             react_1["default"].createElement("main", { className: "flex-1 flex" },
                 react_1["default"].createElement("div", { className: "p-6 " + (selectedProjectDetails ? "w-full lg:w-1/2" : "w-full") },
-                    react_1["default"].createElement("div", { className: "flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6" },
-                        react_1["default"].createElement("div", { className: "relative w-full lg:w-2/3 mb-4 lg:mb-0" },
-                            react_1["default"].createElement(fi_1.FiSearch, { className: "absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" }),
-                            react_1["default"].createElement("input", { type: "text", placeholder: "Search projects...", value: searchQuery, onChange: function (e) { return setSearchQuery(e.target.value); }, className: "w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" })),
-                        react_1["default"].createElement("div", { className: "flex space-x-3 items-center" },
-                            react_1["default"].createElement(fi_1.FiFilter, { className: "text-gray-400" }),
-                            react_1["default"].createElement("select", { value: selectedFilter, onChange: function (e) { return setSelectedFilter(e.target.value); }, className: "bg-gray-700 text-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" },
+                    react_1["default"].createElement("div", { className: "flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4" },
+                        react_1["default"].createElement("div", { className: "relative w-full lg:w-2/3" },
+                            react_1["default"].createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" },
+                                react_1["default"].createElement(lucide_react_1.Search, { className: "h-5 w-5 text-gray-400" })),
+                            react_1["default"].createElement("input", { type: "text", placeholder: "Search projects...", value: searchQuery, onChange: function (e) { return setSearchQuery(e.target.value); }, className: "w-full pl-10 pr-4 py-3 rounded-full bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out hover:bg-gray-600" })),
+                        react_1["default"].createElement("div", { className: "relative w-full lg:w-1/3" },
+                            react_1["default"].createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" },
+                                react_1["default"].createElement(lucide_react_1.Filter, { className: "h-5 w-5 text-gray-400" })),
+                            react_1["default"].createElement("select", { value: selectedFilter, onChange: function (e) { return setSelectedFilter(e.target.value); }, className: "w-full pl-10 pr-10 py-3 rounded-full bg-gray-700 text-gray-200 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out hover:bg-gray-600" },
                                 react_1["default"].createElement("option", { value: "Most Recent" }, "Most Recent"),
                                 react_1["default"].createElement("option", { value: "Best Matches" }, "Best Matches"),
-                                react_1["default"].createElement("option", { value: "Featured" }, "Featured")))),
-                    react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6" }, filteredProjects.length > 0 ? (filteredProjects.map(function (project) { return (react_1["default"].createElement(ExploreProjectCard_1["default"], { key: project.id, id: project.id, title: project.title, description: project.description, stack: project.stack, expertName: project.expertName, onClick: function () { return handleProjectClick(project.id); } })); })) : (react_1["default"].createElement("div", { className: "col-span-full text-center text-gray-400" }, "No projects available.")))),
-                selectedProjectDetails && (react_1["default"].createElement("div", { className: "w-full lg:w-1/2 p-6 bg-gray-800 overflow-auto" },
+                                react_1["default"].createElement("option", { value: "Featured" }, "Featured")),
+                            react_1["default"].createElement("div", { className: "absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none" },
+                                react_1["default"].createElement(lucide_react_1.ChevronDown, { className: "h-5 w-5 text-gray-400" })))),
+                    react_1["default"].createElement("div", { className: "mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6" }, filteredProjects.length > 0 ? (filteredProjects.map(function (project) { return (react_1["default"].createElement(ExploreProjectCard_1["default"], { key: project.id, id: project.id, title: project.title, description: project.description, stack: project.stack, expertName: project.expertName, onClick: function () { return handleProjectClick(project.id); } })); })) : (react_1["default"].createElement("div", { className: "col-span-full text-center text-gray-400" }, "No projects available.")))),
+                selectedProjectDetails && (react_1["default"].createElement("div", { className: "w-full lg:w-1/2 p-6 bg-gray-900 overflow-auto" },
                     react_1["default"].createElement(page_1["default"], { project: selectedProjectDetails, onClose: function () {
                             setSelectedProjectId(null);
                             router.push("");
