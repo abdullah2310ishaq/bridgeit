@@ -93,11 +93,14 @@ const NotificationsPage: React.FC = () => {
   }
 
   if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
+    return
+     <div className="text-center text-red-500">{error}</div>;
   }
 
   if (proposals.length === 0) {
-    return <div className="text-center text-gray-400">No proposals found</div>;
+    <div className="text-center text-white font-semibold text-lg mt-10">
+      No new notifications. All notifications have been read.
+    </div>
   }
 
   const handleSeeDetails = (proposal: Proposal) => {
