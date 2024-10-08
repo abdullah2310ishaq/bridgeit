@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { FaRocket, FaUsers, FaCode, FaCalendarAlt } from 'react-icons/fa';
 
 const PostProjectForm: React.FC = () => {
   const [title, setTitle] = useState<string>("");
@@ -134,73 +137,101 @@ const PostProjectForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6 flex justify-center items-center">
-      <div className="max-w-lg w-full bg-gray-800 p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
-          Post a New Project
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-gray-300 mb-2">Project Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-green-500"
-              placeholder="Enter project title"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 mb-2">
-              Project Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-green-500"
-              placeholder="Describe the project"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 mb-2">End Date</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full p-3 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-green-500"
-              placeholder="End Date"
-            />
-          </div>
-
-          {/* Added Budget Field */}
-          <div>
-            <label className="block text-gray-300 mb-2">Budget</label>
-            <input
-              type="number"
-              value={budget ?? ""}
-              onChange={(e) => setBudget(parseFloat(e.target.value))}
-              className="w-full p-3 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-green-500"
-              placeholder="Enter project budget"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className={`w-full py-3 rounded-lg text-white ${
-              isSubmitting
-                ? "bg-gray-500"
-                : "bg-green-500 hover:bg-green-600"
-            } transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Submitting..." : "Post Project"}
-          </button>
-        </form>
-      </div>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+<div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6 relative overflow-hidden">
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="w-full max-w-4xl p-8 bg-gray-800 rounded-3xl shadow-2xl relative z-10"
+  >
+    <div className="absolute top-4 left-4 z-10">
+      <Image src="/logo.jpg" alt="BridgeIT Logo" width={100} height={100} />
     </div>
+    <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+      Post a New Project
+    </h1>
+
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Project Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+            placeholder="Enter project title"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Budget</label>
+          <input
+            type="number"
+            value={budget ?? ""}
+            onChange={(e) => setBudget(parseFloat(e.target.value))}
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+            placeholder="Enter project budget"
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-300 mb-2">Project Description</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          placeholder="Describe the project"
+          rows={4}
+          required
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">End Date</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+            placeholder="End Date"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Post Project"}
+        </button>
+      </div>
+    </form>
+  </motion.div>
+
+  {/* Decorative elements */}
+  <div className="absolute top-20 right-10 text-blue-400 opacity-20">
+    <FaRocket size={100} />
+  </div>
+  <div className="absolute bottom-20 left-10 text-purple-400 opacity-20">
+    <FaCode size={100} />
+  </div>
+  <div className="absolute top-1/2 left-5 text-green-400 opacity-20">
+    <FaUsers size={80} />
+  </div>
+  <div className="absolute bottom-10 right-20 text-yellow-400 opacity-20">
+    <FaCalendarAlt size={80} />
+  </div>
+
+  <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+</div>
+
   );
 };
 

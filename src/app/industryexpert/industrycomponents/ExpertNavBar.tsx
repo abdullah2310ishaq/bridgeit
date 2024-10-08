@@ -49,7 +49,6 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
       href: "#",
       children: [
         { name: "View", href: "/industryexpert/profile" },
-        { name: "Edit", href: "/industryexpert/profile/editexpert" },
       ],
     },
     {

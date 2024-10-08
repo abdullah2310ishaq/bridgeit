@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from "framer-motion";
+import { Edit, User } from "lucide-react"
 
 interface FacultyProfileProps {
   facultyProfile: {
@@ -7,6 +9,7 @@ interface FacultyProfileProps {
     lastName: string;
     role: string;
     imageData: string;
+    uniImage: string;
   };
   onEditProfile: () => void;
   onViewProfile: () => void;
@@ -14,36 +17,77 @@ interface FacultyProfileProps {
 
 const FacultyProfile: React.FC<FacultyProfileProps> = ({ facultyProfile, onEditProfile, onViewProfile }) => {
   return (
-    <div 
-      className="relative bg-cover bg-center p-6 mb-6 rounded-lg shadow-lg max-w-6xl mx-auto flex items-center" 
-      style={{ backgroundImage: `url('/faculty.jpg')`, height: "300px" }}
-    >
-      <div className="absolute inset-0 opacity-50 rounded-lg"></div>
-      <div className="relative flex items-center w-full">
-        <div className="flex-shrink-0">
-          <img
-            src={`data:image/jpeg;base64,${facultyProfile.imageData}`}
-            alt={`${facultyProfile.firstName} ${facultyProfile.lastName}`}
-            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-lg mr-8"
-          />
-        </div>
-        <div className="flex-grow text-white text-center">
-          <h2 className="text-2xl font-bold">
-            {facultyProfile.firstName} {facultyProfile.lastName}
-          </h2>
-          <p className="text-lg">Role: {facultyProfile.role}</p>
-          <p className="text-lg">User ID: {facultyProfile.userId}</p>
-          <div className="mt-4 space-x-6">
-            <button onClick={onEditProfile} className="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200">
-              Edit Profile
-            </button>
-            <button onClick={onViewProfile} className="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200">
-              View Profile
-            </button>
-          </div>
-        </div>
-      </div>
+    <div
+  className="relative flex flex-col md:flex-row items-center p-16 mb-10 rounded-xl shadow-lg"
+  style={{
+    backgroundImage: `url('data:image/jpeg;base64,${facultyProfile.uniImage}')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+  {/* Overlay to Dim Background for Better Readability */}
+  <div className="absolute inset-0 bg-gray-900 opacity-70"></div>
+
+  {/* Profile Image in Rectangle */}
+  <motion.div
+    initial={{ x: -100, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    transition={{ duration: 1 }}
+    className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0"
+  >
+    <img
+      src={`data:image/jpeg;base64,${facultyProfile.imageData}`}
+      alt={`${facultyProfile.firstName} ${facultyProfile.lastName}`}
+      className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-blue-400 cursor-pointer"
+    />
+  </motion.div>
+
+  {/* Profile Info */}
+  <motion.div
+    initial={{ x: 100, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    transition={{ duration: 1 }}
+    className="relative z-10 text-white flex-grow text-center md:text-left md:pl-12"
+  >
+    <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+      {facultyProfile.firstName} {facultyProfile.lastName}
+    </h2>
+
+    <p className="text-lg mt-4 text-gray-200 font-light">
+      Role: <span className="font-bold text-white">{facultyProfile.role}</span>
+    </p>
+    <p className="text-lg mt-4 text-gray-200 font-light">
+      User ID: <span className="font-bold text-white">{facultyProfile.userId}</span>
+    </p>
+
+    {/* Divider Line */}
+    <div className="w-full h-1 bg-gradient-to-r from-blue-400 to-purple-500 my-8"></div>
+
+    {/* Buttons */}
+    <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-6 mt-8">
+      <button
+        onClick={onEditProfile}
+        className="group px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <Edit className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform duration-300" />
+          Edit Profile
+        </span>
+      </button>
+      <button
+        onClick={onViewProfile}
+        className="group px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <User className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+          View Profile
+        </span>
+      </button>
     </div>
+  </motion.div>
+</div>
+
   );
 };
 

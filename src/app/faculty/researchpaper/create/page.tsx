@@ -1,6 +1,10 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { FaRocket, FaUsers, FaCode, FaCalendarAlt } from 'react-icons/fa';
+import { ToastContainer } from 'react-toastify';
 
 const CreateResearchPaperPage: React.FC = () => {
   const [paperName, setPaperName] = useState('');
@@ -100,76 +104,121 @@ const CreateResearchPaperPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Create New Research Paper</h2>
-        <div className="mb-4">
-          <label className="block text-gray-700">Paper Name</label>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6 relative overflow-hidden">
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="w-full max-w-4xl p-8 bg-gray-800 rounded-3xl shadow-2xl relative z-10"
+  >
+    <div className="absolute top-4 left-4 z-10">
+      <Image src="/logo.jpg" alt="BridgeIT Logo" width={100} height={100} />
+    </div>
+    <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+      Create New Research Paper
+    </h1>
+    
+    <form onSubmit={handleCreateResearchPaper} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Paper Name</label>
           <input
             type="text"
             value={paperName}
             onChange={(e) => setPaperName(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             placeholder="Research Paper Name"
+            required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Category</label>
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Category</label>
           <input
             type="text"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             placeholder="Category"
+            required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Publish Channel</label>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Publish Channel</label>
           <input
             type="text"
             value={publishChannel}
             onChange={(e) => setPublishChannel(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             placeholder="Publish Channel"
+            required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Other Researchers</label>
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Other Researchers</label>
           <input
             type="text"
             value={otherResearchers}
             onChange={(e) => setOtherResearchers(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             placeholder="Other Researchers"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Link</label>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Link</label>
           <input
             type="text"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             placeholder="Publication Link"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Year of Publish</label>
+        <div>
+          <label className="block text-sm font-semibold text-gray-300 mb-2">Year of Publish</label>
           <input
             type="date"
             value={yearOfPublish}
             onChange={(e) => setYearOfPublish(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+            required
           />
         </div>
+      </div>
+
+      <div className="flex justify-center">
         <button
-          onClick={handleCreateResearchPaper}
-          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition duration-200"
+          type="submit"
+          className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
         >
           Create Research Paper
         </button>
       </div>
-    </div>
+    </form>
+  </motion.div>
+
+  {/* Decorative elements */}
+  <div className="absolute top-20 right-10 text-blue-400 opacity-20">
+    <FaRocket size={100} />
+  </div>
+  <div className="absolute bottom-20 left-10 text-purple-400 opacity-20">
+    <FaCode size={100} />
+  </div>
+  <div className="absolute top-1/2 left-5 text-green-400 opacity-20">
+    <FaUsers size={80} />
+  </div>
+  <div className="absolute bottom-10 right-20 text-yellow-400 opacity-20">
+    <FaCalendarAlt size={80} />
+  </div>
+
+  <ToastContainer />
+</div>
+
   );
 };
 

@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from "framer-motion";
+import { Calendar, MapPin, User, Eye, Edit } from "lucide-react";
 
 interface Event {
   id: string;
@@ -47,43 +49,68 @@ const UpcomingEventsSection: React.FC<UpcomingEventsSectionProps> = ({
         </div>
       </div>
 
-      {/* Event Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {events.map((event, index) => (
-          <div
-            key={event.id}
-            className={`relative p-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all overflow-hidden ${
-              gradientStyles[index % gradientStyles.length]
-            }`}
-          >
-            <div className="absolute inset-0 opacity-20 bg-cover bg-center"></div>
-            <div className="relative z-10">
-              <h2 className="text-xl font-semibold text-white mb-4">{event.title}</h2>
-              <p className="text-gray-200 mb-2">Speaker: {event.speakerName}</p>
-              <p className="text-gray-300 mb-4">
-                Date: {new Date(event.eventDate).toLocaleDateString()} | Venue: {event.venue}
-              </p>
-              <a href="#" className="text-white font-semibold hover:underline">
-                Learn More
-              </a>
-            </div>
-          </div>
-        ))}
+  {events.map((event, index) => (
+    <motion.div
+      key={event.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className={`relative p-6 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden ${
+        gradientStyles[index % gradientStyles.length]
+      }`}
+    >
+      <div className="absolute inset-0 bg-black opacity-10 z-0"></div>
+      <div className="relative z-10 flex flex-col h-full">
+        <h2 className="text-2xl font-bold text-white mb-4 tracking-tight">
+          {event.title}
+        </h2>
+
+        <div className="flex items-center text-white mb-2">
+          <User className="w-4 h-4 mr-2" />
+          <p className="text-sm">Speaker: {event.speakerName}</p>
+        </div>
+
+        <div className="flex items-center text-white mb-2">
+          <Calendar className="w-4 h-4 mr-2" />
+          <p className="text-sm">
+            Date: {new Date(event.eventDate).toLocaleDateString()}
+          </p>
+        </div>
+
+        <div className="flex items-center text-white">
+          <MapPin className="w-4 h-4 mr-2" />
+          <p className="text-sm">Venue: {event.venue}</p>
+        </div>
       </div>
+
+      {/* Blurred Decorative Circles */}
+      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white bg-opacity-10 rounded-full blur-xl"></div>
+      <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-24 h-24 bg-white bg-opacity-10 rounded-full blur-xl"></div>
+    </motion.div>
+  ))}
+</div>
+
 
       {/* Buttons */}
       <div className="flex justify-center space-x-6 mt-8">
         <button
           onClick={onSeeMoreEvents}
-          className="px-10 py-4 bg-green-400 text-white font-bold rounded-full shadow-lg hover:shadow-green-400/50 transition duration-300 ease-in-out transform hover:scale-105"
-        >
-          See More Events
+          className="group px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white font-medium rounded-full shadow-lg hover:shadow-gray-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <Edit className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+          Create Events
+        </span>
         </button>
         <button
           onClick={onCreateEvent}
-          className="px-10 py-4 bg-green-400 text-white font-bold rounded-full shadow-lg hover:shadow-green-400/50 transition duration-300 ease-in-out transform hover:scale-105"
-        >
-          Create Event
+          className="group px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white font-medium rounded-full shadow-lg hover:shadow-gray-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <Eye className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+          See More Events
+        </span>
         </button>
       </div>
     </div>

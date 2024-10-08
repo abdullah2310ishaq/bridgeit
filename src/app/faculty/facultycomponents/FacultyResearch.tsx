@@ -1,4 +1,6 @@
 import React from 'react';
+import { CheckCircle, Clock, ChevronRight, Eye, PlusCircle } from "lucide-react"
+import { motion } from "framer-motion";
 
 interface ResearchPaper {
   id: string;
@@ -36,16 +38,22 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
           <div className="flex space-x-6 mt-8">
             <button
               onClick={onSeeMoreResearch}
-              className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:from-green-600 hover:to-blue-600 transition transform hover:scale-105"
-            >
-              See More Research
-            </button>
+              className="group px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white font-medium rounded-full shadow-lg hover:shadow-gray-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+      >
+        <span className="flex items-center justify-center">
+          <Eye className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+          See More Projects
+        </span>
+      </button>
             <button
               onClick={onCreateResearchPaper}
-              className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105"
-            >
-              Create Research Paper
-            </button>
+              className="group px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white font-medium rounded-full shadow-lg hover:shadow-gray-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                <span className="flex items-center justify-center">
+                  <Eye className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
+                  See More Projects
+                </span>
+              </button>
           </div>
         </div>
         <div className="md:w-1/2 flex justify-center mt-8 md:mt-0 relative z-10">

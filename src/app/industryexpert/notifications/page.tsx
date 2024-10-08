@@ -194,13 +194,8 @@ const NotificationsPage: React.FC = () => {
               >
                 See Details
               </button>
-              {/* New "See Profile" button */}
-              <button
-                className="mt-4 text-gray-900 bg-blue-400 rounded py-2 px-4 hover:bg-blue-500 transition duration-200 ml-4"
-                onClick={() => handleSeeProfile(proposal.studentUserId)} // Pass studentUserId here
-              >
-                See Profile
-              </button>
+            
+          
             </div>
           ))}
         </div>

@@ -108,12 +108,12 @@ const IndustryExpertProfilePage: React.FC = () => {
         >
           Back
         </button>
-        <button
+        {/* <button
           onClick={editProfile}
           className="py-2 px-8 bg-blue-600 text-white rounded-full hover:bg-blue-500 transition duration-300"
         >
           Edit Profile
-        </button>
+        </button> */}
       </div>
     </div>
   );

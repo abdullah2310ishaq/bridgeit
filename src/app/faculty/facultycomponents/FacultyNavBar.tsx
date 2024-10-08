@@ -68,6 +68,11 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
     {
       name: "Events",
       href: "/faculty/events",
+      children: [
+        { name: "Create", href: "/faculty/create" },
+        { name: "All Events", href: "/faculty/events" },
+     
+      ],
     },
   ];
 

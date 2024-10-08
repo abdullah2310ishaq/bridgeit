@@ -39,7 +39,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var react_1 = require("react");
 var navigation_1 = require("next/navigation");
-var FacultyEvents_1 = require("../facultycomponents/FacultyEvents");
+var lucide_react_1 = require("lucide-react");
 var UniversityEventsPage = function () {
     var _a = react_1.useState([]), events = _a[0], setEvents = _a[1];
     var router = navigation_1.useRouter();
@@ -87,8 +87,29 @@ var UniversityEventsPage = function () {
         }
         fetchEvents();
     }, [router]);
-    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-600 text-gray-900 p-6" },
-        react_1["default"].createElement("h1", { className: "text-3xl text-white font-bold text-center mb-6" }, "All University Events"),
-        react_1["default"].createElement(FacultyEvents_1["default"], { events: events })));
+    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-6" },
+        react_1["default"].createElement("h1", { className: "text-4xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500" }, "All University Events"),
+        react_1["default"].createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" }, events.map(function (event, index) { return (react_1["default"].createElement("div", { key: event.id, className: "relative p-6 rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden bg-gradient-to-br" },
+            react_1["default"].createElement("div", { className: "absolute inset-0 bg-gray-900 opacity-50" }),
+            react_1["default"].createElement("div", { className: "relative z-10" },
+                react_1["default"].createElement("h2", { className: "text-2xl font-bold text-white mb-4" }, event.title),
+                react_1["default"].createElement("div", { className: "space-y-3" },
+                    react_1["default"].createElement("p", { className: "text-gray-200 flex items-center" },
+                        react_1["default"].createElement(lucide_react_1.User, { className: "w-5 h-5 mr-2 text-gray-300" }),
+                        react_1["default"].createElement("span", { className: "font-semibold mr-2" }, "Speaker:"),
+                        " ",
+                        event.speakerName),
+                    react_1["default"].createElement("p", { className: "text-gray-200 flex items-center" },
+                        react_1["default"].createElement(lucide_react_1.Calendar, { className: "w-5 h-5 mr-2 text-gray-300" }),
+                        react_1["default"].createElement("span", { className: "font-semibold mr-2" }, "Date:"),
+                        " ",
+                        new Date(event.eventDate).toLocaleDateString()),
+                    react_1["default"].createElement("p", { className: "text-gray-200 flex items-center" },
+                        react_1["default"].createElement(lucide_react_1.MapPin, { className: "w-5 h-5 mr-2 text-gray-300" }),
+                        react_1["default"].createElement("span", { className: "font-semibold mr-2" }, "Venue:"),
+                        " ",
+                        event.venue))),
+            react_1["default"].createElement("div", { className: "absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white bg-opacity-20 rounded-full blur-xl" }),
+            react_1["default"].createElement("div", { className: "absolute bottom-0 left-0 -mb-4 -ml-4 w-24 h-24 bg-white bg-opacity-20 rounded-full blur-xl" }))); }))));
 };
 exports["default"] = UniversityEventsPage;
