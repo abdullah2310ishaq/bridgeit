@@ -97,8 +97,8 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
         <div className="flex justify-between h-16">
           {/* Logo or Brand Name */}
           <div className="flex items-center">
-            <Link href="/industry-expert" className="text-blue-500 text-2xl font-bold hover:text-blue-400">
-              BridgeIT
+            <Link href="/faculty" className="text-green-500 text-2xl font-bold hover:text-green-400">
+             Student Module
             </Link>
           </div>
 
@@ -112,8 +112,8 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
                     <button
                       className={`px-3 py-2 text-sm font-medium transition duration-300 ${
                         isActiveLink(link)
-                          ? "text-blue-500 border-b-2 border-blue-500"
-                          : "text-gray-300 hover:text-blue-500"
+                          ? "text-green-500 border-b-2 border-green-500"
+                          : "text-gray-300 hover:text-green-500"
                       }`}
                     >
                       {link.name}
@@ -125,8 +125,8 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
                           href={child.href}
                           className={`block px-4 py-2 text-sm hover:bg-gray-700 ${
                             activePage.startsWith(child.href)
-                              ? "text-blue-500 bg-gray-700"
-                              : "text-gray-300 hover:text-blue-500"
+                              ? "text-green-500 bg-gray-700"
+                              : "text-gray-300 hover:text-green-500"
                           }`}
                         >
                           {child.name}
@@ -140,13 +140,13 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
                     href={link.href}
                     className={`relative px-3 py-2 text-sm font-medium transition duration-300 ${
                       isActiveLink(link)
-                        ? "text-blue-500 border-b-2 border-blue-500"
-                        : "text-gray-300 hover:text-blue-500"
+                        ? "text-green-500 border-b-2 border-green-500"
+                        : "text-gray-300 hover:text-green-500"
                     }`}
                   >
                     {link.name}
                     {isActiveLink(link) && (
-                      <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-500 animate-slideIn" />
+                      <span className="absolute left-0 bottom-0 w-full h-0.5 bg-green-500 animate-slideIn" />
                     )}
                   </Link>
                 )}
@@ -166,7 +166,7 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-300 hover:text-blue-500 focus:outline-none"
+              className="text-gray-300 hover:text-green-500 focus:outline-none"
             >
               <FaBars size={24} />
             </button>
@@ -192,10 +192,11 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
                   // Render parent link with collapsible children
                   <div className="space-y-1">
                     <button
+                      // You may want to handle the submenus differently for mobile
                       className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
                         isActiveLink(link)
-                          ? "text-blue-500 bg-gray-700"
-                          : "text-gray-300 hover:text-blue-500"
+                          ? "text-green-500 bg-gray-700"
+                          : "text-gray-300 hover:text-green-500"
                       }`}
                     >
                       {link.name}
@@ -208,8 +209,8 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
                           onClick={() => setMobileMenuOpen(false)}
                           className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
                             activePage.startsWith(child.href)
-                              ? "text-blue-500 bg-gray-700"
-                              : "text-gray-300 hover:text-blue-500"
+                              ? "text-green-500 bg-gray-700"
+                              : "text-gray-300 hover:text-green-500"
                           }`}
                         >
                           {child.name}
@@ -224,8 +225,8 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
                     onClick={() => setMobileMenuOpen(false)}
                     className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
                       isActiveLink(link)
-                        ? "text-blue-500 bg-gray-700"
-                        : "text-gray-300 hover:text-blue-500"
+                        ? "text-green-500 bg-gray-700"
+                        : "text-gray-300 hover:text-green-500"
                     }`}
                   >
                     {link.name}
@@ -238,19 +239,19 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
             <div className="border-t border-gray-700"></div>
             <button
               onClick={() => {
-                router.push("/industry-expert/profile");
+                router.push("/faculty/profile");
                 setMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-3 py-2 text-gray-300 hover:text-blue-500 rounded-md text-base font-medium transition duration-300"
+              className="block w-full text-left px-3 py-2 text-gray-300 hover:text-green-500 rounded-md text-base font-medium transition duration-300"
             >
               View Profile
             </button>
             <button
               onClick={() => {
-                router.push("/industry-expert/profile/edit");
+                router.push("/faculty/profile/editfaculty");
                 setMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-3 py-2 text-gray-300 hover:text-blue-500 rounded-md text-base font-medium transition duration-300"
+              className="block w-full text-left px-3 py-2 text-gray-300 hover:text-green-500 rounded-md text-base font-medium transition duration-300"
             >
               Edit Profile
             </button>

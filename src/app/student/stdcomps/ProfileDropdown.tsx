@@ -75,53 +75,53 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         <img
           src={`data:image/jpeg;base64,${userProfile.imageData}`}
           alt="Profile"
-          className="w-10 h-10 rounded-full border-2 border-blue-600"
+          className="w-10 h-10 rounded-full border-2 border-green-500"
         />
-        <FaChevronDown className="ml-2 text-gray-600 hover:text-blue-600 transition duration-300" />
+        <FaChevronDown className="ml-2 text-gray-300 hover:text-green-500 transition duration-300" />
       </button>
       {dropdownOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-1" role="menu" aria-orientation="vertical">
-            <div className="px-4 py-2 border-b bg-gray-100 rounded-t-md">
-              <p className="text-sm font-medium text-gray-700">
+            <div className="px-4 py-2 border-b border-gray-700 bg-gray-700 rounded-t-md">
+              <p className="text-sm font-medium text-gray-200">
                 {userProfile.firstName} {userProfile.lastName}
               </p>
             </div>
 
             <button
               onClick={handleViewProfile}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
             >
               <FaUserEdit className="mr-2" /> View Profile
             </button>
 
             <button
               onClick={handleEditProfile}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
             >
               <FaUserEdit className="mr-2" /> Edit Profile
             </button>
 
             <button
               onClick={updateImage}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
             >
               <FaImage className="mr-2" /> Upload Image
             </button>
 
             <button
               onClick={updatePassword}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition duration-300"
+              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
             >
               <FaLock className="mr-2" /> Update Password
             </button>
 
-            <div className="border-t my-2"></div>
+            <div className="border-t border-gray-700 my-2"></div>
 
             {/* Beautified Logout Button */}
             <button
               onClick={handleLogoutClickLocal}
-              className="flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-gray-100 transition duration-300 bg-red-50 rounded-b-md"
+              className="flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-red-500 hover:text-red-700 hover:bg-gray-700 transition duration-300 bg-gray-800 rounded-b-md"
             >
               <FaSignOutAlt className="mr-2" /> Logout
             </button>

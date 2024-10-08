@@ -9,9 +9,9 @@ const AdminCreatePage: React.FC = () => {
     router.push('/admin/create/company');
   };
 
-//   const goToCreateUniversity = () => {
-//     router.push('/admin/create/university'); // You will need to create this page as well
-//   };
+  const goToCreateUniversity = () => {
+    router.push('/admin/create/university'); // You will need to create this page as well
+  };
 
   const goToViewCompanies = () => {
     router.push('/admin/view/companies');
@@ -27,12 +27,12 @@ const AdminCreatePage: React.FC = () => {
         >
           Create Company
         </button>
-        {/* <button
+        <button
           onClick={goToCreateUniversity}
           className="w-full py-3 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-200"
         >
           Create University
-        </button> */}
+        </button>
         <button
           onClick={goToViewCompanies}
           className="w-full py-3 px-6 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition duration-200"
