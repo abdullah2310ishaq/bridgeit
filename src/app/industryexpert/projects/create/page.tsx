@@ -8,6 +8,7 @@ const PostProjectForm: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [endDate, setEndDate] = useState<string>(""); // For date in "yyyy-MM-dd" format
+  const [budget, setBudget] = useState<number | null>(null); // Added budget state
   const [indExpertId, setIndExpertId] = useState<string | null>(null); // Store fetched IndExptId
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // For submit button disabling
   const router = useRouter();
@@ -77,7 +78,7 @@ const PostProjectForm: React.FC = () => {
     e.preventDefault();
 
     // Validate input fields
-    if (!title || !description || !endDate) {
+    if (!title || !description || !endDate || budget === null) {
       toast.error("Please fill in all the required fields");
       return;
     }
@@ -90,26 +91,39 @@ const PostProjectForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("https://localhost:7053/api/projects/expert-post-project", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          endDate,
-          indExpertId, // Use the fetched IndExptId from state
-        }),
-      });
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        toast.error("You must be logged in to post a project.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await fetch(
+        "https://localhost:7053/api/projects/expert-post-project",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the Authorization header
+          },
+          body: JSON.stringify({
+            Title: title,
+            Description: description,
+            EndDate: endDate,
+            IndExpertId: indExpertId, // Use the fetched IndExptId from state
+            Budget: budget, // Include the budget
+          }),
+        }
+      );
 
       if (response.ok) {
         toast.success("Project posted successfully!");
         setTimeout(() => {
-          router.push("/industryexpert/dashboard"); // Redirect after successful project posting
+          router.push("/industryexpert/projects"); // Redirect after successful project posting
         }, 2000);
       } else {
-        toast.error("Failed to post the project");
+        const errorText = await response.text();
+        toast.error(`Failed to post the project: ${errorText}`);
       }
     } catch (error) {
       console.error("Error posting the project:", error);
@@ -122,7 +136,9 @@ const PostProjectForm: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-300 p-6 flex justify-center items-center">
       <div className="max-w-lg w-full bg-gray-800 p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">Post a New Project</h1>
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+          Post a New Project
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-gray-300 mb-2">Project Title</label>
@@ -136,7 +152,9 @@ const PostProjectForm: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2">Project Description</label>
+            <label className="block text-gray-300 mb-2">
+              Project Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -156,10 +174,24 @@ const PostProjectForm: React.FC = () => {
             />
           </div>
 
+          {/* Added Budget Field */}
+          <div>
+            <label className="block text-gray-300 mb-2">Budget</label>
+            <input
+              type="number"
+              value={budget ?? ""}
+              onChange={(e) => setBudget(parseFloat(e.target.value))}
+              className="w-full p-3 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-green-500"
+              placeholder="Enter project budget"
+            />
+          </div>
+
           <button
             type="submit"
             className={`w-full py-3 rounded-lg text-white ${
-              isSubmitting ? "bg-gray-500" : "bg-green-500 hover:bg-green-600"
+              isSubmitting
+                ? "bg-gray-500"
+                : "bg-green-500 hover:bg-green-600"
             } transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
             disabled={isSubmitting}
           >

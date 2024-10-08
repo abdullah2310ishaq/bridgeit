@@ -243,7 +243,7 @@ const UpdateFacultyPage: React.FC = () => {
             />
           </div>
 
-          {/* Department */}
+          {/* Department
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               Department
@@ -255,20 +255,8 @@ const UpdateFacultyPage: React.FC = () => {
               onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
+          </div> */}
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={facultyData.description}
-              onChange={handleInputChange}
-              className="mt-1 block w-full p-4 h-32 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
 
           {/* Interest */}
           <div>
@@ -284,35 +272,7 @@ const UpdateFacultyPage: React.FC = () => {
             />
           </div>
 
-          {/* University Name */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              University Name
-            </label>
-            <input
-              type="text"
-              name="universityName"
-              value={facultyData.universityName}
-              onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-gray-500 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled
-            />
-          </div>
 
-          {/* Address */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              Address
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={facultyData.address}
-              onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-gray-500 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled
-            />
-          </div>
 
           <div className="flex justify-center">
             <button

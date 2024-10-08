@@ -46,7 +46,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
 
   const updateImage = () => {
     if (userProfile.role === "Faculty") {
-      router.push("/faculty/profile/management");
+      router.push("/faculty/profile/managefaculty");
     } else {
       router.push("/student/profile/management");
     }
@@ -55,7 +55,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
 
   const updatePassword = () => {
     if (userProfile.role === "Faculty") {
-      router.push("/faculty/profile/editfaculty");
+      router.push("/faculty/profile/managefaculty");
     } else {
       router.push("/student/profile/edit");
     }

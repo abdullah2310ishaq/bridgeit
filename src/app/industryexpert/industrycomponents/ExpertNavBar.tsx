@@ -36,26 +36,33 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
   }, [pathname]);
 
   const navigationLinks = [
-    { name: "Home", href: "/industry-expert" },
+    { name: "Home", href: "/industryexpert" },
     {
       name: "Projects",
       href: "#",
       children: [
-        { name: "My Projects", href: "/industry-expert/projects" },
-        { name: "Explore Projects", href: "/industry-expert/projects/explore" },
+        { name: "Create Projects", href: "/industryexpert/projects/create" },
       ],
     },
     {
       name: "Profile",
       href: "#",
       children: [
-        { name: "View", href: "/industry-expert/profile" },
-        { name: "Edit", href: "/industry-expert/profile/edit" },
+        { name: "View", href: "/industryexpert/profile" },
+        { name: "Edit", href: "/industryexpert/profile/editexpert" },
       ],
     },
     {
+        name: "Update",
+        href: "#",
+        children: [
+          { name: "Password", href: "/industryexpert/profile/manageexpert" },
+          { name: "Image", href: "/industryexpert/profile/manageexpert" },
+        ],
+      },
+    {
       name: "Notifications",
-      href: "/industry-expert/notifications",
+      href: "/industryexpert/notifications",
     },
   ];
 

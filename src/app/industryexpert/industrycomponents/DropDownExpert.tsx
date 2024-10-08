@@ -30,7 +30,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     if (userProfile.role === "Faculty") {
       router.push("/faculty/profile/editfaculty");
     } else if (userProfile.role === "IndustryExpert") {
-      router.push("/industry-expert/profile/edit");
+      router.push("/industryexpert/profile/editexpert");
     } else {
       router.push("/student/profile/edit");
     }
@@ -41,7 +41,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     if (userProfile.role === "Faculty") {
       router.push("/faculty/profile");
     } else if (userProfile.role === "IndustryExpert") {
-      router.push("/industry-expert/profile");
+      router.push("/industryexpert/profile");
     } else {
       router.push("/student/profile");
     }
@@ -52,7 +52,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     if (userProfile.role === "Faculty") {
       router.push("/faculty/profile/management");
     } else if (userProfile.role === "IndustryExpert") {
-      router.push("/industry-expert/profile/management");
+      router.push("/industryexpert/profile/manageexpert");
     } else {
       router.push("/student/profile/management");
     }
@@ -63,7 +63,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     if (userProfile.role === "Faculty") {
       router.push("/faculty/profile/editfaculty");
     } else if (userProfile.role === "IndustryExpert") {
-      router.push("/industry-expert/profile/edit");
+      router.push("/industryexpert/profile/manageexpert");
     } else {
       router.push("/student/profile/edit");
     }

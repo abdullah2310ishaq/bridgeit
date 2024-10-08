@@ -37,18 +37,8 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
 
   const navigationLinks = [
     { name: "Home", href: "/faculty" },
-    {
-      name: "Projects",
-      href: "#",
-      children: [
-        { name: "My Projects", href: "/faculty/projects" },
-        { name: "All Projects", href: "/faculty/projects/all-projects" },
-      ],
-    },
-    {
-      name: "Students",
-      href: "/faculty/students",
-    },
+
+  
     {
       name: "Profile",
       href: "#",
@@ -57,9 +47,27 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
         { name: "Edit", href: "/faculty/profile/editfaculty" },
       ],
     },
+
     {
-      name: "Notifications",
-      href: "/faculty/notifications",
+        name: "Update",
+        href: "#",
+        children: [
+          { name: "Image", href: "/faculty/profile/managefaculty" },
+          { name: "Password", href: "/faculty/profile/managefaculty" },
+        ],
+      },
+
+      {
+        name: "ResearchPage",
+        href: "#",
+        children: [
+          { name: "See All", href: "/faculty/researchpaper" },
+          { name: "Create", href: "/faculty/researchpaper/create" },
+        ],
+      },
+    {
+      name: "Events",
+      href: "/faculty/events",
     },
   ];
 
