@@ -24,10 +24,9 @@ const OngoingProjectsSection: React.FC<Props> = ({ ongoingProjects }) => {
   return (
     <section className="py-16 bg-gradient-to-br from-gray-900 to-gray-900">
       <div className="max-w-7xl mx-auto mb-16 px-4 md:px-6 lg:px-8">
-      <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-300" style={{ padding: '0.6rem 0',marginLeft: '-7rem' }}>
-       Ongoing Projects
-      </h2>
-
+        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-300" style={{ padding: '0.6rem 0', marginLeft: '-7rem' }}>
+          Ongoing Projects
+        </h2>
       </div>
 
       {/* Ongoing Projects Cards */}
@@ -56,7 +55,6 @@ const OngoingProjectsSection: React.FC<Props> = ({ ongoingProjects }) => {
           <p className="text-gray-500 text-center col-span-full">No ongoing projects available.</p>
         )}
       </div>
-
     </section>
   );
 };

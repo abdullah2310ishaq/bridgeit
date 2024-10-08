@@ -1,4 +1,4 @@
-"use client";
+"use client"; // This directive needs to be present when using client-side hooks like useRouter.
 "use strict";
 exports.__esModule = true;
 var react_1 = require("react");
@@ -17,8 +17,8 @@ var CompletedProjectsSection = function (_a) {
     };
     return (react_1["default"].createElement("section", { className: "py-16 bg-gradient-to-br from-gray-900 to-gray-900" },
         react_1["default"].createElement("div", { className: "max-w-7xl mx-auto mb-16 px-4 md:px-6 lg:px-8" },
-            react_1["default"].createElement("h2", { className: "text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-300", style: { padding: '0.6rem 0', marginLeft: '-7rem' } }, "Completed Projects")),
-        react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-6 lg:px-8" }, projects.length > 0 ? (projects.map(function (project) { return (react_1["default"].createElement(framer_motion_1.motion.div, { key: project.id, whileHover: { scale: 1.05 }, className: "bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300  flex flex-col" },
+            react_1["default"].createElement("h2", { className: "text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-300", style: { padding: '0.6rem 0', marginLeft: '-7rem' } }, "Created Projects")),
+        react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-6 lg:px-8" }, projects.length > 0 ? (projects.map(function (project) { return (react_1["default"].createElement(framer_motion_1.motion.div, { key: project.id, whileHover: { scale: 1.05 }, className: "bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex flex-col" },
             react_1["default"].createElement("h3", { className: "text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-blue-300 mb-4" }, project.title),
             react_1["default"].createElement("p", { className: "text-gray-300 mb-4" }, project.description),
             react_1["default"].createElement("div", { className: "text-left mt-4 space-y-2" },
