@@ -4,13 +4,16 @@ import { useRouter } from 'next/navigation';
 
 interface FacultyProfile {
   userId: string;
+  uniId: string;
   firstName: string;
   lastName: string;
   email: string;
-  imageData: string; // Base64 image data
-  universityName: string;
-  post: string;
+  imageData: string; // Base64 string
   interest: string[];
+  post: string;
+  universityName: string;
+  address: string;
+  uniImage: string; // Base64 string
 }
 
 const FacultyProfilePage: React.FC = () => {
@@ -49,13 +52,16 @@ const FacultyProfilePage: React.FC = () => {
 
             setFacultyProfile({
               userId: facultyData.userId,
+              uniId: facultyData.uniId,
               firstName: facultyData.firstName || 'N/A',
               lastName: facultyData.lastName || 'N/A',
               email: facultyData.email || 'N/A',
               imageData: facultyData.imageData || '',
-              universityName: facultyData.universityName || 'N/A',
+              interest: facultyData.interest || [],
               post: facultyData.post || 'N/A',
-              interest: facultyData.interest || [], // Default to empty array if undefined
+              universityName: facultyData.universityName || 'N/A',
+              address: facultyData.address || 'N/A',
+              uniImage: facultyData.uniImage || '',
             });
           } else {
             console.error('Failed to fetch faculty profile:', facultyResponse.statusText);
@@ -87,33 +93,73 @@ const FacultyProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 text-gray-200 p-8">
-      <h1 className="text-5xl font-bold mb-8 text-white">Faculty Profile</h1>
-      <img
-        src={`data:image/jpeg;base64,${facultyProfile.imageData}`}
-        alt={`${facultyProfile.firstName}'s profile picture`}
-        className="w-40 h-40 rounded-full mb-6 shadow-lg border-4 border-gray-700"
-      />
-      <p className="text-3xl font-semibold mb-2 text-white">{facultyProfile.firstName} {facultyProfile.lastName}</p>
-      <p className="text-lg mb-4 text-gray-400">{facultyProfile.email}</p>
-      <div className="text-lg space-y-2 text-gray-300 mb-8">
-        <p><strong>University:</strong> {facultyProfile.universityName}</p>
-        <p><strong>Post:</strong> {facultyProfile.post}</p>
-        <p><strong>Interest:</strong> {facultyProfile.interest.length > 0 ? facultyProfile.interest.join(', ') : 'No interests available'}</p>
-      </div>
-      <div className="flex space-x-6">
-        <button
-          onClick={goBack}
-          className="py-2 px-8 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300"
-        >
-          Back
-        </button>
-        <button
-          onClick={editProfile}
-          className="py-2 px-8 bg-blue-600 text-white rounded-full hover:bg-blue-500 transition duration-300"
-        >
-          Edit Profile
-        </button>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 p-8">
+      <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold text-gray-900">Faculty Profile</h1>
+          <div className="flex space-x-4">
+            <button
+              onClick={goBack}
+              className="px-6 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition duration-300"
+            >
+              Back
+            </button>
+            <button
+              onClick={editProfile}
+              className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-500 transition duration-300"
+            >
+              Edit Profile
+            </button>
+          </div>
+        </div>
+
+        {/* Profile Image */}
+        <div className="flex justify-center mb-10">
+          <img
+            src={`data:image/jpeg;base64,${facultyProfile.imageData}`}
+            alt={`${facultyProfile.firstName}'s profile picture`}
+            className="w-48 h-48 rounded-full shadow-lg object-cover"
+          />
+        </div>
+
+        {/* Profile Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          {/* Faculty Info */}
+          <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Personal Information</h2>
+            <p className="text-lg mb-2"><strong>Name:</strong> {facultyProfile.firstName} {facultyProfile.lastName}</p>
+            <p className="text-lg mb-2"><strong>Email:</strong> {facultyProfile.email}</p>
+            <p className="text-lg mb-2"><strong>Post:</strong> {facultyProfile.post}</p>
+            <p className="text-lg mb-2"><strong>Interest:</strong> {facultyProfile.interest.length > 0 ? facultyProfile.interest.join(', ') : 'No interests available'}</p>
+          </div>
+
+          {/* University Info */}
+          <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">University Information</h2>
+            <p className="text-lg mb-2"><strong>University:</strong> {facultyProfile.universityName}</p>
+            <p className="text-lg mb-2"><strong>Address:</strong> {facultyProfile.address}</p>
+            {facultyProfile.uniImage && (
+              <div className="mt-6">
+                <img
+                  src={`data:image/jpeg;base64,${facultyProfile.uniImage}`}
+                  alt={`${facultyProfile.universityName} image`}
+                  className="w-full h-40 object-cover rounded-lg shadow-md"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Actions */}
+        <div className="flex justify-center mt-10">
+          <button
+            onClick={editProfile}
+            className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-500 transition duration-300"
+          >
+            Edit Profile
+          </button>
+        </div>
       </div>
     </div>
   );

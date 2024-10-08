@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -17,6 +17,8 @@ interface UserProfile {
   contact?: string;
   rollNumber?: string;
   skills?: string[];
+  post?: string; // Specific to faculty
+  uniImage?: string | null; // Specific to faculty
 }
 
 async function fetchProfile(type: string, userId: string): Promise<UserProfile | null> {
@@ -26,7 +28,12 @@ async function fetchProfile(type: string, userId: string): Promise<UserProfile |
       case 'student':
         response = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`);
         break;
-      // Add more cases for other user types if needed
+      case 'faculty':
+        response = await fetch(`https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`);
+        break;
+      case 'industry':
+        response = await fetch(`https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`);
+        break;
       default:
         throw new Error('Invalid type');
     }
@@ -35,7 +42,8 @@ async function fetchProfile(type: string, userId: string): Promise<UserProfile |
       return null;
     }
 
-    return response.json();
+    const data: UserProfile = await response.json();
+    return data;
   } catch (err) {
     console.error(err);
     return null;
@@ -48,6 +56,9 @@ const ProfilePage = async ({ params }: { params: { type: string; userId: string 
 
   if (!profile) {
     notFound();
+ return (
+<h1>User not Found</h1>
+ )
   }
 
   const formatImageSrc = (imageData: string | null) => {
@@ -77,22 +88,29 @@ const ProfilePage = async ({ params }: { params: { type: string; userId: string 
             <p className="text-gray-400 italic text-xl mb-4">{notAvailable(profile.description)}</p>
           )}
 
-          <div className="space-y-4">
-            <p className="text-lg text-yellow-400">Roll Number: {notAvailable(profile.rollNumber)}</p>
-          </div>
+          {/* Conditionally Render Fields Based on Profile Type */}
+          {type === 'student' && (
+            <div className="space-y-4">
+              <p className="text-lg text-yellow-400">Roll Number: {notAvailable(profile.rollNumber)}</p>
+            </div>
+          )}
+
+          {type === 'faculty' && (
+            <div className="space-y-4">
+              <p className="text-lg text-green-400">Department: {notAvailable(profile.department)}</p>
+              <p className="text-lg text-blue-400">Post: {notAvailable(profile.post)}</p>
+            </div>
+          )}
+
+          {type === 'industry' && (
+            <div className="space-y-4">
+              <p className="text-lg text-purple-400">Company: {notAvailable(profile.companyName)}</p>
+              <p className="text-lg text-red-400">Contact: {notAvailable(profile.contact)}</p>
+            </div>
+          )}
 
           {/* Additional Info: Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-            {profile.department && (
-              <motion.div
-                className="p-6 bg-gray-800 rounded-lg shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.4 }}
-              >
-                <h2 className="text-xl font-bold text-green-400">Department</h2>
-                <p className="text-gray-300">{notAvailable(profile.department)}</p>
-              </motion.div>
-            )}
             {profile.universityName && (
               <motion.div
                 className="p-6 bg-gray-800 rounded-lg shadow-lg"
@@ -103,7 +121,7 @@ const ProfilePage = async ({ params }: { params: { type: string; userId: string 
                 <p className="text-gray-300">{notAvailable(profile.universityName)}</p>
               </motion.div>
             )}
-            {profile.companyName && (
+            {profile.companyName && type === 'industry' && (
               <motion.div
                 className="p-6 bg-gray-800 rounded-lg shadow-lg"
                 whileHover={{ scale: 1.05 }}
@@ -123,7 +141,7 @@ const ProfilePage = async ({ params }: { params: { type: string; userId: string 
                 <p className="text-gray-300">{notAvailable(profile.address)}</p>
               </motion.div>
             )}
-            {profile.contact && (
+            {profile.contact && type === 'industry' && (
               <motion.div
                 className="p-6 bg-gray-800 rounded-lg shadow-lg"
                 whileHover={{ scale: 1.05 }}
@@ -131,6 +149,20 @@ const ProfilePage = async ({ params }: { params: { type: string; userId: string 
               >
                 <h2 className="text-xl font-bold text-red-400">Contact</h2>
                 <p className="text-gray-300">{notAvailable(profile.contact)}</p>
+              </motion.div>
+            )}
+            {type === 'faculty' && profile.uniImage && (
+              <motion.div
+                className="p-6 bg-gray-800 rounded-lg shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.4 }}
+              >
+                <h2 className="text-xl font-bold text-green-400">University Image</h2>
+                <img
+                  src={formatImageSrc(profile.uniImage)}
+                  alt={`${profile.universityName} Logo`}
+                  className="w-full h-32 object-contain mt-2"
+                />
               </motion.div>
             )}
           </div>

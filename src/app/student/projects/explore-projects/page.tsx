@@ -8,6 +8,7 @@ import { FiSearch, FiFilter } from "react-icons/fi";
 import ProjectCard from "./ExploreProjectCard";
 import ProjectDetailsPanel from "../[id]/page";
 import { Search, Filter, ChevronDown } from "lucide-react"
+import { ToastContainer } from "react-toastify";
 
 interface UserProfile {
   userId: string;
@@ -342,6 +343,9 @@ const ExploreProjects: React.FC = () => {
           )}
         </main>
       </div>
+        {/* Toast Notifications */}
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+
     </div>
   );
 };

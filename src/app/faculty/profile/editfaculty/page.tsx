@@ -10,6 +10,11 @@ interface FacultyData {
   email: string;
   post: string;
   interest: string[];
+  description: string;
+  department: string;
+  universityName: string;
+  address: string;
+  uniId: string;
 }
 
 const UpdateFacultyPage: React.FC = () => {
@@ -19,10 +24,16 @@ const UpdateFacultyPage: React.FC = () => {
     email: "",
     post: "",
     interest: [],
+    description: "",
+    department: "",
+    universityName: "",
+    address: "",
+    uniId: "",
   });
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null); // Use userId instead of facultyId
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchFacultyData() {
@@ -30,21 +41,24 @@ const UpdateFacultyPage: React.FC = () => {
 
       try {
         // Step 1: Fetch authorized user info
-        const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const profileResponse = await fetch(
+          "https://localhost:7053/api/auth/authorized-user-info",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
-          const userId = profileData.userId; // Assuming userId corresponds to the authenticated user
+          const userId = profileData.userId;
           setUserId(userId);
 
-          // Step 2: Fetch faculty data using userId (to get facultyId)
+          // Step 2: Fetch faculty data using userId
           const facultyResponse = await fetch(
-            `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`, // Adjust the endpoint to retrieve faculty by userId
+            `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -56,11 +70,16 @@ const UpdateFacultyPage: React.FC = () => {
           if (facultyResponse.ok) {
             const data = await facultyResponse.json();
             setFacultyData({
-              firstName: data.firstName,
-              lastName: data.lastName,
-              email: data.email,
-              post: data.post,
+              firstName: data.firstName || "",
+              lastName: data.lastName || "",
+              email: data.email || "",
+              post: data.post || "",
               interest: data.interest || [],
+              description: data.description || "",
+              department: data.department || "",
+              universityName: data.universityName || "",
+              address: data.address || "",
+              uniId: data.uniId || "",
             });
           } else {
             toast.error("Failed to load faculty data.", {
@@ -85,9 +104,15 @@ const UpdateFacultyPage: React.FC = () => {
     fetchFacultyData();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFacultyData({ ...facultyData, [name]: value });
+  };
+
+  const handleInterestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFacultyData({ ...facultyData, interest: e.target.value.split(",") });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,14 +131,25 @@ const UpdateFacultyPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `https://localhost:7053/api/faculties/update-faculty/${userId}`, // Use userId here
+        `https://localhost:7053/api/faculties/update-faculty/${userId}`,
         {
-          method: "PUT", // Use PUT method to match the backend
+          method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(facultyData),
+          body: JSON.stringify({
+            firstName: facultyData.firstName,
+            lastName: facultyData.lastName,
+            email: facultyData.email,
+            post: facultyData.post,
+            interest: facultyData.interest,
+            description: facultyData.description,
+            department: facultyData.department,
+            universityName: facultyData.universityName,
+            address: facultyData.address,
+            universityId: facultyData.uniId,
+          }),
         }
       );
 
@@ -125,7 +161,8 @@ const UpdateFacultyPage: React.FC = () => {
 
         router.push("/faculty/profile");
       } else {
-        toast.error("Failed to update profile.", {
+        const errorData = await response.json();
+        toast.error(`Failed to update profile: ${errorData.message}`, {
           position: "top-center",
           autoClose: 3000,
         });
@@ -143,10 +180,15 @@ const UpdateFacultyPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200 p-8">
       <div className="w-full max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
-        <h1 className="text-4xl font-extrabold text-center mb-8 text-white">Update Profile</h1>
+        <h1 className="text-4xl font-extrabold text-center mb-8 text-white">
+          Update Profile
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* First Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">First Name</label>
+            <label className="block text-sm font-semibold text-gray-300">
+              First Name
+            </label>
             <input
               type="text"
               name="firstName"
@@ -156,8 +198,12 @@ const UpdateFacultyPage: React.FC = () => {
               required
             />
           </div>
+
+          {/* Last Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">Last Name</label>
+            <label className="block text-sm font-semibold text-gray-300">
+              Last Name
+            </label>
             <input
               type="text"
               name="lastName"
@@ -167,8 +213,12 @@ const UpdateFacultyPage: React.FC = () => {
               required
             />
           </div>
+
+          {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">Email</label>
+            <label className="block text-sm font-semibold text-gray-300">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -178,27 +228,92 @@ const UpdateFacultyPage: React.FC = () => {
               required
             />
           </div>
+
+          {/* Post */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">Post</label>
+            <label className="block text-sm font-semibold text-gray-300">
+              Post
+            </label>
             <input
               type="text"
               name="post"
               value={facultyData.post}
               onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
+
+          {/* Department */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">Interest</label>
+            <label className="block text-sm font-semibold text-gray-300">
+              Department
+            </label>
             <input
               type="text"
-              name="interest"
-              value={facultyData.interest.join(', ')}
-              onChange={(e) => setFacultyData({ ...facultyData, interest: e.target.value.split(', ') })}
+              name="department"
+              value={facultyData.department}
+              onChange={handleInputChange}
               className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={facultyData.description}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 h-32 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Interest */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300">
+              Interest (separated by commas)
+            </label>
+            <input
+              type="text"
+              name="interest"
+              value={facultyData.interest.join(", ")}
+              onChange={handleInterestChange}
+              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* University Name */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300">
+              University Name
+            </label>
+            <input
+              type="text"
+              name="universityName"
+              value={facultyData.universityName}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 bg-gray-700 text-gray-500 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled
+            />
+          </div>
+
+          {/* Address */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300">
+              Address
+            </label>
+            <input
+              type="text"
+              name="address"
+              value={facultyData.address}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 bg-gray-700 text-gray-500 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled
+            />
+          </div>
+
           <div className="flex justify-center">
             <button
               type="submit"
