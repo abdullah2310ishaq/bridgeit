@@ -97,7 +97,7 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
           {/* Logo or Brand Name */}
           <div className="flex items-center">
             <Link href="/faculty" className="text-green-500 text-2xl font-bold hover:text-green-400">
-             Student Module
+           Industry Module
             </Link>
           </div>
 

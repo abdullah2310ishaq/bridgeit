@@ -272,7 +272,7 @@ const StudentPage: React.FC = () => {
       <EventsSection
         events={events}
         gradientStyles={gradientStyles}
-        //goToEventsPage={goToEventsPage}
+       
       />
     </div>
   );
