@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { IoMdSend } from "react-icons/io";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Hardcoded API key
@@ -17,7 +18,6 @@ const generationConfig = {
   responseMimeType: 'text/plain',
 };
 
-// Predefined prompts and outputs
 const promptsAndResponses: { [key: string]: string } = {
   'Who are you?': 'I am the BridgeIT chatbot, here to help you connect with academia and industry professionals in Pakistan.',
   'What is BridgeIT?': 'BridgeIT is a collaborative platform designed to bridge the gap between academia and industry in Pakistan. It connects students, faculty, and industry professionals through real-world projects and mentorship opportunities.',
@@ -43,34 +43,43 @@ const ChatPage: React.FC = () => {
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
+  const send_prompt = async (prompt: string): Promise<string> => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: prompt,  // sending the prompt as "question"
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      return data.answer.trim();  // assuming the API returns an object with "answer" field
+    } catch (error) {
+      console.error("Error:", error);
+      return "Failed to get a response from the server";
+    }
+  };
+  
 
   // Function to handle sending user input and receiving the AI response
   const handleUserInput = async () => {
     if (!userInput.trim()) return;
 
+    const answer = await send_prompt(userInput);
+    console.log(answer);
+    setUserInput('');
+
     // Add user input to chat history
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
 
-    // Check predefined responses
-    if (promptsAndResponses[userInput]) {
-      setMessages((prev) => [...prev, { sender: "ai", text: promptsAndResponses[userInput] }]);
-      setUserInput(""); // Clear input field
-      return;
-    }
-
-    try {
-      // If the input does not match any predefined prompt, fall back to AI generation
-      const result = await model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: `input: ${userInput}` }] }],
-        generationConfig,
-      });
-
-      const response = result.response.text();
-      setMessages((prev) => [...prev, { sender: "ai", text: response }]);
-    } catch (error) {
-      console.error("Failed to generate response:", error);
-      setMessages((prev) => [...prev, { sender: "ai", text: "Failed to generate response." }]);
-    }
+    setMessages((prev) => [...prev, { sender: "ai", text: answer }]);
 
     // Clear input field
     setUserInput("");
@@ -106,15 +115,23 @@ const ChatPage: React.FC = () => {
             ))}
           </div>
           {/* Input Field */}
-          <div className="p-3 border-t">
-            <input
-              type="text"
-              className="w-full p-2 border rounded-lg"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              onKeyDown={(e) => (e.key === "Enter" ? handleUserInput() : null)}
-              placeholder="Type a message..."
-            />
+          <div className="p-3 border-t ">
+            <div className = "flex items-center space-x-2">
+              <input
+                type="text"
+                className="w-full p-2 border rounded-lg"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                onKeyDown={(e) => (e.key === "Enter" ? handleUserInput() : null)}
+                placeholder="Type a message..."
+              />
+              <button 
+              className = "group px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-800 text-white font-medium rounded-full shadow-lg hover:shadow-blue-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" 
+              onClick={() => handleUserInput()}
+              >
+                  <IoMdSend />
+              </button>
+            </div>
           </div>
         </div>
       )}
