@@ -4,33 +4,13 @@ import { useRouter } from "next/navigation";
 import dynamic from 'next/dynamic';
 
 import ProfileSection from "./stdcomps/ProfileSection";
+import Loading from "../loading/page";
+import OngoingProjectsSection from "./stdcomps/OngoingProjects";
+import CompletedProjectsSection from "./stdcomps/CompletedProjects";
+import EventsSection from "./stdcomps/Events";
 
 //lazy loading
-const Loading = dynamic(() => import("../loading/page"), {
-  loading: () => <p>Loading...</p>,
-  ssr: false,
-});
 
-const OngoingProjectsSection = dynamic(
-  () => import('./stdcomps/OngoingProjects'),
-  {
-    loading: () => <p>Loading ongoing projects...</p>,
-    ssr: false,
-  }
-);
-
-const CompletedProjectsSection = dynamic(
-  () => import('./stdcomps/CompletedProjects'),
-  {
-    loading: () => <p>Loading completed projects...</p>,
-    ssr: false,
-  }
-);
-
-const EventsSection = dynamic(() => import('./stdcomps/Events'), {
-  loading: () => <p>Loading events...</p>,
-  ssr: false,
-});
 
 interface UserProfile {
   userId: string;

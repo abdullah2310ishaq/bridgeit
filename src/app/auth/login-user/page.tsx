@@ -20,7 +20,7 @@ import Image from 'next/image';
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [showPassword, setShowPassword] = useState(false); 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
   const router = useRouter();
@@ -213,6 +213,20 @@ const LoginPage: React.FC = () => {
           >
             {loading ? 'Logging in...' : 'Login'}
           </motion.button>
+          <motion.p
+            className="mt-6 text-sm text-gray-400 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.8 }}
+          >
+            Forgot Password?
+            <a
+              onClick={() => router.push('/auth/forgotpassword')}
+              className="text-blue-400 hover:text-blue-300 cursor-pointer ml-1 transition duration-300"
+            >
+              Click Here
+            </a>
+          </motion.p>
           <motion.p
             className="mt-6 text-sm text-gray-400 text-center"
             initial={{ opacity: 0 }}

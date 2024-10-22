@@ -10,7 +10,7 @@ interface OngoingProject {
   expertName: string;
   status: string;
   endDate: string;
-}
+}  
 
 interface Props {
   ongoingProjects: OngoingProject[];
