@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
@@ -22,6 +23,7 @@ interface Department {
 }
 
 const StudentRegistration: React.FC = () => {
+  // State variables
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -34,125 +36,69 @@ const StudentRegistration: React.FC = () => {
   const [departmentId, setDepartmentId] = useState<string>("");
   const [rollNumber, setRollNumber] = useState<number | "">("");
   const [registeredEmails, setRegisteredEmails] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
   const router = useRouter();
 
+  // Fetch data on component mount
   useEffect(() => {
-
-
-
-    
-    const fetchUniversities = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://localhost:7053/api/universities/get-all-universities"
-        );
-        if (response.ok) {
-          const data = await response.json();
-          
-          setUniversities(data);
+        const [universitiesRes, skillsRes, departmentsRes, emailsRes] = await Promise.all([
+          fetch("https://localhost:7053/api/universities/get-all-universities"),
+          fetch("https://localhost:7053/api/skills/get-skills"),
+          fetch("https://localhost:7053/api/Department/get-departments"),
+          fetch("https://localhost:7053/api/register-user/get-all-emails"),
+        ]);
+
+        if (universitiesRes.ok) {
+          setUniversities(await universitiesRes.json());
         } else {
-          toast.error("Failed to load universities.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
+          throw new Error("Failed to load universities.");
         }
-      } catch (error) {
-        console.error("Error fetching universities:", error);
-        
-        toast.error("An error occurred while fetching universities. {error}", {
+
+        if (skillsRes.ok) {
+          setAvailableSkills(await skillsRes.json());
+        } else {
+          throw new Error("Failed to load skills.");
+        }
+
+        if (departmentsRes.ok) {
+          setDepartments(await departmentsRes.json());
+        } else {
+          throw new Error("Failed to load departments.");
+        }
+
+        if (emailsRes.ok) {
+          setRegisteredEmails(await emailsRes.json());
+        } else {
+          throw new Error("Failed to load registered emails.");
+        }
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message, {
           position: "top-center",
           autoClose: 3000,
         });
       }
     };
 
-    const fetchSkills = async () => {
-      try {
-        const response = await fetch("https://localhost:7053/api/skills/get-skills");
-        if (response.ok) {
-          const data = await response.json();
-          setAvailableSkills(data);
-        } else {
-          toast.error("Failed to load skills.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching skills:", error);
-        toast.error("An error occurred while fetching skills.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
-    };
-
-    const fetchDepartments = async () => {
-      try {
-        const response = await fetch(
-          "https://localhost:7053/api/Department/get-departments"
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setDepartments(data);
-        } else {
-          toast.error("Failed to load departments.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching departments:", error);
-        toast.error("An error occurred while fetching departments.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
-    };
-
-    const fetchEmails = async () => {
-      try {
-        const response = await fetch(
-          "https://localhost:7053/api/register-user/get-all-emails"
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setRegisteredEmails(data);
-        } else {
-          toast.error("Failed to load registered emails.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching registered emails:", error);
-        toast.error("An error occurred while fetching registered emails.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
-    };
-
-    fetchUniversities();
-    fetchSkills();
-    fetchDepartments();
-    fetchEmails();
+    fetchData();
   }, []);
 
+  // Form validation
   useEffect(() => {
     if (
       firstName &&
       lastName &&
       email &&
       password.length >= 8 &&
-      /[!@#$%^&*(),.?":{}|<>]/g.test(password) && 
+      /[!@#$%^&*(),.?":{}|<>]/g.test(password) &&
       universityId &&
       departmentId &&
       rollNumber &&
-      skills.length > 0 && // Check if at least one skill is selected
+      skills.length > 0 &&
       !emailError
     ) {
       setIsSubmitDisabled(false);
@@ -171,6 +117,7 @@ const StudentRegistration: React.FC = () => {
     emailError,
   ]);
 
+  // Handle email change and check for duplicates
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
@@ -184,6 +131,19 @@ const StudentRegistration: React.FC = () => {
     }
   };
 
+  // Add skill to the list
+  const addSkill = (skill: string) => {
+    if (!skills.includes(skill)) {
+      setSkills([...skills, skill]);
+    }
+  };
+
+  // Remove skill from the list
+  const removeSkill = (skill: string) => {
+    setSkills(skills.filter((s) => s !== skill));
+  };
+
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -197,7 +157,8 @@ const StudentRegistration: React.FC = () => {
 
     setLoading(true);
 
-    const data: any = {
+    // Prepare registration data
+    const registrationData = {
       firstName,
       lastName,
       email,
@@ -206,67 +167,67 @@ const StudentRegistration: React.FC = () => {
       skills,
       departmentId,
       rollNumber,
-      role: "Student", 
+      role: "Student",
     };
 
-    const apiUrl = `https://localhost:7053/api/register-user/student`;
-
     try {
-      const response = await fetch(apiUrl, {
+      // Store registration data in sessionStorage (excluding password for security)
+      sessionStorage.setItem("registrationData", JSON.stringify(registrationData));
+
+      // Generate OTP
+      const generateOtpResponse = await fetch("https://localhost:7053/api/otp/generate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(email), // Send email as a raw string
       });
 
-      if (response.ok) {
-        toast.success("Registration successful! Redirecting to login page...", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          onClose: () => router.push("/auth/login-user"),
+      if (generateOtpResponse.ok) {
+        // Send OTP to user's email
+        const sendOtpResponse = await fetch("https://localhost:7053/api/otp/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email), // Send email as a raw string
         });
+
+        if (sendOtpResponse.ok) {
+          toast.success("OTP sent to your email. Please check your inbox.", {
+            position: "top-center",
+            autoClose: 3000,
+          });
+
+          // Redirect to OTP verification page with email in query params
+          router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
+        } else {
+          const errorText = await sendOtpResponse.text();
+          toast.error(`Failed to send OTP email: ${errorText}`, {
+            position: "top-center",
+            autoClose: 3000,
+          });
+        }
       } else {
-        toast.error("Registration failed. Please try again.", {
+        const errorText = await generateOtpResponse.text();
+        toast.error(`Failed to generate OTP: ${errorText}`, {
           position: "top-center",
           autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
         });
       }
     } catch (error) {
-      console.error(error);
-      toast.error("An error occurred. Please try again later.", {
+      console.error("Error during OTP process:", error);
+      toast.error("An error occurred during the OTP process.", {
         position: "top-center",
         autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const addSkill = (skill: string) => {
-    if (!skills.includes(skill)) {
-      setSkills([...skills, skill]);
-    }
-  };
-
-  const removeSkill = (skill: string) => {
-    setSkills(skills.filter((s) => s !== skill));
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100">
+    <div className="flex flex-col items-center justify-center bg-gray-900 text-gray-100">
       <h1 className="text-4xl font-extrabold text-center text-green-500 mb-6">
         Student Registration
       </h1>
@@ -413,7 +374,7 @@ const StudentRegistration: React.FC = () => {
             }`}
             disabled={loading || isSubmitDisabled}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Sending OTP..." : "Register"}
           </button>
         </div>
       </form>

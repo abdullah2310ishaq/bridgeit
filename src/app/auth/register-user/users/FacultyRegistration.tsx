@@ -32,75 +32,74 @@ const FacultyRegistration: React.FC = () => {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
   const router = useRouter();
 
+  // Fetch data on component mount
   useEffect(() => {
-    const fetchUniversities = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('https://localhost:7053/api/universities/get-all-universities');
-        if (response.ok) {
-          const data = await response.json();
-          setUniversities(data);
+        const [universitiesRes, interestsRes, emailsRes] = await Promise.all([
+          fetch('https://localhost:7053/api/universities/get-all-universities'),
+          fetch('https://localhost:7053/api/Interests/get-interests'),
+          fetch('https://localhost:7053/api/register-user/get-all-emails'),
+        ]);
+
+        if (universitiesRes.ok) {
+          setUniversities(await universitiesRes.json());
         } else {
-          toast.error('Failed to load universities.', {
-            position: "top-center",
-            autoClose: 3000,
-          });
+          throw new Error('Failed to load universities.');
         }
-      } catch (error) {
-        console.error('Error fetching universities:', error);
-        toast.error('An error occurred while fetching universities.', {
+
+        if (interestsRes.ok) {
+          setAvailableInterests(await interestsRes.json());
+        } else {
+          throw new Error('Failed to load interests.');
+        }
+
+        if (emailsRes.ok) {
+          setRegisteredEmails(await emailsRes.json());
+        } else {
+          throw new Error('Failed to load registered emails.');
+        }
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message, {
           position: "top-center",
           autoClose: 3000,
         });
       }
     };
 
-    const fetchInterests = async () => {
-      try {
-        const response = await fetch('https://localhost:7053/api/Interests/get-interests');
-        if (response.ok) {
-          const data = await response.json();
-          setAvailableInterests(data);
-        } else {
-          toast.error('Failed to load interests.', {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching interests:', error);
-        toast.error('An error occurred while fetching interests.', {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
-    };
-
-    const fetchEmails = async () => {
-      try {
-        const response = await fetch('https://localhost:7053/api/register-user/get-all-emails');
-        if (response.ok) {
-          const data = await response.json();
-          setRegisteredEmails(data);
-        } else {
-          toast.error('Failed to load registered emails.', {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching registered emails:', error);
-        toast.error('An error occurred while fetching registered emails.', {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
-    };
-
-    fetchUniversities();
-    fetchInterests();
-    fetchEmails();
+    fetchData();
   }, []);
 
+  // Form validation
+  useEffect(() => {
+    if (
+      firstName &&
+      lastName &&
+      email &&
+      password.length >= 8 &&
+      /[!@#$%^&*(),.?":{}|<>]/g.test(password) &&
+      universityId &&
+      post &&
+      interests.length > 0 &&
+      !emailError
+    ) {
+      setIsSubmitDisabled(false);
+    } else {
+      setIsSubmitDisabled(true);
+    }
+  }, [
+    firstName,
+    lastName,
+    email,
+    password,
+    universityId,
+    post,
+    interests,
+    emailError,
+  ]);
+
+  // Handle email change and check for duplicates
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
@@ -111,24 +110,24 @@ const FacultyRegistration: React.FC = () => {
       setIsSubmitDisabled(true);
     } else {
       setEmailError(null);
-      setIsSubmitDisabled(false);
     }
   };
 
+  // Add interest to the list
   const addInterest = (interest: string) => {
     if (!interests.includes(interest)) {
       setInterests([...interests, interest]);
     }
   };
 
+  // Remove interest from the list
   const removeInterest = (interest: string) => {
     setInterests(interests.filter(i => i !== interest));
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
 
     if (emailError) {
       toast.error('Please provide a unique email address.', {
@@ -138,67 +137,70 @@ const FacultyRegistration: React.FC = () => {
       return;
     }
 
-    if (!passwordRegex.test(password)) {
-      toast.error('Password must be at least 8 characters long and include at least one special character.', {
-        position: "top-center",
-        autoClose: 3000,
-      });
-      return;
-    }
-
     setLoading(true);
 
-    const data: any = {
+    // Prepare registration data
+    const registrationData = {
       firstName,
       lastName,
       email,
       password,
       universityId,
-      interests, 
+      interests,
       role: "Faculty",
       post,
     };
 
-    const apiUrl = `https://localhost:7053/api/register-user/faculty`;
-
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
+      // Store registration data in sessionStorage (excluding password for security)
+      sessionStorage.setItem("facultyRegistrationData", JSON.stringify(registrationData));
+
+      // Generate OTP
+      const generateOtpResponse = await fetch("https://localhost:7053/api/otp/generate-otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(email), // Send email as a raw string
       });
 
-      if (response.ok) {
-        toast.success('Registration successful! Redirecting to login page...', {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          onClose: () => router.push('/auth/login-user')
+      if (generateOtpResponse.ok) {
+        // Send OTP to user's email
+        const sendOtpResponse = await fetch("https://localhost:7053/api/otp/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email), // Send email as a raw string
         });
+
+        if (sendOtpResponse.ok) {
+          toast.success("OTP sent to your email. Please check your inbox.", {
+            position: "top-center",
+            autoClose: 3000,
+          });
+
+          // Redirect to OTP verification page with email and role in query params
+          router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}&role=faculty`);
+        } else {
+          const errorText = await sendOtpResponse.text();
+          toast.error(`Failed to send OTP email: ${errorText}`, {
+            position: "top-center",
+            autoClose: 3000,
+          });
+        }
       } else {
-        toast.error('Registration failed. Please try again.', {
+        const errorText = await generateOtpResponse.text();
+        toast.error(`Failed to generate OTP: ${errorText}`, {
           position: "top-center",
           autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
         });
       }
     } catch (error) {
-      console.error(error);
-      toast.error('An error occurred. Please try again later.', {
+      console.error('Error during OTP process:', error);
+      toast.error('An error occurred during the OTP process.', {
         position: "top-center",
         autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
       });
     } finally {
       setLoading(false);
@@ -210,6 +212,7 @@ const FacultyRegistration: React.FC = () => {
       <h1 className="text-4xl font-extrabold text-center text-green-500 mb-6">Faculty Registration</h1>
       <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md" autoComplete="off">
         <input autoComplete="false" name="hidden" type="text" style={{ display: 'none' }} />
+        {/* Form Fields */}
         <div>
           <label className="block text-sm font-semibold text-gray-300">First Name</label>
           <input
@@ -251,6 +254,7 @@ const FacultyRegistration: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             required
+            placeholder="At least 8 characters and a special character"
           />
         </div>
         <div>
@@ -310,7 +314,7 @@ const FacultyRegistration: React.FC = () => {
             className={`py-4 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-white ${loading || isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading || isSubmitDisabled}
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Processing...' : 'Register'}
           </button>
         </div>
       </form>

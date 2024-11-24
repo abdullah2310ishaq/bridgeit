@@ -1,24 +1,24 @@
+// StudentNotificationsPage.tsx
+
 'use client'
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-interface Proposal {
-  id: string
-  projectTitle: string
-  proposal: string
-  status: string
-  read: boolean
-  projectId: string
-  expertFirstName: string
-  expertLastName: string
-  expertImageData: string
-}
+import useStudentStore from '@/app/stores/studentStore'
 
 const StudentNotificationsPage: React.FC = () => {
-  const [proposals, setProposals] = useState<Proposal[]>([])
+  const {
+    proposals,
+    setProposals,
+    markProposalAsRead,
+  } = useStudentStore((state) => ({
+    proposals: state.proposals,
+    setProposals: state.setProposals,
+    markProposalAsRead: state.markProposalAsRead,
+  }));
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'unread' | 'read'>('unread')
@@ -26,7 +26,7 @@ const StudentNotificationsPage: React.FC = () => {
 
   useEffect(() => {
     fetchProposals()
-  }, [])
+  }, [router])
 
   const fetchProposals = async () => {
     const token = localStorage.getItem('jwtToken')
@@ -64,9 +64,7 @@ const StudentNotificationsPage: React.FC = () => {
   }
 
   const handleDismissProposal = (id: string) => {
-    setProposals((prev) =>
-      prev.map((proposal) => (proposal.id === id ? { ...proposal, read: true } : proposal))
-    )
+    markProposalAsRead(id)
   }
 
   if (loading) {
@@ -87,90 +85,89 @@ const StudentNotificationsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-b from-gray-900 to-gray-900">
-  <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8 text-white">
-    {/* Page Title */}
-    <h1 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
-      Notifications
-    </h1>
+      <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8 text-white">
+        {/* Page Title */}
+        <h1 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
+          Notifications
+        </h1>
 
-    {/* Tab Switcher for Unread and Read Notifications */}
-    <div className="flex space-x-6 mb-6 border-b border-gray-600">
-      <button
-        className={`py-2 px-4 focus:outline-none text-lg transition-colors duration-300 ${
-          activeTab === 'unread'
-            ? 'border-b-4 border-blue-500 text-blue-400'
-            : 'text-gray-400 hover:text-white'
-        }`}
-        onClick={() => setActiveTab('unread')}
-      >
-        Unread ({unreadProposals.length})
-      </button>
-      <button
-        className={`py-2 px-4 focus:outline-none text-lg transition-colors duration-300 ${
-          activeTab === 'read'
-            ? 'border-b-4 border-blue-500 text-blue-400'
-            : 'text-gray-400 hover:text-white'
-        }`}
-        onClick={() => setActiveTab('read')}
-      >
-        Read ({readProposals.length})
-      </button>
-    </div>
-
-    {/* Notifications List */}
-    <div className="h-[400px] overflow-y-auto space-y-4">
-      <AnimatePresence>
-        {(activeTab === 'unread' ? unreadProposals : readProposals).map((proposal) => (
-          <motion.div
-            key={proposal.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-60 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+        {/* Tab Switcher for Unread and Read Notifications */}
+        <div className="flex space-x-6 mb-6 border-b border-gray-600">
+          <button
+            className={`py-2 px-4 focus:outline-none text-lg transition-colors duration-300 ${
+              activeTab === 'unread'
+                ? 'border-b-4 border-blue-500 text-blue-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+            onClick={() => setActiveTab('unread')}
           >
-            <div className="flex items-center mb-4">
-              {/* Expert Image or Placeholder */}
-              {proposal.expertImageData ? (
-                <img
-                  src={proposal.expertImageData}
-                  alt={`${proposal.expertFirstName} ${proposal.expertLastName}`}
-                  className="w-12 h-12 rounded-full mr-4 border-2 border-gray-600"
-                />
-              ) : (
-                <div className="bg-gray-600 w-12 h-12 rounded-full mr-4" />
-              )}
+            Unread ({unreadProposals.length})
+          </button>
+          <button
+            className={`py-2 px-4 focus:outline-none text-lg transition-colors duration-300 ${
+              activeTab === 'read'
+                ? 'border-b-4 border-blue-500 text-blue-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+            onClick={() => setActiveTab('read')}
+          >
+            Read ({readProposals.length})
+          </button>
+        </div>
 
-              {/* Expert and Project Information */}
-              <div>
-                <p className="text-lg font-semibold text-green-400">{proposal.projectTitle}</p>
-                <p className="text-sm text-gray-300">
-                  {proposal.expertFirstName} {proposal.expertLastName}
-                </p>
-              </div>
-            </div>
+        {/* Notifications List */}
+        <div className="h-[400px] overflow-y-auto space-y-4">
+          <AnimatePresence>
+            {(activeTab === 'unread' ? unreadProposals : readProposals).map((proposal) => (
+              <motion.div
+                key={proposal.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-60 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="flex items-center mb-4">
+                  {/* Expert Image or Placeholder */}
+                  {proposal.expertImageData ? (
+                    <img
+                      src={proposal.expertImageData}
+                      alt={`${proposal.expertFirstName} ${proposal.expertLastName}`}
+                      className="w-12 h-12 rounded-full mr-4 border-2 border-gray-600"
+                    />
+                  ) : (
+                    <div className="bg-gray-600 w-12 h-12 rounded-full mr-4" />
+                  )}
 
-            {/* Proposal Message */}
-            <p className="text-gray-300 mb-4">{proposal.proposal}</p>
+                  {/* Expert and Project Information */}
+                  <div>
+                    <p className="text-lg font-semibold text-green-400">{proposal.projectTitle}</p>
+                    <p className="text-sm text-gray-300">
+                      {proposal.expertFirstName} {proposal.expertLastName}
+                    </p>
+                  </div>
+                </div>
 
-            {/* Status and Dismiss Button */}
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500 italic">{proposal.status}</span>
-              {activeTab === 'unread' && (
-                <button
-                  onClick={() => handleDismissProposal(proposal.id)}
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  Dismiss
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+                {/* Proposal Message */}
+                <p className="text-gray-300 mb-4">{proposal.proposal}</p>
+
+                {/* Status and Dismiss Button */}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-500 italic">{proposal.status}</span>
+                  {activeTab === 'unread' && (
+                    <button
+                      onClick={() => handleDismissProposal(proposal.id)}
+                      className="text-sm text-blue-500 hover:underline"
+                    >
+                      Dismiss
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
   )
 }
 
