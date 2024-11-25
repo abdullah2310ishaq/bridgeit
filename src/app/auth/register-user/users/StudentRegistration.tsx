@@ -23,7 +23,6 @@ interface Department {
 }
 
 const StudentRegistration: React.FC = () => {
-  // State variables
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -41,7 +40,6 @@ const StudentRegistration: React.FC = () => {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
   const router = useRouter();
 
-  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,7 +85,6 @@ const StudentRegistration: React.FC = () => {
     fetchData();
   }, []);
 
-  // Form validation
   useEffect(() => {
     if (
       firstName &&
@@ -117,12 +114,10 @@ const StudentRegistration: React.FC = () => {
     emailError,
   ]);
 
-  // Handle email change and check for duplicates
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
 
-    // Check if email is already registered
     if (registeredEmails.includes(enteredEmail)) {
       setEmailError("This email is already registered.");
       setIsSubmitDisabled(true);
@@ -131,19 +126,16 @@ const StudentRegistration: React.FC = () => {
     }
   };
 
-  // Add skill to the list
   const addSkill = (skill: string) => {
     if (!skills.includes(skill)) {
       setSkills([...skills, skill]);
     }
   };
 
-  // Remove skill from the list
   const removeSkill = (skill: string) => {
     setSkills(skills.filter((s) => s !== skill));
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -157,7 +149,6 @@ const StudentRegistration: React.FC = () => {
 
     setLoading(true);
 
-    // Prepare registration data
     const registrationData = {
       firstName,
       lastName,
@@ -171,26 +162,23 @@ const StudentRegistration: React.FC = () => {
     };
 
     try {
-      // Store registration data in sessionStorage (excluding password for security)
       sessionStorage.setItem("registrationData", JSON.stringify(registrationData));
 
-      // Generate OTP
       const generateOtpResponse = await fetch("https://localhost:7053/api/otp/generate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(email), // Send email as a raw string
+        body: JSON.stringify(email),
       });
 
       if (generateOtpResponse.ok) {
-        // Send OTP to user's email
         const sendOtpResponse = await fetch("https://localhost:7053/api/otp/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(email), // Send email as a raw string
+          body: JSON.stringify(email),
         });
 
         if (sendOtpResponse.ok) {
@@ -199,7 +187,6 @@ const StudentRegistration: React.FC = () => {
             autoClose: 3000,
           });
 
-          // Redirect to OTP verification page with email in query params
           router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
         } else {
           const errorText = await sendOtpResponse.text();
@@ -227,16 +214,16 @@ const StudentRegistration: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-900 text-gray-100">
-      <h1 className="text-4xl font-extrabold text-center text-green-500 mb-6">
+    <div className="w-full max-w-4xl mx-auto bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-sm p-8 rounded-xl shadow-lg">
+      <h2 className="text-3xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
         Student Registration
-      </h1>
+      </h2>
       <form
         autoComplete="off"
         method="post"
         action=""
         onSubmit={handleSubmit}
-        className="space-y-6 w-full max-w-md"
+        className="space-y-6 w-full"
       >
         <input autoComplete="false" name="hidden" type="text" style={{ display: "none" }} />
         <div>
@@ -245,7 +232,7 @@ const StudentRegistration: React.FC = () => {
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
             autoComplete="off"
           />
@@ -256,7 +243,7 @@ const StudentRegistration: React.FC = () => {
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
             autoComplete="off"
           />
@@ -267,7 +254,7 @@ const StudentRegistration: React.FC = () => {
             type="email"
             value={email}
             onChange={handleEmailChange}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
             autoComplete="off"
           />
@@ -279,7 +266,7 @@ const StudentRegistration: React.FC = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
             autoComplete="off"
             placeholder="At least 8 characters and a special character"
@@ -290,7 +277,7 @@ const StudentRegistration: React.FC = () => {
           <select
             value={universityId}
             onChange={(e) => setUniversityId(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
           >
             <option value="" disabled>
@@ -308,7 +295,7 @@ const StudentRegistration: React.FC = () => {
           <select
             value=""
             onChange={(e) => addSkill(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
           >
             <option value="" disabled>
               Select a skill
@@ -319,19 +306,21 @@ const StudentRegistration: React.FC = () => {
               </option>
             ))}
           </select>
-          <div className="mt-4">
+          <div className="flex flex-wrap gap-2 mt-2">
             {skills.map((skill) => (
               <span
                 key={skill}
-                className="inline-flex items-center m-1 px-3 py-1 bg-green-600 text-white rounded-full"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-600 text-white"
               >
                 {skill}
                 <button
                   type="button"
                   onClick={() => removeSkill(skill)}
-                  className="ml-2 text-sm text-red-400 hover:text-red-600"
+                  className="ml-2 focus:outline-none"
                 >
-                  &times;
+                  <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </span>
             ))}
@@ -342,7 +331,7 @@ const StudentRegistration: React.FC = () => {
           <select
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
           >
             <option value="" disabled>
@@ -361,7 +350,7 @@ const StudentRegistration: React.FC = () => {
             type="number"
             value={rollNumber}
             onChange={(e) => setRollNumber(e.target.value ? parseInt(e.target.value) : "")}
-            className="mt-1 block w-full p-4 bg-gray-800 text-gray-100 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
             autoComplete="off"
           />
@@ -369,7 +358,7 @@ const StudentRegistration: React.FC = () => {
         <div className="flex justify-center">
           <button
             type="submit"
-            className={`py-4 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-white ${
+            className={`w-full py-3 px-6 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 text-white transition-colors duration-300 ${
               loading || isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading || isSubmitDisabled}
@@ -384,3 +373,4 @@ const StudentRegistration: React.FC = () => {
 };
 
 export default StudentRegistration;
+
