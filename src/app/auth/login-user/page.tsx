@@ -99,7 +99,7 @@ const LoginPage: React.FC = () => {
                 router.push("/industryexpert");
                 break;
               case "UniversityAdmin":
-                router.push("/unidmin");
+                router.push("/uniadmin");
                 break;
               default:
                 toast.error("Invalid role. Please contact support.");

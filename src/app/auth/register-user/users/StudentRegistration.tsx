@@ -27,6 +27,7 @@ const StudentRegistration: React.FC = () => {
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [universityId, setUniversityId] = useState<string>("");
   const [universities, setUniversities] = useState<University[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
@@ -37,6 +38,7 @@ const StudentRegistration: React.FC = () => {
   const [registeredEmails, setRegisteredEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
   const router = useRouter();
 
@@ -92,11 +94,13 @@ const StudentRegistration: React.FC = () => {
       email &&
       password.length >= 8 &&
       /[!@#$%^&*(),.?":{}|<>]/g.test(password) &&
+      confirmPassword === password &&
       universityId &&
       departmentId &&
       rollNumber &&
       skills.length > 0 &&
-      !emailError
+      !emailError &&
+      !passwordError
     ) {
       setIsSubmitDisabled(false);
     } else {
@@ -107,11 +111,13 @@ const StudentRegistration: React.FC = () => {
     lastName,
     email,
     password,
+    confirmPassword,
     universityId,
     departmentId,
     rollNumber,
     skills,
     emailError,
+    passwordError,
   ]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,6 +129,32 @@ const StudentRegistration: React.FC = () => {
       setIsSubmitDisabled(true);
     } else {
       setEmailError(null);
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    validatePassword(newPassword);
+  };
+
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const confirmedPassword = e.target.value;
+    setConfirmPassword(confirmedPassword);
+    if (confirmedPassword !== password) {
+      setPasswordError("Passwords do not match.");
+    } else {
+      setPasswordError(null);
+    }
+  };
+
+  const validatePassword = (pass: string) => {
+    if (pass.length < 8) {
+      setPasswordError("Password must be at least 8 characters long.");
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/g.test(pass)) {
+      setPasswordError("Password must contain at least one special character.");
+    } else {
+      setPasswordError(null);
     }
   };
 
@@ -141,6 +173,14 @@ const StudentRegistration: React.FC = () => {
 
     if (emailError) {
       toast.error("Please provide a unique email address.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (passwordError) {
+      toast.error("Please correct the password issues.", {
         position: "top-center",
         autoClose: 3000,
       });
@@ -265,12 +305,26 @@ const StudentRegistration: React.FC = () => {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             required
             autoComplete="off"
             placeholder="At least 8 characters and a special character"
           />
+          {passwordError && <p className="text-red-400 mt-2">{passwordError}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-300">Confirm Password</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            required
+            autoComplete="off"
+            placeholder="Confirm your password"
+          />
+          {/* {passwordError && <p className="text-red-400 mt-2">{passwordError}</p>} */}
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-300">University</label>

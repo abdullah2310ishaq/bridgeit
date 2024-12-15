@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { IoMdSend } from "react-icons/io";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Hardcoded API key
 const apiKey = 'AIzaSyCuDO42B9iq6EeXrlo2WJBrwWuHkYh3jrM';
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
@@ -35,7 +35,7 @@ const promptsAndResponses: { [key: string]: string } = {
   'Who are youu?': 'I am the BridgeIT chatbot.',
 };
 
-const ChatPage: React.FC = () => {
+const ChatWidget: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
   const [userInput, setUserInput] = useState("");
@@ -43,6 +43,7 @@ const ChatPage: React.FC = () => {
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
+
   const send_prompt = async (prompt: string): Promise<string> => {
     try {
       const response = await fetch("http://127.0.0.1:8000/chat", {
@@ -51,7 +52,7 @@ const ChatPage: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question: prompt,  // sending the prompt as "question"
+          question: prompt,
         }),
       });
   
@@ -60,78 +61,89 @@ const ChatPage: React.FC = () => {
       }
   
       const data = await response.json();
-      return data.answer.trim();  // assuming the API returns an object with "answer" field
+      return data.answer.trim(); 
     } catch (error) {
       console.error("Error:", error);
       return "Failed to get a response from the server";
     }
   };
-  
 
-  // Function to handle sending user input and receiving the AI response
   const handleUserInput = async () => {
     if (!userInput.trim()) return;
 
     const answer = await send_prompt(userInput);
     console.log(answer);
-    setUserInput('');
 
-    // Add user input to chat history
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
-
     setMessages((prev) => [...prev, { sender: "ai", text: answer }]);
 
-    // Clear input field
     setUserInput("");
   };
 
   return (
-    <div className="relative h-screen bg-gray-100">
+    <div className="relative">
       {/* Floating Action Button */}
       <button
-        className="fixed bottom-5 right-5 bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 transition"
+        className="fixed bottom-5 right-5 flex items-center justify-center w-14 h-14 rounded-full 
+                   bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 text-white 
+                   shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 
+                   focus:outline-none focus:ring-4 focus:ring-purple-300"
         onClick={toggleChat}
       >
-        Chatbot
+        <IoChatbubbleEllipsesOutline size={28} />
       </button>
 
       {/* Chat Modal */}
       {isChatOpen && (
-        <div className="fixed bottom-20 right-5 w-80 h-96 bg-white rounded-lg shadow-lg flex flex-col">
-          <div className="bg-blue-500 text-white flex justify-between items-center p-3 rounded-t-lg">
-            <h3 className="text-lg">Chat with us</h3>
-            <button onClick={toggleChat} className="text-white font-bold">
+        <div className="fixed bottom-20 right-5 w-80 h-96 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-2xl flex flex-col overflow-hidden border border-gray-200">
+          <div className="bg-gradient-to-r from-purple-600 to-blue-500 text-white flex justify-between items-center p-3">
+            <h3 className="text-lg font-semibold">Chat with us</h3>
+            <button
+              onClick={toggleChat}
+              className="text-white font-bold focus:outline-none hover:opacity-80 transition-opacity"
+            >
               &#10005;
             </button>
           </div>
-          <div className="p-4 flex-grow overflow-y-auto">
+          <div className="p-4 flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             {/* Chat messages */}
-            {messages.map((msg, index) => (
-              <div key={index} className={msg.sender === "user" ? "text-right" : "text-left"}>
-                <p className={`p-2 my-2 ${msg.sender === "user" ? "bg-blue-200" : "bg-gray-200"} rounded-lg inline-block`}>
-                  {msg.text}
-                </p>
-              </div>
-            ))}
+            {messages.map((msg, index) => {
+              const isUser = msg.sender === "user";
+              return (
+                <div key={index} className={`my-2 flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`
+                      px-4 py-2 max-w-[75%] rounded-xl 
+                      ${isUser 
+                        ? 'bg-gradient-to-bl from-blue-200 to-blue-300 text-gray-800 shadow-sm' 
+                        : 'bg-gradient-to-bl from-gray-200 to-gray-300 text-gray-800 shadow-sm'
+                      }
+                    `}
+                  >
+                    {msg.text}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           {/* Input Field */}
-          <div className="p-3 border-t ">
-            <div className = "flex items-center space-x-2">
-              <input
-                type="text"
-                className="w-full p-2 border rounded-lg"
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                onKeyDown={(e) => (e.key === "Enter" ? handleUserInput() : null)}
-                placeholder="Type a message..."
-              />
-              <button 
-              className = "group px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-800 text-white font-medium rounded-full shadow-lg hover:shadow-blue-600/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" 
+          <div className="p-3 border-t border-gray-200 bg-white flex items-center space-x-2">
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) => (e.key === "Enter" ? handleUserInput() : null)}
+              placeholder="Type a message..."
+            />
+            <button
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium 
+                         shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 
+                         focus:outline-none focus:ring-2 focus:ring-blue-400"
               onClick={() => handleUserInput()}
-              >
-                  <IoMdSend />
-              </button>
-            </div>
+            >
+              <IoMdSend />
+            </button>
           </div>
         </div>
       )}
@@ -139,4 +151,4 @@ const ChatPage: React.FC = () => {
   );
 };
 
-export default ChatPage;
+export default ChatWidget;

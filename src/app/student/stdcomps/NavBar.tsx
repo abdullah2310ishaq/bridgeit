@@ -1,12 +1,13 @@
 // components/NavBar.tsx
 
 "use client";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
-import { Transition, Dialog } from "@headlessui/react";
-import ProfileDropdown from "./ProfileDropdown";
+import React, { Fragment, useEffect, useState } from "react";
+import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
+import { Transition, Dialog, Menu } from "@headlessui/react";
+import ProfileDropdown from "./ProfileDropdown"; // Ensure this component is properly implemented
 
 interface UserProfile {
   userId: string;
@@ -21,21 +22,20 @@ interface NavBarProps {
   onLogout: () => void;
 }
 
+interface NavLink {
+  name: string;
+  href: string;
+  children?: NavLink[];
+}
+
 const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [activePage, setActivePage] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // State for logout confirmation dialog
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
-  // Set active page based on the current route
-  useEffect(() => {
-    setActivePage(pathname);
-  }, [pathname]);
-
-  const navigationLinks = [
+  // Define navigation links
+  const navigationLinks: NavLink[] = [
     { name: "Home", href: "/student" },
     {
       name: "Projects",
@@ -67,108 +67,121 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
     },
   ];
 
-  // Updated isActiveLink function
-  const isActiveLink = (link: { href: string; children?: any[] }) => {
+  // Function to determine if a link is active
+  const isActiveLink = (link: NavLink): boolean => {
     if (link.href === "#" && link.children) {
-      // Check if any child link is active
-      return link.children.some((child) => activePage.startsWith(child.href));
-    } else {
-      return activePage === link.href || activePage.startsWith(link.href);
+      return link.children.some((child) => pathname.startsWith(child.href));
     }
+    return pathname === link.href || pathname.startsWith(link.href);
   };
 
-  // Function to handle logout click from ProfileDropdown
+  // Logout handlers
   const handleLogoutClick = () => {
     setIsLogoutDialogOpen(true);
   };
 
-  // Function to confirm logout
   const handleConfirmLogout = () => {
     setIsLogoutDialogOpen(false);
     onLogout();
   };
 
-  // Function to cancel logout
   const handleCancelLogout = () => {
     setIsLogoutDialogOpen(false);
   };
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
     <nav className="bg-gray-800 fixed w-full top-0 z-50 shadow-md">
+      {/* Main Navbar Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* Logo or Brand Name */}
-          <div className="flex items-center">
-            <Link href="/faculty" className="text-green-500 text-2xl font-bold hover:text-green-400">
-             Student Module
+          {/* Left Section: Logo/Brand */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/student" className="text-green-500 text-2xl font-bold hover:text-green-400">
+              Student Module
             </Link>
           </div>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex md:ml-10 space-x-4 items-center">
+          {/* Middle Section: Desktop Navigation Links */}
+          <div className="hidden md:flex md:space-x-4 md:items-center">
             {navigationLinks.map((link) => (
               <div key={link.name} className="relative group">
                 {link.children ? (
-                  // Render parent link with dropdown
-                  <>
-                    <button
-                      className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+                  // Dropdown Menu for Links with Children
+                  <Menu as="div" className="relative">
+                    <Menu.Button
+                      className={`flex items-center px-3 py-2 text-sm font-medium transition duration-300 ${
                         isActiveLink(link)
                           ? "text-green-500 border-b-2 border-green-500"
                           : "text-gray-300 hover:text-green-500"
                       }`}
+                      aria-haspopup="true"
+                      aria-expanded="false"
                     >
                       {link.name}
-                    </button>
-                    <div className="absolute left-0 mt-2 w-48 bg-gray-800 shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          href={child.href}
-                          className={`block px-4 py-2 text-sm hover:bg-gray-700 ${
-                            activePage.startsWith(child.href)
-                              ? "text-green-500 bg-gray-700"
-                              : "text-gray-300 hover:text-green-500"
-                          }`}
-                        >
-                          {child.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </>
+                      <FaChevronDown className="ml-1 h-4 w-4" />
+                    </Menu.Button>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-200"
+                      enterFrom="opacity-0 translate-y-1"
+                      enterTo="opacity-100 translate-y-0"
+                      leave="transition ease-in duration-150"
+                      leaveFrom="opacity-100 translate-y-0"
+                      leaveTo="opacity-0 translate-y-1"
+                    >
+                      <Menu.Items className="absolute left-0 mt-2 w-48 bg-gray-800 shadow-lg rounded-md py-1 z-50">
+                        {link.children.map((child) => (
+                          <Menu.Item key={child.name}>
+                            {({ active }) => (
+                              <Link
+                                href={child.href}
+                                className={`block px-4 py-2 text-sm ${
+                                  active || isActiveLink(child)
+                                    ? "text-green-500 bg-gray-700"
+                                    : "text-gray-300 hover:text-green-500"
+                                }`}
+                              >
+                                {child.name}
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        ))}
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 ) : (
-                  // Render normal link
+                  // Single Link
                   <Link
                     href={link.href}
-                    className={`relative px-3 py-2 text-sm font-medium transition duration-300 ${
+                    className={`px-3 py-2 text-sm font-medium transition duration-300 ${
                       isActiveLink(link)
                         ? "text-green-500 border-b-2 border-green-500"
                         : "text-gray-300 hover:text-green-500"
                     }`}
                   >
                     {link.name}
-                    {isActiveLink(link) && (
-                      <span className="absolute left-0 bottom-0 w-full h-0.5 bg-green-500 animate-slideIn" />
-                    )}
                   </Link>
                 )}
               </div>
             ))}
           </div>
 
-          {/* Profile Dropdown */}
+          {/* Right Section: Profile Dropdown (Desktop) */}
           <div className="hidden md:flex items-center">
-            <ProfileDropdown
-              userProfile={userProfile}
-              onLogoutClick={handleLogoutClick}
-            />
+            <ProfileDropdown userProfile={userProfile} onLogoutClick={handleLogoutClick} />
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
+          <div className="flex items-center md:hidden">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => setMobileMenuOpen(true)}
               className="text-gray-300 hover:text-green-500 focus:outline-none"
+              aria-label="Open Menu"
             >
               <FaBars size={24} />
             </button>
@@ -176,131 +189,148 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <Transition
-        show={mobileMenuOpen}
-        enter="transition ease-out duration-200 transform"
-        enterFrom="opacity-0 -translate-y-2"
-        enterTo="opacity-100 translate-y-0"
-        leave="transition ease-in duration-150 transform"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 -translate-y-2"
-      >
-        <div className="md:hidden bg-gray-800 shadow-md">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navigationLinks.map((link) => (
-              <div key={link.name}>
-                {link.children ? (
-                  // Render parent link with collapsible children
-                  <div className="space-y-1">
-                    <button
-                      // You may want to handle the submenus differently for mobile
-                      className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
-                        isActiveLink(link)
-                          ? "text-green-500 bg-gray-700"
-                          : "text-gray-300 hover:text-green-500"
-                      }`}
-                    >
-                      {link.name}
-                    </button>
-                    <div className="pl-4">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          href={child.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
-                            activePage.startsWith(child.href)
-                              ? "text-green-500 bg-gray-700"
-                              : "text-gray-300 hover:text-green-500"
-                          }`}
-                        >
-                          {child.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  // Render normal link
-                  <Link
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
-                      isActiveLink(link)
-                        ? "text-green-500 bg-gray-700"
-                        : "text-gray-300 hover:text-green-500"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                )}
-              </div>
-            ))}
+      {/* Mobile Menu Overlay */}
+      <Transition show={mobileMenuOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50 md:hidden" onClose={() => setMobileMenuOpen(false)}>
+          {/* Overlay */}
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-75"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-75"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black opacity-75" />
+          </Transition.Child>
 
-            {/* Profile Options */}
-            <div className="border-t border-gray-700"></div>
-            <button
-              onClick={() => {
-                router.push("/faculty/profile");
-                setMobileMenuOpen(false);
-              }}
-              className="block w-full text-left px-3 py-2 text-gray-300 hover:text-green-500 rounded-md text-base font-medium transition duration-300"
+          {/* Sliding Panel */}
+          <div className="fixed inset-0 z-50 flex">
+            <Transition.Child
+              as={Fragment}
+              enter="transition ease-out duration-300 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in duration-200 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
             >
-              View Profile
-            </button>
-            <button
-              onClick={() => {
-                router.push("/faculty/profile/editfaculty");
-                setMobileMenuOpen(false);
-              }}
-              className="block w-full text-left px-3 py-2 text-gray-300 hover:text-green-500 rounded-md text-base font-medium transition duration-300"
-            >
-              Edit Profile
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleLogoutClick();
-              }}
-              className="block w-full text-left px-3 py-2 text-red-500 hover:text-red-700 rounded-md text-base font-medium transition duration-300"
-            >
-              Logout
-            </button>
+              <Dialog.Panel className="relative flex-1 flex flex-col max-w-xs w-full bg-gray-800">
+                {/* Close Button */}
+                <div className="absolute top-0 right-0 -mr-12 pt-2">
+                  <button
+                    className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close Menu"
+                  >
+                    <FaTimes className="h-6 w-6 text-white" />
+                  </button>
+                </div>
+
+                {/* Mobile Menu Content */}
+                <div className="pt-5 pb-4 overflow-y-auto">
+                  {/* Brand */}
+                  <div className="flex items-center px-4">
+                    <Link href="/student" className="text-green-500 text-2xl font-bold hover:text-green-400">
+                      Student Module
+                    </Link>
+                  </div>
+
+                  {/* Navigation Links */}
+                  <nav className="mt-5 px-2 space-y-1">
+                    {navigationLinks.map((link) => (
+                      <div key={link.name}>
+                        {link.children ? (
+                          // Collapsible Submenu
+                          <MobileSubMenu link={link} />
+                        ) : (
+                          // Single Link
+                          <Link
+                            href={link.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+                              isActiveLink(link)
+                                ? "text-green-500 bg-gray-700"
+                                : "text-gray-300 hover:text-green-500"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        )}
+                      </div>
+                    ))}
+                  </nav>
+                </div>
+
+                {/* Profile and Logout */}
+                <div className="px-4 py-4 border-t border-gray-700">
+                  <button
+                    onClick={() => {
+                      router.push("/student/profile");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-green-500 transition duration-300"
+                  >
+                    View Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      router.push("/student/profile/edit");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-green-500 transition duration-300"
+                  >
+                    Edit Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogoutClick();
+                    }}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:text-red-700 transition duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+
+            {/* Clickable Area to Close Menu */}
+            <div className="flex-shrink-0 w-14" aria-hidden="true"></div>
           </div>
-        </div>
+        </Dialog>
       </Transition>
 
       {/* Logout Confirmation Dialog */}
-      <Transition appear show={isLogoutDialogOpen} as={React.Fragment}>
+      <Transition appear show={isLogoutDialogOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={handleCancelLogout}>
-          {/* Overlay transition */}
           <Transition.Child
-            as={React.Fragment}
-            enter="ease-out duration-300"
+            as={Fragment}
+            enter="transition ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="ease-in duration-200"
+            leave="transition ease-in duration-200"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
             <div className="fixed inset-0 bg-black bg-opacity-50" />
           </Transition.Child>
 
-          {/* Dialog panel */}
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex items-center justify-center min-h-full p-4 text-center">
               <Transition.Child
-                as={React.Fragment}
-                enter="ease-out duration-300"
+                as={Fragment}
+                enter="transition ease-out duration-300 transform"
                 enterFrom="opacity-0 scale-95"
                 enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
+                leave="transition ease-in duration-200 transform"
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="max-w-md w-full bg-gray-800 rounded-lg p-6 shadow-lg transform transition-all">
+                  {/* Header */}
                   <div className="flex items-center space-x-4">
-                    {/* Icon to enhance dialog appearance */}
                     <div className="bg-red-100 p-3 rounded-full">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +359,7 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                     </p>
                   </div>
 
-                  {/* Action buttons */}
+                  {/* Action Buttons */}
                   <div className="mt-6 flex justify-end space-x-4">
                     <button
                       onClick={handleCancelLogout}
@@ -351,6 +381,54 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
         </Dialog>
       </Transition>
     </nav>
+  );
+};
+
+// Mobile SubMenu Component
+const MobileSubMenu: React.FC<{ link: NavLink }> = ({ link }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActiveLink = (child: NavLink): boolean => {
+    return pathname.startsWith(child.href);
+  };
+
+  return (
+    <div className="space-y-1">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+          link.children?.some((child) => isActiveLink(child))
+            ? "text-green-500 bg-gray-700"
+            : "text-gray-300 hover:text-green-500"
+        }`}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+      >
+        <span>{link.name}</span>
+        <FaChevronDown
+          className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""
+            }`}
+        />
+      </button>
+      {isOpen && (
+        <div className="pl-4 mt-1 space-y-1">
+          {link.children?.map((child) => (
+            <Link
+              key={child.name}
+              href={child.href}
+              className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+                isActiveLink(child)
+                  ? "text-green-500 bg-gray-700"
+                  : "text-gray-300 hover:text-green-500"
+              }`}
+            >
+              {child.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

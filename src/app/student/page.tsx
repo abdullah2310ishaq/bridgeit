@@ -8,6 +8,7 @@ import Loading from "../loading/page";
 import OngoingProjectsSection from "./stdcomps/OngoingProjects";
 import CompletedProjectsSection from "./stdcomps/CompletedProjects";
 import EventsSection from "./stdcomps/Events";
+import ChatWidget from "../chat/ChatWidget";
 
 
 
@@ -253,7 +254,9 @@ const StudentPage: React.FC = () => {
         gradientStyles={gradientStyles}
         //goToEventsPage={goToEventsPage}
       />
+      <ChatWidget/>
     </div>
+    
   );
 };
 

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify"; // Import only toast, not ToastContainer
 import { FaTimes, FaEdit } from "react-icons/fa";
 
@@ -11,38 +10,70 @@ interface ProposalModalProps {
 }
 
 const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onClose }) => {
-  const [proposal, setProposal] = useState<string>("");
+  const [proposalFile, setProposalFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const router = useRouter();
 
+  // Handle file change
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const validExtensions = ['.doc', '.docx', '.pdf'];
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+      if (validExtensions.includes(`.${fileExtension}`)) {
+        setProposalFile(file);
+      } else {
+        toast.error("Please select a valid .doc, .docx, or .pdf file.");
+      }
+    } else {
+      toast.error("Please select a valid file.");
+    }
+  };
+
+  // Convert file to base64
+  const toBase64 = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64File = reader.result as string;
+        // Extract the base64 portion from the data URL (after 'base64,')
+        const base64Data = base64File.split(',')[1];
+        resolve(base64Data);
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  // Handle submit proposal
   const handleSubmitProposal = async () => {
-    if (!proposal.trim()) {
-      toast.error("Please enter your proposal.");
+    if (!proposalFile) {
+      toast.error("Please select a proposal file.");
       return;
     }
 
     setIsSubmitting(true);
 
+    // Convert file to Base64
+    const base64File = await toBase64(proposalFile);
+
+    const data = {
+      studentId,
+      projectId,
+      proposal: base64File, // Send only the base64 string
+    };
+
     try {
       const response = await fetch("https://localhost:7053/api/project-proposals/send-proposal", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // Send as JSON
         },
-        body: JSON.stringify({
-          proposal,
-          studentId,
-          projectId,
-        }),
+        body: JSON.stringify(data), // Send the JSON with the base64-encoded file
       });
 
       if (response.ok) {
         toast.success("Proposal submitted successfully!");
-
-        // Close the modal after submission
-        onClose();
-
-        // Optionally, you can refresh the page or update the state to reflect the submission
+        onClose(); // Close the modal after submission
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || "Failed to submit proposal. Please try again.");
@@ -71,12 +102,12 @@ const ProposalModal: React.FC<ProposalModalProps> = ({ projectId, studentId, onC
           <FaEdit className="mr-2 text-green-400" /> Submit Your Proposal Here
         </h2>
 
-        {/* Proposal Textarea */}
-        <textarea
-          value={proposal}
-          onChange={(e) => setProposal(e.target.value)}
-          placeholder="Write your proposal here..."
-          className="w-full p-4 rounded-md bg-gray-700 text-gray-200 h-48 border border-gray-600 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition duration-300"
+        {/* File Input */}
+        <input
+          type="file"
+          accept=".doc,.docx,.pdf" // Allow .pdf files
+          onChange={handleFileChange}
+          className="w-full p-4 rounded-md bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition duration-300"
         />
 
         {/* Action Buttons */}

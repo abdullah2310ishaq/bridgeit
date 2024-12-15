@@ -9,8 +9,8 @@ interface Proposal {
   id: string;
   projectTitle: string;
   studentName: string;
-  studentUserId: string; // Ensure that this field is present in the API response
-  proposal: string;
+  studentUserId: string;
+  proposal: string; // Base64 encoded proposal
   status: string;
 }
 
@@ -18,8 +18,8 @@ const NotificationsPage: React.FC = () => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null); // State for selected proposal
-  const [showModal, setShowModal] = useState<boolean>(false); // State to toggle modal
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -73,7 +73,17 @@ const NotificationsPage: React.FC = () => {
 
         if (proposalsResponse.ok) {
           const proposalsData = await proposalsResponse.json();
-          setProposals(proposalsData);
+          // proposalsData should be an array of proposals with base64-encoded 'Proposal' field
+          // Map them to match our state interface
+          const mappedProposals = proposalsData.map((p: any) => ({
+            id: p.id,
+            projectTitle: p.projectTitle,
+            studentName: p.studentName,
+            studentUserId: p.studentId,
+            proposal: p.proposal, // base64 string
+            status: p.status,
+          }));
+          setProposals(mappedProposals);
         } else {
           setProposals([]);
         }
@@ -93,27 +103,20 @@ const NotificationsPage: React.FC = () => {
   }
 
   if (error) {
-    return
-     <div className="text-center text-red-500">{error}</div>;
+    return <div className="text-center text-red-500">{error}</div>;
   }
 
   if (proposals.length === 0) {
-    <div className="text-center text-white font-semibold text-lg mt-10">
-      No new notifications. All notifications have been read.
-    </div>
+    return (
+      <div className="text-center text-white font-semibold text-lg mt-10">
+        No new notifications. All notifications have been read.
+      </div>
+    );
   }
 
   const handleSeeDetails = (proposal: Proposal) => {
     setSelectedProposal(proposal);
     setShowModal(true);
-  };
-
-  const handleSeeProfile = (studentUserId: string) => {
-    if (studentUserId) {
-      router.push(`/industryexpert/student-profile/${studentUserId}`);
-    } else {
-      toast.error("Student ID not available");
-    }
   };
 
   const handleAcceptProposal = async (proposalId: string) => {
@@ -160,9 +163,9 @@ const NotificationsPage: React.FC = () => {
       if (response.ok) {
         toast.success("Proposal rejected successfully!");
         setProposals((prev) =>
-          prev.filter((proposal) => proposal.id !== proposalId) 
+          prev.filter((proposal) => proposal.id !== proposalId)
         );
-        setShowModal(false); // Close the modal
+        setShowModal(false);
       } else {
         toast.error("Failed to reject proposal.");
       }
@@ -186,7 +189,7 @@ const NotificationsPage: React.FC = () => {
                 {proposal.projectTitle}
               </h2>
               <p className="text-gray-400">From: {proposal.studentName}</p>
-              <p className="text-gray-300 mb-2">{proposal.proposal}</p>
+              <p className="text-gray-300 mb-2">You have a new proposal document.</p>
               <p className="text-gray-400">Status: {proposal.status}</p>
               <button
                 className="mt-4 text-gray-900 bg-green-400 rounded py-2 px-4 hover:bg-green-500 transition duration-200"
@@ -194,14 +197,11 @@ const NotificationsPage: React.FC = () => {
               >
                 See Details
               </button>
-            
-          
             </div>
           ))}
         </div>
       </div>
 
-      {/* Proposal Details Modal */}
       {showModal && selectedProposal && (
         <ProposalDetailsModal
           proposal={selectedProposal}
