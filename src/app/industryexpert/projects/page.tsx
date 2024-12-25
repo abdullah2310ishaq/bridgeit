@@ -1,125 +1,151 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import ProjecttCard from "../industrycomponents/ProjectsPageCard";
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  endDate: string;
+}
 
 const ExpertProjectsPage: React.FC = () => {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [indExpertId, setIndExpertId] = useState<string | null>(null);
+  const [assignedProjects, setAssignedProjects] = useState<Project[]>([]);
+  const [unassignedProjects, setUnassignedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const [activeTab, setActiveTab] = useState<"assigned" | "unassigned">("assigned");
   const router = useRouter();
 
   useEffect(() => {
     const fetchProjects = async () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
-        toast.error("You must be logged in to view your projects.");
-        router.push("/login"); // Redirect to login page if not logged in
+        router.push("/login");
         return;
       }
 
       try {
-        // Fetch authorized user profile to get userId
+        // Fetch expert ID
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        if (profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          const userId = profileData.userId;
+        if (!profileResponse.ok) throw new Error("Failed to fetch user info");
+        const profileData = await profileResponse.json();
+        const userId = profileData.userId;
 
-          // Fetch IndExpertId using userId
-          const expertResponse = await fetch(
-            `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (expertResponse.ok) {
-            const expertData = await expertResponse.json();
-
-            if (expertData.indExptId) {
-              const indExptId = expertData.indExptId;
-              setIndExpertId(indExptId);
-
-              // Fetch projects using IndExpertId
-              const projectsResponse = await fetch(
-                `https://localhost:7053/api/projects/get-expert-projects-by-id/${indExptId}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
-
-              if (projectsResponse.ok) {
-                const projectsData = await projectsResponse.json();
-                setProjects(projectsData);
-              } else {
-                toast.error("Failed to fetch projects.");
-              }
-            } else {
-              toast.error("Unable to fetch your expert ID.");
-            }
-          } else {
-            toast.error("Failed to fetch expert data.");
+        // Fetch expert profile
+        const expertResponse = await fetch(
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
           }
+        );
+
+        if (!expertResponse.ok) throw new Error("Failed to fetch expert profile");
+        const expertData = await expertResponse.json();
+
+        // Fetch assigned projects
+        const assignedResponse = await fetch(
+          `https://localhost:7053/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (assignedResponse.ok) {
+          const assignedData = await assignedResponse.json();
+          setAssignedProjects(assignedData);
         } else {
-          toast.error("Failed to fetch user profile.");
+          throw new Error("Failed to fetch assigned projects");
+        }
+
+        // Fetch unassigned projects
+        const unassignedResponse = await fetch(
+          `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (unassignedResponse.ok) {
+          const unassignedData = await unassignedResponse.json();
+          setUnassignedProjects(unassignedData);
+        } else {
+          throw new Error("Failed to fetch unassigned projects");
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
-        toast.error("An error occurred while fetching projects.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProjects();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-gray-300 p-6 flex justify-center items-center">
+      <div className="min-h-screen bg-gray-900 text-gray-300 flex justify-center items-center">
         <p>Loading...</p>
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6">
-      <h1 className="text-2xl font-bold text-white mb-6">My Projects</h1>
-      {projects.length > 0 ? (
-        <div className="grid gap-6">
-          {projects.map((project) => (
-            <div key={project.id} className="bg-gray-800 p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-white mb-2">{project.title}</h2>
-              <p className="text-gray-400 mb-4">{project.description}</p>
-              <p><strong>Start Date:</strong> {project.startDate}</p>
-              <p><strong>End Date:</strong> {project.endDate}</p>
-              <p><strong>Status:</strong> {project.currentStatus}</p>
-              {/* Include other project details as needed */}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No projects found.</p>
-      )}
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+      <h1 className="text-2xl font-bold mb-6">My Projects</h1>
+
+      {/* Tabs */}
+      <div className="flex space-x-4 mb-6">
+        <button
+          onClick={() => setActiveTab("assigned")}
+          className={`py-2 px-4 rounded-lg ${
+            activeTab === "assigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+          }`}
+        >
+          Assigned Projects
+        </button>
+        <button
+          onClick={() => setActiveTab("unassigned")}
+          className={`py-2 px-4 rounded-lg ${
+            activeTab === "unassigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+          }`}
+        >
+          Unassigned Projects
+        </button>
+      </div>
+
+      {/* Project Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {activeTab === "assigned"
+          ? assignedProjects.map((project) => (
+              <ProjecttCard
+                key={project.id}
+                projectId={project.id}
+                title={project.title}
+                description={project.description}
+                endDate={project.endDate}
+              />
+            ))
+          : unassignedProjects.map((project) => (
+              <ProjecttCard
+                key={project.id}
+                projectId={project.id}
+                title={project.title}
+                description={project.description}
+                endDate={project.endDate}
+              />
+            ))}
+      </div>
     </div>
   );
 };

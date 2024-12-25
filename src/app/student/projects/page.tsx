@@ -6,7 +6,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { FaRocket, FaCode, FaCheckCircle, FaSpinner } from "react-icons/fa";
-import Image from "next/image";
 
 interface Project {
   id: string;
@@ -89,6 +88,10 @@ const ProjectsPage: React.FC = () => {
     fetchProjects();
   }, [router]);
 
+  const handleCardClick = (projectId: string) => {
+    router.push(`/student/projects/personal/${projectId}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -128,7 +131,8 @@ const ProjectsPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden group"
+                onClick={() => handleCardClick(project.id)} // Handle card click
+                className="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden group cursor-pointer"
               >
                 <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-sm rounded-bl-lg">
                   {project.status}

@@ -202,8 +202,8 @@ const FacultyPage: React.FC = () => {
       {/* Upcoming Events Section */}
       <UpcomingEventsSection
         events={events}
-        onSeeMoreEvents={onSeeMoreEvents}
-        onCreateEvent={onCreateEvent}
+        onSeeMoreEvents={onCreateEvent}
+        onCreateEvent={onSeeMoreEvents}
       />
     </div>
   );

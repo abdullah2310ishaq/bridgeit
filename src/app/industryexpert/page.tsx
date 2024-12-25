@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import IndustryProfile from './industrycomponents/IndustryProfile';
-import CompanyProfile from './industrycomponents/CompanyProfile'; 
-import ProjectCard from './industrycomponents/ProjectsCardd';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import IndustryProfile from "./industrycomponents/IndustryProfile";
+import CompanyProfile from "./industrycomponents/CompanyProfile";
+import ProjectCard from "./industrycomponents/ProjectsCardd";
 
 interface IndustryExpertProfile {
   userId: string;
@@ -28,42 +28,50 @@ interface Project {
 
 const IndustryExpertPage: React.FC = () => {
   const [expertProfile, setExpertProfile] = useState<IndustryExpertProfile | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [unassignedProjects, setUnassignedProjects] = useState<Project[]>([]);
+  const [assignedProjects, setAssignedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"unassigned" | "assigned">("unassigned");
   const router = useRouter();
 
   useEffect(() => {
     const fetchProfileAndProjects = async () => {
-      const token = localStorage.getItem('jwtToken');
+      const token = localStorage.getItem("jwtToken");
       if (!token) {
-        router.push('/auth/login-user');
+        router.push("/auth/login-user");
         return;
       }
 
       try {
-        const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Fetch Industry Expert Profile
+        const profileResponse = await fetch(
+          "https://localhost:7053/api/auth/authorized-user-info",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (!profileResponse.ok) throw new Error('Failed to fetch profile');
+        if (!profileResponse.ok) throw new Error("Failed to fetch profile");
 
         const profileData = await profileResponse.json();
         const userId = profileData.userId;
 
-        // Fetch industry expert profile
-        const expertResponse = await fetch(`https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const expertResponse = await fetch(
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (!expertResponse.ok) throw new Error('Failed to fetch industry expert profile');
-        
+        if (!expertResponse.ok) throw new Error("Failed to fetch industry expert profile");
+
         const expertData = await expertResponse.json();
         setExpertProfile({
           userId: expertData.userId,
@@ -78,24 +86,45 @@ const IndustryExpertPage: React.FC = () => {
           imageData: expertData.imageData,
         });
 
-        // Fetch projects for the industry expert
-        const projectsResponse = await fetch(`https://localhost:7053/api/projects/get-expert-projects-by-id/${expertData.indExptId}`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Fetch Assigned Projects
+        const assignedResponse = await fetch(
+          `https://localhost:7053/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (projectsResponse.ok) {
-          const projectsData = await projectsResponse.json();
-          setProjects(projectsData); // Save the projects
+        if (assignedResponse.ok) {
+          const assignedData = await assignedResponse.json();
+          setAssignedProjects(assignedData);
         } else {
-          console.error('Failed to fetch projects:', projectsResponse.statusText);
+          console.error("Failed to fetch assigned projects:", assignedResponse.statusText);
+        }
+
+        // Fetch Unassigned Projects
+        const unassignedResponse = await fetch(
+          `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (unassignedResponse.ok) {
+          const unassignedData = await unassignedResponse.json();
+          setUnassignedProjects(unassignedData);
+        } else {
+          console.error("Failed to fetch unassigned projects:", unassignedResponse.statusText);
         }
       } catch (error) {
-        setError('Failed to fetch data');
-        console.error('Failed to fetch data:', error);
-        router.push('/unauthorized');
+        setError("Failed to fetch data");
+        console.error("Failed to fetch data:", error);
+        router.push("/unauthorized");
       } finally {
         setLoading(false);
       }
@@ -105,8 +134,8 @@ const IndustryExpertPage: React.FC = () => {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('jwtToken');
-    router.push('/auth/login-user');
+    localStorage.removeItem("jwtToken");
+    router.push("/auth/login-user");
   };
 
   if (loading) {
@@ -129,15 +158,18 @@ const IndustryExpertPage: React.FC = () => {
           <h1 className="text-xl font-bold text-gray-700">Industry Expert Dashboard</h1>
           <ul className="flex space-x-6">
             <li>
-              <button 
-                onClick={() => router.push("/industryexpert/notifications")} 
+              <button
+                onClick={() => router.push("/industryexpert/notifications")}
                 className="text-gray-500 hover:text-blue-600 transition"
               >
                 Notifications
               </button>
             </li>
             <li>
-              <button onClick={handleLogout} className="text-gray-500 hover:text-red-600 transition">
+              <button
+                onClick={handleLogout}
+                className="text-gray-500 hover:text-red-600 transition"
+              >
                 Logout
               </button>
             </li>
@@ -165,35 +197,53 @@ const IndustryExpertPage: React.FC = () => {
         />
 
         {/* Company Profile Section */}
-        <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-pink-500 mb-6">
-  Industry Information
-</h2>
-<CompanyProfile
-  companyName={expertProfile.companyName}
-  address={expertProfile.address}
-  contact={expertProfile.contact}
-  onEditCompany={() => {}}
-/>
+        <CompanyProfile
+          companyName={expertProfile.companyName}
+          address={expertProfile.address}
+          contact={expertProfile.contact}
+          onEditCompany={() => {}}
+        />
 
+        {/* Tabs for Assigned and Unassigned Projects */}
+        <div className="flex space-x-4">
+          <button
+            onClick={() => setActiveTab("unassigned")}
+            className={`py-2 px-4 rounded-lg ${
+              activeTab === "unassigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+            }`}
+          >
+            Unassigned Projects
+          </button>
+          <button
+            onClick={() => setActiveTab("assigned")}
+            className={`py-2 px-4 rounded-lg ${
+              activeTab === "assigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+            }`}
+          >
+            Assigned Projects
+          </button>
+        </div>
 
         {/* Projects Section */}
-        <div>
-          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-6">Projects</h2>
-          {projects.length === 0 ? (
-            <p className="text-gray-500">No projects found</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activeTab === "unassigned"
+            ? unassignedProjects.map((project) => (
                 <ProjectCard
-                  key={project.id}
-                  title={project.title}
-                  description={project.description}
-                  endDate={project.endDate}
-                  name={project.name}
+                key={project.id}
+                projectId={project.id}
+                title={project.title}
+                description={project.description}
+                endDate={project.endDate} name={""}                />
+              ))
+            : assignedProjects.map((project) => (
+                <ProjectCard
+                key={project.id}
+                projectId={project.id}
+                title={project.title}
+                description={project.description}
+                endDate={project.endDate} name={""}           
                 />
               ))}
-            </div>
-          )}
         </div>
       </div>
     </div>

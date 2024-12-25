@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "./stdcomps/NavBar"; // Adjust the import path
+import ChatWidget from "../chat/ChatWidget";
 
 interface UserProfile {
   userId: string;
@@ -97,6 +98,7 @@ const StudentLayout = ({ children }: { children: ReactNode }) => {
       <div className="pt-16"> {/* pt-16 ensures content is below the navbar */}
         <main>{children}</main>
       </div>
+      <ChatWidget />
     </div>
   );
 };

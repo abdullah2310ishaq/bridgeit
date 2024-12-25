@@ -10,7 +10,7 @@ import CompletedProjectsSection from "./stdcomps/CompletedProjects";
 import EventsSection from "./stdcomps/Events";
 import ChatWidget from "../chat/ChatWidget";
 
-
+// Import the ChatWidget component
 
 interface UserProfile {
   userId: string;
@@ -51,12 +51,13 @@ interface OngoingProject {
 
 const StudentPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showModal, setShowModal] = useState(false);
-
+  const [personalProjects, setPersonalProjects] = useState<Project[]>([]);
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -124,10 +125,8 @@ const StudentPage: React.FC = () => {
 
             if (projectsResponse.ok) {
               const projectsData = await projectsResponse.json();
-              setProjects(projectsData.slice(0, 3)); // Limit to 3 projects
-            } else {
-              setProjects([]);
-            }
+              setCompletedProjects(projectsData.slice(0, 3)); // Limit to 3 projects
+            } 
 
             // Fetch ongoing projects
             const ongoingProjectsResponse = await fetch(
@@ -204,9 +203,7 @@ const StudentPage: React.FC = () => {
     router.push("/student/projects/create");
   };
 
-  const goToEventsPage = () => {
-    router.push("/student/events");
-  };
+ 
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -238,25 +235,22 @@ const StudentPage: React.FC = () => {
       />
 
       {/* Ongoing Projects */}
-      <OngoingProjectsSection
-        ongoingProjects={ongoingProjects}
-        goToProjectsPage={goToProjectsPage}
-        createProjects={createProjects}
-      />
+      <OngoingProjectsSection ongoingProjects={ongoingProjects} />
+
 
       {/* Completed Projects */}
       <CompletedProjectsSection
-        projects={projects} />
+        projects={completedProjects} />
 
       {/* Events Section */}
       <EventsSection
         events={events}
         gradientStyles={gradientStyles}
-        //goToEventsPage={goToEventsPage}
       />
-      <ChatWidget/>
-    </div>
-    
+
+      {/* Chat Widget Component */}
+      /<ChatWidget /> 
+          </div>
   );
 };
 

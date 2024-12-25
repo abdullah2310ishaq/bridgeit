@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
 import { motion } from "framer-motion";
 
 interface StudentData {
@@ -30,8 +29,17 @@ const UpdateStudentPage: React.FC = () => {
   useEffect(() => {
     async function fetchStudentData() {
       const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        toast.error("User not authenticated. Redirecting to login.", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+        router.push("/auth/login-user");
+        return;
+      }
 
       try {
+        // Fetch authenticated user info
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
@@ -47,6 +55,7 @@ const UpdateStudentPage: React.FC = () => {
           const userId = profileData.userId;
           setUserId(userId);
 
+          // Fetch student-specific data
           const studentResponse = await fetch(
             `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
@@ -88,7 +97,7 @@ const UpdateStudentPage: React.FC = () => {
     }
 
     fetchStudentData();
-  }, []);
+  }, [router]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -132,14 +141,18 @@ const UpdateStudentPage: React.FC = () => {
 
       // Update user description
       const updateDescriptionResponse = await fetch(
-        `https://localhost:7053/api/edit-user-profile/update-user-description/${userId}`,
+        `https://localhost:7053/api/edit-user-profile/update-user-data/${userId}`,
         {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(studentData.description),
+          body: JSON.stringify({
+            description: studentData.description,
+            Firstname: studentData.firstName,
+            Lastname: studentData.lastName,
+          }),
         }
       );
 
@@ -166,44 +179,12 @@ const UpdateStudentPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-gray-900 text-gray-200 p-8 space-x-8">
-      {/* Left Side with Gradient Text, Logo, and Edit Image */}
-      <div className="flex flex-col items-center lg:items-start lg:ml-16">
-        <h1 className="text-6xl font-extrabold text-white mb-4 flex items-center">
-          {/* Logo Image */}
-          <Image
-            src="/logo.jpg"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="mx-4"
-          />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
-            Edit
-          </span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 ml-2">
-            Profile
-          </span>
-        </h1>
-        {/* Edit Profile Image */}
-        <div className="mt-6">
-          <Image
-            src="/editpr.png"
-            alt="Edit Profile"
-            width={400}
-            height={300}
-            className="rounded-lg"
-          />
-        </div>
-      </div>
-
-      {/* Right Side with Form */}
+    <div className="min-h-screen flex flex-col items-center bg-gray-900 text-gray-200 p-8">
+      <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">
+        Update Profile
+      </h1>
       <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
-        <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">
-          Update Profile
-        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* First Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               First Name
@@ -217,7 +198,6 @@ const UpdateStudentPage: React.FC = () => {
               required
             />
           </div>
-          {/* Last Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               Last Name
@@ -231,7 +211,6 @@ const UpdateStudentPage: React.FC = () => {
               required
             />
           </div>
-          {/* Email */}
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               Email
@@ -245,7 +224,6 @@ const UpdateStudentPage: React.FC = () => {
               required
             />
           </div>
-          {/* Roll Number */}
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               Roll Number
@@ -259,7 +237,6 @@ const UpdateStudentPage: React.FC = () => {
               required
             />
           </div>
-          {/* Description */}
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               Description
@@ -273,7 +250,6 @@ const UpdateStudentPage: React.FC = () => {
               placeholder="Tell us something about yourself..."
             />
           </div>
-          {/* Submit Button */}
           <div className="flex justify-center">
             <motion.button
               type="submit"
@@ -286,13 +262,6 @@ const UpdateStudentPage: React.FC = () => {
             </motion.button>
           </div>
         </form>
-        {/* Back to Profile Button */}
-        <button
-          onClick={() => router.push("/student/profile")}
-          className="mt-6 py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300 w-full"
-        >
-          Back to Profile
-        </button>
       </div>
       <ToastContainer />
     </div>
