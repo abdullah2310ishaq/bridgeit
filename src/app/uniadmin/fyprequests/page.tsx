@@ -42,7 +42,6 @@ const FypRequestsPage: React.FC = () => {
 
     const fetchAdminAndFyps = async () => {
       try {
-        // Step 1: Fetch admin profile
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
@@ -60,7 +59,6 @@ const FypRequestsPage: React.FC = () => {
         const profileData = await profileResponse.json();
         const userId = profileData.userId;
 
-        // Fetch admin details to get universityId
         const adminResponse = await fetch(
           `https://localhost:7053/api/get-uni-admins/admins-by-id/${userId}`,
           {
@@ -78,7 +76,6 @@ const FypRequestsPage: React.FC = () => {
 
         setAdminProfile({ universityId: adminData.uniId });
 
-        // Step 2: Fetch FYP requests
         const fypResponse = await fetch(
           `https://localhost:7053/api/uni-admin-for-fyp/get-fyps-for-uniAdmin-for-approval?uniId=${adminData.uniId}`,
           {
@@ -108,12 +105,19 @@ const FypRequestsPage: React.FC = () => {
   );
 
   if (loading) return <div className="text-center text-gray-400">Loading...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white py-8">
-      <div className="max-w-7xl mx-auto px-6">
-        <h1 className="text-4xl font-extrabold mb-8 text-center text-purple-300">FYP Requests</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white py-10 relative overflow-hidden">
+      {/* Background Graphics */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full opacity-30 blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        <h1 className="text-5xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-400 mb-6">
+          FYP Requests
+        </h1>
 
         {/* Filter Tabs */}
         <div className="flex justify-center space-x-4 mb-8">
@@ -121,10 +125,10 @@ const FypRequestsPage: React.FC = () => {
             <button
               key={status}
               onClick={() => setFilter(status as "All" | "Pending" | "Approved" | "Rejected")}
-              className={`px-6 py-2 rounded-full text-lg font-semibold transition-colors ${
+              className={`px-6 py-2 rounded-full text-lg font-semibold transition-all ${
                 filter === status
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-700 text-gray-300 hover:bg-purple-500 hover:text-white"
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-gray-700 text-gray-300 hover:bg-blue-500 hover:text-white"
               }`}
             >
               {status}
@@ -133,40 +137,58 @@ const FypRequestsPage: React.FC = () => {
         </div>
 
         {/* FYP Request Tiles */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredRequests.map((fyp) => (
-            <div
-              key={fyp.fId}
-              onClick={() => router.push(`/uniadmin/fyprequests/${fyp.fId}`)}
-              className="cursor-pointer bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105"
-            >
-              <div className="flex items-center justify-center h-20 w-20 bg-purple-700 rounded-full mx-auto mb-4">
-                <FaProjectDiagram className="text-4xl text-white" />
-              </div>
-              <h2 className="text-lg font-bold text-center text-purple-200 mb-2">{fyp.title}</h2>
-              <p className="text-sm text-gray-300 text-center">
-                <strong>Batch:</strong> {fyp.batch}
-              </p>
-              <p className="text-sm text-gray-300 text-center">
-                <strong>Technology:</strong> {fyp.technology}
-              </p>
-              <p
-                className={`mt-4 text-center text-lg font-bold ${
-                  fyp.status === "Pending"
-                    ? "text-yellow-400"
-                    : fyp.status === "Approved"
-                    ? "text-green-400"
-                    : "text-red-400"
-                }`}
-              >
-                {fyp.status}
-              </p>
-              <p className="text-sm text-gray-400 text-center mt-2">
-                <strong>Student:</strong> {fyp.studentName}
-              </p>
-            </div>
-          ))}
+{filteredRequests.length > 0 ? (
+  <div className="space-y-6">
+    {filteredRequests.map((fyp) => (
+      <div
+        key={fyp.fId}
+        onClick={() => router.push(`/uniadmin/fyprequests/${fyp.fId}`)}
+        className="relative flex flex-col md:flex-row items-center bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 p-6 border border-gray-700 overflow-hidden"
+      >
+        {/* Icon Section */}
+        <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-500 rounded-full flex items-center justify-center shadow-md">
+          <FaProjectDiagram className="text-4xl text-white" />
         </div>
+
+        {/* Content Section */}
+        <div className="flex-grow ml-0 md:ml-6 mt-4 md:mt-0 text-center md:text-left">
+          <h2 className="text-2xl font-bold text-white mb-2">{fyp.title}</h2>
+          <div className="text-sm text-gray-300 space-y-1">
+            <p>
+              <strong>Batch:</strong> {fyp.batch}
+            </p>
+            <p>
+              <strong>Technology:</strong> {fyp.technology}
+            </p>
+            <p>
+              <strong>Student:</strong> {fyp.studentName}
+            </p>
+          </div>
+        </div>
+
+        {/* Status Section */}
+        <div
+          className={`flex-shrink-0 mt-4 md:mt-0 py-2 px-4 rounded-full text-lg font-semibold ${
+            fyp.status === "Pending"
+              ? "bg-yellow-500 text-black"
+              : fyp.status === "Approved"
+              ? "bg-green-500 text-black"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          {fyp.status}
+        </div>
+
+        {/* Hover Effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-transparent to-blue-500 opacity-0 hover:opacity-10 transition-opacity"></div>
+      </div>
+    ))}
+  </div>
+) : (
+  <div className="text-center text-gray-400 mt-10">
+    <p className="text-lg">There are no FYP requests matching the selected filter.</p>
+  </div>
+)}
       </div>
       <ToastContainer />
     </div>

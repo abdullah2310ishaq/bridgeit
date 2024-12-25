@@ -86,7 +86,6 @@ var UserProfilePage = function () {
                         return [4 /*yield*/, adminResponse.json()];
                     case 4:
                         adminData = _a.sent();
-                        // Set profile data
                         setProfile({
                             id: adminData.userId,
                             firstName: adminData.firstName,
@@ -117,45 +116,39 @@ var UserProfilePage = function () {
         return react_1["default"].createElement("div", { className: "text-center text-gray-400" }, "Loading...");
     if (error)
         return react_1["default"].createElement("div", { className: "text-center text-red-500" }, error);
-    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white" },
-        react_1["default"].createElement("div", { className: "max-w-4xl mx-auto p-6" },
-            react_1["default"].createElement("h1", { className: "text-4xl font-bold mb-6" }, "University Admin Profile"),
-            profile ? (react_1["default"].createElement("div", { className: "bg-gray-700 p-6 rounded-lg shadow-lg" },
-                react_1["default"].createElement("div", { className: "flex items-center mb-6" },
-                    react_1["default"].createElement("img", { src: "data:image/png;base64," + profile.profileImage, alt: "Profile", className: "w-28 h-28 rounded-full border-4 border-gray-600 shadow-md mr-6" }),
-                    react_1["default"].createElement("div", null,
-                        react_1["default"].createElement("h2", { className: "text-3xl font-bold" },
+    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center py-10 px-4 relative overflow-hidden" },
+        react_1["default"].createElement("div", { className: "absolute inset-0 z-0" },
+            react_1["default"].createElement("div", { className: "absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl" }),
+            react_1["default"].createElement("div", { className: "absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full opacity-30 blur-3xl" }),
+            react_1["default"].createElement("div", { className: "absolute top-1/3 left-1/3 w-72 h-72 bg-gradient-to-br from-teal-500 to-indigo-500 rounded-full opacity-20 blur-2xl" })),
+        react_1["default"].createElement("div", { className: "max-w-5xl w-full bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 md:p-10 relative z-10 transform hover:scale-105 transition-transform duration-500" },
+            react_1["default"].createElement("div", { className: "flex flex-col sm:flex-row items-center justify-between mb-10" },
+                react_1["default"].createElement("div", { className: "flex flex-col sm:flex-row items-center space-x-0 sm:space-x-6" },
+                    react_1["default"].createElement("img", { src: "data:image/png;base64," + (profile === null || profile === void 0 ? void 0 : profile.profileImage), alt: "Profile", className: "w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-blue-500 shadow-lg transform hover:scale-110 transition-transform duration-300" }),
+                    react_1["default"].createElement("div", { className: "mt-4 sm:mt-0 text-center sm:text-left" },
+                        react_1["default"].createElement("h1", { className: "text-3xl sm:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" }, profile === null || profile === void 0 ? void 0 :
                             profile.firstName,
-                            " ",
+                            " ", profile === null || profile === void 0 ? void 0 :
                             profile.lastName),
-                        react_1["default"].createElement("p", { className: "text-lg text-gray-300" },
-                            react_1["default"].createElement(fa_1.FaEnvelope, { className: "inline mr-2" }),
-                            " ",
-                            profile.email))),
-                react_1["default"].createElement("div", { className: "mt-6 space-y-4" },
-                    react_1["default"].createElement("div", { className: "flex items-start" },
-                        react_1["default"].createElement(fa_1.FaBuilding, { className: "text-blue-500 mr-4 mt-1" }),
-                        react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("h3", { className: "text-xl font-semibold" }, "University"),
-                            react_1["default"].createElement("p", { className: "text-gray-300" }, profile.university))),
-                    react_1["default"].createElement("div", { className: "flex items-start" },
-                        react_1["default"].createElement(fa_1.FaMapMarkerAlt, { className: "text-green-500 mr-4 mt-1" }),
-                        react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("h3", { className: "text-xl font-semibold" }, "Office Address"),
-                            react_1["default"].createElement("p", { className: "text-gray-300" }, profile.officeAddress))),
-                    react_1["default"].createElement("div", { className: "flex items-start" },
-                        react_1["default"].createElement(fa_1.FaPhone, { className: "text-purple-500 mr-4 mt-1" }),
-                        react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("h3", { className: "text-xl font-semibold" }, "Contact"),
-                            react_1["default"].createElement("p", { className: "text-gray-300" }, profile.contact))),
-                    react_1["default"].createElement("div", { className: "flex items-start" },
-                        react_1["default"].createElement(fa_1.FaUser, { className: "text-pink-500 mr-4 mt-1" }),
-                        react_1["default"].createElement("div", null,
-                            react_1["default"].createElement("h3", { className: "text-xl font-semibold" }, "About Me"),
-                            react_1["default"].createElement("p", { className: "text-gray-300" }, profile.description)))),
-                react_1["default"].createElement("button", { onClick: function () { return router.push("/profile/edit"); }, className: "mt-6 bg-blue-500 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-600 flex items-center" },
+                        react_1["default"].createElement("p", { className: "text-sm sm:text-lg text-gray-300 mt-2 flex items-center justify-center sm:justify-start" },
+                            react_1["default"].createElement(fa_1.FaEnvelope, { className: "mr-2 text-blue-400" }),
+                            (profile === null || profile === void 0 ? void 0 : profile.email) || "---"))),
+                react_1["default"].createElement("button", { onClick: function () { return router.push("/profile/edit"); }, className: "mt-6 sm:mt-0 bg-gradient-to-r from-purple-500 to-blue-600 px-6 py-3 rounded-lg shadow-lg hover:from-purple-600 hover:to-blue-700 transition-transform duration-300 flex items-center text-white font-semibold" },
                     react_1["default"].createElement(fa_1.FaEdit, { className: "mr-2" }),
-                    " Edit Profile"))) : (react_1["default"].createElement("p", { className: "text-center text-red-500 mt-4" }, "No profile found")),
+                    " Edit Profile")),
+            react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8" },
+                react_1["default"].createElement(InfoCard, { icon: react_1["default"].createElement(fa_1.FaBuilding, { className: "text-blue-400 text-3xl" }), title: "University", content: (profile === null || profile === void 0 ? void 0 : profile.university) || "---" }),
+                react_1["default"].createElement(InfoCard, { icon: react_1["default"].createElement(fa_1.FaMapMarkerAlt, { className: "text-green-400 text-3xl" }), title: "Office Address", content: (profile === null || profile === void 0 ? void 0 : profile.officeAddress) || "---" }),
+                react_1["default"].createElement(InfoCard, { icon: react_1["default"].createElement(fa_1.FaPhone, { className: "text-purple-400 text-3xl" }), title: "Contact", content: (profile === null || profile === void 0 ? void 0 : profile.contact) || "---" }),
+                react_1["default"].createElement(InfoCard, { icon: react_1["default"].createElement(fa_1.FaUser, { className: "text-pink-400 text-3xl" }), title: "About Me", content: (profile === null || profile === void 0 ? void 0 : profile.description) || "---" })),
             react_1["default"].createElement(react_toastify_1.ToastContainer, null))));
+};
+var InfoCard = function (_a) {
+    var icon = _a.icon, title = _a.title, content = _a.content;
+    return (react_1["default"].createElement("div", { className: "flex items-start space-x-4 bg-gray-700 p-4 sm:p-6 rounded-lg shadow hover:shadow-lg hover:bg-gray-600 transition-transform duration-300" },
+        icon,
+        react_1["default"].createElement("div", null,
+            react_1["default"].createElement("h3", { className: "text-lg sm:text-xl font-semibold text-white" }, title),
+            react_1["default"].createElement("p", { className: "text-sm sm:text-base text-gray-300" }, content))));
 };
 exports["default"] = UserProfilePage;

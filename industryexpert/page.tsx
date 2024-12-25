@@ -233,7 +233,7 @@ const IndustryExpertPage: React.FC = () => {
                 projectId={project.id}
                 title={project.title}
                 description={project.description}
-                endDate={project.endDate}              />
+                endDate={project.endDate} name={""}                />
               ))
             : assignedProjects.map((project) => (
                 <ProjectCard
@@ -241,7 +241,7 @@ const IndustryExpertPage: React.FC = () => {
                 projectId={project.id}
                 title={project.title}
                 description={project.description}
-                endDate={project.endDate}           
+                endDate={project.endDate} name={""}           
                 />
               ))}
         </div>

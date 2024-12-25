@@ -33,7 +33,6 @@ const UserProfilePage: React.FC = () => {
 
     const fetchUserProfile = async () => {
       try {
-        // Fetch user information
         const response = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
@@ -46,7 +45,6 @@ const UserProfilePage: React.FC = () => {
         const userData = await response.json();
         const userId = userData.userId;
 
-        // Fetch admin profile using userId
         const adminResponse = await fetch(`https://localhost:7053/api/get-uni-admins/admins-by-id/${userId}`, {
           method: 'GET',
           headers: {
@@ -58,7 +56,6 @@ const UserProfilePage: React.FC = () => {
 
         const adminData = await adminResponse.json();
 
-        // Set profile data
         setProfile({
           id: adminData.userId,
           firstName: adminData.firstName,
@@ -85,63 +82,79 @@ const UserProfilePage: React.FC = () => {
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-4xl font-bold mb-6">University Admin Profile</h1>
-        {profile ? (
-          <div className="bg-gray-700 p-6 rounded-lg shadow-lg">
-            <div className="flex items-center mb-6">
-              <img
-                src={`data:image/png;base64,${profile.profileImage}`}
-                alt="Profile"
-                className="w-28 h-28 rounded-full border-4 border-gray-600 shadow-md mr-6"
-              />
-              <div>
-                <h2 className="text-3xl font-bold">{profile.firstName} {profile.lastName}</h2>
-                <p className="text-lg text-gray-300"><FaEnvelope className="inline mr-2" /> {profile.email}</p>
-              </div>
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center py-10 px-4 relative overflow-hidden">
+      {/* Background Graphics */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full opacity-30 blur-3xl"></div>
+        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-gradient-to-br from-teal-500 to-indigo-500 rounded-full opacity-20 blur-2xl"></div>
+      </div>
+
+      <div className="max-w-5xl w-full bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 md:p-10 relative z-10 transform hover:scale-105 transition-transform duration-500">
+        {/* Profile Header */}
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-10">
+          <div className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-6">
+            <img
+              src={`data:image/png;base64,${profile?.profileImage}`}
+              alt="Profile"
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-blue-500 shadow-lg transform hover:scale-110 transition-transform duration-300"
+            />
+            <div className="mt-4 sm:mt-0 text-center sm:text-left">
+              <h1 className="text-3xl sm:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                {profile?.firstName} {profile?.lastName}
+              </h1>
+              <p className="text-sm sm:text-lg text-gray-300 mt-2 flex items-center justify-center sm:justify-start">
+                <FaEnvelope className="mr-2 text-blue-400" />
+                {profile?.email || "---"}
+              </p>
             </div>
-            <div className="mt-6 space-y-4">
-              <div className="flex items-start">
-                <FaBuilding className="text-blue-500 mr-4 mt-1" />
-                <div>
-                  <h3 className="text-xl font-semibold">University</h3>
-                  <p className="text-gray-300">{profile.university}</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <FaMapMarkerAlt className="text-green-500 mr-4 mt-1" />
-                <div>
-                  <h3 className="text-xl font-semibold">Office Address</h3>
-                  <p className="text-gray-300">{profile.officeAddress}</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <FaPhone className="text-purple-500 mr-4 mt-1" />
-                <div>
-                  <h3 className="text-xl font-semibold">Contact</h3>
-                  <p className="text-gray-300">{profile.contact}</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <FaUser className="text-pink-500 mr-4 mt-1" />
-                <div>
-                  <h3 className="text-xl font-semibold">About Me</h3>
-                  <p className="text-gray-300">{profile.description}</p>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => router.push(`/profile/edit`)}
-              className="mt-6 bg-blue-500 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-600 flex items-center"
-            >
-              <FaEdit className="mr-2" /> Edit Profile
-            </button>
           </div>
-        ) : (
-          <p className="text-center text-red-500 mt-4">No profile found</p>
-        )}
+          <button
+            onClick={() => router.push(`/profile/edit`)}
+            className="mt-6 sm:mt-0 bg-gradient-to-r from-purple-500 to-blue-600 px-6 py-3 rounded-lg shadow-lg hover:from-purple-600 hover:to-blue-700 transition-transform duration-300 flex items-center text-white font-semibold"
+          >
+            <FaEdit className="mr-2" /> Edit Profile
+          </button>
+        </div>
+
+        {/* Profile Information */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+          <InfoCard
+            icon={<FaBuilding className="text-blue-400 text-3xl" />}
+            title="University"
+            content={profile?.university || "---"}
+          />
+          <InfoCard
+            icon={<FaMapMarkerAlt className="text-green-400 text-3xl" />}
+            title="Office Address"
+            content={profile?.officeAddress || "---"}
+          />
+          <InfoCard
+            icon={<FaPhone className="text-purple-400 text-3xl" />}
+            title="Contact"
+            content={profile?.contact || "---"}
+          />
+          <InfoCard
+            icon={<FaUser className="text-pink-400 text-3xl" />}
+            title="About Me"
+            content={profile?.description || "---"}
+          />
+        </div>
+
+        {/* Toast Notification */}
         <ToastContainer />
+      </div>
+    </div>
+  );
+};
+
+const InfoCard: React.FC<{ icon: JSX.Element; title: string; content: string }> = ({ icon, title, content }) => {
+  return (
+    <div className="flex items-start space-x-4 bg-gray-700 p-4 sm:p-6 rounded-lg shadow hover:shadow-lg hover:bg-gray-600 transition-transform duration-300">
+      {icon}
+      <div>
+        <h3 className="text-lg sm:text-xl font-semibold text-white">{title}</h3>
+        <p className="text-sm sm:text-base text-gray-300">{content}</p>
       </div>
     </div>
   );

@@ -156,7 +156,7 @@ const EditIndustryExpertProfile: React.FC = () => {
               className="w-full p-4 bg-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm text-gray-300">Company Name</label>
             <input
               type="text"
@@ -195,7 +195,7 @@ const EditIndustryExpertProfile: React.FC = () => {
               className="w-full p-4 bg-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={4}
             ></textarea>
-          </div>
+          </div> */}
           <button
             type="button"
             onClick={handleSaveChanges}

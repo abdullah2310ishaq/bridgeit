@@ -51,7 +51,9 @@ exports.__esModule = true;
 var react_1 = require("react");
 var navigation_1 = require("next/navigation");
 var react_toastify_1 = require("react-toastify");
+var image_1 = require("next/image");
 require("react-toastify/dist/ReactToastify.css");
+var framer_motion_1 = require("framer-motion");
 var EditUniAdminProfile = function () {
     var _a = react_1.useState(null), profile = _a[0], setProfile = _a[1];
     var _b = react_1.useState(true), loading = _b[0], setLoading = _b[1];
@@ -165,7 +167,7 @@ var EditUniAdminProfile = function () {
                     _a.label = 4;
                 case 4:
                     react_toastify_1.toast.success('Profile updated successfully!');
-                    router.push('uniadmin/profile'); // Redirect to dashboard
+                    router.push('/uniadmin/profile'); // Redirect to dashboard
                     return [3 /*break*/, 6];
                 case 5:
                     err_2 = _a.sent();
@@ -180,30 +182,39 @@ var EditUniAdminProfile = function () {
         return react_1["default"].createElement("div", { className: "text-center text-gray-400" }, "Loading...");
     if (error)
         return react_1["default"].createElement("div", { className: "text-center text-red-500" }, error);
-    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-800 text-white" },
-        react_1["default"].createElement("div", { className: "max-w-4xl mx-auto p-6" },
-            react_1["default"].createElement("h1", { className: "text-3xl font-bold mb-4" }, "Edit Profile"),
-            react_1["default"].createElement("div", { className: "bg-gray-700 p-6 rounded-lg shadow-lg" },
-                react_1["default"].createElement("div", { className: "mb-6" },
-                    react_1["default"].createElement("label", { className: "block text-gray-400" }, "Profile Image"),
-                    react_1["default"].createElement("input", { type: "file", onChange: handleImageChange, className: "block mt-2 text-white" }),
-                    form.profileImage && react_1["default"].createElement("img", { src: form.profileImage, alt: "Profile", className: "w-24 h-24 rounded-full mt-4" })),
-                react_1["default"].createElement("div", { className: "mb-4" },
-                    react_1["default"].createElement("label", { className: "block text-gray-400" }, "First Name"),
-                    react_1["default"].createElement("input", { type: "text", name: "firstName", value: form.firstName, onChange: handleInputChange, className: "w-full mt-2 p-2 bg-gray-800 border border-gray-600 rounded" })),
-                react_1["default"].createElement("div", { className: "mb-4" },
-                    react_1["default"].createElement("label", { className: "block text-gray-400" }, "Last Name"),
-                    react_1["default"].createElement("input", { type: "text", name: "lastName", value: form.lastName, onChange: handleInputChange, className: "w-full mt-2 p-2 bg-gray-800 border border-gray-600 rounded" })),
-                react_1["default"].createElement("div", { className: "mb-4" },
-                    react_1["default"].createElement("label", { className: "block text-gray-400" }, "Office Address"),
-                    react_1["default"].createElement("input", { type: "text", name: "officeAddress", value: form.officeAddress, onChange: handleInputChange, className: "w-full mt-2 p-2 bg-gray-800 border border-gray-600 rounded" })),
-                react_1["default"].createElement("div", { className: "mb-4" },
-                    react_1["default"].createElement("label", { className: "block text-gray-400" }, "Contact"),
-                    react_1["default"].createElement("input", { type: "text", name: "contact", value: form.contact, onChange: handleInputChange, className: "w-full mt-2 p-2 bg-gray-800 border border-gray-600 rounded" })),
-                react_1["default"].createElement("div", { className: "mb-4" },
-                    react_1["default"].createElement("label", { className: "block text-gray-400" }, "Description"),
-                    react_1["default"].createElement("textarea", { name: "description", value: form.description, onChange: handleInputChange, className: "w-full mt-2 p-2 bg-gray-800 border border-gray-600 rounded" })),
-                react_1["default"].createElement("button", { onClick: handleSubmit, className: "w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" }, "Save Changes")),
+    return (react_1["default"].createElement("div", { className: "min-h-screen bg-gray-900 text-gray-200 flex items-center justify-center p-8 relative overflow-hidden" },
+        react_1["default"].createElement("div", { className: "absolute inset-0 z-0" },
+            react_1["default"].createElement("div", { className: "absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl" }),
+            react_1["default"].createElement("div", { className: "absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full opacity-30 blur-3xl" }),
+            react_1["default"].createElement("div", { className: "absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-teal-500 to-indigo-500 rounded-full opacity-10 blur-2xl" })),
+        react_1["default"].createElement("div", { className: "max-w-4xl w-full bg-gray-800 p-8 rounded-lg shadow-2xl relative z-10" },
+            react_1["default"].createElement("div", { className: "flex items-center justify-center mb-8" },
+                react_1["default"].createElement(image_1["default"], { src: "/logo.jpg", alt: "Logo", width: 80, height: 80, className: "mr-4" }),
+                react_1["default"].createElement("h1", { className: "text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500" }, "Edit Profile")),
+            react_1["default"].createElement("div", { className: "space-y-10" },
+                react_1["default"].createElement("div", { className: "text-center" },
+                    react_1["default"].createElement("div", { className: "relative inline-block" },
+                        form.profileImage ? (react_1["default"].createElement("img", { src: form.profileImage, alt: "Profile", className: "w-32 h-32 rounded-full border-4 border-blue-500 shadow-md hover:scale-105 transition-transform duration-300" })) : (react_1["default"].createElement("div", { className: "w-32 h-32 rounded-full bg-gray-700 border-4 border-blue-500 flex items-center justify-center text-gray-400" }, "No Image")),
+                        react_1["default"].createElement("input", { type: "file", onChange: handleImageChange, className: "absolute inset-0 opacity-0 w-32 h-32 cursor-pointer", title: "Upload Image" })),
+                    react_1["default"].createElement("p", { className: "text-sm text-gray-400 mt-3" }, "Click to upload a new profile image")),
+                react_1["default"].createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-8" },
+                    react_1["default"].createElement("div", { className: "relative" },
+                        react_1["default"].createElement("input", { type: "text", name: "firstName", value: form.firstName, onChange: handleInputChange, className: "peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: " " }),
+                        react_1["default"].createElement("label", { className: "absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all" }, "First Name")),
+                    react_1["default"].createElement("div", { className: "relative" },
+                        react_1["default"].createElement("input", { type: "text", name: "lastName", value: form.lastName, onChange: handleInputChange, className: "peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: " " }),
+                        react_1["default"].createElement("label", { className: "absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all" }, "Last Name")),
+                    react_1["default"].createElement("div", { className: "relative col-span-1 sm:col-span-2" },
+                        react_1["default"].createElement("input", { type: "text", name: "officeAddress", value: form.officeAddress, onChange: handleInputChange, className: "peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: " " }),
+                        react_1["default"].createElement("label", { className: "absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all" }, "Office Address")),
+                    react_1["default"].createElement("div", { className: "relative" },
+                        react_1["default"].createElement("input", { type: "text", name: "contact", value: form.contact, onChange: handleInputChange, className: "peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: " " }),
+                        react_1["default"].createElement("label", { className: "absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all" }, "Contact")),
+                    react_1["default"].createElement("div", { className: "relative col-span-1 sm:col-span-2" },
+                        react_1["default"].createElement("textarea", { name: "description", value: form.description, onChange: handleInputChange, rows: 4, className: "peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: " " }),
+                        react_1["default"].createElement("label", { className: "absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all" }, "Description"))),
+                react_1["default"].createElement("div", { className: "text-center" },
+                    react_1["default"].createElement(framer_motion_1.motion.button, { whileHover: { scale: 1.02 }, whileTap: { scale: 0.98 }, onClick: handleSubmit, className: "w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-purple-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" }, "Save Changes"))),
             react_1["default"].createElement(react_toastify_1.ToastContainer, null))));
 };
 exports["default"] = EditUniAdminProfile;

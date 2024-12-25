@@ -235,7 +235,7 @@ const ProjectMilestonePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-300 p-6">
       {/* Project Overview */}
-      <h1 className="text-4xl font-bold text-green-400 mb-2">
+      <h1 className="text-5xl font-bold mb-12 text-transparent bg-clip-text p-3 bg-gradient-to-r from-blue-500 to-green-500 ">
         {project?.title}
       </h1>
       <p className="text-gray-400 mb-4">{project?.description}</p>
@@ -292,8 +292,8 @@ const ProjectMilestonePage: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-col">
-          <p className="text-lg font-semibold text-green-300">Overall Progress</p>
-          <p className="text-sm text-gray-400">
+          <p className="text-3xl font-semibold text-transparent bg-clip-text p-3 bg-gradient-to-r from-blue-500 to-blue-500">Overall Progress</p>
+          <p className="text-xl text-gray-400">
             {completedMilestones} / {totalMilestones} milestones completed
           </p>
         </div>
@@ -301,11 +301,11 @@ const ProjectMilestonePage: React.FC = () => {
 
       {/* --------- Milestone Section --------- */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold text-green-300">
+        <h2 className="text-4xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-600">
           Project Milestones
         </h2>
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="p-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-md hover:opacity-90 transition duration-300 flex items-center justify-center w-full md:w-auto"
           onClick={() => setShowAddModal(true)}
         >
           + Add Milestone

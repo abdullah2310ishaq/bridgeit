@@ -111,8 +111,13 @@ const FypDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white p-6">
-      <div className="max-w-4xl mx-auto bg-gray-700 rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-4">FYP Details</h1>
+      {/* Background Graphics */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full opacity-30 blur-3xl"></div>
+      </div>
+      <div className="max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400 mb-6">FYP Details</h1>
         {fypDetails && (
           <>
             <div className="space-y-4">

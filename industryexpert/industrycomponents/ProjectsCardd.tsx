@@ -7,6 +7,7 @@ interface ProjectCardProps {
   title: string;
   description: string;
   endDate: string;
+  name: string; // Name of the expert assigning the project
 }
 
 interface StudentDetails {
@@ -20,9 +21,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
   description,
   endDate,
+  
 }) => {
   const router = useRouter();
-  const [studentDetails, setStudentDetails] = useState<StudentDetails | null>(null);
+  const [studentDetails, setStudentDetails] = useState<StudentDetails | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,18 +37,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`
         );
 
-        if (!response.ok) throw new Error("Failed to fetch project details.");
+        if (!response.ok) throw new Error("Failed to fetch student details.");
 
-        const data = await response.json();
-        if (data.studentId) {
+        const projectData = await response.json();
+        if (projectData.studentId) {
           setStudentDetails({
-            studentId: data.studentId,
-            firstName: data.studentName.split(" ")[0],
-            lastName: data.studentName.split(" ")[1] || "",
+            studentId: projectData.studentId,
+            firstName: projectData.studentName.split(" ")[0],
+            lastName: projectData.studentName.split(" ")[1] || "",
           });
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred.");
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred."
+        );
       } finally {
         setLoading(false);
       }
@@ -86,6 +92,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <strong>End Date:</strong> {endDate}
         </p>
 
+      
+
         {/* Student Details */}
         {loading ? (
           <p className="text-gray-300">Loading student details...</p>
@@ -94,7 +102,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         ) : studentDetails ? (
           <div className="mb-4">
             <p className="text-gray-300">
-              <strong>Assigned Student:</strong> {studentDetails.firstName}{" "}
+              <strong>Student:</strong> {studentDetails.firstName}{" "}
               {studentDetails.lastName}
             </p>
           </div>
