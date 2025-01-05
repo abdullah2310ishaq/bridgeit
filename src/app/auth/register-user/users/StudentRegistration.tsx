@@ -123,15 +123,21 @@ const StudentRegistration: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
-
-    if (registeredEmails.includes(enteredEmail)) {
+  
+    // Regex for validating university email
+    const universityEmailRegex = /^[0-9]+@students\.au\.edu\.pk$/;
+  
+    if (!universityEmailRegex.test(enteredEmail)) {
+      setEmailError("Please use a valid university email (e.g., 210909@students.au.edu.pk).");
+      setIsSubmitDisabled(true);
+    } else if (registeredEmails.includes(enteredEmail)) {
       setEmailError("This email is already registered.");
       setIsSubmitDisabled(true);
     } else {
       setEmailError(null);
     }
   };
-
+  
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
     setPassword(newPassword);

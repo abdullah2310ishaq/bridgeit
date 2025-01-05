@@ -144,9 +144,23 @@ const PostProjectForm: React.FC = () => {
     transition={{ duration: 0.5 }}
     className="w-full max-w-4xl p-8 bg-gray-800 rounded-3xl shadow-2xl relative z-10"
   >
-    <div className="absolute top-4 left-4 z-10">
-      <Image src="/logo.jpg" alt="BridgeIT Logo" width={100} height={100} />
-    </div>
+   <div className="absolute top-6 left-6 z-10 flex items-center space-x-4">
+  {/* Logo container */}
+  <div className="relative w-16 h-16 md:w-20 md:h-20">
+    <Image
+      src="/logo.jpg"
+      alt="BridgeIT Logo"
+      layout="fill"
+      objectFit="contain"
+      className="rounded-full bg-gray-800 p-2 border border-gray-600"
+    />
+  </div>
+  {/* Text container */}
+  <h1 className="text-lg md:text-2xl font-bold text-white tracking-wide leading-tight">
+    BridgeIT
+  </h1>
+</div>
+
     <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
       Post a New Project
     </h1>

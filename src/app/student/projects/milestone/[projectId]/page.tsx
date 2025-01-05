@@ -1,22 +1,24 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import ChatSignalR from "@/app/common_components/ChatSignalR";
 
 // --------- Interfaces ---------
-interface MilestoneUpdate {
+interface ProgressUpdate {
   id: string;
   content: string;
   date: string;
 }
 
-interface Milestone {
+interface ProgressItem {
   id: string;
   title: string;
   description: string;
   achievementDate: string;
-  isCompleted?: boolean;     // added to track completion
-  updates?: MilestoneUpdate[]; // new field for milestone updates
+  isCompleted?: boolean;
+  updates?: ProgressUpdate[];
 }
 
 interface ProjectDetails {
@@ -26,435 +28,467 @@ interface ProjectDetails {
   status: string;
   endDate: string;
   expertName: string;
-  indExpertId: string; // Industry Expert ID
+  indExpertId: string;
 }
 
-const ProjectMilestonePage: React.FC = () => {
+// For milestone comments
+interface MilestoneComment {
+  id: string;
+  comment: string;
+  commentDate: string;
+  commenterName: string;
+  commenter_id: string;
+  milestone_id: string;
+}
+
+const ProjectProgressTracker: React.FC = () => {
   const { projectId } = useParams();
 
-  // --------- State ---------
+  // ------------------- State -------------------
   const [project, setProject] = useState<ProjectDetails | null>(null);
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [studentUserId, setStudentUserId] = useState<string>("");
+  const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
+  const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({});
+  const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null);
 
-  // For Add/Edit Milestone
-  const [showAddModal, setShowAddModal] = useState<boolean>(false);
-  const [showEditModal, setShowEditModal] = useState<boolean>(false);
-  const [editMilestoneId, setEditMilestoneId] = useState<string | null>(null);
+  // For local "updates" within each item
+  const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
+  const [currentItem, setCurrentItem] = useState<ProgressItem | null>(null);
+  const [newUpdate, setNewUpdate] = useState({ content: "", date: new Date().toISOString().split("T")[0] });
 
-  const [newMilestone, setNewMilestone] = useState({
+  // ---- Single Modal for Adding/Editing an item ----
+  const [showModal, setShowModal] = useState(false);
+  const [editItemId, setEditItemId] = useState<string | null>(null); // if null => adding
+  const [itemFormData, setItemFormData] = useState({
     title: "",
     description: "",
     achievementDate: "",
   });
 
-  // For Adding an Update (Follow-up) to a Milestone
-  const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
-  const [currentMilestone, setCurrentMilestone] = useState<Milestone | null>(null);
-  const [newUpdate, setNewUpdate] = useState({
-    content: "",
-    date: new Date().toISOString().split("T")[0], // default: today's date
-  });
+  const [loading, setLoading] = useState(true);
 
-  // --------- Fetch Project & Milestones ---------
+  // ------------------- Fetch Project & Milestones -------------------
   useEffect(() => {
-    const fetchProjectAndMilestones = async () => {
+    const fetchProjectAndProgress = async () => {
       const token = localStorage.getItem("jwtToken");
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
+      
       try {
-        // -- 1) Fetch Project Details
-        const projectRes = await fetch(
+
+
+        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          setStudentUserId(authData.userId);
+        }
+        
+        // 1) Fetch project details
+        const resProject = await fetch(
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (!projectRes.ok) throw new Error("Failed to fetch project details.");
-        const projectData = await projectRes.json();
-        setProject(projectData);
 
-        // -- 2) Fetch Milestones
-        const milestonesRes = await fetch(
+        if (resProject.ok) {
+          const projectData = await resProject.json();
+          setProject(projectData);
+        }
+
+        // 2) Fetch milestones
+        const resMilestones = await fetch(
           `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (!milestonesRes.ok)
-          throw new Error("Failed to fetch milestones for the project.");
-        const milestonesData = await milestonesRes.json();
 
-        // For demonstration, add `isCompleted` and empty `updates` array.
-        // You might base 'completed' logic on real fields or statuses from your DB.
-        const today = new Date().toISOString().split("T")[0];
-        const updatedMilestones: Milestone[] = milestonesData.map((m: Milestone) => {
-          return {
+        if (resMilestones.ok) {
+          const data = await resMilestones.json();
+          const today = new Date().toISOString().split("T")[0];
+          const items = data.map((m: ProgressItem) => ({
             ...m,
-            isCompleted: m.achievementDate <= today, // example logic
+            isCompleted: m.achievementDate <= today,
             updates: [],
-          };
-        });
-        setMilestones(updatedMilestones);
-      } catch (err: any) {
-        setError(err.message);
+          }));
+          setProgressItems(items);
+        } else {
+          setProgressItems([]);
+        }
+      } catch (err) {
+        console.error("Error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (projectId) fetchProjectAndMilestones();
+    if (projectId) fetchProjectAndProgress();
   }, [projectId]);
 
-  // --------- Add Milestone ---------
-  const addMilestone = async () => {
+  // ------------------- Refresh Progress Items -------------------
+  const refreshProgressItems = async () => {
     const token = localStorage.getItem("jwtToken");
+    if (!token) return;
+
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone/add-milestone/${projectId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(newMilestone),
-        }
+        `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (!res.ok) throw new Error("Failed to add milestone.");
 
-      // Refresh
-      await refreshMilestones();
-
-      // Close Modal & reset
-      setShowAddModal(false);
-      setNewMilestone({ title: "", description: "", achievementDate: "" });
+      if (res.ok) {
+        const data = await res.json();
+        const today = new Date().toISOString().split("T")[0];
+        // keep existing local updates
+        const updated = data.map((m: ProgressItem) => {
+          const existing = progressItems.find((x) => x.id === m.id);
+          return {
+            ...m,
+            isCompleted: m.achievementDate <= today,
+            updates: existing?.updates || [],
+          };
+        });
+        setProgressItems(updated);
+      } else {
+        setProgressItems([]);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Refresh error:", err);
     }
   };
 
-  // --------- Update Milestone ---------
-  const updateMilestone = async () => {
+  // ------------------- Add / Edit a Progress Item -------------------
+  const handleOpenModal = (item?: ProgressItem) => {
+    // If item is provided, we are editing
+    if (item) {
+      setEditItemId(item.id);
+      setItemFormData({
+        title: item.title,
+        description: item.description,
+        achievementDate: item.achievementDate,
+      });
+    } else {
+      // otherwise, adding
+      setEditItemId(null);
+      setItemFormData({ title: "", description: "", achievementDate: "" });
+    }
+    setShowModal(true);
+  };
+
+  const handleSaveItem = async () => {
     const token = localStorage.getItem("jwtToken");
+    if (!token) return;
+
     try {
-      const res = await fetch(
-        `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editMilestoneId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(newMilestone),
+      if (editItemId) {
+        // editing
+        const res = await fetch(
+          `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(itemFormData),
+          }
+        );
+        if (!res.ok) {
+          console.error("Failed to update item. Status:", res.status);
+        } else {
+          await refreshProgressItems();
         }
-      );
-      if (!res.ok) throw new Error("Failed to update milestone.");
-
-      // Refresh
-      await refreshMilestones();
-
-      // Close Modal & reset
-      setShowEditModal(false);
-      setNewMilestone({ title: "", description: "", achievementDate: "" });
+      } else {
+        // adding
+        const res = await fetch(
+          `https://localhost:7053/api/milestone/add-milestone/${projectId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(itemFormData),
+          }
+        );
+        if (!res.ok) {
+          console.error("Failed to add item. Status:", res.status);
+        } else {
+          await refreshProgressItems();
+        }
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error saving item:", err);
+    } finally {
+      setShowModal(false);
+      setItemFormData({ title: "", description: "", achievementDate: "" });
     }
   };
 
-  // --------- Helper: Refresh Milestones ---------
-  const refreshMilestones = async () => {
-    const token = localStorage.getItem("jwtToken");
-    const res = await fetch(
-      `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    const data = await res.json();
-    const today = new Date().toISOString().split("T")[0];
-
-    // Keep any existing updates from local state by matching IDs
-    const updated: Milestone[] = data.map((m: Milestone) => {
-      const existing = milestones.find((x) => x.id === m.id);
-      return {
-        ...m,
-        isCompleted: m.achievementDate <= today,
-        updates: existing?.updates || [],
-      };
-    });
-    setMilestones(updated);
-  };
-
-  // --------- Add a "Follow-up" Update to a Milestone (Local Demo) ---------
-  const addUpdate = () => {
-    if (!currentMilestone) return;
-    // If you want to persist, you'd do a POST request to an "add update" endpoint here
-
-    const newUpdateObj: MilestoneUpdate = {
-      id: Date.now().toString(), // or from backend
+  // ------------------- Local "Follow-up" Update -------------------
+  const handleAddLocalUpdate = () => {
+    if (!currentItem) return;
+    const updateObj: ProgressUpdate = {
+      id: Date.now().toString(),
       content: newUpdate.content,
       date: newUpdate.date,
     };
-
-    // Update local state
-    const updatedMilestones = milestones.map((m) => {
-      if (m.id === currentMilestone.id) {
-        // Append new update
-        const updatedUpdates = m.updates ? [...m.updates, newUpdateObj] : [newUpdateObj];
-        return {
-          ...m,
-          updates: updatedUpdates,
-        };
-      }
-      return m;
-    });
-
-    setMilestones(updatedMilestones);
-
-    // Close modal & reset
+    const updated = progressItems.map((p) =>
+      p.id === currentItem.id
+        ? { ...p, updates: [...(p.updates || []), updateObj] }
+        : p
+    );
+    setProgressItems(updated);
     setShowUpdateModal(false);
-    setNewUpdate({
-      content: "",
-      date: new Date().toISOString().split("T")[0],
-    });
+    setNewUpdate({ content: "", date: new Date().toISOString().split("T")[0] });
   };
 
-  // --------- Overall Project Progress (for Circular Bar) ---------
-  const totalMilestones = milestones.length;
-  const completedMilestones = milestones.filter((m) => m.isCompleted).length;
-  const progressFraction =
-    totalMilestones > 0 ? completedMilestones / totalMilestones : 0;
-  const progressPercent = Math.round(progressFraction * 100);
+  // ------------------- Fetch Comments for a Milestone -------------------
+  const fetchComments = async (milestoneId: string) => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data === "string" && data.includes("No comments")) {
+          setComments((prev) => ({ ...prev, [milestoneId]: [] }));
+        } else {
+          setComments((prev) => ({ ...prev, [milestoneId]: data }));
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+    }
+  };
 
-  // For the circular progress bar: let's define the circle’s circumference
-  const circleRadius = 36;
-  const circleCircumference = 2 * Math.PI * circleRadius;
-  const strokeDashoffset =
-    circleCircumference - circleCircumference * progressFraction;
-
-  // --------- Render ---------
-  if (loading) return <div className="text-gray-300">Loading...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  // ------------------- Render -------------------
+  if (loading) {
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 p-6">
-      {/* Project Overview */}
-      <h1 className="text-5xl font-bold mb-12 text-transparent bg-clip-text p-3 bg-gradient-to-r from-blue-500 to-green-500 ">
-        {project?.title}
-      </h1>
-      <p className="text-gray-400 mb-4">{project?.description}</p>
-
-      <div className="mb-4">
-        <p>
-          <strong>Status:</strong> {project?.status}
-        </p>
-        <p>
-          <strong>End Date:</strong> {project?.endDate}
-        </p>
-        <p>
-          <strong>Industry Expert:</strong>{" "}
-          <Link
-            href={`/student/industry-profile/${project?.indExpertId}`}
-            className="text-blue-400 hover:underline"
-          >
-            {project?.expertName}
-          </Link>
-        </p>
-      </div>
-
-      {/* --------- Circular Progress Bar (Overall Project) --------- */}
-      <div className="flex items-center space-x-4 mb-8">
-        <div className="relative w-20 h-20">
-          <svg className="w-full h-full transform -rotate-90">
-            <circle
-              className="text-gray-700"
-              strokeWidth="6"
-              stroke="currentColor"
-              fill="transparent"
-              r={circleRadius}
-              cx="40"
-              cy="40"
-            />
-            <circle
-              className="text-green-400"
-              strokeWidth="6"
-              strokeDasharray={circleCircumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              stroke="currentColor"
-              fill="transparent"
-              r={circleRadius}
-              cx="40"
-              cy="40"
-              style={{ transition: "stroke-dashoffset 0.35s" }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-sm font-semibold text-green-400">
-              {progressPercent}%
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <p className="text-3xl font-semibold text-transparent bg-clip-text p-3 bg-gradient-to-r from-blue-500 to-blue-500">Overall Progress</p>
-          <p className="text-xl text-gray-400">
-            {completedMilestones} / {totalMilestones} milestones completed
+    <div className="bg-gray-900 text-white min-h-screen p-4">
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto mb-6">
+        <h1 className="text-3xl font-bold text-green-400">Project Progress</h1>
+        <div className="mt-4 bg-gray-800 p-4 rounded">
+          <p className="mb-1">
+            <strong className="text-green-300">Title:</strong> {project?.title}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">Description:</strong> {project?.description}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">Status:</strong> {project?.status}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">End Date:</strong> {project?.endDate}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">Industry Expert:</strong>{" "}
+            {project?.indExpertId ? (
+              <Link
+                href={`/student/industry-profile/${project.indExpertId}`}
+                className="underline text-green-400 hover:text-green-300"
+              >
+                {project.expertName}
+              </Link>
+            ) : (
+              "N/A"
+            )}
           </p>
         </div>
       </div>
 
-      {/* --------- Milestone Section --------- */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-4xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-600">
-          Project Milestones
-        </h2>
-        <button
-          className="p-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-md hover:opacity-90 transition duration-300 flex items-center justify-center w-full md:w-auto"
-          onClick={() => setShowAddModal(true)}
-        >
-          + Add Milestone
-        </button>
-      </div>
+      {/* Progress Items */}
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-green-300">Milestones</h2>
+          <button
+            onClick={() => handleOpenModal()}
+            className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-sm"
+          >
+            + Add Milestone
+          </button>
+        </div>
 
-      {milestones.length > 0 ? (
-        <div className="border-l border-gray-700 pl-6">
-          {milestones.map((milestone, index) => (
-            <div key={milestone.id} className="relative mb-8">
-              {/* Dot on the timeline */}
-              <div
-                className={`absolute w-4 h-4 rounded-full -left-6 top-2 ${
-                  milestone.isCompleted ? "bg-green-500" : "bg-gray-500"
-                }`}
-              />
-
-              <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-                {/* Header row: Title + Status */}
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl text-green-400 font-bold">
-                    {milestone.title}
-                  </h3>
-                  {milestone.isCompleted ? (
-                    <span className="text-sm text-green-400 px-2 py-1 border border-green-400 rounded">
-                      Completed
+        {progressItems.length === 0 ? (
+          <div className="text-center text-gray-300">
+            <p>No milestones found.</p>
+            <button
+              onClick={() => handleOpenModal()}
+              className="bg-blue-600 hover:bg-blue-500 text-white mt-3 px-4 py-2 rounded text-sm"
+            >
+              Add First Milestone
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {progressItems.map((item) => (
+              <div key={item.id} className="bg-gray-800 p-4 rounded shadow">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-bold text-green-400">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-gray-300">{item.description}</p>
+                  </div>
+                  {item.isCompleted ? (
+                    <span className="text-xs bg-green-700 text-green-100 px-2 py-1 rounded">
+                      Done
                     </span>
                   ) : (
-                    <span className="text-sm text-yellow-400 px-2 py-1 border border-yellow-400 rounded">
+                    <span className="text-xs bg-yellow-600 text-yellow-100 px-2 py-1 rounded">
                       Pending
                     </span>
                   )}
                 </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Target Date: {item.achievementDate}
+                </p>
 
-                <p className="text-gray-400 mb-2">{milestone.description}</p>
-                <small className="text-gray-300">
-                  Achievement Date: {milestone.achievementDate}
-                </small>
-
-                {/* Buttons */}
-                <div className="flex gap-6 mt-4">
+                {/* Action Buttons */}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {/* Edit Milestone */}
                   <button
-                    onClick={() => {
-                      // Open Edit Modal
-                      setShowEditModal(true);
-                      setEditMilestoneId(milestone.id);
-                      setNewMilestone({
-                        title: milestone.title,
-                        description: milestone.description,
-                        achievementDate: milestone.achievementDate,
-                      });
-                    }}
-                    className="text-blue-400 hover:underline"
+                    onClick={() => handleOpenModal(item)}
+                    className="text-blue-400 text-xs hover:underline"
                   >
                     Edit
                   </button>
+
+                  {/* Local Update */}
                   <button
                     onClick={() => {
-                      // Open "Add Update" Modal
-                      setCurrentMilestone(milestone);
+                      setCurrentItem(item);
                       setShowUpdateModal(true);
                     }}
-                    className="text-yellow-400 hover:underline"
+                    className="text-yellow-400 text-xs hover:underline"
                   >
-                    + Update
+                    + Follow-up
+                  </button>
+
+                  {/* View Comments */}
+                  <button
+                    onClick={() => {
+                      setCurrentCommentItem(item);
+                      fetchComments(item.id);
+                    }}
+                    className="text-purple-400 text-xs hover:underline"
+                  >
+                    Comments
                   </button>
                 </div>
 
-                {/* Follow-ups / Updates */}
-                {milestone.updates && milestone.updates.length > 0 && (
-                  <div className="mt-4 border-l border-gray-700 pl-4">
-                    <h4 className="text-md text-green-300 font-semibold mb-2">
-                      Follow-ups / Updates:
-                    </h4>
-                    {milestone.updates.map((upd) => (
-                      <div key={upd.id} className="mb-2">
-                        <p className="text-gray-300">{upd.content}</p>
-                        <small className="text-gray-500">{upd.date}</small>
-                        <hr className="border-gray-700 my-1" />
+                {/* Existing Local "updates" */}
+                {item.updates && item.updates.length > 0 && (
+                  <div className="mt-3 border-l border-gray-700 pl-3">
+                    <p className="text-sm font-semibold text-green-300 mb-1">
+                      Updates:
+                    </p>
+                    {item.updates.map((u) => (
+                      <div key={u.id} className="text-xs text-gray-200 mb-2">
+                        <p>- {u.content}</p>
+                        <p className="text-gray-500">{u.date}</p>
                       </div>
                     ))}
                   </div>
                 )}
+
+                {/* If we're viewing comments for THIS milestone, show them */}
+                {currentCommentItem && currentCommentItem.id === item.id && (
+                  <div className="mt-3 border-l border-gray-700 pl-3">
+                    <p className="text-sm font-semibold text-purple-300 mb-1">
+                      Comments:
+                    </p>
+                    {comments[item.id]?.length ? (
+                      comments[item.id].map((c) => (
+                        <div
+                          key={c.id}
+                          className="bg-gray-700 p-2 rounded mb-2 text-sm"
+                        >
+                          <p className="text-gray-200">{c.comment}</p>
+                          <p className="text-gray-400 text-xs">
+                            {c.commenterName} on{" "}
+                            {new Date(c.commentDate).toLocaleString()}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-400 text-xs">
+                        No comments found.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-              {/* Vertical line connector for the timeline (except the last milestone) */}
-              {index < milestones.length - 1 && (
-                <div className="absolute border-l border-gray-700 left-[-2px] top-[2.5rem] bottom-0"></div>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-400">No milestones available for this project.</p>
-      )}
-
-      {/* --------- Add/Edit Milestone Modal --------- */}
-      {(showAddModal || showEditModal) && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-2xl text-green-400 mb-4">
-              {showAddModal ? "Add Milestone" : "Edit Milestone"}
+      {/* ---------- Unified Modal for Add/Edit Milestone ---------- */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
+            <h3 className="text-xl font-bold text-green-400 mb-4">
+              {editItemId ? "Edit Milestone" : "Add Milestone"}
             </h3>
             <input
               type="text"
               placeholder="Title"
-              value={newMilestone.title}
+              value={itemFormData.title}
               onChange={(e) =>
-                setNewMilestone({ ...newMilestone, title: e.target.value })
+                setItemFormData({ ...itemFormData, title: e.target.value })
               }
-              className="w-full p-2 mb-2 bg-gray-700 rounded"
+              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
             />
             <textarea
               placeholder="Description"
-              value={newMilestone.description}
+              value={itemFormData.description}
               onChange={(e) =>
-                setNewMilestone({ ...newMilestone, description: e.target.value })
+                setItemFormData({
+                  ...itemFormData,
+                  description: e.target.value,
+                })
               }
-              className="w-full p-2 mb-2 bg-gray-700 rounded"
+              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
             />
             <input
               type="date"
-              value={newMilestone.achievementDate}
+              value={itemFormData.achievementDate}
               onChange={(e) =>
-                setNewMilestone({
-                  ...newMilestone,
+                setItemFormData({
+                  ...itemFormData,
                   achievementDate: e.target.value,
                 })
               }
-              className="w-full p-2 mb-4 bg-gray-700 rounded"
+              className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
             />
-            <div className="flex justify-end">
+
+            <div className="flex justify-end gap-3">
               <button
-                onClick={showAddModal ? addMilestone : updateMilestone}
-                className="bg-green-500 text-white px-4 py-2 rounded"
+                onClick={handleSaveItem}
+                className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded"
               >
                 Save
               </button>
               <button
                 onClick={() => {
-                  setShowAddModal(false);
-                  setShowEditModal(false);
-                  setNewMilestone({
-                    title: "",
-                    description: "",
-                    achievementDate: "",
-                  });
+                  setShowModal(false);
+                  setItemFormData({ title: "", description: "", achievementDate: "" });
                 }}
-                className="text-gray-400 ml-4"
+                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded"
               >
                 Cancel
               </button>
@@ -463,54 +497,53 @@ const ProjectMilestonePage: React.FC = () => {
         </div>
       )}
 
-      {/* --------- Add Update (Follow-up) Modal --------- */}
-      {showUpdateModal && currentMilestone && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-xl text-yellow-400 mb-4">
-              Add Update for <span className="text-white">{currentMilestone.title}</span>
+      {/* ---------- Modal for a "Follow-up" Update ---------- */}
+      {showUpdateModal && currentItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
+            <h3 className="text-xl font-bold text-yellow-400 mb-4">
+              Follow-up for: {currentItem.title}
             </h3>
             <textarea
               placeholder="What's the update?"
               value={newUpdate.content}
-              onChange={(e) =>
-                setNewUpdate({ ...newUpdate, content: e.target.value })
-              }
-              className="w-full p-2 mb-2 bg-gray-700 rounded"
+              onChange={(e) => setNewUpdate({ ...newUpdate, content: e.target.value })}
+              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
             />
             <input
               type="date"
               value={newUpdate.date}
-              onChange={(e) =>
-                setNewUpdate({ ...newUpdate, date: e.target.value })
-              }
-              className="w-full p-2 mb-4 bg-gray-700 rounded"
+              onChange={(e) => setNewUpdate({ ...newUpdate, date: e.target.value })}
+              className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
             />
-            <div className="flex justify-end">
+
+            <div className="flex justify-end gap-3">
               <button
-                onClick={addUpdate}
-                className="bg-yellow-500 text-white px-4 py-2 rounded"
+                onClick={handleAddLocalUpdate}
+                className="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded"
               >
-                Save Update
+                Save
               </button>
               <button
                 onClick={() => {
                   setShowUpdateModal(false);
-                  setNewUpdate({
-                    content: "",
-                    date: new Date().toISOString().split("T")[0],
-                  });
+                  setNewUpdate({ content: "", date: new Date().toISOString().split("T")[0] });
                 }}
-                className="text-gray-400 ml-4"
+                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded"
               >
                 Cancel
               </button>
             </div>
           </div>
+        </div>
+      )}
+       {studentUserId && project?.indExpertId && (
+        <div className="mt-6">
+          <ChatSignalR studentId={studentUserId} expertId={project.indExpertId} />
         </div>
       )}
     </div>
   );
 };
 
-export default ProjectMilestonePage;
+export default ProjectProgressTracker;

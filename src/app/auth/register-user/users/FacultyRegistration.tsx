@@ -33,6 +33,8 @@ const FacultyRegistration: React.FC = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
+  const [department, setDepartment] = useState<string>("");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -84,6 +86,7 @@ const FacultyRegistration: React.FC = () => {
       universityId &&
       post &&
       interests.length > 0 &&
+      department &&
       !emailError &&
       !passwordError
     ) {
@@ -100,6 +103,8 @@ const FacultyRegistration: React.FC = () => {
     universityId,
     post,
     interests,
+    
+    department,
     emailError,
     passwordError,
   ]);
@@ -107,14 +112,21 @@ const FacultyRegistration: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
-
-    if (registeredEmails.includes(enteredEmail)) {
-      setEmailError('This email is already registered.');
+  
+    // Regex for validating faculty email
+    const facultyEmailRegex = /^[a-zA-Z]+\.[a-zA-Z]+@students\.au\.edu\.pk$/;
+  
+    if (!facultyEmailRegex.test(enteredEmail)) {
+      setEmailError("Please use a valid faculty email (e.g., warda.aslam@students.au.edu.pk).");
+      setIsSubmitDisabled(true);
+    } else if (registeredEmails.includes(enteredEmail)) {
+      setEmailError("This email is already registered.");
+      setIsSubmitDisabled(true);
     } else {
       setEmailError(null);
     }
   };
-
+  
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -326,6 +338,18 @@ const FacultyRegistration: React.FC = () => {
             ))}
           </select>
         </div>
+        <div>
+  <     label className="block text-sm font-semibold text-gray-300">Department</label>
+            <input
+          type="text"
+      value={department}
+          onChange={(e) => setDepartment(e.target.value)}
+        className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+      required
+      autoComplete="off"
+    />
+      </div>
+
         <div>
           <label className="block text-sm font-semibold text-gray-300">Interests</label>
           <select

@@ -89,17 +89,24 @@ const RegisterIndustryExpert: React.FC = () => {
     passwordError,
   ]);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
 
-    if (registeredEmails.includes(enteredEmail)) {
-      setEmailError('This email is already registered.');
-    } else {
-      setEmailError(null);
-    }
-  };
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+    if (!emailRegex.test(enteredEmail)) {
+        setEmailError('Please enter a valid email address.');
+        setIsSubmitDisabled(true);
+    } else if (registeredEmails.includes(enteredEmail)) {
+        setEmailError('This email is already registered.');
+        setIsSubmitDisabled(true);
+    } else {
+        setEmailError(null);
+    }
+};
+
+  
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -125,9 +132,22 @@ const RegisterIndustryExpert: React.FC = () => {
       setPasswordError(null);
     }
   };
+  const validateContact = (contact: string) => {
+    const contactRegex = /^03\d{9}$/; // Example for Pakistan phone numbers
+    if (!contactRegex.test(contact)) {
+        toast.error('Please enter a valid contact number (e.g., 03xxxxxxxxx).', {
+            position: 'top-center',
+            autoClose: 3000,
+        });
+        return false;
+    }
+    return true;
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateContact(contact)) return;
 
     if (emailError) {
       toast.error('Please provide a unique email address.', {
