@@ -1,9 +1,10 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface ProjectCardProps {
-  projectId: string; // Project ID for navigation
+  projectId: string; 
   title: string;
   description: string;
   endDate: string;
@@ -22,6 +23,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   endDate,
 }) => {
   const router = useRouter();
+
   const [studentDetails, setStudentDetails] = useState<StudentDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +31,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   useEffect(() => {
     const fetchStudentDetails = async () => {
       try {
+        // You might need an Authorization header if the endpoint requires it
         const response = await fetch(
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`
         );
@@ -44,7 +47,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           });
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred.");
+        setError(err instanceof Error ? err.message : "Unknown error occurred.");
       } finally {
         setLoading(false);
       }
@@ -53,16 +56,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     fetchStudentDetails();
   }, [projectId]);
 
+  // Navigate to a page showing milestone progress
+  const handleViewMilestones = () => {
+    // If you'd like to pass an expertId, do something like:
+    // const expertId = localStorage.getItem("expertId") || "<some-other-source>";
+    // router.push(`/industryexpert/projects/milestone/${projectId}?expertId=${expertId}`);
+
+    router.push(`/industryexpert/projects/milestone/${projectId}`);
+  };
+
+  // Optional: Navigate to student profile
   const handleViewStudentProfile = () => {
     if (studentDetails?.studentId) {
       router.push(`/industryexpert/student-profile/${studentDetails.studentId}`);
     }
   };
 
-  const handleViewMilestones = () => {
-    router.push(`/industryexpert/projects/milestone/${projectId}`);
-  };
-
+  // A few random background gradients for visual variety
   const gradientStyles = [
     "bg-gradient-to-r from-purple-400 via-pink-500 to-red-500",
     "bg-gradient-to-r from-green-400 via-blue-500 to-purple-500",
@@ -71,7 +81,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <div
-      className={`relative p-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all overflow-hidden cursor-pointer ${gradientStyles[Math.floor(Math.random() * gradientStyles.length)]}`}
+      className={`relative p-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all overflow-hidden cursor-pointer ${
+        gradientStyles[Math.floor(Math.random() * gradientStyles.length)]
+      }`}
     >
       <div className="absolute inset-0 opacity-20 bg-cover bg-center"></div>
       <div className="relative z-10">
@@ -94,8 +106,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         ) : studentDetails ? (
           <div className="mb-4">
             <p className="text-gray-300">
-              <strong>Assigned Student:</strong> {studentDetails.firstName}{" "}
-              {studentDetails.lastName}
+              <strong>Assigned Student:</strong>{" "}
+              {studentDetails.firstName} {studentDetails.lastName}
             </p>
           </div>
         ) : (
@@ -108,7 +120,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             onClick={handleViewMilestones}
             className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
           >
-            View Milestones
+            View Progress
           </button>
           {studentDetails && (
             <button

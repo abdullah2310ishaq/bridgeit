@@ -14,7 +14,7 @@ export default function ContactSection() {
     setResult("Sending...");
 
     const formData = new FormData(event.target as HTMLFormElement);
-    formData.append("access_key", "your-access-key"); // Replace with your actual access key
+    formData.append("access_key", "cf10bcb0-9a81-4467-86fc-cde2595377ae"); // Replace with your actual access key
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -43,7 +43,7 @@ export default function ContactSection() {
         Get in Touch
       </h2>
       <p className="text-gray-400 max-w-2xl mx-auto">
-        Whether you have questions, feedback, or partnership inquiries, we'd love to hear from you.
+        Whether you have questions, feedback, or partnership inquiries.
       </p>
     </div>
     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">

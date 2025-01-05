@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Navbar from "@/app/components/NavBar";
 import ProfileCard from "./ProfileCard";
 import ProjectCard from "./ExploreProjectCard";
 import ProjectDetailsPanel from "../[id]/page";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify"; // to display toasts
 import { Search as SearchIcon, Filter, ChevronDown } from "lucide-react";
 
+// Interfaces
 interface UserProfile {
   userId: string;
   firstName: string;
@@ -18,6 +18,7 @@ interface UserProfile {
   address: string;
   rollNumber: string;
   imageData: string;
+  skills?: string[];
 }
 
 interface ExpertProject {
@@ -27,36 +28,45 @@ interface ExpertProject {
   stack?: string;
   status?: string;
   expertName?: string;
-  studentName?: string;  // from API if assigned to a student
-  budget?: number;       // from API
+  studentName?: string;
+  budget?: number;
   companyName?: string;
-  isFeatured?: boolean;
   matchScore?: number;
   createdAt?: string;
   isRequested?: boolean;
 }
 
+interface Proposal {
+  id: string;
+  projectId: string;
+  studentId: string;
+  status: string; // "Pending", "Accepted", "Rejected"
+}
+
 const ExploreProjects: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // States
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [expertProjects, setExpertProjects] = useState<ExpertProject[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ExpertProject[]>([]);
+  const [studentProposals, setStudentProposals] = useState<Proposal[]>([]);
 
   const [selectedFilter, setSelectedFilter] = useState("Most Recent");
   const [searchQuery, setSearchQuery] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Project details
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [selectedProjectDetails, setSelectedProjectDetails] = useState<ExpertProject | null>(
     null
   );
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // 1) Fetch user profile & projects
   useEffect(() => {
-    async function fetchProfileAndProjects() {
+    async function fetchData() {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
         router.push("/auth/login-user");
@@ -64,13 +74,10 @@ const ExploreProjects: React.FC = () => {
       }
 
       try {
-        // Fetch user profile
-        const profileRes = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        // 1) Fetch user info
+        const profileRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!profileRes.ok) {
           router.push("/unauthorized");
           return;
@@ -78,7 +85,7 @@ const ExploreProjects: React.FC = () => {
         const profileData = await profileRes.json();
         const userId = profileData.userId;
 
-        // Fetch extended student data
+        // 2) Fetch extended student data
         const studentRes = await fetch(
           `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
@@ -89,8 +96,8 @@ const ExploreProjects: React.FC = () => {
           router.push("/unauthorized");
           return;
         }
-
         const studentData = await studentRes.json();
+
         setUserProfile({
           userId: studentData.userId,
           firstName: studentData.firstName,
@@ -101,41 +108,78 @@ const ExploreProjects: React.FC = () => {
           address: studentData.address,
           rollNumber: studentData.rollNumber,
           imageData: studentData.imageData,
+          skills: studentData.skills,
         });
 
-        // Fetch Expert Projects
-        const projectsRes = await fetch(
-          "https://localhost:7053/api/projects/get-expert-projects",
+        // 3) Fetch the student’s proposals
+        const proposalsRes = await fetch(
+          `https://localhost:7053/api/project-proposals/get-proposal-for-student/${studentData.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        if (proposalsRes.ok) {
+          const proposalsData = await proposalsRes.json();
+          setStudentProposals(proposalsData);
+        } else {
+          console.log("No proposals or could not fetch proposals");
+        }
+
+        // 4) Fetch Expert Projects
+        const projectsRes = await fetch("https://localhost:7053/api/projects/get-expert-projects", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!projectsRes.ok) {
           setError("Failed to load projects.");
           return;
         }
-
-        // parse the response
         const projectsData = await projectsRes.json();
-        // Format each project, extracting budget, studentName, etc.
-        const formatted: ExpertProject[] = projectsData.map((p: any) => ({
-          id: p.id,
-          title: p.title,
-          description: p.description,
-          stack: p.stack,               // if present
-          status: p.currentStatus,
-          expertName: p.name,           // from IndExptProjectTileDTO "Name"
-          studentName: p.studentName,   // if it exists
-          budget: p.budget,             // new field
-          companyName: p.companyName,
-          isFeatured: p.isFeatured,
-          matchScore: p.matchScore,
-          createdAt: p.createdAt,
-          isRequested: p.isRequested,
-        }));
 
-        setExpertProjects(formatted);
-        setFilteredProjects(formatted);
+        // 5) For each project, optionally call Python /predict to compute matchScore
+        const updatedProjects: ExpertProject[] = [];
+        for (const proj of projectsData) {
+          const projectObj: ExpertProject = {
+            id: proj.id,
+            title: proj.title,
+            description: proj.description,
+            stack: proj.stack,
+            status: proj.currentStatus,
+            expertName: proj.name,
+            studentName: proj.studentName,
+            budget: proj.budget,
+            companyName: proj.companyName,
+            matchScore: 0,
+            createdAt: proj.createdAt,
+            isRequested: proj.isRequested,
+          };
+
+          // (optional) Python skill prediction
+          try {
+            const pythonResp = await fetch(
+              `http://127.0.0.1:5000/predict?project_title=${encodeURIComponent(
+                projectObj.title
+              )}`
+            );
+            if (pythonResp.ok) {
+              const result = await pythonResp.json();
+              const predictedSkills: string[] = result.skills || [];
+              // Compare with student's known skills
+              const studentSkillsSet = new Set(
+                studentData.skills?.map((s: string) => s.toLowerCase()) || []
+              );
+              const overlap = predictedSkills.filter((skill: string) =>
+                studentSkillsSet.has(skill.toLowerCase())
+              );
+              projectObj.matchScore = overlap.length;
+            }
+          } catch (err) {
+            console.error("Error calling Python API for project:", proj.title, err);
+          }
+          updatedProjects.push(projectObj);
+        }
+
+        setExpertProjects(updatedProjects);
+        setFilteredProjects(updatedProjects);
       } catch (err) {
         console.error("An error occurred:", err);
         setError("Failed to load projects.");
@@ -144,10 +188,10 @@ const ExploreProjects: React.FC = () => {
       }
     }
 
-    fetchProfileAndProjects();
+    fetchData();
   }, [router]);
 
-  // 2) Filter logic
+  // Filter logic
   useEffect(() => {
     filterProjects();
   }, [selectedFilter, searchQuery, expertProjects]);
@@ -171,27 +215,30 @@ const ExploreProjects: React.FC = () => {
       case "Most Recent":
         sorted.sort(
           (a, b) =>
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime()
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
         );
         break;
       case "Best Matches":
         sorted.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
         break;
-      case "Featured":
-        sorted = sorted.filter((p) => p.isFeatured);
-        break;
       default:
         break;
     }
 
-    // Exclude isRequested
+    // Optionally exclude isRequested
     sorted = sorted.filter((p) => !p.isRequested);
 
     setFilteredProjects(sorted);
   };
 
-  // 3) Query param for projectId
+  // Check for pending proposals
+  function hasPendingProposal(projectId: string): boolean {
+    return studentProposals.some(
+      (proposal) => proposal.projectId === projectId && proposal.status === "Pending"
+    );
+  }
+
+  // Handle project selection
   useEffect(() => {
     const idFromUrl = searchParams.get("projectId");
     if (idFromUrl) {
@@ -199,7 +246,6 @@ const ExploreProjects: React.FC = () => {
     }
   }, [searchParams]);
 
-  // 4) Update selectedProjectDetails
   useEffect(() => {
     if (selectedProjectId) {
       const found = expertProjects.find((p) => p.id === selectedProjectId);
@@ -211,9 +257,11 @@ const ExploreProjects: React.FC = () => {
 
   const handleProjectClick = (id: string) => {
     setSelectedProjectId(id);
-    router.push(`?projectId=${id}`); // Add query param to URL
+    router.push(`?projectId=${id}`);
+    // If you want to open a proposal modal, do it here
   };
 
+  // Render
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
@@ -232,8 +280,6 @@ const ExploreProjects: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 to-gray-900 text-gray-300">
-      <Navbar />
-
       <div className="flex flex-1">
         {/* Sidebar with Profile */}
         <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-900 p-6">
@@ -243,19 +289,16 @@ const ExploreProjects: React.FC = () => {
               firstName={userProfile.firstName}
               lastName={userProfile.lastName}
               role={userProfile.role}
+              skills={userProfile.skills}
             />
           )}
         </aside>
 
         {/* Main Content */}
         <main className="flex-1 flex">
-          {/* Project List */}
-          <div
-            className={`p-6 ${selectedProjectDetails ? "w-full lg:w-1/2" : "w-full"}`}
-          >
-            {/* Search & Filter Section */}
+          <div className={`p-6 ${selectedProjectDetails ? "w-full lg:w-1/2" : "w-full"}`}>
+            {/* Search & Filter */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
-              {/* Search Bar */}
               <div className="relative w-full lg:w-2/3">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <SearchIcon className="h-5 w-5 text-gray-400" />
@@ -269,7 +312,6 @@ const ExploreProjects: React.FC = () => {
                 />
               </div>
 
-              {/* Filter Select */}
               <div className="relative w-full lg:w-1/3">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Filter className="h-5 w-5 text-gray-400" />
@@ -281,7 +323,6 @@ const ExploreProjects: React.FC = () => {
                 >
                   <option value="Most Recent">Most Recent</option>
                   <option value="Best Matches">Best Matches</option>
-                  <option value="Featured">Featured</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <ChevronDown className="h-5 w-5 text-gray-400" />
@@ -292,20 +333,29 @@ const ExploreProjects: React.FC = () => {
             {/* Projects Grid */}
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
               {filteredProjects.length > 0 ? (
-                filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    id={project.id}
-                    title={project.title}
-                    description={project.description}
-                    stack={project.stack}
-                    status={project.status}
-                    expertName={project.expertName}
-                    studentName={project.studentName}
-                    budget={project.budget}
-                    onClick={() => handleProjectClick(project.id)}
-                  />
-                ))
+                filteredProjects.map((project) => {
+                  const pending = hasPendingProposal(project.id);
+                  return (
+                    <ProjectCard
+                      key={project.id}
+                      id={project.id}
+                      title={project.title}
+                      description={project.description}
+                      stack={project.stack}
+                      status={project.status}
+                      expertName={project.expertName}
+                      studentName={project.studentName}
+                      budget={project.budget}
+                      hasPending={pending}
+                      onClick={() => {
+                        if (!pending) {
+                          handleProjectClick(project.id);
+                          // e.g., open a <ProposalModal /> here
+                        }
+                      }}
+                    />
+                  );
+                })
               ) : (
                 <div className="col-span-full text-center text-gray-400">
                   No projects available.
@@ -314,7 +364,7 @@ const ExploreProjects: React.FC = () => {
             </div>
           </div>
 
-          {/* Project Details Panel (if selected) */}
+          {/* Project Details Panel */}
           {selectedProjectDetails && (
             <div className="w-full lg:w-1/2 p-6 bg-gray-900 overflow-auto">
               <ProjectDetailsPanel
@@ -329,6 +379,7 @@ const ExploreProjects: React.FC = () => {
         </main>
       </div>
 
+      {/* Toast Notification Container */}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );

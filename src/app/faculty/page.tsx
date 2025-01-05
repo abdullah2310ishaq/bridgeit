@@ -191,6 +191,22 @@ const FacultyPage: React.FC = () => {
         onViewProfile={onViewProfile}
         onEditProfile={onEditProfile}
       />
+ <div className="space-y-4 mt-8">
+  <button
+    onClick={() => router.push("/faculty/idea")}
+    className="w-full py-3 px-6 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600"
+  >
+    Create New Idea
+  </button>
+  <button
+    onClick={() => router.push("/faculty/idea/viewidea")}
+    className="w-full py-3 px-6 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600"
+  >
+    View My Ideas
+  </button>
+</div>
+
+
 
       {/* Research Section */}
       <ResearchSection

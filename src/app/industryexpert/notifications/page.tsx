@@ -22,6 +22,7 @@ const NotificationsPage: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const router = useRouter();
 
+  // Fetch proposals on component load
   useEffect(() => {
     const fetchProposals = async () => {
       const token = localStorage.getItem("jwtToken");
@@ -73,8 +74,7 @@ const NotificationsPage: React.FC = () => {
 
         if (proposalsResponse.ok) {
           const proposalsData = await proposalsResponse.json();
-          // proposalsData should be an array of proposals with base64-encoded 'Proposal' field
-          // Map them to match our state interface
+          // Map API response to match Proposal interface
           const mappedProposals = proposalsData.map((p: any) => ({
             id: p.id,
             projectTitle: p.projectTitle,
@@ -97,22 +97,6 @@ const NotificationsPage: React.FC = () => {
 
     fetchProposals();
   }, [router]);
-
-  if (loading) {
-    return <div className="text-center text-gray-400">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
-
-  if (proposals.length === 0) {
-    return (
-      <div className="text-center text-white font-semibold text-lg mt-10">
-        No new notifications. All notifications have been read.
-      </div>
-    );
-  }
 
   const handleSeeDetails = (proposal: Proposal) => {
     setSelectedProposal(proposal);
@@ -175,6 +159,32 @@ const NotificationsPage: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-400">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  if (proposals.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="mb-6">
+          {/* <img
+            src="/no-notifications.svg" // Use a placeholder image or illustration
+            alt="No Notifications"
+            className="w-40 h-40"
+          /> */}
+        </div>
+        <h1 className="text-2xl font-semibold">No Notifications</h1>
+        <p className="text-gray-400 mt-2">
+          You dont have any new proposals at the moment. Check back later!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-300 p-4">
       <div className="max-w-5xl mx-auto">
@@ -189,7 +199,9 @@ const NotificationsPage: React.FC = () => {
                 {proposal.projectTitle}
               </h2>
               <p className="text-gray-400">From: {proposal.studentName}</p>
-              <p className="text-gray-300 mb-2">You have a new proposal document.</p>
+              <p className="text-gray-300 mb-2">
+                You have a new proposal document.
+              </p>
               <p className="text-gray-400">Status: {proposal.status}</p>
               <button
                 className="mt-4 text-gray-900 bg-green-400 rounded py-2 px-4 hover:bg-green-500 transition duration-200"

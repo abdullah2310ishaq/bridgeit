@@ -1,51 +1,45 @@
+"use client";
 import React from "react";
-import { useRouter } from "next/navigation";
-import { Edit, User } from "lucide-react"
 
 interface ProfileCardProps {
   imageData: string;
   firstName: string;
   lastName: string;
   role: string;
+  skills?: string[]; // <-- Accept optional array of skills
 }
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ imageData, firstName, lastName, role }) => {
-  const router = useRouter();
-
-  const handleProfileRedirect = () => {
-    router.push("/student");
-  };
-
+const ProfileCard: React.FC<ProfileCardProps> = ({
+  imageData,
+  firstName,
+  lastName,
+  role,
+  skills,
+}) => {
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl shadow-lg overflow-hidden w-50 text-center transform hover:scale-105 transition-transform duration-300">
-      {/* Upper Section with Image */}
-      <div className="bg-gradient-to-t from-green-400 to-blue-500 h-20"></div>
+    <div className="bg-gray-800 p-4 rounded shadow-lg">
+      {/* Basic profile info */}
+      <img
+        src={imageData}
+        alt={`${firstName} ${lastName}`}
+        className="rounded-full w-24 h-24 mb-4"
+      />
+      <h2 className="text-white text-lg font-bold">
+        {firstName} {lastName}
+      </h2>
+      <p className="text-gray-400 text-sm mb-4">{role}</p>
 
-      {/* Profile Image */}
-      <div className="relative -mt-12">
-        <img
-          src={imageData || "/default-profile.png"}
-          alt="Profile Picture"
-          className="mx-auto h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg transform hover:scale-110 transition-transform duration-300"
-        />
-      </div>
-
-      {/* Name and Role */}
-      <div className="p-4">
-        <h3 className="text-lg font-bold text-white">{`${firstName} ${lastName}`}</h3>
-        <p className="text-sm text-gray-200 mb-4">{role}</p>
-
-        {/* View Profile Button */}
-        <button
-          onClick={handleProfileRedirect}
-          className="group px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            <span className="flex items-center justify-center">
-              <User className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
-              View Profile
-            </span>
-        </button>
-      </div>
+      {/* Skills (if any) */}
+      {skills && skills.length > 0 && (
+        <div className="mt-4">
+          <h3 className="text-white font-semibold mb-2">Skills:</h3>
+          <ul className="list-disc list-inside text-gray-300 space-y-1">
+            {skills.map((skill) => (
+              <li key={skill}>{skill}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

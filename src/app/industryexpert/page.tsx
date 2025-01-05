@@ -1,10 +1,14 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+// Import your custom components
 import IndustryProfile from "./industrycomponents/IndustryProfile";
 import CompanyProfile from "./industrycomponents/CompanyProfile";
 import ProjectCard from "./industrycomponents/ProjectsCardd";
 
+// Interface for the expert's main profile data
 interface IndustryExpertProfile {
   userId: string;
   indExptId: string;
@@ -18,6 +22,7 @@ interface IndustryExpertProfile {
   imageData: string;
 }
 
+// Interface for each project
 interface Project {
   id: string;
   title: string;
@@ -27,13 +32,17 @@ interface Project {
 }
 
 const IndustryExpertPage: React.FC = () => {
+  const router = useRouter();
+
+  // Basic state
   const [expertProfile, setExpertProfile] = useState<IndustryExpertProfile | null>(null);
   const [unassignedProjects, setUnassignedProjects] = useState<Project[]>([]);
   const [assignedProjects, setAssignedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // For toggling between “unassigned” & “assigned”
   const [activeTab, setActiveTab] = useState<"unassigned" | "assigned">("unassigned");
-  const router = useRouter();
 
   useEffect(() => {
     const fetchProfileAndProjects = async () => {
@@ -44,33 +53,28 @@ const IndustryExpertPage: React.FC = () => {
       }
 
       try {
-        // Fetch Industry Expert Profile
+        // 1) Fetch basic user info
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        if (!profileResponse.ok) throw new Error("Failed to fetch profile");
+        if (!profileResponse.ok) throw new Error("Failed to fetch profile.");
 
         const profileData = await profileResponse.json();
         const userId = profileData.userId;
 
+        // 2) Fetch the full industry-expert profile
         const expertResponse = await fetch(
           `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        if (!expertResponse.ok) throw new Error("Failed to fetch industry expert profile");
+        if (!expertResponse.ok) throw new Error("Failed to fetch expert profile.");
 
         const expertData = await expertResponse.json();
         setExpertProfile({
@@ -86,44 +90,35 @@ const IndustryExpertPage: React.FC = () => {
           imageData: expertData.imageData,
         });
 
-        // Fetch Assigned Projects
-        const assignedResponse = await fetch(
+        // 3) Fetch “Assigned” Projects
+        const assignedRes = await fetch(
           `https://localhost:7053/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        if (assignedResponse.ok) {
-          const assignedData = await assignedResponse.json();
+        if (assignedRes.ok) {
+          const assignedData = await assignedRes.json();
           setAssignedProjects(assignedData);
-        } else {
-          console.error("Failed to fetch assigned projects:", assignedResponse.statusText);
         }
 
-        // Fetch Unassigned Projects
-        const unassignedResponse = await fetch(
+        // 4) Fetch “Unassigned” Projects
+        const unassignedRes = await fetch(
           `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        if (unassignedResponse.ok) {
-          const unassignedData = await unassignedResponse.json();
+        if (unassignedRes.ok) {
+          const unassignedData = await unassignedRes.json();
           setUnassignedProjects(unassignedData);
-        } else {
-          console.error("Failed to fetch unassigned projects:", unassignedResponse.statusText);
         }
-      } catch (error) {
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
         setError("Failed to fetch data");
-        console.error("Failed to fetch data:", error);
+        // Potentially route to "unauthorized" page if needed
         router.push("/unauthorized");
       } finally {
         setLoading(false);
@@ -133,53 +128,26 @@ const IndustryExpertPage: React.FC = () => {
     fetchProfileAndProjects();
   }, [router]);
 
+  if (loading) {
+    return <div className="text-center text-gray-400">Loading...</div>;
+  }
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+  if (!expertProfile) {
+    return <div className="text-center text-gray-400">No profile found</div>;
+  }
+
+  // For logging out
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
     router.push("/auth/login-user");
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-400">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
-
-  if (!expertProfile) {
-    return <div className="text-center text-gray-400">No profile found</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
-      {/* Navbar */}
-      <nav className="bg-white p-6 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-700">Industry Expert Dashboard</h1>
-          <ul className="flex space-x-6">
-            <li>
-              <button
-                onClick={() => router.push("/industryexpert/notifications")}
-                className="text-gray-500 hover:text-blue-600 transition"
-              >
-                Notifications
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={handleLogout}
-                className="text-gray-500 hover:text-red-600 transition"
-              >
-                Logout
-              </button>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <div className="container mx-auto p-6 space-y-8">
-        {/* Industry Expert Profile Section */}
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+      <div className="container mx-auto space-y-8">
+        {/* (A) Industry Expert Profile Section */}
         <IndustryProfile
           companyLogo={expertProfile.imageData}
           companyName={expertProfile.companyName}
@@ -191,25 +159,27 @@ const IndustryExpertPage: React.FC = () => {
           email={expertProfile.email}
           address={expertProfile.address}
           contact={expertProfile.contact}
-          onViewProjects={() => {}}
-          onEditProfile={() => {}}
-          onAddProjects={() => {}}
         />
 
-        {/* Company Profile Section */}
+        {/* (B) Company Profile Section */}
         <CompanyProfile
           companyName={expertProfile.companyName}
           address={expertProfile.address}
           contact={expertProfile.contact}
-          onEditCompany={() => {}}
+          onEditCompany={() => {
+            // Placeholder for editing company details
+            alert("Editing company not implemented yet.");
+          }}
         />
 
-        {/* Tabs for Assigned and Unassigned Projects */}
+        {/* (C) Tabs for “Assigned” / “Unassigned” Projects */}
         <div className="flex space-x-4">
           <button
             onClick={() => setActiveTab("unassigned")}
             className={`py-2 px-4 rounded-lg ${
-              activeTab === "unassigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+              activeTab === "unassigned"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-gray-300"
             }`}
           >
             Unassigned Projects
@@ -217,33 +187,46 @@ const IndustryExpertPage: React.FC = () => {
           <button
             onClick={() => setActiveTab("assigned")}
             className={`py-2 px-4 rounded-lg ${
-              activeTab === "assigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+              activeTab === "assigned"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-gray-300"
             }`}
           >
             Assigned Projects
           </button>
         </div>
 
-        {/* Projects Section */}
+        {/* (D) List Projects */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeTab === "unassigned"
-            ? unassignedProjects.map((project) => (
+            ? unassignedProjects.map((proj) => (
                 <ProjectCard
-                key={project.id}
-                projectId={project.id}
-                title={project.title}
-                description={project.description}
-                endDate={project.endDate}              />
+                  key={proj.id}
+                  projectId={proj.id}
+                  title={proj.title}
+                  description={proj.description}
+                  endDate={proj.endDate}
+                />
               ))
-            : assignedProjects.map((project) => (
+            : assignedProjects.map((proj) => (
                 <ProjectCard
-                key={project.id}
-                projectId={project.id}
-                title={project.title}
-                description={project.description}
-                endDate={project.endDate}           
+                  key={proj.id}
+                  projectId={proj.id}
+                  title={proj.title}
+                  description={proj.description}
+                  endDate={proj.endDate}
                 />
               ))}
+        </div>
+
+        {/* Example: Logout button (optional) */}
+        <div className="mt-10">
+          <button
+            onClick={handleLogout}
+            className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>
