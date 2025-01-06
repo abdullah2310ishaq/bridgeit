@@ -12,6 +12,7 @@
     "@google/generative-ai": "^0.21.0",
     "@headlessui/react": "^2.1.9",
     "@iconify/react": "^5.0.2",
+    "@microsoft/signalr": "^8.0.7",
     "@nextui-org/button": "^2.0.38",
     "@nextui-org/system": "^2.2.6",
     "@nextui-org/theme": "^2.2.11",

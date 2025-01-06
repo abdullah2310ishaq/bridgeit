@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ChatSignalR from "@/app/common_components/ChatSignalR";
+import ChatForIndustry from "@/app/common_components/ChatforIndustry";
 
 // ----- Interfaces -----
 interface IndustryExpertProfile {
@@ -25,6 +26,7 @@ interface StudentDetails {
   studentId: string;
   firstName: string;
   lastName: string;
+  stdUserId: string;
 }
 
 interface Comment {
@@ -110,6 +112,7 @@ const MilestonePage: React.FC = () => {
         const projectData = await projectRes.json();
         setStudentDetails({
           studentId: projectData.studentId,
+          stdUserId :projectData.stdUserId,
           firstName: projectData.studentName.split(" ")[0] ?? "",
           lastName: projectData.studentName.split(" ")[1] ?? "",
         });
@@ -301,11 +304,15 @@ const MilestonePage: React.FC = () => {
           </div>
         ))
       )}
-      {expertProfile?.indExptId && studentDetails?.studentId && (
-        <div className="mt-6">
-          <ChatSignalR studentId={studentDetails.studentId} expertId={expertProfile.indExptId} />
-        </div>
-      )}
+     {expertProfile?.userId && studentDetails?.stdUserId ? (
+  <div className="mt-6">
+    <ChatForIndustry expertId={expertProfile.userId} studentId={studentDetails.stdUserId} />
+
+  </div>
+) : (
+  <p className="text-gray-400">Chat is unavailable at the moment.</p>
+)}
+
     </div>
   );
 };

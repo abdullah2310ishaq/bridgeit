@@ -6,19 +6,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface UserProfile {
-    userId: string;
-    firstName: string;
-    lastName: string;
-    description: string;
-    role: string;
-    email: string;
-    universityName: string;
-    address: string;
-    rollNumber: string;
-    imageData: string;
-    uniImage: string;
-  }
-  
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  universityName: string;
+  uniId: string;
+  stdId: string;
+}
+
 interface Idea {
   id: string;
   title: string;
@@ -31,15 +27,16 @@ interface Idea {
 
 const IdeasPage: React.FC = () => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const fetchIdeas = async () => {
       const token = localStorage.getItem("jwtToken");
 
-      // Check if token is missing
       if (!token) {
         toast.error("Please log in to access this page.", {
           position: "top-center",
@@ -50,7 +47,7 @@ const IdeasPage: React.FC = () => {
       }
 
       try {
-        // Step 1: Fetch user profile to get `userId`
+        // Fetch user profile to get `userId`
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
@@ -68,7 +65,7 @@ const IdeasPage: React.FC = () => {
         const profileData = await profileResponse.json();
         const userId = profileData.userId;
 
-        // Step 2: Fetch student details using `userId`
+        // Fetch student details to retrieve `uniId` and `stdId`
         const studentResponse = await fetch(
           `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
@@ -84,9 +81,20 @@ const IdeasPage: React.FC = () => {
         }
 
         const studentData = await studentResponse.json();
-        const uniId = studentData.uniId;
+        const uniId = studentData.universityId;
 
-        // Step 3: Fetch ideas by `uniId`
+        // Save user profile including stdId
+        setUserProfile({
+          userId: studentData.userId,
+          firstName: studentData.firstName,
+          lastName: studentData.lastName,
+          email: studentData.email,
+          universityName: studentData.universityName,
+          uniId: uniId,
+          stdId: studentData.id,
+        });
+
+        // Fetch ideas by `uniId`
         const ideasResponse = await fetch(
           `https://localhost:7053/api/ideas/get-ideas-by-uni/${uniId}`,
           {
@@ -105,18 +113,10 @@ const IdeasPage: React.FC = () => {
         setIdeas(ideasData);
       } catch (error) {
         if (error instanceof Error) {
-          toast.error(error.message, {
-            position: "top-center",
-            autoClose: 3000,
-          });
+          setError(error.message);
         } else {
-          toast.error("An unexpected error occurred.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
+          setError("An unexpected error occurred.");
         }
-
-        router.push("/unauthorized");
       } finally {
         setLoading(false);
       }
@@ -124,6 +124,10 @@ const IdeasPage: React.FC = () => {
 
     fetchIdeas();
   }, [router]);
+
+  const handleIdeaClick = (id: string) => {
+    router.push(`/student/seeideas/${id}`); // Navigate to the dynamic idea page
+  };
 
   const filteredIdeas = ideas.filter(
     (idea) =>
@@ -135,9 +139,36 @@ const IdeasPage: React.FC = () => {
     return <div className="text-center text-gray-400">Loading ideas...</div>;
   }
 
+  if (error) {
+    return (
+      <div className="text-center text-red-400">
+        <p>Error: {error}</p>
+        <button
+          onClick={() => router.push("/auth/login-user")}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-6">Ideas from Your University</h1>
+
+      {/* User Profile Section */}
+      {userProfile && (
+        <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg mb-6">
+          <h2 className="text-lg font-semibold">{userProfile.universityName}</h2>
+          <p className="text-sm text-gray-400">
+            Admin: {userProfile.firstName} {userProfile.lastName}
+          </p>
+          <p className="text-sm text-gray-400">Email: {userProfile.email}</p>
+        </div>
+      )}
+
+      {/* Search Bar */}
       <div className="mb-6">
         <input
           type="text"
@@ -147,12 +178,15 @@ const IdeasPage: React.FC = () => {
           className="w-full px-4 py-2 rounded-lg bg-gray-800 text-gray-300 placeholder-gray-500"
         />
       </div>
+
+      {/* Ideas List */}
       {filteredIdeas.length > 0 ? (
         <div className="space-y-4">
           {filteredIdeas.map((idea) => (
             <div
               key={idea.id}
-              className="p-4 bg-gray-800 border border-gray-700 rounded-lg"
+              onClick={() => handleIdeaClick(idea.id)}
+              className="p-4 bg-gray-800 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-700"
             >
               <h2 className="text-lg font-semibold">{idea.title}</h2>
               <p className="text-sm text-gray-400">Technology: {idea.technology}</p>

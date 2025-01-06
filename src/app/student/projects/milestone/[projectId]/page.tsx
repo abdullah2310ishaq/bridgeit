@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import ChatSignalR from "@/app/common_components/ChatSignalR";
+import ChatForStudent from "@/app/common_components/ChatforStudent";
 
 // --------- Interfaces ---------
 interface ProgressUpdate {
@@ -29,6 +30,9 @@ interface ProjectDetails {
   endDate: string;
   expertName: string;
   indExpertId: string;
+  iExptUserId: string;
+
+
 }
 
 // For milestone comments
@@ -50,7 +54,7 @@ const ProjectProgressTracker: React.FC = () => {
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
   const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({});
   const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null);
-
+const[expertUserId, setExpertUserId] = useState<string>("");
   // For local "updates" within each item
   const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
   const [currentItem, setCurrentItem] = useState<ProgressItem | null>(null);
@@ -97,6 +101,8 @@ const ProjectProgressTracker: React.FC = () => {
         if (resProject.ok) {
           const projectData = await resProject.json();
           setProject(projectData);
+          setExpertUserId(projectData.iExptUserId);
+
         }
 
         // 2) Fetch milestones
@@ -537,11 +543,15 @@ const ProjectProgressTracker: React.FC = () => {
           </div>
         </div>
       )}
-       {studentUserId && project?.indExpertId && (
-        <div className="mt-6">
-          <ChatSignalR studentId={studentUserId} expertId={project.indExpertId} />
-        </div>
-      )}
+   {studentUserId && project?.iExptUserId ? (
+  <div className="mt-6">
+    <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
+  </div>
+) : (
+  <p className="text-gray-400">Chat is unavailable at the moment.</p>
+)}
+
+
     </div>
   );
 };

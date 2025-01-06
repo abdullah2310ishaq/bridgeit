@@ -3,11 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-interface ChatSignalRProps {
-  senderId: string; // Current user's userId
-  receiverId: string; // The userId of the person they're chatting with
-}
-
 interface Message {
   id?: string;
   senderId: string;
@@ -16,7 +11,12 @@ interface Message {
   timeSent: string;
 }
 
-const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
+interface ChatForIndustryProps {
+  expertId: string; // Industry expert's ID
+  studentId: string; // Student's ID
+}
+
+const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState("");
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
@@ -40,7 +40,11 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
       .build();
 
     setConnection(newConnection);
-  }, [senderId, receiverId]);
+
+    return () => {
+      if (newConnection) newConnection.stop().catch((err) => console.error("Error stopping SignalR connection:", err));
+    };
+  }, [expertId, studentId]);
 
   // Start SignalR connection and set up listeners
   useEffect(() => {
@@ -49,38 +53,26 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
     connection
       .start()
       .then(() => {
-        console.log("SignalR connected.");
-        const groupName = `chat-${senderId}-${receiverId}`;
-        connection.invoke("JoinGroup", groupName);
+        console.log("SignalR connected for industry.");
+        const groupName = `chat-${expertId}-${studentId}`;
+        connection.invoke("JoinGroup", groupName).catch((err) => console.error("Failed to join group:", err));
 
         connection.on("ReceiveMessage", (messageJson: string) => {
-          try {
-            // Parse the incoming message
+            console.log("Raw incoming message:", messageJson); 
+            try {
             const message = JSON.parse(messageJson) as Message;
             setMessages((prev) => [...prev, message]);
           } catch (error) {
-            console.error("Failed to parse incoming message. Ensure the backend sends valid JSON:", messageJson);
+            console.error("Failed to parse incoming message:", messageJson);
           }
-        });
-
-        connection.onclose((error) => {
-          console.error("Connection closed:", error);
-        });
-
-        connection.onreconnecting((error) => {
-          console.warn("Reconnecting:", error);
-        });
-
-        connection.onreconnected((connectionId) => {
-          console.log("Reconnected with connectionId:", connectionId);
         });
       })
       .catch((error) => console.error("SignalR connection failed:", error));
 
     return () => {
-      connection.stop().then(() => console.log("SignalR connection stopped."));
+      connection.stop().catch((err) => console.error("Error stopping SignalR connection:", err));
     };
-  }, [connection, senderId, receiverId]);
+  }, [connection, expertId, studentId]);
 
   // Fetch message history
   useEffect(() => {
@@ -90,12 +82,8 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
 
       try {
         const response = await fetch(
-          `https://localhost:7053/api/chats/message-history/${senderId}/${receiverId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          `https://localhost:7053/api/chats/message-history/${studentId}/${expertId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (response.ok) {
@@ -110,7 +98,7 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
     };
 
     fetchMessages();
-  }, [senderId, receiverId]);
+  }, [expertId, studentId]);
 
   // Scroll to the latest message
   useEffect(() => {
@@ -127,10 +115,7 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
     }
 
     const token = localStorage.getItem("jwtToken");
-    if (!token) {
-      console.error("No JWT token found in localStorage.");
-      return;
-    }
+    if (!token) return;
 
     try {
       const response = await fetch("https://localhost:7053/api/chats/send-message", {
@@ -140,21 +125,21 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          StudentId: senderId,
-          ExpertId: receiverId,
+          StudentId: studentId,
+          ExpertId: expertId,
           Message: newMsg,
         }),
       });
 
       if (response.ok) {
-        const data = await response.json(); // The new message object from the server
+        const data: Message = await response.json();
         setMessages((prev) => [...prev, data]);
         setNewMsg("");
 
-        const groupName = `chat-${senderId}-${receiverId}`;
+        const groupName = `chat-${expertId}-${studentId}`;
         await connection.invoke("SendMessageToGroup", groupName, JSON.stringify(data));
       } else {
-        console.error("Failed to send message to DB");
+        console.error("Failed to send message");
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -163,33 +148,32 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
 
   return (
     <div className="bg-gray-800 p-4 rounded shadow-md">
-      <h2 className="text-lg font-bold text-green-400 mb-2">Chat</h2>
+      <h2 className="text-lg font-bold text-green-400 mb-2">Industry Chat</h2>
       <div ref={chatContainerRef} className="mb-4 h-64 overflow-y-auto bg-gray-900 p-4 rounded">
-  {messages.map((msg, index) => {
-    const isSelf = msg.senderId === senderId;
-    const formattedDate =
-      msg.timeSent && !isNaN(new Date(msg.timeSent).getTime())
-        ? new Date(msg.timeSent).toLocaleString()
-        : "Invalid Date";
+        {messages.map((msg, index) => {
+          const isSelf = msg.senderId === expertId;
+          const formattedDate =
+            msg.timeSent && !isNaN(new Date(msg.timeSent).getTime())
+              ? new Date(msg.timeSent).toLocaleString()
+              : "";
 
-    return (
-      <div
-        key={index}
-        className={`mb-2 flex ${isSelf ? "justify-end" : "justify-start"}`}
-      >
-        <div
-          className={`p-2 rounded-lg max-w-xs ${
-            isSelf ? "bg-green-600 text-white" : "bg-gray-700 text-white"
-          }`}
-        >
-          <p>{msg.content}</p>
-          <div className="text-xs text-gray-300 mt-1">{formattedDate}</div>
-        </div>
+          return (
+            <div
+              key={index}
+              className={`mb-2 flex ${isSelf ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`p-2 rounded-lg max-w-xs ${
+                  isSelf ? "bg-green-600 text-white" : "bg-gray-700 text-white"
+                }`}
+              >
+                <p>{msg.content}</p>
+                {formattedDate && <div className="text-xs text-gray-300 mt-1">{formattedDate}</div>}
+              </div>
+            </div>
+          );
+        })}
       </div>
-    );
-  })}
-</div>
-
       <div className="flex gap-2">
         <input
           type="text"
@@ -198,10 +182,7 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
           placeholder="Type your message..."
           className="flex-grow p-2 rounded bg-gray-700 text-white"
         />
-        <button
-          onClick={sendMessage}
-          className="bg-green-600 px-4 py-2 rounded text-white hover:bg-green-500"
-        >
+        <button onClick={sendMessage} className="bg-blue-600 px-4 py-2 rounded text-white">
           Send
         </button>
       </div>
@@ -209,4 +190,4 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
   );
 };
 
-export default ChatSignalR;
+export default ChatForIndustry;
