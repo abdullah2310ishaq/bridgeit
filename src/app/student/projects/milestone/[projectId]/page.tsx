@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import ChatSignalR from "@/app/common_components/ChatSignalR";
 import ChatForStudent from "@/app/common_components/ChatforStudent";
+import MilestoneTimeline from "@/app/student/stdcomps/MilestoneTimeline";
 
 // --------- Interfaces ---------
 interface ProgressUpdate {
@@ -54,13 +55,13 @@ const ProjectProgressTracker: React.FC = () => {
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
   const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({});
   const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null);
-const[expertUserId, setExpertUserId] = useState<string>("");
-  // For local "updates" within each item
+  const[expertUserId, setExpertUserId] = useState<string>("");
+
+  
   const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
   const [currentItem, setCurrentItem] = useState<ProgressItem | null>(null);
   const [newUpdate, setNewUpdate] = useState({ content: "", date: new Date().toISOString().split("T")[0] });
 
-  // ---- Single Modal for Adding/Editing an item ----
   const [showModal, setShowModal] = useState(false);
   const [editItemId, setEditItemId] = useState<string | null>(null); // if null => adding
   const [itemFormData, setItemFormData] = useState({
@@ -327,7 +328,12 @@ const[expertUserId, setExpertUserId] = useState<string>("");
             + Add Milestone
           </button>
         </div>
-
+        {progressItems.length > 0 && (
+  <div className="mt-4 mb-8">
+    <h2 className="text-xl font-bold text-green-300 mb-2">Overall Timeline</h2>
+    <MilestoneTimeline milestones={progressItems} />
+  </div>
+)}
         {progressItems.length === 0 ? (
           <div className="text-center text-gray-300">
             <p>No milestones found.</p>

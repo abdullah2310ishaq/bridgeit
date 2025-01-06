@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 
 interface ExpertProfile {
   userId: string;
+  indExptId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -31,8 +32,9 @@ const IndustryExpertProfile: React.FC = () => {
       }
 
       try {
+        console.log("Fetching profile for expertId:", expertId);
         const response = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${expertId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-expert-id/${expertId}`,
           {
             method: "GET",
             headers: {
@@ -42,10 +44,13 @@ const IndustryExpertProfile: React.FC = () => {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch industry expert profile.");
+          const errorData = await response.text();
+          console.error("Error response:", errorData);
+          throw new Error(`Failed to fetch industry expert profile. Status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data: ExpertProfile = await response.json();
+        console.log("Fetched profile data:", data);
         setExpertProfile(data);
       } catch (err: any) {
         console.error("Error fetching expert profile:", err.message);

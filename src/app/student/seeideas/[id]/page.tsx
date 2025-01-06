@@ -28,13 +28,13 @@ const IdeaDetailsPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [requestPlaced, setRequestPlaced] = useState(false);
-  const { id } = useParams(); // Dynamic route parameter
+
+  const { id } = useParams(); 
   const router = useRouter();
 
   useEffect(() => {
     const fetchIdeaDetails = async () => {
       const token = localStorage.getItem("jwtToken");
-
       if (!token) {
         toast.error("Please log in to access this page.", {
           position: "top-center",
@@ -45,7 +45,7 @@ const IdeaDetailsPage: React.FC = () => {
       }
 
       try {
-        // Fetch idea details
+        // 1) Fetch idea details
         const ideaResponse = await fetch(
           `https://localhost:7053/api/ideas/get-idea-by-id/${id}`,
           {
@@ -61,10 +61,14 @@ const IdeaDetailsPage: React.FC = () => {
         }
 
         const ideaData: IdeaDetails[] = await ideaResponse.json();
-        setIdea(ideaData[0]);
+        if (ideaData.length > 0) {
+          setIdea(ideaData[0]);
+        } else {
+          throw new Error("Idea not found.");
+        }
 
-        // Fetch user profile to get stdId
-        const profileResponse = await fetch(
+        // 2) Fetch user profile (to get stdId)
+        const profileRes = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
@@ -74,13 +78,14 @@ const IdeaDetailsPage: React.FC = () => {
           }
         );
 
-        if (!profileResponse.ok) {
+        if (!profileRes.ok) {
           throw new Error("Authorization failed. Please log in again.");
         }
 
-        const profileData = await profileResponse.json();
+        const profileData = await profileRes.json();
         const userId = profileData.userId;
 
+        // 3) Fetch student details
         const studentResponse = await fetch(
           `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
@@ -104,11 +109,11 @@ const IdeaDetailsPage: React.FC = () => {
           universityName: studentData.universityName,
         });
       } catch (error) {
-        toast.error("Failed to fetch idea details.", {
+        toast.error((error as Error).message || "Failed to fetch idea details.", {
           position: "top-center",
           autoClose: 3000,
         });
-        router.push("/ideas");
+        router.push("/student/seeideas");
       } finally {
         setLoading(false);
       }
@@ -164,20 +169,28 @@ const IdeaDetailsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-4">{idea.title}</h1>
+
+      {/* Idea Basic Info */}
       <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg">
         <h2 className="text-lg font-semibold">Details</h2>
         <p className="text-sm text-gray-400">Technology: {idea.technology}</p>
         <p className="mt-2">{idea.description}</p>
       </div>
+
+      {/* Faculty Info */}
       <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg mt-6">
         <h2 className="text-lg font-semibold">Faculty Details</h2>
         <p className="text-sm text-gray-400">Faculty: {idea.facultyName}</p>
         <p className="text-sm text-gray-400">Email: {idea.email}</p>
       </div>
+
+      {/* University Info */}
       <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg mt-6">
         <h2 className="text-lg font-semibold">University</h2>
         <p className="text-sm text-gray-400">University: {idea.uniName}</p>
       </div>
+
+      {/* Express Interest Button */}
       <div className="mt-6">
         <button
           onClick={handleExpressInterest}
@@ -189,6 +202,7 @@ const IdeaDetailsPage: React.FC = () => {
           {requestPlaced ? "Request Placed" : "Express Interest"}
         </button>
       </div>
+
       <ToastContainer />
     </div>
   );

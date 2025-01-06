@@ -6,6 +6,7 @@ import * as signalR from "@microsoft/signalr";
 interface ChatForStudentProps {
   studentId: string; // Current student's userId
   expertId: string;  // Expert's userId
+  expertName?: string; // Optional: Expert's name
 }
 
 interface Message {
@@ -16,11 +17,11 @@ interface Message {
   timeSent: string;
 }
 
-const ChatForStudent: React.FC<ChatForStudentProps> = ({ studentId, expertId }) => {
+const ChatForStudent: React.FC<ChatForStudentProps> = ({ studentId, expertId, expertName }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState("");
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-
+  const [showChat, setShowChat] = useState(false); // Toggle chat modal
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Establish SignalR connection
@@ -145,45 +146,90 @@ const ChatForStudent: React.FC<ChatForStudentProps> = ({ studentId, expertId }) 
   };
 
   return (
-    <div className="bg-gray-800 p-4 rounded shadow-md">
-      <h2 className="text-lg font-bold text-green-400 mb-2">Student Chat</h2>
-      <div ref={chatContainerRef} className="mb-4 h-64 overflow-y-auto bg-gray-900 p-4 rounded">
-        {messages.map((msg, index) => {
-          const isSelf = msg.senderId === studentId;
-          const formattedDate =
-            msg.timeSent && !isNaN(new Date(msg.timeSent).getTime())
-              ? new Date(msg.timeSent).toLocaleString()
-              : "";
+    <div>
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setShowChat(true)}
+        className="fixed bottom-6 right-6 bg-green-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-500 transition z-50"
+        title="Open Chat"
+      >
+        💬
+      </button>
 
-          return (
-            <div
-              key={index}
-              className={`mb-2 flex ${isSelf ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`p-2 rounded-lg max-w-xs ${
-                  isSelf ? "bg-green-600 text-white" : "bg-gray-700 text-white"
-                }`}
+      {/* Chat Modal */}
+      {showChat && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-90 flex justify-center items-center z-50">
+          <div className="bg-gray-800 w-full max-w-lg rounded-lg shadow-lg">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between bg-gray-700 p-4 rounded-t-lg">
+              <h2 className="text-xl font-bold text-green-400">
+                Chat with {expertName || "Expert"}
+              </h2>
+              <button
+                onClick={() => setShowChat(false)}
+                className="text-gray-300 hover:text-white transition"
               >
-                <p>{msg.content}</p>
-                {formattedDate && <div className="text-xs text-gray-300 mt-1">{formattedDate}</div>}
-              </div>
+                ✖
+              </button>
             </div>
-          );
-        })}
-      </div>
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={newMsg}
-          onChange={(e) => setNewMsg(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-grow p-2 rounded bg-gray-700 text-white"
-        />
-        <button onClick={sendMessage} className="bg-green-600 px-4 py-2 rounded text-white">
-          Send
-        </button>
-      </div>
+
+            {/* Chat Messages */}
+            <div
+              ref={chatContainerRef}
+              className="p-4 h-64 overflow-y-auto bg-gray-900 rounded-b-lg"
+            >
+              {messages.map((msg, index) => {
+                const isSelf = msg.senderId === studentId;
+                const formattedDate =
+                  msg.timeSent && !isNaN(new Date(msg.timeSent).getTime())
+                    ? new Date(msg.timeSent).toLocaleString()
+                    : "";
+
+                return (
+                  <div
+                    key={index}
+                    className={`mb-2 flex ${
+                      isSelf ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`p-2 rounded-lg max-w-xs ${
+                        isSelf
+                          ? "bg-green-600 text-white"
+                          : "bg-gray-700 text-white"
+                      }`}
+                    >
+                      <p>{msg.content}</p>
+                      {formattedDate && (
+                        <div className="text-xs text-gray-300 mt-1">
+                          {formattedDate}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Chat Input */}
+            <div className="flex gap-2 p-4 bg-gray-800 rounded-b-lg">
+              <input
+                type="text"
+                value={newMsg}
+                onChange={(e) => setNewMsg(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-grow p-2 rounded bg-gray-700 text-white"
+              />
+              <button
+                onClick={sendMessage}
+                className="bg-green-600 px-4 py-2 rounded text-white hover:bg-green-500 transition"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

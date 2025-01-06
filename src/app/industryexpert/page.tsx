@@ -16,6 +16,7 @@ interface IndustryExpertProfile {
   firstName: string;
   lastName: string;
   email: string;
+  description:string;
   companyName: string;
   address: string;
   contact: string;
@@ -83,6 +84,7 @@ const IndustryExpertPage: React.FC = () => {
           companyId: expertData.companyId,
           firstName: expertData.firstName,
           lastName: expertData.lastName,
+          description: expertData.description,
           email: expertData.email,
           companyName: expertData.companyName,
           address: expertData.address,
@@ -156,6 +158,7 @@ const IndustryExpertPage: React.FC = () => {
           companyId={expertProfile.companyId}
           firstName={expertProfile.firstName}
           lastName={expertProfile.lastName}
+          description={expertProfile.description}
           email={expertProfile.email}
           address={expertProfile.address}
           contact={expertProfile.contact}

@@ -124,7 +124,7 @@ const StudentRegistration: React.FC = () => {
     const enteredEmail = e.target.value;
     setEmail(enteredEmail);
   
-    // Regex for validating university email
+   // Regex for validating university email
     const universityEmailRegex = /^[0-9]+@students\.au\.edu\.pk$/;
   
     if (!universityEmailRegex.test(enteredEmail)) {
