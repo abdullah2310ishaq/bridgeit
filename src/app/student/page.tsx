@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from 'next/dynamic';
-
+import IdeasSection from "./stdcomps/IdeasSection";
 import ProfileSection from "./stdcomps/ProfileSection";
 import Loading from "../loading/page";
 import OngoingProjectsSection from "./stdcomps/OngoingProjects";
@@ -24,6 +24,16 @@ interface UserProfile {
   rollNumber: string;
   imageData: string;
   uniImage: string;
+}
+
+interface Idea {
+  id: string;
+  title: string;
+  technology: string;
+  description: string;
+  facultyName: string;
+  email: string;
+  uniName: string;
 }
 
 interface Event {
@@ -57,7 +67,8 @@ const StudentPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showModal, setShowModal] = useState(false);
   const [personalProjects, setPersonalProjects] = useState<Project[]>([]);
-  
+  const[myIdeas,setMyIdeas]=useState<Idea[]>([]);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -191,6 +202,11 @@ const StudentPage: React.FC = () => {
     router.push("/student/profile/edit");
   };
 
+  const handleIdeaClick = (id: string) => {
+    // e.g., navigate to a details page
+    router.push(`/student/seeideas/${id}`);
+  };
+
   const gotoProfile = () => {
     router.push("/student/profile");
   };
@@ -248,8 +264,10 @@ const StudentPage: React.FC = () => {
         gradientStyles={gradientStyles}
       />
 
+    
+
       {/* Chat Widget Component */}
-      /<ChatWidget /> 
+      /<ChatWidget/> 
           </div>
   );
 };

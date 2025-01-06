@@ -1,4 +1,3 @@
-// components/NavBar.tsx
 
 "use client";
 
@@ -43,14 +42,18 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
       children: [
         { name: "My Projects", href: "/student/projects" },
         { name: "Explore Projects", href: "/student/projects/explore-projects" },
+        { name: "Create", href: "/student/projects/create"},
+        { name: "History", href: "/student/projects/history"},
+
+        
+      
       ],
     },
     {
       name: "Update",
       href: "#",
       children: [
-        { name: "Image", href: "/student/profile/management" },
-        { name: "Password", href: "/student/profile/management" },
+        { name: "Image & Password", href: "/student/profile/management" },
       ],
     },
     {
@@ -59,6 +62,21 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
       children: [
         { name: "View", href: "/student/profile" },
         { name: "Edit", href: "/student/profile/edit" },
+      ],
+    },
+    {
+      name: "Ideas",
+      href: "#",
+      children: [
+        { name: "View All Ideas", href: "/student/seeideas" },
+      ],
+    },
+    {
+      name: "FYP",
+      href: "#",
+      children: [
+        { name: "Register", href: "/student/fyp" },
+        { name: "View", href: "/student/fyp/fyp_record" },  
       ],
     },
     {
@@ -99,12 +117,7 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
       {/* Main Navbar Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* Left Section: Logo/Brand */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/student" className="text-green-500 text-2xl font-bold hover:text-green-400">
-              Student Module
-            </Link>
-          </div>
+         
 
           {/* Middle Section: Desktop Navigation Links */}
           <div className="hidden md:flex md:space-x-4 md:items-center">
