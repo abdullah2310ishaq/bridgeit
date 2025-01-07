@@ -114,17 +114,17 @@ const FacultyRegistration: React.FC = () => {
     setEmail(enteredEmail);
   
     // Regex for validating faculty email
-    const facultyEmailRegex = /^[a-zA-Z]+\.[a-zA-Z]+@students\.au\.edu\.pk$/;
+    // const facultyEmailRegex = /^[a-zA-Z]+\.[a-zA-Z]+@students\.au\.edu\.pk$/;
   
-    if (!facultyEmailRegex.test(enteredEmail)) {
-      setEmailError("Please use a valid faculty email (e.g., warda.aslam@students.au.edu.pk).");
-      setIsSubmitDisabled(true);
-    } else if (registeredEmails.includes(enteredEmail)) {
-      setEmailError("This email is already registered.");
-      setIsSubmitDisabled(true);
-    } else {
-      setEmailError(null);
-    }
+    // if (!facultyEmailRegex.test(enteredEmail)) {
+    //   setEmailError("Please use a valid faculty email (e.g., warda.aslam@students.au.edu.pk).");
+    //   setIsSubmitDisabled(true);
+    // } else if (registeredEmails.includes(enteredEmail)) {
+    //   setEmailError("This email is already registered.");
+    //   setIsSubmitDisabled(true);
+    // } else {
+    //   setEmailError(null);
+    // }
   };
   
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,14 +154,20 @@ const FacultyRegistration: React.FC = () => {
   };
 
   const addInterest = (interest: string) => {
-    if (!interests.includes(interest)) {
+    if (interest && !interests.includes(interest)) {
       setInterests([...interests, interest]);
+      console.log('Updated Interests:', interests);
     }
   };
+  
 
   const removeInterest = (interest: string) => {
-    setInterests(interests.filter(i => i !== interest));
+    setInterests(interests.filter((i) => i !== interest)); // Remove the interest
   };
+  
+
+
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,6 +196,7 @@ const FacultyRegistration: React.FC = () => {
       email,
       password,
       universityId,
+      department,
       interests,
       role: "Faculty",
       post,
@@ -374,6 +381,7 @@ const FacultyRegistration: React.FC = () => {
               >
                 {interest}
                 <button
+                
                   type="button"
                   onClick={() => removeInterest(interest)}
                   className="ml-2 focus:outline-none"

@@ -1,23 +1,34 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { FaCheck, FaTimes, FaBook, FaUsers, FaCog } from "react-icons/fa";
+import { FaCheck, FaTimes, FaBook, FaUsers, FaCog, FaUserTie } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+interface FacultyDetails {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  department: string;
+  post: string;
+}
 
 interface FypDetails {
   id: string;
   fypId: string;
   title: string;
-  members: string;
+  members: number;
   batch: string;
   technology: string;
   description: string;
   status: string;
+  faculty: { id: string } | null; // Holds only faculty ID
 }
 
 const FypDetailPage: React.FC = () => {
   const [fypDetails, setFypDetails] = useState<FypDetails | null>(null);
+  const [facultyDetails, setFacultyDetails] = useState<FacultyDetails | null>(null); // Faculty details state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -33,7 +44,7 @@ const FypDetailPage: React.FC = () => {
 
     const fetchFypDetails = async () => {
       try {
-        const response = await fetch(`https://localhost:7053/api/fyp/get-fyp-by-id/${fypId}`, {
+        const response = await fetch(`https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,10 +55,36 @@ const FypDetailPage: React.FC = () => {
 
         const data = await response.json();
         setFypDetails(data);
+
+        // Fetch faculty details if faculty is assigned
+        if (data.faculty && data.faculty.id) {
+          fetchFacultyDetails(data.faculty.id, token);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred.");
       } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchFacultyDetails = async (facultyId: string, token: string) => {
+      try {
+        const response = await fetch(
+          `https://localhost:7053/api/get-faculty/faculty-by-faculity-id/${facultyId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch faculty details.");
+
+        const facultyData = await response.json();
+        setFacultyDetails(facultyData);
+      } catch (err) {
+        toast.error("Failed to load faculty details.");
       }
     };
 
@@ -111,11 +148,6 @@ const FypDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white p-6">
-      {/* Background Graphics */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full opacity-30 blur-3xl"></div>
-      </div>
       <div className="max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400 mb-6">FYP Details</h1>
         {fypDetails && (
@@ -141,20 +173,22 @@ const FypDetailPage: React.FC = () => {
                 <h3 className="text-lg font-semibold">Description:</h3>
                 <p className="text-gray-300">{fypDetails.description}</p>
               </div>
-              <div className="text-lg">
-                <strong>Status:</strong>{" "}
-                <span
-                  className={`font-bold ${
-                    fypDetails.status === "Pending"
-                      ? "text-yellow-400"
-                      : fypDetails.status === "Approved"
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {fypDetails.status}
-                </span>
-              </div>
+
+              {/* Faculty Details Section */}
+              {facultyDetails && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold">Faculty Details:</h3>
+                  <p className="text-gray-300">
+                    <strong>Name:</strong> {facultyDetails.firstName} {facultyDetails.lastName}
+                    <br />
+                    <strong>Email:</strong> {facultyDetails.email}
+                    <br />
+                    <strong>Department:</strong> {facultyDetails.department}
+                    <br />
+                    <strong>Post:</strong> {facultyDetails.post}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Approve/Reject Buttons */}
@@ -179,7 +213,6 @@ const FypDetailPage: React.FC = () => {
           </>
         )}
       </div>
-      {/* Toast Notifications */}
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
     </div>
   );

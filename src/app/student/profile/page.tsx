@@ -15,7 +15,9 @@ interface StudentProfile {
   address: string;
   rollNumber: string;
   skills: string[];
-  description: string; // Added description field
+  description: string; 
+  department:string;
+  // Added description field
 }
 
 const ProfilePage: React.FC = () => {
@@ -62,6 +64,7 @@ const ProfilePage: React.FC = () => {
               address: studentData.address || 'N/A',
               rollNumber: studentData.rollNumber || 'N/A',
               skills: studentData.skills || [],
+              department:studentData.department || "Computer Science",
               description: studentData.description || 'No description provided.', // Fetch description
             });
           } else {
@@ -164,6 +167,11 @@ const ProfilePage: React.FC = () => {
                 <p className="font-medium text-white">Roll Number:</p>
                 <p className="text-gray-400">{studentProfile.rollNumber}</p>
               </div>
+              <div>
+                  <p className="font-medium text-white">Department:</p>
+                  <p className="text-gray-400">{studentProfile.department}</p>
+                </div>
+
               <div>
                 <p className="font-medium text-white">Skills:</p>
                 <div className="flex flex-wrap gap-2 mt-2">

@@ -284,7 +284,7 @@ const UpdateFacultyPage: React.FC = () => {
         <input
           type="text"
           name="interest"
-          value={facultyData.interest.join(", ")}
+          value={facultyData.interest.join(",")}
           onChange={handleInterestChange}
           className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

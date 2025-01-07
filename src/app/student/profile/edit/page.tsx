@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 interface StudentData {
   firstName: string;
   lastName: string;
-  email: string;
+
   rollNumber: string;
   description: string;
 }
@@ -17,7 +17,7 @@ const UpdateStudentPage: React.FC = () => {
   const [studentData, setStudentData] = useState<StudentData>({
     firstName: "",
     lastName: "",
-    email: "",
+   
     rollNumber: "",
     description: "",
   });
@@ -211,19 +211,7 @@ const UpdateStudentPage: React.FC = () => {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={studentData.email}
-              onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+         
           <div>
             <label className="block text-sm font-semibold text-gray-300">
               Roll Number

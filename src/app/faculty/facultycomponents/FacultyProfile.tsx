@@ -5,15 +5,10 @@ import { motion } from 'framer-motion';
 import { Edit, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-
 interface FacultyProfileProps {
-
   facultyProfile: FacultyProfileData;
-
   onViewProfile: () => void;
-
   onEditProfile: () => void;
-
 }
 
 interface FacultyProfileData {
@@ -22,7 +17,7 @@ interface FacultyProfileData {
   firstName: string;
   lastName: string;
   email: string;
-  imageData: string;
+  imageData: string | null; // Nullable to handle missing image
   description: string;
   department: string;
   interest: string[];
@@ -45,7 +40,7 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
       }
 
       try {
-        // Fetch faculty profile data
+        // Fetch user profile data
         const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
@@ -73,14 +68,18 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
               firstName: facultyData.firstName,
               lastName: facultyData.lastName,
               email: facultyData.email,
-              imageData: `data:image/jpeg;base64,${facultyData.imageData}`, // Convert Base64
+              imageData: facultyData.imageData
+                ? `data:image/jpeg;base64,${facultyData.imageData}`
+                : null, // Handle missing image
               description: facultyData.description,
               department: facultyData.department,
               interest: facultyData.interest,
               post: facultyData.post,
               universityName: facultyData.universityName,
               address: facultyData.address,
-              uniImage: `data:image/jpeg;base64,${facultyData.uniImage}`, // Convert Base64
+              uniImage: facultyData.uniImage
+                ? `data:image/jpeg;base64,${facultyData.uniImage}`
+                : '/unknown.jpg', // Placeholder if university image is missing
             });
           } else {
             console.error('Failed to fetch faculty details.');
@@ -121,7 +120,7 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
         className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0"
       >
         <img
-          src={facultyProfile.imageData}
+          src={facultyProfile.imageData || '/unknown.jpg'} // Use placeholder if no image is available
           alt={`${facultyProfile.firstName} ${facultyProfile.lastName}`}
           className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-blue-400 cursor-pointer"
         />
