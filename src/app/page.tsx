@@ -6,7 +6,7 @@ import MissionSection from "./common_components/MissionSection";
 import KeyFeaturesSection from "./common_components/KeyFeatures";
 import ImpactSection from "./common_components/ImpactSection";
 import ContactSection from "./common_components/ContactSection";
-import Footer from "./common_components/Footer";
+import Footer from "./common_components/footer";
 
 export default function HomePage() {
   const [impactView, setImpactView] = useState<"users" | "visualizations">("users");
