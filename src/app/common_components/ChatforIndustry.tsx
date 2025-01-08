@@ -32,7 +32,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7053/chathub", {
+      .withUrl(`https://localhost:7053/chathub?userId=${expertId}`, { // Pass expertId in query string
         accessTokenFactory: () => token,
       })
       .withAutomaticReconnect()
@@ -54,17 +54,15 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
       .start()
       .then(() => {
         console.log("SignalR connected for industry.");
-        const groupName = `chat-${expertId}-${studentId}`;
-        connection.invoke("JoinGroup", groupName).catch((err) => console.error("Failed to join group:", err));
-
-        connection.on("ReceiveMessage", (messageJson: string) => {
-            console.log("Raw incoming message:", messageJson); 
-            try {
-            const message = JSON.parse(messageJson) as Message;
-            setMessages((prev) => [...prev, message]);
-          } catch (error) {
-            console.error("Failed to parse incoming message:", messageJson);
-          }
+      
+        connection.on("ReceiveMessage", (senderId: string, message: string, timeSent: string) => {
+          const newMessage: Message = {
+            senderId,
+            recipientId: expertId,
+            content: message,
+            timeSent,
+          };
+          setMessages((prev) => [...prev, newMessage]);
         });
       })
       .catch((error) => console.error("SignalR connection failed:", error));
@@ -109,38 +107,22 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
 
   // Send a new message
   const sendMessage = async () => {
-    if (!newMsg.trim() || !connection) {
-      console.warn("Message is empty or connection is not established.");
-      return;
-    }
+    if (!newMsg.trim() || !connection) return;
 
     const token = localStorage.getItem("jwtToken");
     if (!token) return;
 
     try {
-      const response = await fetch("https://localhost:7053/api/chats/send-message", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          StudentId: studentId,
-          ExpertId: expertId,
-          Message: newMsg,
-        }),
-      });
-
-      if (response.ok) {
-        const data: Message = await response.json();
-        setMessages((prev) => [...prev, data]);
-        setNewMsg("");
-
-        const groupName = `chat-${expertId}-${studentId}`;
-        await connection.invoke("SendMessageToGroup", groupName, JSON.stringify(data));
-      } else {
-        console.error("Failed to send message");
-      }
+      const timeSent = new Date().toISOString();
+      await connection.invoke("SendMessageToUser", studentId, expertId, newMsg, timeSent);
+      const newMessage: Message = {
+        senderId: expertId,
+        recipientId: studentId,
+        content: newMsg,
+        timeSent,
+      };
+      setMessages((prev) => [...prev, newMessage]);
+      setNewMsg("");
     } catch (error) {
       console.error("Error sending message:", error);
     }

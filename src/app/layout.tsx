@@ -1,8 +1,8 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Footer from "./common_components/Footer";
-
+import StripeProvider from "./components/StripeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,10 +25,9 @@ export default function RootLayout({
         {/* Add any additional meta tags here */}
       </head>
       <body className={inter.className}>
-
-        <main>{children}</main>
-   
-     
+        <StripeProvider>
+          <main>{children}</main>
+        </StripeProvider>
       </body>
     </html>
   );
