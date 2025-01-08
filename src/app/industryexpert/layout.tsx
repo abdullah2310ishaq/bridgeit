@@ -1,10 +1,10 @@
-// industry-expert/layout.tsx
 
 "use client";
 import React, { useEffect, useState } from "react";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import IndustryExpertNavBar from "./industrycomponents/ExpertNavBar";
+// import StripeProvider from "../components/StripeProvider";
 
 interface UserProfile {
   userId: string;
@@ -96,7 +96,9 @@ const IndustryExpertLayout = ({ children }: { children: ReactNode }) => {
       <IndustryExpertNavBar userProfile={userProfile} onLogout={handleLogout} />
       <div className="pt-16">
         {/* pt-16 ensures content is below the navbar */}
+      {/* <StripeProvider> */}
         <main>{children}</main>
+        {/* </StripeProvider> */}
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
+// app/components/ProposalDetailsModal.tsx
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 
@@ -48,7 +50,8 @@ const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({
           type = "application/msword";
           break;
         case "docx":
-          type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+          type =
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
           break;
         // Add more cases if needed
         default:
@@ -68,19 +71,24 @@ const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({
 
   // Function to convert Base64 string to a Blob
   const base64ToBlob = (base64: string, type: string) => {
-    const byteCharacters = atob(base64);
-    const byteArrays = [];
-    for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
-      const slice = byteCharacters.slice(offset, offset + 1024);
+    try {
+      const byteCharacters = atob(base64);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+        const slice = byteCharacters.slice(offset, offset + 1024);
 
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        byteArrays.push(new Uint8Array(byteNumbers));
       }
-
-      byteArrays.push(new Uint8Array(byteNumbers));
+      return new Blob(byteArrays, { type });
+    } catch (error) {
+      console.error("Error converting Base64 to Blob:", error);
+      return new Blob([], { type });
     }
-    return new Blob(byteArrays, { type });
   };
 
   return (
@@ -89,14 +97,21 @@ const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({
         <button
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
           onClick={onClose}
+          aria-label="Close Proposal Details Modal"
         >
           <FaTimes size={24} />
         </button>
         <h2 className="text-2xl font-bold text-green-500 mb-4">Proposal Details</h2>
 
-        <p><strong>Project:</strong> {proposal.projectTitle}</p>
-        <p><strong>Student:</strong> {proposal.studentName}</p>
-        <p><strong>Status:</strong> {proposal.status}</p>
+        <p>
+          <strong>Project:</strong> {proposal.projectTitle}
+        </p>
+        <p>
+          <strong>Student:</strong> {proposal.studentName}
+        </p>
+        <p>
+          <strong>Status:</strong> {proposal.status}
+        </p>
 
         <div className="mt-4">
           {decodedFileUrl ? (
