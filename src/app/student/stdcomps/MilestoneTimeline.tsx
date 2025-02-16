@@ -24,7 +24,6 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
   return (
     <div className="space-y-6">
       {milestones.map((mile, index) => {
-        // Calculate some progress logic (example: completed = 100%, pending = 0%)
         const progressValue = mile.isCompleted ? 100 : 0;
         
         return (

@@ -75,9 +75,9 @@ const ViewCompaniesPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-blue-50 via-purple-100 to-pink-50 py-12">
+    <div className="min-h-screen bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700 py-12">
       <div className="flex flex-col justify-center items-center mb-8 space-y-6">
-        <h1 className="text-5xl font-extrabold text-gray-800">Companies Directory</h1>
+        <h1 className="text-5xl font-extrabold text-blue-500">Companies Directory</h1>
 
         {/* Search Bar */}
         <div className="flex items-center space-x-2">

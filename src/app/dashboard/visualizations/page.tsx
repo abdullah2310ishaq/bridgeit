@@ -87,8 +87,8 @@ const VisualizationsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-r from-gray-800 via-purple-800 to-gray-900 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-white mb-10 drop-shadow-lg">Data Visualizations</h1>
+    <div className="min-h-screen p-8 bg-gradient-to-r from-gray-900 to-gray-800 flex flex-col items-center">
+      <h1 className="text-4xl font-bold text-blue-400 mb-10 drop-shadow-lg">Data Visualizations</h1>
       <div className="mb-6 flex justify-center space-x-4">
         {['bar', 'line', 'pie', 'doughnut'].map((chartType) => (
           <motion.button
