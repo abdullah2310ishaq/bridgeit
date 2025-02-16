@@ -233,7 +233,7 @@ const LoginPage: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 0.8 }}
           >
-            Don't have an account?
+            Dont have an account?
             <a
               onClick={() => router.push('/auth/register-user')}
               className="text-blue-400 hover:text-blue-300 cursor-pointer ml-1 transition duration-300"
