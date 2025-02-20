@@ -10,7 +10,7 @@ export default function FeatureCard({ icon, title, description }: FeatureCardPro
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="bg-gray-800 rounded-xl p-8 text-center transition-all duration-300 shadow-lg hover:shadow-xl"
+      className="bg-gray-00 rounded-xl p-8 text-center transition-all duration-300 shadow-lg hover:shadow-xl"
     >
       <div className="flex justify-center mb-6">
         <div className="bg-gray-700 rounded-full p-4">
@@ -18,7 +18,7 @@ export default function FeatureCard({ icon, title, description }: FeatureCardPro
         </div>
       </div>
       <h3 className="text-2xl font-bold text-green-400 mb-4">{title}</h3>
-      <p className="text-gray-300">{description}</p>
+      <p className="text-gray-500">{description}</p>
     </motion.div>
   );
 }
