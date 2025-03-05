@@ -1,6 +1,4 @@
-// app/industryexpert/notifications/NotificationsPage.tsx
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +11,7 @@ interface Proposal {
   projectTitle: string;
   studentName: string;
   studentUserId: string;
-  proposal: string; // Base64 encoded proposal
+  proposal: string;
   status: string;
 }
 
