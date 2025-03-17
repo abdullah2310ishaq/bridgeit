@@ -318,15 +318,12 @@ const NotificationsPage: React.FC = () => {
                 You have a new proposal document.
               </p>
               <p className="text-gray-400">Status: {proposal.status}</p>
-
               <div className="mt-4 flex space-x-2">
                 <button
                   className="text-gray-900 bg-green-400 rounded py-2 px-4 hover:bg-green-500 transition duration-200"
                   onClick={() => handleSeeDetails(proposal)}
-                >
-                  See Details
+                >                  See Details
                 </button>
-
                 <button
                   className="text-gray-900 bg-blue-400 rounded py-2 px-4 hover:bg-blue-500 transition duration-200"
                   onClick={() => handleViewStudentDetails(proposal.studentUserId)}
