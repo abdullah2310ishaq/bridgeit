@@ -205,7 +205,7 @@ const AboutPage: React.FC = () => {
               {popupContent.name}
             </h2>
             <p className="text-lg text-gray-300 mb-2">{popupContent.role}</p>
-            <p className="text-lg text-gray-400 bold mb-4">"{popupContent.funFact}"</p>
+            <p className="text-lg text-gray-400 bold mb-4">{popupContent.funFact}</p>
             <button
               onClick={handlePopupClose}
               className="mt-6 py-2 px-6 bg-gradient-to-r from-green-500 to-blue-600 hover:from-blue-600 hover:to-green-500 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out"
