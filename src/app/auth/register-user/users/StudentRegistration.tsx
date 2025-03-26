@@ -175,18 +175,7 @@ const StudentRegistration: React.FC = () => {
     setSkills(skills.filter((s) => s !== skill));
   };
 
-  const handleDepartmentChange = (e) => {
-    const selectedId = e.target.value;       // this is departmentId
-    setDepartmentId(selectedId);
-  
-    // Find the department's name in your departments array
-    const selectedDeptObj = departments.find(
-      (dept) => dept.id === selectedId
-    );
-  
-    // selectedDeptObj.department should be the actual name (e.g., "Computer Science")
-    setDepartmentName(selectedDeptObj?.department || "");
-  };
+ 
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

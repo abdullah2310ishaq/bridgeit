@@ -1,7 +1,6 @@
 "use client"; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import MyCalendar from "@/app/components/MyCalendar"; 
 import {FaUser,FaPhone,FaCalendarAlt, FaAddressCard,FaEdit, FaSearch, FaSignOutAlt, FaGraduationCap, FaChalkboardTeacher, FaProjectDiagram,} from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -306,7 +305,7 @@ const UniAdminDashboard: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Calendar
             </h2>
-            <MyCalendar />
+        
           </motion.div>
         </nav>
       </div>

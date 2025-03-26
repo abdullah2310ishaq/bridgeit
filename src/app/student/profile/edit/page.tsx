@@ -72,7 +72,7 @@ const UpdateStudentPage: React.FC = () => {
             setStudentData({
               firstName: data.firstName,
               lastName: data.lastName,
-              email: data.email,
+             
               rollNumber: data.rollNumber,
               description: data.description || "",
             });
@@ -133,7 +133,7 @@ const UpdateStudentPage: React.FC = () => {
           body: JSON.stringify({
             firstName: studentData.firstName,
             lastName: studentData.lastName,
-            email: studentData.email,
+            
             rollNumber: studentData.rollNumber,
           }),
         }
