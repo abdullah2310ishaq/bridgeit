@@ -6,7 +6,7 @@ const ProjectsBanner: React.FC = () => {
       <div className="absolute inset-0 opacity-20 bg-no-repeat bg-cover" style={{ backgroundImage: `url('/path-to-banner-image.png')` }}></div>
       <div className="relative z-10">
         <h2 className="text-4xl font-extrabold mb-2">My Projects</h2>
-        <p className="text-lg">Here are some of the projects I’ve completed. Click on "Learn More" to dive deeper!</p>
+        <p className="text-lg">Here are some of the projects Ive completed. Click on  Learn More to dive deeper!</p>
       </div>
     </div>
   );

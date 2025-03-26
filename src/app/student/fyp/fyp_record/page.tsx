@@ -118,7 +118,7 @@ const StudentProposalStatusPage: React.FC = () => {
 
       <div className="text-center mt-12 text-gray-400">
         <p className="text-sm">
-          Didn't receive an email? Make sure to check your spam/junk folder or contact your university administrator for assistance.
+          Didnot receive an email? Make sure to check your spam/junk folder or contact your university administrator for assistance.
         </p>
       </div>
     </div>
