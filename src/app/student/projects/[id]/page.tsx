@@ -35,7 +35,7 @@ interface ProjectDetailsPanelProps {
   onClose: () => void;
 }
 
-const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({
+const Project: React.FC<ProjectDetailsPanelProps> = ({
   project,
   onClose,
 }) => {
@@ -188,4 +188,4 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({
   );
 };
 
-export default ProjectDetailsPanel;
+export default Project;
