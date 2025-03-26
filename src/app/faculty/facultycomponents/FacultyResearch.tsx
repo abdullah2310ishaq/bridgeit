@@ -33,7 +33,8 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
           </h1>
           <p className="text-xl text-gray-300">
             Our dedicated faculty members contribute groundbreaking research across various fields. Dive
-            into the innovation that's shaping the future.
+            into the innovation that
+            s shaping the future.
           </p>
           <div className="flex space-x-6 mt-8">
             <button
