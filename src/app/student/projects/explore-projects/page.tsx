@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProfileCard from "./ProfileCard";
 import ProjectCard from "./ExploreProjectCard";
-import ProjectDetailsPanel from "../[id]/page";
 import { ToastContainer } from "react-toastify"; // to display toasts
 import { Search as SearchIcon, Filter, ChevronDown } from "lucide-react";
+import ProjectDetailsPanel from "../[id]/ProjectDetailsPanel";
 
 // Interfaces
 interface UserProfile {
