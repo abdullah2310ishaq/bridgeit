@@ -226,8 +226,8 @@ const UniversityAdminRegistration: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-sm p-8 rounded-xl shadow-lg">
-      <h2 className="text-3xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
+    <div className="w-full max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+      <h2 className="text-3xl font-semibold mb-6 text-blue-600">
         University Admin Registration
       </h2>
       <form
@@ -238,94 +238,110 @@ const UniversityAdminRegistration: React.FC = () => {
         className="space-y-6 w-full"
       >
         <input autoComplete="false" name="hidden" type="text" style={{ display: "none" }} />
+  
+        {/* First Name */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">First Name</label>
+          <label className="block text-sm font-semibold text-gray-700">First Name</label>
           <input
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
           />
         </div>
+  
+        {/* Last Name */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">Last Name</label>
+          <label className="block text-sm font-semibold text-gray-700">Last Name</label>
           <input
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
           />
         </div>
+  
+        {/* Email */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">Email</label>
+          <label className="block text-sm font-semibold text-gray-700">Email</label>
           <input
             type="email"
             value={email}
             onChange={handleEmailChange}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
           />
-          {emailError && <p className="text-red-400 mt-2">{emailError}</p>}
+          {emailError && <p className="text-red-500 mt-2">{emailError}</p>}
         </div>
+  
+        {/* Password */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">Password</label>
+          <label className="block text-sm font-semibold text-gray-700">Password</label>
           <input
             type="password"
             value={password}
             onChange={handlePasswordChange}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
             placeholder="At least 8 characters and a special character"
           />
-          {passwordError && <p className="text-red-400 mt-2">{passwordError}</p>}
+          {passwordError && <p className="text-red-500 mt-2">{passwordError}</p>}
         </div>
+  
+        {/* Confirm Password */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">Confirm Password</label>
+          <label className="block text-sm font-semibold text-gray-700">Confirm Password</label>
           <input
             type="password"
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
             placeholder="Confirm your password"
           />
-          {passwordError && <p className="text-red-400 mt-2">{passwordError}</p>}
+          {passwordError && <p className="text-red-500 mt-2">{passwordError}</p>}
         </div>
+  
+        {/* Contact Number */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">Contact Number</label>
+          <label className="block text-sm font-semibold text-gray-700">Contact Number</label>
           <input
             type="text"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
           />
         </div>
+  
+        {/* Office Address */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">Office Address</label>
+          <label className="block text-sm font-semibold text-gray-700">Office Address</label>
           <input
             type="text"
             value={officeAddress}
             onChange={(e) => setOfficeAddress(e.target.value)}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="off"
           />
         </div>
+  
+        {/* University Selection */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300">University</label>
+          <label className="block text-sm font-semibold text-gray-700">University</label>
           <select
             value={universityId}
             onChange={(e) => setUniversityId(e.target.value)}
-            className="mt-1 block w-full p-3 bg-gray-700 bg-opacity-50 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="mt-1 block w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="" disabled>
@@ -338,10 +354,12 @@ const UniversityAdminRegistration: React.FC = () => {
             ))}
           </select>
         </div>
+  
+        {/* Submit Button */}
         <div className="flex justify-center">
           <button
             type="submit"
-            className={`w-full py-3 px-6 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 text-white transition-colors duration-300 ${
+            className={`w-full py-3 px-6 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white text-white transition-colors duration-300 ${
               loading || isSubmitDisabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading || isSubmitDisabled}
@@ -353,6 +371,7 @@ const UniversityAdminRegistration: React.FC = () => {
       <ToastContainer />
     </div>
   );
+  
 };
 
 export default UniversityAdminRegistration;
