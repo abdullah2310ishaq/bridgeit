@@ -59,22 +59,22 @@ const RegistrationPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-200 text-gray-800 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Glow */}
+    <div className="min-h-screen bg-white text-gray-800 px-4 py-12 flex flex-col items-center justify-start relative overflow-hidden">
+      {/* Background Accent Glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            'radial-gradient(circle at center, rgba(0,123,255,0.05) 0%, transparent 60%)',
+            'radial-gradient(circle at top center, rgba(0,123,255,0.05) 0%, transparent 70%)',
         }}
       />
   
-      {/* Header */}
+      {/* Logo & Heading */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 text-center mb-12"
+        transition={{ duration: 0.6 }}
+        className="text-center mb-10 z-10"
       >
         <motion.div
           initial={{ scale: 0 }}
@@ -84,22 +84,22 @@ const RegistrationPage: React.FC = () => {
           <Image
             src="/logo.jpg"
             alt="BridgeIT Logo"
-            width={180}
-            height={180}
-            className="rounded-full border-4 border-blue-500 shadow-xl mx-auto"
+            width={140}
+            height={140}
+            className="rounded-full border-4 border-blue-500 shadow-md mx-auto"
           />
         </motion.div>
-        <h1 className="text-5xl sm:text-6xl font-extrabold mt-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-700">
-          Welcome to BridgeIT
+        <h1 className="text-4xl sm:text-5xl font-extrabold mt-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-700">
+          Join BridgeIT
         </h1>
-        <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">
-          Join our platform to connect, collaborate, and grow across various roles.
+        <p className="mt-3 text-gray-500 max-w-xl mx-auto text-base sm:text-lg">
+          Choose your role to get started with registration.
         </p>
       </motion.div>
   
-      {/* Role Selection / Registration */}
+      {/* Role Selection / Form */}
       <motion.div
-        className="relative z-10 w-full max-w-5xl"
+        className="relative z-10 w-full max-w-6xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -112,7 +112,7 @@ const RegistrationPage: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
             >
               {roles.map((role) => (
                 <motion.div
@@ -122,15 +122,13 @@ const RegistrationPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
-                  className={`bg-gradient-to-br ${role.color} p-6 rounded-2xl shadow-md cursor-pointer relative overflow-hidden group`}
+                  className={`cursor-pointer rounded-2xl p-6 bg-gradient-to-br ${role.color} text-white shadow-md relative overflow-hidden group`}
                 >
-                  <div className="absolute inset-0 bg-white bg-opacity-20 group-hover:bg-opacity-30 transition" />
-                  <div className="flex flex-col items-center">
-                    <Icon icon={role.icon} className="text-5xl text-white mb-4" />
-                    <h3 className="text-xl font-bold text-white">{role.label}</h3>
-                    <p className="text-white text-center mt-2 text-sm opacity-90">
-                      {role.description}
-                    </p>
+                  <div className="absolute inset-0 bg-white bg-opacity-10 group-hover:bg-opacity-20 transition-all" />
+                  <div className="relative flex flex-col items-center text-center">
+                    <Icon icon={role.icon} className="text-4xl mb-3" />
+                    <h3 className="text-lg font-semibold">{role.label}</h3>
+                    <p className="text-sm opacity-90 mt-2">{role.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -142,18 +140,18 @@ const RegistrationPage: React.FC = () => {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -50, opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white border border-blue-100 rounded-2xl p-8 shadow-lg relative"
+              className="bg-white border border-blue-100 rounded-xl p-6 sm:p-8 shadow-md"
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-700">
+                <h2 className="text-2xl sm:text-3xl font-bold text-blue-600">
                   {roles.find((role) => role.key === selectedRole)?.label} Registration
                 </h2>
                 <button
                   onClick={() => setSelectedRole('')}
-                  className="text-blue-500 hover:text-blue-700 transition flex items-center"
+                  className="text-blue-500 hover:text-blue-700 text-sm sm:text-base flex items-center transition"
                 >
-                  <Icon icon="ph:arrow-left-bold" className="mr-2" />
-                  Back to Roles
+                  <Icon icon="ph:arrow-left-bold" className="mr-2 text-lg" />
+                  Back
                 </button>
               </div>
               {renderRegistrationForm()}
@@ -162,7 +160,8 @@ const RegistrationPage: React.FC = () => {
         </AnimatePresence>
       </motion.div>
     </div>
-  );
+  )
+  
   
 }
 
