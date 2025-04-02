@@ -151,29 +151,33 @@ const VerifyOtp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white p-8">
+    <div className="min-h-screen flex items-center justify-center bg-white text-gray-800 p-6 sm:p-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-gray-700/50 w-full max-w-md"
+        className="bg-white border border-blue-100 rounded-2xl p-8 shadow-xl w-full max-w-md"
       >
+        {/* Logo and Heading */}
         <div className="flex items-center justify-center mb-8 space-x-4">
           <Image
             src="/logo.jpg"
             alt="BridgeIT Logo"
             width={48}
-              height={48}
-              //className="rounded-lg"
+            height={48}
           />
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-700">
             Verify OTP
           </h1>
         </div>
-        <p className="text-center text-gray-400 mb-6">
+  
+        {/* Info Text */}
+        <p className="text-center text-gray-600 mb-6">
           An OTP has been sent to your email:{" "}
-          <span className="text-blue-400">{email}</span>
+          <span className="text-blue-600 font-medium">{email}</span>
         </p>
+  
+        {/* OTP Input Fields */}
         <form onSubmit={handleVerifyOtp}>
           <div className="flex justify-center gap-2 mb-6">
             {otp.map((digit, index) => (
@@ -184,13 +188,15 @@ const VerifyOtp: React.FC = () => {
                 value={digit}
                 maxLength={1}
                 onChange={(e) => handleInputChange(e.target.value, index)}
-                className="w-12 h-12 text-center text-xl bg-gray-900/50 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                className="w-12 h-12 text-center text-xl bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
               />
             ))}
           </div>
+  
+          {/* Submit Button */}
           <motion.button
             type="submit"
-            className={`w-full py-3 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white ${
+            className={`w-full py-3 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white ${
               loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
             }`}
             disabled={loading}
@@ -200,19 +206,24 @@ const VerifyOtp: React.FC = () => {
             {loading ? "Verifying..." : "Verify OTP"}
           </motion.button>
         </form>
+  
+        {/* Resend Button */}
         <div className="mt-4 text-center">
           <button
             onClick={handleResendOtp}
-            className="text-sm text-blue-400 hover:text-blue-300 focus:outline-none transition duration-300"
+            className="text-sm text-blue-600 hover:text-blue-700 focus:outline-none transition duration-300"
             disabled={loading}
           >
             Resend OTP
           </button>
         </div>
       </motion.div>
+  
+      {/* Toast Notifications */}
       <ToastContainer />
     </div>
   );
+  
 };
 
 export default VerifyOtp;

@@ -49,34 +49,35 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white p-8 relative overflow-hidden">
-      {/* Background Elements */}
+    <div className="min-h-screen flex items-center justify-center bg-white text-gray-800 p-6 relative overflow-hidden">
+      {/* Glowing Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/10 rounded-full filter blur-3xl"></div>
       </div>
-
-      {/* Main Content */}
-      <div className="w-full max-w-md relative">
+  
+      {/* OTP Verification Card */}
+      <div className="w-full max-w-md relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-gray-700/50"
+          className="bg-white border border-blue-100 rounded-2xl p-8 shadow-2xl backdrop-blur-lg"
         >
+          {/* Logo + Title */}
           <div className="flex items-center justify-center mb-8 space-x-4">
             <Image
               src="/logo.jpg"
               alt="BridgeIT Logo"
               width={48}
               height={48}
-              //className="rounded-lg"
             />
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">
               Verify OTP
             </h1>
           </div>
-
+  
+          {/* Form */}
           <motion.form
             onSubmit={handleSubmit}
             className="space-y-6"
@@ -84,48 +85,53 @@ const VerifyOtp = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
+            {/* Email */}
             <div className="relative">
               <FaEnvelope className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-4 pl-12 bg-gray-900/50 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 backdrop-blur-sm"
+                className="w-full p-4 pl-12 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 placeholder="Email"
                 required
               />
             </div>
+  
+            {/* OTP */}
             <div className="relative">
               <FaLock className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-4 pl-12 bg-gray-900/50 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 backdrop-blur-sm"
+                className="w-full p-4 pl-12 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 placeholder="Enter OTP"
                 required
               />
             </div>
-
+  
+            {/* Messages */}
             {error && (
-              <motion.p 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="text-red-500 text-sm mt-2"
               >
                 {error}
               </motion.p>
             )}
             {success && (
-              <motion.p 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="text-green-500 text-sm mt-2"
               >
                 {success}
               </motion.p>
             )}
-
+  
+            {/* Submit Button */}
             <motion.button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 px-4 rounded-lg hover:opacity-90 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
@@ -139,6 +145,7 @@ const VerifyOtp = () => {
       </div>
     </div>
   );
+  
 };
 
 export default VerifyOtp;
