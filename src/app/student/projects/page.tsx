@@ -1,11 +1,10 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
-import { FaRocket, FaCode, FaCheckCircle, FaSpinner } from "react-icons/fa";
+import { FaRocket, FaCode, FaCheckCircle, FaSpinner, FaPlus } from "react-icons/fa";
 
 interface Project {
   id: string;
@@ -27,59 +26,48 @@ const ProjectsPage: React.FC = () => {
         router.push("/auth/login-user");
         return;
       }
+
       try {
-        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const userRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          const userId = userData.userId;
-
-          const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (studentResponse.ok) {
-            const studentData = await studentResponse.json();
-            const studentId = studentData.id;
-
-            const projectsResponse = await fetch(`https://localhost:7053/api/projects/get-student-projects-by-id/${studentId}`, {
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          const studentRes = await fetch(
+            `https://localhost:7053/api/get-student/student-by-id/${userData.userId}`,
+            {
               method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
 
-            if (projectsResponse.ok) {
-              const projectsData = await projectsResponse.json();
+          if (studentRes.ok) {
+            const studentData = await studentRes.json();
+            const projectRes = await fetch(
+              `https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`,
+              {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            if (projectRes.ok) {
+              const projectsData = await projectRes.json();
               setProjects(projectsData);
             } else {
-              toast.error("Failed to load projects.", {
-                position: "top-center",
-                autoClose: 3000,
-              });
+              toast.error("Failed to load projects.", { position: "top-center" });
             }
           } else {
-            console.error("Failed to fetch student details.");
             router.push("/unauthorized");
           }
         } else {
-          console.error("Failed to fetch user details.");
           router.push("/unauthorized");
         }
-      } catch (error) {
-        console.error("An error occurred:", error);
-        toast.error("An error occurred while fetching projects.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
+      } catch (err) {
+        console.error(err);
+        toast.error("An error occurred while fetching projects.");
       } finally {
         setLoading(false);
       }
@@ -88,17 +76,21 @@ const ProjectsPage: React.FC = () => {
     fetchProjects();
   }, [router]);
 
-  const handleCardClick = (projectId: string) => {
-    router.push(`/student/projects/personal/${projectId}`);
+  const handleCardClick = (id: string) => {
+    router.push(`/student/projects/personal/${id}`);
+  };
+
+  const handleCreateProject = () => {
+    router.push("/student/projects/create");
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="text-6xl text-blue-500"
+          className="text-5xl text-blue-600"
         >
           <FaSpinner />
         </motion.div>
@@ -107,22 +99,31 @@ const ProjectsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 text-white p-8 relative overflow-hidden">
-      <div className="container mx-auto relative z-10">
-        <motion.h1
+    <div className="min-h-screen bg-gray-100 text-gray-800 p-8 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-5xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
+          transition={{ duration: 0.6 }}
+          className="flex items-center justify-between mb-12"
         >
-          My Innovative Projects
-        </motion.h1>
+          <h1 className="text-4xl font-bold text-blue-700">
+            My Innovative Projects
+          </h1>
+          <button
+            onClick={handleCreateProject}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
+          >
+            <FaPlus />
+            New Project
+          </button>
+        </motion.div>
 
         {projects.length > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {projects.map((project, index) => (
@@ -130,26 +131,25 @@ const ProjectsPage: React.FC = () => {
                 key={project.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                onClick={() => handleCardClick(project.id)} // Handle card click
-                className="bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden group cursor-pointer"
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                onClick={() => handleCardClick(project.id)}
+                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer border border-gray-200 group"
               >
-                <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-sm rounded-bl-lg">
+                <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-xs rounded-bl-lg">
                   {project.status}
                 </div>
-                <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-400 transition-colors duration-300">
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition">
                   {project.title}
-                </h2>
-                <p className="text-gray-400 mb-4">{project.description}</p>
-                <div className="flex items-center text-gray-500 mb-2">
-                  <FaCode className="mr-2" />
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">{project.description}</p>
+                <div className="text-sm text-gray-500 flex items-center gap-2">
+                  <FaCode className="text-blue-400" />
                   <span>{project.stack}</span>
                 </div>
-                <div className="flex items-center text-gray-500">
-                  <FaCheckCircle className="mr-2" />
+                <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                  <FaCheckCircle className="text-green-400" />
                   <span>{project.status}</span>
                 </div>
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
               </motion.div>
             ))}
           </motion.div>
@@ -157,20 +157,20 @@ const ProjectsPage: React.FC = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-gray-300 text-center text-xl"
+            transition={{ duration: 0.4 }}
+            className="text-center text-gray-600 text-lg"
           >
-            No projects found. Start creating your innovative projects!
+            No projects yet. Start by creating your first!
           </motion.p>
         )}
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-10 text-blue-400 opacity-20 animate-pulse">
-        <FaRocket size={100} />
+      {/* Decorative Icons */}
+      <div className="absolute top-24 right-10 text-blue-400 opacity-10 animate-pulse">
+        <FaRocket size={90} />
       </div>
-      <div className="absolute bottom-20 left-10 text-purple-400 opacity-20 animate-pulse">
-        <FaCode size={100} />
+      <div className="absolute bottom-24 left-10 text-purple-500 opacity-10 animate-pulse">
+        <FaCode size={90} />
       </div>
 
       <ToastContainer />
