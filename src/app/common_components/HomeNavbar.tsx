@@ -2,13 +2,14 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { FiSearch } from "react-icons/fi"
+import { motion, AnimatePresence } from "framer-motion"
+import { FiSearch, FiMenu, FiX } from "react-icons/fi"
 import { useState, useEffect } from "react"
 import NavLink from "./NavLink"
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +18,8 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const toggleMenu = () => setMenuOpen(!menuOpen)
 
   return (
     <nav
@@ -32,39 +35,69 @@ export default function Navbar() {
         </span>
       </div>
 
-      {/* Nav Links - Hidden on mobile, visible on medium screens and up */}
+      {/* Nav Links - Desktop */}
       <div className="hidden md:flex space-x-8">
         <NavLink href="/">Home</NavLink>
         <NavLink href="/about">About</NavLink>
         <NavLink href="/dashboard">Analytics</NavLink>
       </div>
 
-      {/* Search Icon and Sign In */}
+      {/* Right Side */}
       <div className="flex items-center space-x-4">
         {/* Search Icon */}
         <Link href="/dashboard/searchpage">
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-500 cursor-pointer transition-colors duration-300"
+            className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-500 cursor-pointer transition-colors duration-300 hidden md:block"
           >
             <FiSearch size={22} aria-label="Search" />
           </motion.div>
         </Link>
 
-        {/* Sign In Button */}
+        {/* Sign In - Desktop */}
         <Link href="/auth/login-user">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-full shadow-md hover:shadow-lg active:opacity-90 outline-none transition-all duration-300"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-full shadow-md hover:shadow-lg active:opacity-90 outline-none transition-all duration-300 hidden md:block"
             aria-label="Sign In"
           >
             Sign In
           </motion.button>
         </Link>
+
+        {/* Hamburger - Mobile */}
+        <div className="md:hidden">
+          <button onClick={toggleMenu} aria-label="Toggle Menu">
+            {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-20 left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-6 md:hidden z-40"
+          >
+            <NavLink href="/" onClick={() => setMenuOpen(false)}>Home</NavLink>
+            <NavLink href="/about" onClick={() => setMenuOpen(false)}>About</NavLink>
+            <NavLink href="/dashboard" onClick={() => setMenuOpen(false)}>Analytics</NavLink>
+            <Link href="/dashboard/searchpage" onClick={() => setMenuOpen(false)}>
+              <span className="text-blue-600 hover:underline">Search</span>
+            </Link>
+            <Link href="/auth/login-user" onClick={() => setMenuOpen(false)}>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition">
+                Sign In
+              </button>
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }
-

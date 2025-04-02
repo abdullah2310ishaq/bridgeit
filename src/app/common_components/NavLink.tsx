@@ -1,9 +1,22 @@
-import Link from "next/link";
+"use client"
 
-export default function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+import Link from "next/link"
+import { ReactNode } from "react"
+
+interface NavLinkProps {
+  href: string
+  children: ReactNode
+  onClick?: () => void
+}
+
+export default function NavLink({ href, children, onClick }: NavLinkProps) {
   return (
-    <Link href={href} className="text-lg text-gray-300 hover:text-green-400 transition-colors duration-300">
+    <Link
+      href={href}
+      onClick={onClick}
+      className="text-gray-700 hover:text-blue-600 transition font-medium"
+    >
       {children}
     </Link>
-  );
+  )
 }
