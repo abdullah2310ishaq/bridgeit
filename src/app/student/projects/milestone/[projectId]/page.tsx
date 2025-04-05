@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ChatForStudent from "@/app/common_components/ChatforStudent";
 import MilestoneTimeline from "@/app/student/stdcomps/MilestoneTimeline";
@@ -44,7 +44,6 @@ interface MilestoneComment {
   milestone_id: string;
 }
 
-// New interface for tasks
 interface TaskItem {
   id: string;
   projectId: string;
@@ -53,17 +52,40 @@ interface TaskItem {
   taskStatus: string;
 }
 
+interface Review {
+  id: string;
+  review: string;
+  rating: number;
+  datePosted: string;
+  reviewerName: string;
+}
+
+// This interface extends project details with student info (if needed)
+interface ProjectDetailsExtended extends ProjectDetails {
+  studentId: string;
+  stdUserId: string;
+  studentName: string;
+}
+
 const ProjectProgressTracker: React.FC = () => {
   const { projectId } = useParams();
+  const router = useRouter();
 
-  // ------------------- State -------------------
-  const [project, setProject] = useState<ProjectDetails | null>(null);
+  // State for project details and user info
+  const [project, setProject] = useState<ProjectDetailsExtended | null>(null);
   const [studentUserId, setStudentUserId] = useState<string>("");
+  const [expertUserId, setExpertUserId] = useState<string>("");
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
   const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({});
   const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null);
-  const [expertUserId, setExpertUserId] = useState<string>("");
+  // Tasks state – tasks can be added by the expert and toggled by both expert and student (if allowed)
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  // Review state (displayed when project is completed)
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [newReviewText, setNewReviewText] = useState("");
+  const [newReviewRating, setNewReviewRating] = useState<number>(0);
 
+  // Modal state for add/edit milestone
   const [showModal, setShowModal] = useState(false);
   const [editItemId, setEditItemId] = useState<string | null>(null);
   const [itemFormData, setItemFormData] = useState({
@@ -71,22 +93,29 @@ const ProjectProgressTracker: React.FC = () => {
     description: "",
     achievementDate: "",
   });
+  // New Task inputs (visible only to industry experts)
+  const [newTask, setNewTask] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // ---------- New state for Tasks (view-only for students) ----------
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  // Determine if project is completed
+  const isProjectComplete = project?.status === "Completed";
 
-  // ------------------- Fetch Project & Milestones -------------------
+  // -----------------------------
+  // 1) Fetch Project Details, Milestones, and Authorized User Info
+  // -----------------------------
   useEffect(() => {
-    const fetchProjectAndProgress = async () => {
+    const fetchData = async () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
-        setLoading(false);
+        router.push("/auth/login-user");
         return;
       }
+      if (!projectId) return;
       try {
-        // Get authorized user info
+        // Get authorized user info (student's userId)
         const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -94,7 +123,7 @@ const ProjectProgressTracker: React.FC = () => {
           const authData = await authRes.json();
           setStudentUserId(authData.userId);
         }
-        // 1) Fetch project details
+        // Fetch project details (which includes student info and expert info)
         const resProject = await fetch(
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -104,7 +133,7 @@ const ProjectProgressTracker: React.FC = () => {
           setProject(projectData);
           setExpertUserId(projectData.iExptUserId);
         }
-        // 2) Fetch milestones
+        // Fetch milestones
         const resMilestones = await fetch(
           `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -123,14 +152,17 @@ const ProjectProgressTracker: React.FC = () => {
         }
       } catch (err) {
         console.error("Error:", err);
+        setError("Failed to load project data.");
       } finally {
         setLoading(false);
       }
     };
-    if (projectId) fetchProjectAndProgress();
-  }, [projectId]);
+    if (projectId) fetchData();
+  }, [projectId, router]);
 
-  // ------------------- Refresh Progress Items -------------------
+  // -----------------------------
+  // 2) Refresh Milestones
+  // -----------------------------
   const refreshProgressItems = async () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) return;
@@ -159,7 +191,9 @@ const ProjectProgressTracker: React.FC = () => {
     }
   };
 
-  // ------------------- Add / Edit a Progress Item -------------------
+  // -----------------------------
+  // 3) Milestone Modal: Add / Edit
+  // -----------------------------
   const handleOpenModal = (item?: ProgressItem) => {
     if (item) {
       setEditItemId(item.id);
@@ -180,7 +214,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token) return;
     try {
       if (editItemId) {
-        // Editing an existing milestone
+        // Edit milestone
         const res = await fetch(
           `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`,
           {
@@ -192,13 +226,10 @@ const ProjectProgressTracker: React.FC = () => {
             body: JSON.stringify(itemFormData),
           }
         );
-        if (!res.ok) {
-          console.error("Failed to update item. Status:", res.status);
-        } else {
-          await refreshProgressItems();
-        }
+        if (!res.ok) console.error("Failed to update milestone. Status:", res.status);
+        else await refreshProgressItems();
       } else {
-        // Adding a new milestone
+        // Add milestone
         const res = await fetch(
           `https://localhost:7053/api/milestone/add-milestone/${projectId}`,
           {
@@ -210,21 +241,20 @@ const ProjectProgressTracker: React.FC = () => {
             body: JSON.stringify(itemFormData),
           }
         );
-        if (!res.ok) {
-          console.error("Failed to add item. Status:", res.status);
-        } else {
-          await refreshProgressItems();
-        }
+        if (!res.ok) console.error("Failed to add milestone. Status:", res.status);
+        else await refreshProgressItems();
       }
     } catch (err) {
-      console.error("Error saving item:", err);
+      console.error("Error saving milestone:", err);
     } finally {
       setShowModal(false);
       setItemFormData({ title: "", description: "", achievementDate: "" });
     }
   };
 
-  // ------------------- Fetch Comments for a Milestone -------------------
+  // -----------------------------
+  // 4) Fetch Comments for a Milestone
+  // -----------------------------
   const fetchComments = async (milestoneId: string) => {
     const token = localStorage.getItem("jwtToken");
     if (!token) return;
@@ -235,18 +265,20 @@ const ProjectProgressTracker: React.FC = () => {
       );
       if (res.ok) {
         const data = await res.json();
-        if (typeof data === "string" && data.includes("No comments")) {
-          setComments((prev) => ({ ...prev, [milestoneId]: [] }));
-        } else {
-          setComments((prev) => ({ ...prev, [milestoneId]: data }));
-        }
+        setComments((prev) => ({
+          ...prev,
+          [milestoneId]:
+            typeof data === "string" && data.includes("No comments") ? [] : data,
+        }));
       }
     } catch (err) {
       console.error("Error fetching comments:", err);
     }
   };
 
-  // -------------- New: Fetch Tasks from the API --------------
+  // -----------------------------
+  // 5) Fetch Tasks
+  // -----------------------------
   const fetchTasks = async () => {
     const token = localStorage.getItem("jwtToken");
     if (!token || !projectId) return;
@@ -266,59 +298,140 @@ const ProjectProgressTracker: React.FC = () => {
     }
   };
 
-  // -------------- New: Handle Task Completion Toggle with Undo --------------
+  // -----------------------------
+  // 6) Handle Task Toggle (Update Task Status)
+  // -----------------------------
   const handleTaskToggle = async (task: TaskItem) => {
     const token = localStorage.getItem("jwtToken");
     if (!token || !projectId) return;
-
-    // If task is completed, unchecking it will mark it as PENDING (undo)
-    if (task.taskStatus === "COMPLETED") {
-      try {
-        const res = await fetch(
-          `https://localhost:7053/api/project-progress/undo-task/${projectId}/${task.id}`,
-          {
-            method: "PUT",
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (res.ok) {
-          setTasks((prev) =>
-            prev.map((t) =>
-              t.id === task.id ? { ...t, taskStatus: "PENDING" } : t
-            )
-          );
-        } else {
-          console.error("Failed to undo task status:", res.status);
+    // Toggle task status
+    const newStatus = task.taskStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/update-task/${projectId}/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ taskStatus: newStatus }),
         }
-      } catch (err) {
-        console.error("Error undoing task status:", err);
-      }
-    } else {
-      // Otherwise, mark as completed
-      try {
-        const res = await fetch(
-          `https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
-          {
-            method: "PUT",
-            headers: { Authorization: `Bearer ${token}` },
-          }
+      );
+      if (res.ok) {
+        setTasks((prev) =>
+          prev.map((t) => (t.id === task.id ? { ...t, taskStatus: newStatus } : t))
         );
-        if (res.ok) {
-          setTasks((prev) =>
-            prev.map((t) =>
-              t.id === task.id ? { ...t, taskStatus: "COMPLETED" } : t
-            )
-          );
-        } else {
-          console.error("Failed to update task status:", res.status);
-        }
-      } catch (err) {
-        console.error("Error updating task status:", err);
+      } else {
+        console.error("Failed to update task status:", res.status);
       }
+    } catch (err) {
+      console.error("Error updating task status:", err);
     }
   };
 
-  // -------------- New: Handle Mark Project as Complete --------------
+  // -----------------------------
+  // 7) Handle Add Task (Industry Expert adds a new task)
+  // -----------------------------
+  const handleAddTask = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    if (!newTask.trim() || !newTaskDescription.trim()) {
+      toast.error("Please provide both task title and description.");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/add-tasks/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ task: newTask, description: newTaskDescription }),
+        }
+      );
+      if (res.ok) {
+        toast.success("Task added successfully.");
+        setNewTask("");
+        setNewTaskDescription("");
+        await fetchTasks();
+      } else {
+        console.error("Failed to add task:", res.status);
+        toast.error("Failed to add task.");
+      }
+    } catch (err) {
+      console.error("Error adding task:", err);
+      toast.error("Error adding task.");
+    }
+  };
+
+  // -----------------------------
+  // 8) Handle Add Review (Industry Expert adds review)
+  // -----------------------------
+  const handleAddReview = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    if (newReviewRating < 1 || newReviewRating > 5 || !newReviewText.trim()) {
+      toast.error("Please enter a valid review and a rating between 1 and 5.");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/reviews/add-review/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ReviewerId: expertUserId,
+            Review: newReviewText,
+            Rating: newReviewRating,
+          }),
+        }
+      );
+      if (res.ok) {
+        toast.success("Review added successfully.");
+        setNewReviewText("");
+        setNewReviewRating(0);
+        await fetchReviews();
+      } else {
+        toast.error("Failed to add review.");
+      }
+    } catch (err) {
+      console.error("Error adding review:", err);
+      toast.error("Error adding review.");
+    }
+  };
+
+  // -----------------------------
+  // 9) Fetch Reviews (if project is completed)
+  // -----------------------------
+  const fetchReviews = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data);
+      } else {
+        console.error("Failed to fetch reviews:", res.status);
+      }
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
+    }
+  };
+
+  // -----------------------------
+  // 10) Handle Mark Project as Complete (Student requests completion)
+  // -----------------------------
   const handleCompleteProject = async () => {
     if (!window.confirm("Are you sure you want to mark this project as complete? Once complete, editing will be disabled.")) return;
     const token = localStorage.getItem("jwtToken");
@@ -333,11 +446,9 @@ const ProjectProgressTracker: React.FC = () => {
       );
       if (res.ok) {
         toast.success("Project marked as complete.");
-        // Update project state to reflect complete status
+        // Update local project state to reflect complete status
         setProject((prev) =>
-          prev
-            ? { ...prev, status: "Completed", endDate: new Date().toISOString().split("T")[0] }
-            : prev
+          prev ? { ...prev, status: "Completed", endDate: new Date().toISOString().split("T")[0] } : prev
         );
       } else {
         console.error("Failed to complete project:", res.status);
@@ -356,11 +467,17 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }, [projectId]);
 
-  // ------------------- Render -------------------
+  // When project becomes complete, fetch reviews
+  useEffect(() => {
+    if (project?.status === "Completed") {
+      fetchReviews();
+    }
+  }, [project]);
+
   if (loading) {
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
-        Loading...
+        <p>Loading...</p>
       </div>
     );
   }
@@ -414,7 +531,7 @@ const ProjectProgressTracker: React.FC = () => {
         )}
       </div>
 
-      {/* Progress Items */}
+      {/* Milestones Section */}
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-green-300">Milestones</h2>
@@ -427,13 +544,12 @@ const ProjectProgressTracker: React.FC = () => {
             </button>
           )}
         </div>
-        {progressItems.length > 0 && (
+        {progressItems.length > 0 ? (
           <div className="mt-4 mb-8">
             <h2 className="text-xl font-bold text-green-300 mb-2">Overall Timeline</h2>
             <MilestoneTimeline milestones={progressItems} />
           </div>
-        )}
-        {progressItems.length === 0 ? (
+        ) : (
           <div className="text-center text-gray-300">
             <p>No milestones found.</p>
             {project?.status !== "Completed" && (
@@ -445,79 +561,43 @@ const ProjectProgressTracker: React.FC = () => {
               </button>
             )}
           </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {progressItems.map((item) => (
-              <div key={item.id} className="bg-gray-800 p-4 rounded shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-bold text-green-400">{item.title}</h3>
-                    <p className="text-sm text-gray-300">{item.description}</p>
-                  </div>
-                  {item.isCompleted ? (
-                    <span className="text-xs bg-green-700 text-green-100 px-2 py-1 rounded">
-                      Done
-                    </span>
-                  ) : (
-                    <span className="text-xs bg-yellow-600 text-yellow-100 px-2 py-1 rounded">
-                      Pending
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-gray-400 mt-2">
-                  Target Date: {item.achievementDate}
-                </p>
-                {project?.status !== "Completed" && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <button
-                      onClick={() => handleOpenModal(item)}
-                      className="text-blue-400 text-xs hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setCurrentCommentItem(item);
-                        fetchComments(item.id);
-                      }}
-                      className="text-purple-400 text-xs hover:underline"
-                    >
-                      Comments
-                    </button>
-                  </div>
-                )}
-                {currentCommentItem && currentCommentItem.id === item.id && (
-                  <div className="mt-3 border-l border-gray-700 pl-3">
-                    <p className="text-sm font-semibold text-purple-300 mb-1">Comments:</p>
-                    {comments[item.id]?.length ? (
-                      comments[item.id].map((c) => (
-                        <div key={c.id} className="bg-gray-700 p-2 rounded mb-2 text-sm">
-                          <p className="text-gray-200">{c.comment}</p>
-                          <p className="text-gray-400 text-xs">
-                            {c.commenterName} on {new Date(c.commentDate).toLocaleString()}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 text-xs">No comments found.</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
         )}
       </div>
 
-      {/* ---------- Tasks Section (Student can only mark tasks as done) ---------- */}
+      {/* Tasks Section */}
       <div className="max-w-4xl mx-auto mt-8">
         <h2 className="text-xl font-semibold text-green-300">Tasks</h2>
+        {/* Add Task form visible only to industry experts */}
+        {expertUserId && (
+          <div className="mb-6 p-4 bg-gray-800 rounded shadow">
+            <h3 className="text-xl font-bold mb-2">Add New Task</h3>
+            <input
+              type="text"
+              value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              placeholder="Task Title"
+              className="p-2 rounded w-full bg-gray-700 text-white mb-2"
+            />
+            <textarea
+              value={newTaskDescription}
+              onChange={(e) => setNewTaskDescription(e.target.value)}
+              placeholder="Task Description"
+              className="p-2 rounded w-full bg-gray-700 text-white mb-2"
+            />
+            <button
+              onClick={handleAddTask}
+              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+            >
+              Add Task
+            </button>
+          </div>
+        )}
         {tasks.length === 0 ? (
           <p className="text-gray-400">No tasks assigned.</p>
         ) : (
           <ul className="mt-4 space-y-2">
             {tasks.map((task) => (
-              <li key={task.id} className="flex items-start">
+              <li key={task.id} className="flex items-center">
                 <input
                   type="checkbox"
                   checked={task.taskStatus === "COMPLETED"}
@@ -553,6 +633,54 @@ const ProjectProgressTracker: React.FC = () => {
         )}
       </div>
 
+      {/* Review Section (visible when project is completed) */}
+      {project?.status === "Completed" && (
+        <div className="max-w-4xl mx-auto mt-8">
+          <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
+          {reviews.length === 0 ? (
+            <p className="text-gray-400">No reviews yet.</p>
+          ) : (
+            <ul className="space-y-4">
+              {reviews.map((r) => (
+                <li key={r.id} className="p-4 bg-gray-700 rounded shadow">
+                  <p className="font-bold">
+                    {r.reviewerName} - Rating: {r.rating}
+                  </p>
+                  <p className="mt-2">{r.review}</p>
+                  <small className="text-gray-400">
+                    Posted on: {new Date(r.datePosted).toLocaleDateString()}
+                  </small>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="mt-4">
+            <h3 className="text-xl font-bold mb-2">Add a Review</h3>
+            <textarea
+              value={newReviewText}
+              onChange={(e) => setNewReviewText(e.target.value)}
+              placeholder="Write your review..."
+              className="w-full p-2 bg-gray-700 rounded mb-2"
+            />
+            <input
+              type="number"
+              value={newReviewRating}
+              onChange={(e) => setNewReviewRating(parseInt(e.target.value))}
+              placeholder="Rating (1-5)"
+              className="w-full p-2 bg-gray-700 rounded mb-2"
+              min={1}
+              max={5}
+            />
+            <button
+              onClick={handleAddReview}
+              className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+            >
+              Submit Review
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Chat Section */}
       {studentUserId && project?.iExptUserId ? (
         <div className="mt-6">
@@ -562,7 +690,7 @@ const ProjectProgressTracker: React.FC = () => {
         <p className="text-gray-400">Chat is unavailable at the moment.</p>
       )}
 
-      {/* ---------- Unified Modal for Add/Edit Milestone ---------- */}
+      {/* Milestone Modal */}
       {project?.status !== "Completed" && showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
