@@ -1,7 +1,6 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from 'next/dynamic';
 import IdeasSection from "./stdcomps/IdeasSection";
 import ProfileSection from "./stdcomps/ProfileSection";
 import Loading from "../loading/page";
@@ -9,8 +8,7 @@ import OngoingProjectsSection from "./stdcomps/OngoingProjects";
 import CompletedProjectsSection from "./stdcomps/CompletedProjects";
 import EventsSection from "./stdcomps/Events";
 import ChatWidget from "../chat/ChatWidget";
-
-// Import the ChatWidget component
+import CompletedIndustryProjectsSection from "./stdcomps/CompletedExpert";
 
 interface UserProfile {
   userId: string;
@@ -59,16 +57,21 @@ interface OngoingProject {
   endDate: string;
 }
 
+interface CompletedProject {
+  id: string;
+  title: string;
+  description: string;
+  expertName: string;
+  status: string;
+  endDate: string;
+}
+
 const StudentPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>([]);
+  const [completedProjects, setCompletedProjects] = useState<CompletedProject[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [showModal, setShowModal] = useState(false);
-  const [personalProjects, setPersonalProjects] = useState<Project[]>([]);
-  const[myIdeas,setMyIdeas]=useState<Idea[]>([]);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -80,6 +83,7 @@ const StudentPage: React.FC = () => {
       }
 
       try {
+        // Fetch user profile
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
@@ -89,7 +93,6 @@ const StudentPage: React.FC = () => {
             },
           }
         );
-
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           const userId = profileData.userId;
@@ -103,10 +106,8 @@ const StudentPage: React.FC = () => {
               },
             }
           );
-
           if (studentResponse.ok) {
             const studentData = await studentResponse.json();
-
             setUserProfile({
               userId: studentData.userId,
               firstName: studentData.firstName,
@@ -123,24 +124,8 @@ const StudentPage: React.FC = () => {
               uniImage: studentData.uniImage,
             });
 
-            // Fetch completed projects
-            const projectsResponse = await fetch(
-              `https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`,
-              {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-
-            if (projectsResponse.ok) {
-              const projectsData = await projectsResponse.json();
-              setCompletedProjects(projectsData.slice(0, 3)); // Limit to 3 projects
-            } 
-
-            // Fetch ongoing projects
-            const ongoingProjectsResponse = await fetch(
+            // Fetch ongoing projects (for projects with expert assigned but not completed)
+            const ongoingResponse = await fetch(
               `https://localhost:7053/api/projects/get-student-with-expert-project-by-id/${studentData.id}`,
               {
                 method: "GET",
@@ -149,12 +134,28 @@ const StudentPage: React.FC = () => {
                 },
               }
             );
-
-            if (ongoingProjectsResponse.ok) {
-              const ongoingData = await ongoingProjectsResponse.json();
+            if (ongoingResponse.ok) {
+              const ongoingData = await ongoingResponse.json();
               setOngoingProjects(ongoingData);
             } else {
               setOngoingProjects([]);
+            }
+
+            // Fetch completed projects using the industry endpoint
+            const completedResponse = await fetch(
+              `https://localhost:7053/api/projects/get-industry-completed-projects/${studentData.id}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            if (completedResponse.ok) {
+              const completedData = await completedResponse.json();
+              setCompletedProjects(completedData);
+            } else {
+              setCompletedProjects([]);
             }
 
             // Fetch events
@@ -167,7 +168,6 @@ const StudentPage: React.FC = () => {
                 },
               }
             );
-
             if (eventsResponse.ok) {
               const eventsData = await eventsResponse.json();
               setEvents(eventsData);
@@ -202,11 +202,6 @@ const StudentPage: React.FC = () => {
     router.push("/student/profile/edit");
   };
 
-  const handleIdeaClick = (id: string) => {
-    // e.g., navigate to a details page
-    router.push(`/student/seeideas/${id}`);
-  };
-
   const gotoProfile = () => {
     router.push("/student/profile");
   };
@@ -219,20 +214,6 @@ const StudentPage: React.FC = () => {
     router.push("/student/projects/create");
   };
 
- 
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
-
-  const gradientStyles = [
-    "bg-gradient-to-r from-green-400 to-blue-500",
-    "bg-gradient-to-r from-purple-400 to-pink-500",
-    "bg-gradient-to-r from-yellow-400 to-red-500",
-    "bg-gradient-to-r from-indigo-400 to-purple-600",
-    "bg-gradient-to-r from-orange-400 to-pink-500",
-  ];
-
   if (loading || !userProfile) {
     return (
       <div className="text-center text-gray-400">
@@ -242,7 +223,7 @@ const StudentPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-200 text-gray-300 p-6">
+    <div className="min-h-screen bg-gray-200 text-gray-800 p-6">
       {/* Profile Section */}
       <ProfileSection
         userProfile={userProfile}
@@ -250,25 +231,26 @@ const StudentPage: React.FC = () => {
         gotoProfile={gotoProfile}
       />
 
-      {/* Ongoing Projects */}
+      {/* Ongoing Projects Section */}
       <OngoingProjectsSection ongoingProjects={ongoingProjects} />
 
-
-      {/* Completed Projects */}
-      <CompletedProjectsSection
-        projects={completedProjects} />
+      <CompletedIndustryProjectsSection projects={completedProjects} />
+      {/* Completed Projects Section */}
+      <CompletedProjectsSection projects={completedProjects} />
 
       {/* Events Section */}
-      <EventsSection
-        events={events}
-        gradientStyles={gradientStyles}
-      />
+      <EventsSection events={events} gradientStyles={[]} />
 
-    
+      {/* Chat Widget */}
+      <ChatWidget />
 
-      {/* Chat Widget Component */}
-      /<ChatWidget/> 
-          </div>
+      <button
+        onClick={handleLogout}
+        className="mt-4 py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500"
+      >
+        Logout
+      </button>
+    </div>
   );
 };
 

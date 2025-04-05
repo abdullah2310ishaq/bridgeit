@@ -2,9 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import ChatForIndustry from "@/app/common_components/ChatforIndustry";
+import MilestoneTimeline from "@/app/student/stdcomps/MilestoneTimeline";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-// ----- Interfaces -----
+// --------- Interfaces ---------
 interface IndustryExpertProfile {
   userId: string;
   indExptId: string; // We'll use this as the "expertId"
@@ -34,7 +38,6 @@ interface Comment {
   commentDate: string;
 }
 
-// New interface for To-Do Tasks (Project Progress Tasks)
 interface TaskItem {
   id: string;
   projectId: string;
@@ -43,85 +46,108 @@ interface TaskItem {
   taskStatus: string;
 }
 
+interface Review {
+  id: string;
+  review: string;
+  rating: number;
+  datePosted: string;
+  reviewerName: string;
+}
+
+interface ProjectDetailsExtended {
+  studentId: string;
+  stdUserId: string;
+  studentName: string;
+  status?: string;
+  title: string;
+  description: string;
+  endDate: string;
+  expertName: string;
+  indExpertId: string;
+  iExptUserId: string;
+}
+
 const MilestonePage: React.FC = () => {
   const { projectId } = useParams();
   const router = useRouter();
 
-  // Logged-in Industry Expert info
+  // Logged-in industry expert profile (if available)
   const [expertProfile, setExpertProfile] = useState<IndustryExpertProfile | null>(null);
-
-  // Project / Milestone data
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  // Project details and student info
+  const [project, setProject] = useState<ProjectDetailsExtended | null>(null);
   const [studentDetails, setStudentDetails] = useState<StudentDetails | null>(null);
-
-  // Comments
+  // Milestones and comments
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [comments, setComments] = useState<Record<string, Comment[]>>({});
-  const [newComment, setNewComment] = useState("");
   const [currentMilestoneId, setCurrentMilestoneId] = useState<string | null>(null);
-
-  // To-Do Tasks (Project Progress Tasks)
+  const [newComment, setNewComment] = useState("");
+  // Tasks state
   const [tasks, setTasks] = useState<TaskItem[]>([]);
+  // New Task inputs (visible only to industry experts)
   const [newTask, setNewTask] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
-
-  // Loading & Error
+  // Review state (if needed when project is completed)
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [newReviewText, setNewReviewText] = useState("");
+  const [newReviewRating, setNewReviewRating] = useState<number>(0);
+  // Modal state for adding/editing milestones
+  const [showModal, setShowModal] = useState(false);
+  const [editItemId, setEditItemId] = useState<string | null>(null);
+  const [itemFormData, setItemFormData] = useState({
+    title: "",
+    description: "",
+    achievementDate: "",
+  });
+  // Loading and error state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Determine if the project is completed
+  const isProjectComplete = project?.status === "Completed";
+
   // -----------------------------
-  // 1) Check Auth & Fetch Expert, Milestones, and Project Details
+  // 1) Fetch Expert, Project Details, and Milestones
   // -----------------------------
   useEffect(() => {
-    const fetchExpertAndMilestones = async () => {
+    const fetchData = async () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
-        // If no token, redirect to login
         router.push("/auth/login-user");
         return;
       }
       if (!projectId) return;
 
       try {
-        // A) Get current user's ID
+        // Get authorized user info
         const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!authRes.ok) {
-          throw new Error("Failed to get authorized user info.");
-        }
+        if (!authRes.ok) throw new Error("Failed to get authorized user info.");
         const authData = await authRes.json();
-        const userId = authData.userId;
 
-        // B) Fetch the industry expert profile by userId
+        // Fetch industry expert profile using logged-in user ID
         const expertRes = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (!expertRes.ok) {
-          throw new Error("Failed to fetch industry expert profile.");
-        }
+        if (!expertRes.ok) throw new Error("Failed to fetch industry expert profile.");
         const expertData = await expertRes.json();
         setExpertProfile({
           userId: expertData.userId,
-          indExptId: expertData.indExptId, // We'll need this for adding a comment
+          indExptId: expertData.indExptId,
           firstName: expertData.firstName,
           lastName: expertData.lastName,
           email: expertData.email,
         });
 
-        // C) Fetch the project details (including student info)
+        // Fetch project details (includes student info)
         const projectRes = await fetch(
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (!projectRes.ok) {
-          throw new Error("Failed to fetch project details.");
-        }
+        if (!projectRes.ok) throw new Error("Failed to fetch project details.");
         const projectData = await projectRes.json();
+        setProject(projectData);
         setStudentDetails({
           studentId: projectData.studentId,
           stdUserId: projectData.stdUserId,
@@ -129,16 +155,12 @@ const MilestonePage: React.FC = () => {
           lastName: projectData.studentName.split(" ")[1] ?? "",
         });
 
-        // D) Fetch project milestones
+        // Fetch milestones
         const milestonesRes = await fetch(
           `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (!milestonesRes.ok) {
-          throw new Error("Failed to fetch milestones.");
-        }
+        if (!milestonesRes.ok) throw new Error("Failed to fetch milestones.");
         const milestonesData = await milestonesRes.json();
         setMilestones(milestonesData);
       } catch (err) {
@@ -148,31 +170,23 @@ const MilestonePage: React.FC = () => {
         setLoading(false);
       }
     };
-
-    fetchExpertAndMilestones();
+    fetchData();
   }, [projectId, router]);
 
   // -----------------------------
-  // 2) Fetch Comments for a specific milestone
+  // 2) Fetch Comments for a Milestone
   // -----------------------------
   const fetchComments = async (milestoneId: string) => {
     const token = localStorage.getItem("jwtToken");
     if (!token) return;
-
     try {
       const res = await fetch(
         `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.ok) {
         const data = await res.json();
-        if (typeof data === "string" && data.includes("No comments")) {
-          setComments((prev) => ({ ...prev, [milestoneId]: [] }));
-        } else {
-          setComments((prev) => ({ ...prev, [milestoneId]: data }));
-        }
+        setComments((prev) => ({ ...prev, [milestoneId]: typeof data === "string" && data.includes("No comments") ? [] : data }));
       }
     } catch (err) {
       console.error("Error fetching comments:", err);
@@ -184,12 +198,9 @@ const MilestonePage: React.FC = () => {
   // -----------------------------
   const handleAddComment = async () => {
     const token = localStorage.getItem("jwtToken");
-    if (!token || !expertProfile) return; // need both token & expert
-
-    if (!newComment.trim() || !currentMilestoneId) return;
-
+    if (!token || !expertProfile || !currentMilestoneId) return;
+    if (!newComment.trim()) return;
     try {
-      // We'll use the expertProfile.indExptId as the "expertId" param
       const res = await fetch(
         `https://localhost:7053/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
         {
@@ -198,15 +209,11 @@ const MilestonePage: React.FC = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          // The server wants a raw JSON string in the body:
           body: JSON.stringify(newComment),
         }
       );
-
       if (res.ok) {
-        // Clear the input
         setNewComment("");
-        // Refresh comments for this milestone
         await fetchComments(currentMilestoneId);
       } else {
         console.error("Failed to add comment:", res.status);
@@ -217,7 +224,7 @@ const MilestonePage: React.FC = () => {
   };
 
   // -----------------------------
-  // 4) Fetch To-Do Tasks (Project Progress Tasks)
+  // 4) Fetch Tasks
   // -----------------------------
   const fetchTasks = async () => {
     const token = localStorage.getItem("jwtToken");
@@ -225,9 +232,7 @@ const MilestonePage: React.FC = () => {
     try {
       const res = await fetch(
         `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.ok) {
         const data = await res.json();
@@ -241,69 +246,12 @@ const MilestonePage: React.FC = () => {
   };
 
   // -----------------------------
-  // 5) Add a new Task
-  // -----------------------------
-  const handleAddTask = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
-    if (!newTask.trim() || !newTaskDescription.trim()) return;
-
-    try {
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/add-tasks/${projectId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            task: newTask,
-            description: newTaskDescription,
-          }),
-        }
-      );
-
-      if (res.ok) {
-        // Clear the input fields
-        setNewTask("");
-        setNewTaskDescription("");
-        // Refresh the tasks list
-        await fetchTasks();
-      } else {
-        console.error("Failed to add task:", res.status);
-      }
-    } catch (err) {
-      console.error("Error adding task:", err);
-    }
-  };
-
-  // Optional: Navigate to the student's profile
-  const handleViewStudentProfile = () => {
-    if (studentDetails?.studentId) {
-      router.push(`/industryexpert/student-profile/${studentDetails.studentId}`);
-    }
-  };
-
-  // -----------------------------
-  // Fetch tasks when projectId changes
-  // -----------------------------
-  useEffect(() => {
-    if (projectId) {
-      fetchTasks();
-    }
-  }, [projectId]);
-
-  // -----------------------------
-  // 6) Handle Task Toggle (Update Task Status)
+  // 5) Handle Task Toggle (Update Task Status)
   // -----------------------------
   const handleTaskToggle = async (task: TaskItem) => {
     const token = localStorage.getItem("jwtToken");
     if (!token || !projectId) return;
-
-    // Toggle the status
     const newStatus = task.taskStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
-
     try {
       const res = await fetch(
         `https://localhost:7053/api/project-progress/update-task/${projectId}/${task.id}`,
@@ -330,12 +278,158 @@ const MilestonePage: React.FC = () => {
     }
   };
 
-  // =============================
-  // Render
-  // =============================
+  // -----------------------------
+  // 6) Handle Add Task (Industry Expert adds a new task)
+  // -----------------------------
+  const handleAddTask = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    if (!newTask.trim() || !newTaskDescription.trim()) {
+      toast.error("Please provide both task title and description.");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/add-tasks/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ task: newTask, description: newTaskDescription }),
+        }
+      );
+      if (res.ok) {
+        toast.success("Task added successfully.");
+        setNewTask("");
+        setNewTaskDescription("");
+        await fetchTasks();
+      } else {
+        console.error("Failed to add task:", res.status);
+        toast.error("Failed to add task.");
+      }
+    } catch (err) {
+      console.error("Error adding task:", err);
+      toast.error("Error adding task.");
+    }
+  };
+
+  // -----------------------------
+  // 7) Fetch Reviews (if project is completed)
+  // -----------------------------
+  const fetchReviews = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data);
+      } else {
+        console.error("Failed to fetch reviews:", res.status);
+      }
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
+    }
+  };
+
+  // -----------------------------
+  // 8) Handle Add Review (Industry Expert adds a review)
+  // -----------------------------
+  const handleAddReview = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId || !expertProfile) return;
+    if (newReviewRating < 1 || newReviewRating > 5) {
+      toast.error("Rating must be between 1 and 5.");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/reviews/add-review/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ReviewerId: expertProfile.userId,
+            Review: newReviewText,
+            Rating: newReviewRating,
+          }),
+        }
+      );
+      if (res.ok) {
+        toast.success("Review added successfully.");
+        setNewReviewText("");
+        setNewReviewRating(0);
+        await fetchReviews();
+      } else {
+        toast.error("Failed to add review.");
+      }
+    } catch (err) {
+      console.error("Error adding review:", err);
+      toast.error("Error adding review.");
+    }
+  };
+
+  // -----------------------------
+  // 9) Handle Mark Project as Complete (Student requests completion)
+  // -----------------------------
+  const handleCompleteProject = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to mark this project as complete? This will send a completion request for industry expert approval."
+      )
+    )
+      return;
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/projects/${projectId}/complete`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.ok) {
+        toast.success("Completion request sent. Await industry expert approval.");
+        // Update local project status to indicate pending completion
+        setProject((prev) =>
+          prev ? { ...prev, status: "PendingCompletion" } : prev
+        );
+      } else {
+        console.error("Failed to request project completion:", res.status);
+        toast.error("Failed to send completion request.");
+      }
+    } catch (err) {
+      console.error("Error sending completion request:", err);
+      toast.error("Error sending completion request.");
+    }
+  };
+
+  // Fetch tasks when projectId changes
+  useEffect(() => {
+    if (projectId) {
+      fetchTasks();
+    }
+  }, [projectId]);
+
+  // When project becomes complete, fetch reviews
+  useEffect(() => {
+    if (project?.status === "Completed") {
+      fetchReviews();
+    }
+  }, [project]);
+
   if (loading) {
     return (
-      <div className="p-6 bg-gray-900 text-white min-h-screen flex items-center justify-center">
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
         <p>Loading...</p>
       </div>
     );
@@ -348,27 +442,64 @@ const MilestonePage: React.FC = () => {
     );
   }
 
+ 
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">Project Milestones</h1>
-
-      {/* Student Info */}
-      {studentDetails && (
-        <div className="p-6 mb-6 bg-gray-800 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-2">Assigned Student</h2>
-          <p className="text-xl font-semibold">
-            {studentDetails.firstName} {studentDetails.lastName}
+    <div className="bg-gray-900 text-white min-h-screen p-6">
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto mb-6">
+        <h1 className="text-3xl font-bold text-green-400">Project Milestones</h1>
+        <div className="mt-4 bg-gray-800 p-4 rounded">
+          <p className="mb-1">
+            <strong className="text-green-300">Title:</strong> {project?.title}
           </p>
-          <button
-            onClick={handleViewStudentProfile}
-            className="mt-4 py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
-          >
-            View Profile
-          </button>
+          <p className="mb-1">
+            <strong className="text-green-300">Description:</strong> {project?.description}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">Status:</strong> {project?.status}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">End Date:</strong> {project?.endDate}
+          </p>
+          <p className="mb-1">
+            <strong className="text-green-300">Industry Expert:</strong>{" "}
+            {project?.indExpertId ? (
+              <Link
+                href={`/student/industry-profile/${project.indExpertId}`}
+                className="underline text-green-400 hover:text-green-300"
+              >
+                {project.expertName}
+              </Link>
+            ) : (
+              "N/A"
+            )}
+          </p>
         </div>
-      )}
+        {/* Show student’s "Mark Project as Complete" button only if not pending/completed */}
+        {project?.status !== "Completed" && project?.status !== "PendingCompletion" && (
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={handleCompleteProject}
+              className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition"
+            >
+              Mark Project as Complete
+            </button>
+          </div>
+        )}
+        {project?.status === "PendingCompletion" && (
+          <div className="mt-4 text-center text-lg font-semibold text-yellow-500">
+            Completion request sent. Awaiting industry expert approval.
+          </div>
+        )}
+        {project?.status === "Completed" && (
+          <div className="mt-4 text-center text-lg font-semibold text-green-500">
+            This project is complete. Editing is disabled.
+          </div>
+        )}
+      </div>
 
-      {/* Milestones */}
+      {/* Milestones Section */}
       <h2 className="text-2xl font-bold mb-4">Milestones</h2>
       {milestones.length === 0 ? (
         <p className="text-gray-400">No progress for now</p>
@@ -380,7 +511,6 @@ const MilestonePage: React.FC = () => {
             <p>
               <strong>Achievement Date:</strong> {mile.achievementDate}
             </p>
-
             {/* Button to load comments */}
             <button
               onClick={() => {
@@ -391,8 +521,6 @@ const MilestonePage: React.FC = () => {
             >
               View Comments
             </button>
-
-            {/* If this milestone is selected, show its comments & add-new-comment form */}
             {currentMilestoneId === mile.id && (
               <div className="mt-4">
                 <h4 className="text-lg font-bold">Comments:</h4>
@@ -400,13 +528,10 @@ const MilestonePage: React.FC = () => {
                   <div key={c.id} className="mt-2 p-2 bg-gray-700 rounded">
                     <p>{c.comment}</p>
                     <small>
-                      - {c.commenterName} on{" "}
-                      {new Date(c.commentDate).toLocaleString()}
+                      - {c.commenterName} on {new Date(c.commentDate).toLocaleString()}
                     </small>
                   </div>
                 ))}
-
-                {/* Add a comment */}
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
@@ -425,33 +550,36 @@ const MilestonePage: React.FC = () => {
         ))
       )}
 
-      {/* To-Do Tasks Section */}
+      {/* Tasks Section */}
       <h2 className="text-2xl font-bold mt-8 mb-4">To-Do Tasks</h2>
-      <div className="mb-6 p-4 bg-gray-800 rounded shadow">
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Task Title"
-          className="p-2 rounded w-full bg-gray-700 text-white mb-2"
-        />
-        <textarea
-          value={newTaskDescription}
-          onChange={(e) => setNewTaskDescription(e.target.value)}
-          placeholder="Task Description"
-          className="p-2 rounded w-full bg-gray-700 text-white mb-2"
-        />
-        <button
-          onClick={handleAddTask}
-          className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-        >
-          Add Task
-        </button>
-      </div>
-
-      {/* List of Existing Tasks with Checkbox Toggle */}
+      {/* If the logged-in user is an industry expert, show the Add Task form */}
+      {expertProfile && (
+        <div className="mb-6 p-4 bg-gray-800 rounded shadow">
+          <h3 className="text-xl font-bold mb-2">Add New Task</h3>
+          <input
+            type="text"
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            placeholder="Task Title"
+            className="p-2 rounded w-full bg-gray-700 text-white mb-2"
+          />
+          <textarea
+            value={newTaskDescription}
+            onChange={(e) => setNewTaskDescription(e.target.value)}
+            placeholder="Task Description"
+            className="p-2 rounded w-full bg-gray-700 text-white mb-2"
+          />
+          <button
+            onClick={handleAddTask}
+            className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+          >
+            Add Task
+          </button>
+        </div>
+      )}
+      {/* List of Tasks */}
       {tasks.length === 0 ? (
-        <p className="text-gray-400">No tasks added yet.</p>
+        <p className="text-gray-400">No tasks assigned.</p>
       ) : (
         <ul className="mt-4 space-y-2">
           {tasks.map((task) => (
@@ -461,6 +589,7 @@ const MilestonePage: React.FC = () => {
                 checked={task.taskStatus === "COMPLETED"}
                 onChange={() => handleTaskToggle(task)}
                 className="mr-2"
+                disabled={project?.status === "Completed"}
               />
               <div>
                 <span
@@ -489,6 +618,54 @@ const MilestonePage: React.FC = () => {
         </ul>
       )}
 
+      {/* Review Section (Visible only when project is Completed) */}
+      {project?.status === "Completed" && (
+        <div className="max-w-4xl mx-auto mt-8">
+          <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
+          <div>
+            {reviews.length === 0 ? (
+              <p className="text-gray-400">No reviews yet.</p>
+            ) : (
+              <ul>
+                {reviews.map((r) => (
+                  <li key={r.id} className="mb-2 p-2 bg-gray-800 rounded">
+                    <p className="font-bold">
+                      {r.reviewerName} - Rating: {r.rating}
+                    </p>
+                    <p>{r.review}</p>
+                    <small>{new Date(r.datePosted).toLocaleDateString()}</small>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="mt-4">
+            <h3 className="text-xl font-bold mb-2">Add a Review</h3>
+            <textarea
+              value={newReviewText}
+              onChange={(e) => setNewReviewText(e.target.value)}
+              placeholder="Write your review..."
+              className="w-full p-2 bg-gray-700 rounded mb-2"
+            />
+            <input
+              type="number"
+              value={newReviewRating}
+              onChange={(e) => setNewReviewRating(parseInt(e.target.value))}
+              placeholder="Rating (1-5)"
+              className="w-full p-2 bg-gray-700 rounded mb-2"
+              min={1}
+              max={5}
+            />
+            <button
+              onClick={handleAddReview}
+              className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+            >
+              Submit Review
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Chat Section */}
       {expertProfile?.userId && studentDetails?.stdUserId ? (
         <div className="mt-6">
@@ -497,6 +674,57 @@ const MilestonePage: React.FC = () => {
       ) : (
         <p className="text-gray-400">Chat is unavailable at the moment.</p>
       )}
+
+      {/* Milestone Modal for Adding/Editing Milestones */}
+      {project?.status !== "Completed" && showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
+            <h3 className="text-xl font-bold text-green-400 mb-4">
+              {editItemId ? "Edit Milestone" : "Add Milestone"}
+            </h3>
+            <input
+              type="text"
+              placeholder="Title"
+              value={itemFormData.title}
+              onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
+              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
+            />
+            <textarea
+              placeholder="Description"
+              value={itemFormData.description}
+              onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
+              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
+            />
+            <input
+              type="date"
+              value={itemFormData.achievementDate}
+              onChange={(e) =>
+                setItemFormData({ ...itemFormData, achievementDate: e.target.value })
+              }
+              className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                // onClick={handleSaveItem}
+                className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setItemFormData({ title: "", description: "", achievementDate: "" });
+                }}
+                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer />
     </div>
   );
 };

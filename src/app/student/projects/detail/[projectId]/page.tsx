@@ -53,7 +53,7 @@ interface TaskItem {
   taskStatus: string;
 }
 
-const ProjectProgressTracker: React.FC = () => {
+const ProjectProgressTrackerr: React.FC = () => {
   const { projectId } = useParams();
 
   // ------------------- State -------------------
@@ -616,4 +616,4 @@ const ProjectProgressTracker: React.FC = () => {
   );
 };
 
-export default ProjectProgressTracker;
+export default ProjectProgressTrackerr;
