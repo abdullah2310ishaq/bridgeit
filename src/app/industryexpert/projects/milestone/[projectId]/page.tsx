@@ -2,17 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import ChatSignalR from "@/app/common_components/ChatSignalR";
 import ChatForIndustry from "@/app/common_components/ChatforIndustry";
 
 // ----- Interfaces -----
 interface IndustryExpertProfile {
   userId: string;
-  indExptId: string;   // <== We'll use this as the "expertId"
+  indExptId: string; // We'll use this as the "expertId"
   firstName: string;
   lastName: string;
   email: string;
-  // etc... if needed
 }
 
 interface Milestone {
@@ -36,6 +34,15 @@ interface Comment {
   commentDate: string;
 }
 
+// New interface for To-Do Tasks (Project Progress Tasks)
+interface TaskItem {
+  id: string;
+  projectId: string;
+  task: string;
+  description: string;
+  taskStatus: string;
+}
+
 const MilestonePage: React.FC = () => {
   const { projectId } = useParams();
   const router = useRouter();
@@ -52,12 +59,17 @@ const MilestonePage: React.FC = () => {
   const [newComment, setNewComment] = useState("");
   const [currentMilestoneId, setCurrentMilestoneId] = useState<string | null>(null);
 
+  // To-Do Tasks (Project Progress Tasks)
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [newTask, setNewTask] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+
   // Loading & Error
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // -----------------------------
-  // 1) Check Auth & Fetch Expert + Milestones
+  // 1) Check Auth & Fetch Expert, Milestones, and Project Details
   // -----------------------------
   useEffect(() => {
     const fetchExpertAndMilestones = async () => {
@@ -93,7 +105,7 @@ const MilestonePage: React.FC = () => {
         const expertData = await expertRes.json();
         setExpertProfile({
           userId: expertData.userId,
-          indExptId: expertData.indExptId,  // We'll need this for adding a comment
+          indExptId: expertData.indExptId, // We'll need this for adding a comment
           firstName: expertData.firstName,
           lastName: expertData.lastName,
           email: expertData.email,
@@ -112,7 +124,7 @@ const MilestonePage: React.FC = () => {
         const projectData = await projectRes.json();
         setStudentDetails({
           studentId: projectData.studentId,
-          stdUserId :projectData.stdUserId,
+          stdUserId: projectData.stdUserId,
           firstName: projectData.studentName.split(" ")[0] ?? "",
           lastName: projectData.studentName.split(" ")[1] ?? "",
         });
@@ -204,10 +216,117 @@ const MilestonePage: React.FC = () => {
     }
   };
 
+  // -----------------------------
+  // 4) Fetch To-Do Tasks (Project Progress Tasks)
+  // -----------------------------
+  const fetchTasks = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(data);
+      } else {
+        console.error("Failed to fetch tasks:", res.status);
+      }
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
+  // -----------------------------
+  // 5) Add a new Task
+  // -----------------------------
+  const handleAddTask = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    if (!newTask.trim() || !newTaskDescription.trim()) return;
+
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/add-tasks/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            task: newTask,
+            description: newTaskDescription,
+          }),
+        }
+      );
+
+      if (res.ok) {
+        // Clear the input fields
+        setNewTask("");
+        setNewTaskDescription("");
+        // Refresh the tasks list
+        await fetchTasks();
+      } else {
+        console.error("Failed to add task:", res.status);
+      }
+    } catch (err) {
+      console.error("Error adding task:", err);
+    }
+  };
+
   // Optional: Navigate to the student's profile
   const handleViewStudentProfile = () => {
     if (studentDetails?.studentId) {
       router.push(`/industryexpert/student-profile/${studentDetails.studentId}`);
+    }
+  };
+
+  // -----------------------------
+  // Fetch tasks when projectId changes
+  // -----------------------------
+  useEffect(() => {
+    if (projectId) {
+      fetchTasks();
+    }
+  }, [projectId]);
+
+  // -----------------------------
+  // 6) Handle Task Toggle (Update Task Status)
+  // -----------------------------
+  const handleTaskToggle = async (task: TaskItem) => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+
+    // Toggle the status
+    const newStatus = task.taskStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
+
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/update-task/${projectId}/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ taskStatus: newStatus }),
+        }
+      );
+      if (res.ok) {
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === task.id ? { ...t, taskStatus: newStatus } : t
+          )
+        );
+      } else {
+        console.error("Failed to update task status:", res.status);
+      }
+    } catch (err) {
+      console.error("Error updating task status:", err);
     }
   };
 
@@ -249,8 +368,8 @@ const MilestonePage: React.FC = () => {
         </div>
       )}
 
+      {/* Milestones */}
       <h2 className="text-2xl font-bold mb-4">Milestones</h2>
-
       {milestones.length === 0 ? (
         <p className="text-gray-400">No progress for now</p>
       ) : (
@@ -281,7 +400,8 @@ const MilestonePage: React.FC = () => {
                   <div key={c.id} className="mt-2 p-2 bg-gray-700 rounded">
                     <p>{c.comment}</p>
                     <small>
-                      - {c.commenterName} on {new Date(c.commentDate).toLocaleString()}
+                      - {c.commenterName} on{" "}
+                      {new Date(c.commentDate).toLocaleString()}
                     </small>
                   </div>
                 ))}
@@ -304,15 +424,79 @@ const MilestonePage: React.FC = () => {
           </div>
         ))
       )}
-     {expertProfile?.userId && studentDetails?.stdUserId ? (
-  <div className="mt-6">
-    <ChatForIndustry expertId={expertProfile.userId} studentId={studentDetails.stdUserId} />
 
-  </div>
-) : (
-  <p className="text-gray-400">Chat is unavailable at the moment.</p>
-)}
+      {/* To-Do Tasks Section */}
+      <h2 className="text-2xl font-bold mt-8 mb-4">To-Do Tasks</h2>
+      <div className="mb-6 p-4 bg-gray-800 rounded shadow">
+        <input
+          type="text"
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          placeholder="Task Title"
+          className="p-2 rounded w-full bg-gray-700 text-white mb-2"
+        />
+        <textarea
+          value={newTaskDescription}
+          onChange={(e) => setNewTaskDescription(e.target.value)}
+          placeholder="Task Description"
+          className="p-2 rounded w-full bg-gray-700 text-white mb-2"
+        />
+        <button
+          onClick={handleAddTask}
+          className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+        >
+          Add Task
+        </button>
+      </div>
 
+      {/* List of Existing Tasks with Checkbox Toggle */}
+      {tasks.length === 0 ? (
+        <p className="text-gray-400">No tasks added yet.</p>
+      ) : (
+        <ul className="mt-4 space-y-2">
+          {tasks.map((task) => (
+            <li key={task.id} className="flex items-center">
+              <input
+                type="checkbox"
+                checked={task.taskStatus === "COMPLETED"}
+                onChange={() => handleTaskToggle(task)}
+                className="mr-2"
+              />
+              <div>
+                <span
+                  className={
+                    task.taskStatus === "COMPLETED"
+                      ? "line-through text-gray-500 font-bold"
+                      : "font-bold"
+                  }
+                >
+                  {task.task}
+                </span>
+                {task.description && (
+                  <p
+                    className={
+                      task.taskStatus === "COMPLETED"
+                        ? "line-through text-gray-500"
+                        : "text-gray-400"
+                    }
+                  >
+                    {task.description}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Chat Section */}
+      {expertProfile?.userId && studentDetails?.stdUserId ? (
+        <div className="mt-6">
+          <ChatForIndustry expertId={expertProfile.userId} studentId={studentDetails.stdUserId} />
+        </div>
+      ) : (
+        <p className="text-gray-400">Chat is unavailable at the moment.</p>
+      )}
     </div>
   );
 };

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import ChatSignalR from "@/app/common_components/ChatSignalR";
 import ChatForStudent from "@/app/common_components/ChatforStudent";
 import MilestoneTimeline from "@/app/student/stdcomps/MilestoneTimeline";
 
@@ -32,11 +31,8 @@ interface ProjectDetails {
   expertName: string;
   indExpertId: string;
   iExptUserId: string;
-
-
 }
 
-// For milestone comments
 interface MilestoneComment {
   id: string;
   comment: string;
@@ -44,6 +40,15 @@ interface MilestoneComment {
   commenterName: string;
   commenter_id: string;
   milestone_id: string;
+}
+
+// New interface for tasks
+interface TaskItem {
+  id: string;
+  projectId: string;
+  task: string;
+  description: string;
+  taskStatus: string;
 }
 
 const ProjectProgressTracker: React.FC = () => {
@@ -55,15 +60,14 @@ const ProjectProgressTracker: React.FC = () => {
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
   const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({});
   const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null);
-  const[expertUserId, setExpertUserId] = useState<string>("");
+  const [expertUserId, setExpertUserId] = useState<string>("");
 
-  
   const [showUpdateModal, setShowUpdateModal] = useState<boolean>(false);
   const [currentItem, setCurrentItem] = useState<ProgressItem | null>(null);
   const [newUpdate, setNewUpdate] = useState({ content: "", date: new Date().toISOString().split("T")[0] });
 
   const [showModal, setShowModal] = useState(false);
-  const [editItemId, setEditItemId] = useState<string | null>(null); // if null => adding
+  const [editItemId, setEditItemId] = useState<string | null>(null);
   const [itemFormData, setItemFormData] = useState({
     title: "",
     description: "",
@@ -71,6 +75,9 @@ const ProjectProgressTracker: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(true);
+
+  // ---------- New state for Tasks ----------
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
 
   // ------------------- Fetch Project & Milestones -------------------
   useEffect(() => {
@@ -81,10 +88,8 @@ const ProjectProgressTracker: React.FC = () => {
         return;
       }
 
-      
       try {
-
-
+        // Get authorized user info
         const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -92,18 +97,16 @@ const ProjectProgressTracker: React.FC = () => {
           const authData = await authRes.json();
           setStudentUserId(authData.userId);
         }
-        
+
         // 1) Fetch project details
         const resProject = await fetch(
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
         if (resProject.ok) {
           const projectData = await resProject.json();
           setProject(projectData);
           setExpertUserId(projectData.iExptUserId);
-
         }
 
         // 2) Fetch milestones
@@ -111,7 +114,6 @@ const ProjectProgressTracker: React.FC = () => {
           `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
         if (resMilestones.ok) {
           const data = await resMilestones.json();
           const today = new Date().toISOString().split("T")[0];
@@ -144,11 +146,9 @@ const ProjectProgressTracker: React.FC = () => {
         `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (res.ok) {
         const data = await res.json();
         const today = new Date().toISOString().split("T")[0];
-        // keep existing local updates
         const updated = data.map((m: ProgressItem) => {
           const existing = progressItems.find((x) => x.id === m.id);
           return {
@@ -168,7 +168,6 @@ const ProjectProgressTracker: React.FC = () => {
 
   // ------------------- Add / Edit a Progress Item -------------------
   const handleOpenModal = (item?: ProgressItem) => {
-    // If item is provided, we are editing
     if (item) {
       setEditItemId(item.id);
       setItemFormData({
@@ -177,7 +176,6 @@ const ProjectProgressTracker: React.FC = () => {
         achievementDate: item.achievementDate,
       });
     } else {
-      // otherwise, adding
       setEditItemId(null);
       setItemFormData({ title: "", description: "", achievementDate: "" });
     }
@@ -190,7 +188,7 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       if (editItemId) {
-        // editing
+        // Editing an existing milestone
         const res = await fetch(
           `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`,
           {
@@ -208,7 +206,7 @@ const ProjectProgressTracker: React.FC = () => {
           await refreshProgressItems();
         }
       } else {
-        // adding
+        // Adding a new milestone
         const res = await fetch(
           `https://localhost:7053/api/milestone/add-milestone/${projectId}`,
           {
@@ -243,9 +241,7 @@ const ProjectProgressTracker: React.FC = () => {
       date: newUpdate.date,
     };
     const updated = progressItems.map((p) =>
-      p.id === currentItem.id
-        ? { ...p, updates: [...(p.updates || []), updateObj] }
-        : p
+      p.id === currentItem.id ? { ...p, updates: [...(p.updates || []), updateObj] } : p
     );
     setProgressItems(updated);
     setShowUpdateModal(false);
@@ -273,6 +269,85 @@ const ProjectProgressTracker: React.FC = () => {
       console.error("Error fetching comments:", err);
     }
   };
+
+  // -------------- New: Fetch Tasks from the API --------------
+  const fetchTasks = async () => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(data);
+      } else {
+        console.error("Failed to fetch tasks:", res.status);
+      }
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
+  // -------------- New: Handle Task Completion Toggle with Undo --------------
+  const handleTaskToggle = async (task: TaskItem) => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token || !projectId) return;
+
+    // If task is completed, unchecking it will mark it as PENDING (undo)
+    if (task.taskStatus === "COMPLETED") {
+      try {
+        const res = await fetch(
+          `https://localhost:7053/api/project-progress/undo-task/${projectId}/${task.id}`,
+          {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (res.ok) {
+          setTasks((prev) =>
+            prev.map((t) =>
+              t.id === task.id ? { ...t, taskStatus: "PENDING" } : t
+            )
+          );
+        } else {
+          console.error("Failed to undo task status:", res.status);
+        }
+      } catch (err) {
+        console.error("Error undoing task status:", err);
+      }
+    } else {
+      // Otherwise, mark as completed
+      try {
+        const res = await fetch(
+          `https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
+          {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (res.ok) {
+          setTasks((prev) =>
+            prev.map((t) =>
+              t.id === task.id ? { ...t, taskStatus: "COMPLETED" } : t
+            )
+          );
+        } else {
+          console.error("Failed to update task status:", res.status);
+        }
+      } catch (err) {
+        console.error("Error updating task status:", err);
+      }
+    }
+  };
+
+  // Fetch tasks when projectId changes
+  useEffect(() => {
+    if (projectId) {
+      fetchTasks();
+    }
+  }, [projectId]);
 
   // ------------------- Render -------------------
   if (loading) {
@@ -329,11 +404,11 @@ const ProjectProgressTracker: React.FC = () => {
           </button>
         </div>
         {progressItems.length > 0 && (
-  <div className="mt-4 mb-8">
-    <h2 className="text-xl font-bold text-green-300 mb-2">Overall Timeline</h2>
-    <MilestoneTimeline milestones={progressItems} />
-  </div>
-)}
+          <div className="mt-4 mb-8">
+            <h2 className="text-xl font-bold text-green-300 mb-2">Overall Timeline</h2>
+            <MilestoneTimeline milestones={progressItems} />
+          </div>
+        )}
         {progressItems.length === 0 ? (
           <div className="text-center text-gray-300">
             <p>No milestones found.</p>
@@ -350,9 +425,7 @@ const ProjectProgressTracker: React.FC = () => {
               <div key={item.id} className="bg-gray-800 p-4 rounded shadow">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg font-bold text-green-400">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-lg font-bold text-green-400">{item.title}</h3>
                     <p className="text-sm text-gray-300">{item.description}</p>
                   </div>
                   {item.isCompleted ? (
@@ -371,15 +444,12 @@ const ProjectProgressTracker: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {/* Edit Milestone */}
                   <button
                     onClick={() => handleOpenModal(item)}
                     className="text-blue-400 text-xs hover:underline"
                   >
                     Edit
                   </button>
-
-                  {/* Local Update */}
                   <button
                     onClick={() => {
                       setCurrentItem(item);
@@ -389,8 +459,6 @@ const ProjectProgressTracker: React.FC = () => {
                   >
                     + Follow-up
                   </button>
-
-                  {/* View Comments */}
                   <button
                     onClick={() => {
                       setCurrentCommentItem(item);
@@ -402,12 +470,10 @@ const ProjectProgressTracker: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Existing Local "updates" */}
+                {/* Existing Local Updates */}
                 {item.updates && item.updates.length > 0 && (
                   <div className="mt-3 border-l border-gray-700 pl-3">
-                    <p className="text-sm font-semibold text-green-300 mb-1">
-                      Updates:
-                    </p>
+                    <p className="text-sm font-semibold text-green-300 mb-1">Updates:</p>
                     {item.updates.map((u) => (
                       <div key={u.id} className="text-xs text-gray-200 mb-2">
                         <p>- {u.content}</p>
@@ -417,29 +483,21 @@ const ProjectProgressTracker: React.FC = () => {
                   </div>
                 )}
 
-                {/* If we're viewing comments for THIS milestone, show them */}
+                {/* Comments for this Milestone */}
                 {currentCommentItem && currentCommentItem.id === item.id && (
                   <div className="mt-3 border-l border-gray-700 pl-3">
-                    <p className="text-sm font-semibold text-purple-300 mb-1">
-                      Comments:
-                    </p>
+                    <p className="text-sm font-semibold text-purple-300 mb-1">Comments:</p>
                     {comments[item.id]?.length ? (
                       comments[item.id].map((c) => (
-                        <div
-                          key={c.id}
-                          className="bg-gray-700 p-2 rounded mb-2 text-sm"
-                        >
+                        <div key={c.id} className="bg-gray-700 p-2 rounded mb-2 text-sm">
                           <p className="text-gray-200">{c.comment}</p>
                           <p className="text-gray-400 text-xs">
-                            {c.commenterName} on{" "}
-                            {new Date(c.commentDate).toLocaleString()}
+                            {c.commenterName} on {new Date(c.commentDate).toLocaleString()}
                           </p>
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-400 text-xs">
-                        No comments found.
-                      </p>
+                      <p className="text-gray-400 text-xs">No comments found.</p>
                     )}
                   </div>
                 )}
@@ -448,6 +506,50 @@ const ProjectProgressTracker: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* ---------- New: Tasks Section ---------- */}
+      <div className="max-w-4xl mx-auto mt-8">
+        <h2 className="text-xl font-semibold text-green-300">Tasks</h2>
+        {tasks.length === 0 ? (
+          <p className="text-gray-400">No tasks assigned.</p>
+        ) : (
+          <ul className="mt-4 space-y-2">
+            {tasks.map((task) => (
+              <li key={task.id} className="flex items-start">
+                <input
+                  type="checkbox"
+                  checked={task.taskStatus === "COMPLETED"}
+                  onChange={() => handleTaskToggle(task)}
+                  className="mt-1 mr-2"
+                />
+                <div>
+                  <span
+                    className={
+                      task.taskStatus === "COMPLETED"
+                        ? "line-through text-gray-500 font-bold"
+                        : "font-bold"
+                    }
+                  >
+                    {task.task}
+                  </span>
+                  {task.description && (
+                    <p className="text-sm text-gray-400">{task.description}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Chat Section */}
+      {studentUserId && project?.iExptUserId ? (
+        <div className="mt-6">
+          <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
+        </div>
+      ) : (
+        <p className="text-gray-400">Chat is unavailable at the moment.</p>
+      )}
 
       {/* ---------- Unified Modal for Add/Edit Milestone ---------- */}
       {showModal && (
@@ -460,34 +562,23 @@ const ProjectProgressTracker: React.FC = () => {
               type="text"
               placeholder="Title"
               value={itemFormData.title}
-              onChange={(e) =>
-                setItemFormData({ ...itemFormData, title: e.target.value })
-              }
+              onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
               className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
             />
             <textarea
               placeholder="Description"
               value={itemFormData.description}
-              onChange={(e) =>
-                setItemFormData({
-                  ...itemFormData,
-                  description: e.target.value,
-                })
-              }
+              onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
               className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
             />
             <input
               type="date"
               value={itemFormData.achievementDate}
               onChange={(e) =>
-                setItemFormData({
-                  ...itemFormData,
-                  achievementDate: e.target.value,
-                })
+                setItemFormData({ ...itemFormData, achievementDate: e.target.value })
               }
               className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
             />
-
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleSaveItem}
@@ -528,7 +619,6 @@ const ProjectProgressTracker: React.FC = () => {
               onChange={(e) => setNewUpdate({ ...newUpdate, date: e.target.value })}
               className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
             />
-
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleAddLocalUpdate}
@@ -549,15 +639,6 @@ const ProjectProgressTracker: React.FC = () => {
           </div>
         </div>
       )}
-   {studentUserId && project?.iExptUserId ? (
-  <div className="mt-6">
-    <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
-  </div>
-) : (
-  <p className="text-gray-400">Chat is unavailable at the moment.</p>
-)}
-
-
     </div>
   );
 };
