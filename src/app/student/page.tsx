@@ -70,6 +70,7 @@ const StudentPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>([]);
   const [completedProjects, setCompletedProjects] = useState<CompletedProject[]>([]);
+  const [personalProjects, setPersonalProjects] = useState<Project[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
@@ -81,16 +82,13 @@ const StudentPage: React.FC = () => {
         router.push("/auth/login-user");
         return;
       }
-
       try {
         // Fetch user profile
         const profileResponse = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (profileResponse.ok) {
@@ -101,11 +99,10 @@ const StudentPage: React.FC = () => {
             `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
               method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+              headers: { Authorization: `Bearer ${token}` },
             }
           );
+
           if (studentResponse.ok) {
             const studentData = await studentResponse.json();
             setUserProfile({
@@ -123,15 +120,25 @@ const StudentPage: React.FC = () => {
                 "Add your description by going to edit profile section.",
               uniImage: studentData.uniImage,
             });
+            // Fetch completed projects (personal)
+            const projectsResponse = await fetch(
+              `https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`,
+              {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            if (projectsResponse.ok) {
+              const projectsData = await projectsResponse.json();
+              setPersonalProjects(projectsData);
+            }
 
-            // Fetch ongoing projects (for projects with expert assigned but not completed)
+            // Fetch ongoing projects (with expert assigned)
             const ongoingResponse = await fetch(
               `https://localhost:7053/api/projects/get-student-with-expert-project-by-id/${studentData.id}`,
               {
                 method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
               }
             );
             if (ongoingResponse.ok) {
@@ -141,14 +148,12 @@ const StudentPage: React.FC = () => {
               setOngoingProjects([]);
             }
 
-            // Fetch completed projects using the industry endpoint
+            // Fetch completed industry projects
             const completedResponse = await fetch(
               `https://localhost:7053/api/projects/get-industry-completed-projects/${studentData.id}`,
               {
                 method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
               }
             );
             if (completedResponse.ok) {
@@ -163,9 +168,7 @@ const StudentPage: React.FC = () => {
               "https://localhost:7053/api/Events/get-events",
               {
                 method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
               }
             );
             if (eventsResponse.ok) {
@@ -189,7 +192,6 @@ const StudentPage: React.FC = () => {
         setLoading(false);
       }
     }
-
     fetchProfileAndProjects();
   }, [router]);
 
@@ -234,22 +236,17 @@ const StudentPage: React.FC = () => {
       {/* Ongoing Projects Section */}
       <OngoingProjectsSection ongoingProjects={ongoingProjects} />
 
+      {/* Completed Industry Projects Section */}
       <CompletedIndustryProjectsSection projects={completedProjects} />
-      {/* Completed Projects Section */}
-      <CompletedProjectsSection projects={completedProjects} />
+
+      {/* Completed Personal Projects Section */}
+      <CompletedProjectsSection projects={personalProjects} />
 
       {/* Events Section */}
       <EventsSection events={events} gradientStyles={[]} />
 
       {/* Chat Widget */}
       <ChatWidget />
-
-      <button
-        onClick={handleLogout}
-        className="mt-4 py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500"
-      >
-        Logout
-      </button>
     </div>
   );
 };

@@ -28,7 +28,6 @@ const CompletedProjectsSection: React.FC<Props> = ({ projects }) => {
           Completed Personal Projects
         </h2>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-6 lg:px-8">
         {projects.length > 0 ? (
           projects.map((project) => (
@@ -36,7 +35,7 @@ const CompletedProjectsSection: React.FC<Props> = ({ projects }) => {
               key={project.id}
               onClick={() => handleCardClick(project.id)}
               whileHover={{ scale: 1.03 }}
-              className="bg-white border border-gray-300 p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col"
+              className="bg-white border border-gray-300 p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col"
             >
               <h3 className="text-xl font-bold text-blue-700 mb-3">
                 {project.title}

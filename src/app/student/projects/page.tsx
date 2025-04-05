@@ -107,9 +107,7 @@ const ProjectsPage: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="flex items-center justify-between mb-12"
         >
-          <h1 className="text-4xl font-bold text-blue-700">
-            My Innovative Projects
-          </h1>
+          <h1 className="text-4xl font-bold text-blue-700">My Innovative Projects</h1>
           <button
             onClick={handleCreateProject}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
