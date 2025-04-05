@@ -1,259 +1,229 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { motion } from "framer-motion";
+"use client"
 
-interface StudentData {
-  firstName: string;
-  lastName: string;
+import type React from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import Image from "next/image"
 
-  rollNumber: string;
-  description: string;
-}
-
-const UpdateStudentPage: React.FC = () => {
-  const [studentData, setStudentData] = useState<StudentData>({
+const EditStudentProfilePage: React.FC = () => {
+  const [profile, setProfile] = useState<any | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-   
-    rollNumber: "",
     description: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const [studentId, setStudentId] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+    profileImage: "",
+  })
+  const router = useRouter()
 
   useEffect(() => {
-    async function fetchStudentData() {
-      const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        toast.error("User not authenticated. Redirecting to login.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-        router.push("/auth/login-user");
-        return;
-      }
+    const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      router.push("/auth/login-user") // Redirect to login if no token
+      return
+    }
 
+    const fetchProfile = async () => {
       try {
-        // Fetch authenticated user info
-        const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!response.ok) throw new Error("Failed to fetch profile")
 
-        if (profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          const userId = profileData.userId;
-          setUserId(userId);
-
-          // Fetch student-specific data
-          const studentResponse = await fetch(
-            `https://localhost:7053/api/get-student/student-by-id/${userId}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (studentResponse.ok) {
-            const data = await studentResponse.json();
-            setStudentId(data.id);
-            setStudentData({
-              firstName: data.firstName,
-              lastName: data.lastName,
-             
-              rollNumber: data.rollNumber,
-              description: data.description || "",
-            });
-          } else {
-            toast.error("Failed to load student data.", {
-              position: "top-center",
-              autoClose: 3000,
-            });
-          }
-        } else {
-          toast.error("Failed to fetch user profile.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        toast.error("An error occurred while fetching profile data.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
+        const data = await response.json()
+        setProfile(data)
+        setForm({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          description: data.description || "",
+          profileImage: data.profileImage || "",
+        })
+      } catch (err) {
+        setError("Failed to load profile.")
+        toast.error("An error occurred while loading your profile.")
+      } finally {
+        setLoading(false)
       }
     }
 
-    fetchStudentData();
-  }, [router]);
+    fetchProfile()
+  }, [router])
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setStudentData({ ...studentData, [name]: value });
-  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setForm({ ...form, [name]: value })
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (!studentId || !userId) {
-      toast.error("User ID not found. Please try again later.", {
-        position: "top-center",
-        autoClose: 3000,
-      });
-      setLoading(false);
-      return;
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      reader.onload = () => {
+        setForm({ ...form, profileImage: reader.result as string })
+      }
+      reader.readAsDataURL(file)
     }
+  }
 
-    const token = localStorage.getItem("jwtToken");
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token) return
+
     try {
-      // Update student basic info
-      const updateStudentResponse = await fetch(
-        `https://localhost:7053/api/students/update-student/${studentId}`,
-        {
+      // Update description and other details
+      await fetch(`https://localhost:7053/api/edit-user-profile/update-user-data/${profile.userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Firstname: form.firstName,
+          Lastname: form.lastName,
+          description: form.description,
+        }),
+      })
+
+      // Update profile image
+      if (form.profileImage) {
+        const base64Image = form.profileImage.split(",")[1] // Remove data:image/png;base64,
+        await fetch(`https://localhost:7053/api/edit-user-profile/set-profile-image/${profile.userId}`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            firstName: studentData.firstName,
-            lastName: studentData.lastName,
-            
-            rollNumber: studentData.rollNumber,
-          }),
-        }
-      );
-
-      // Update user description
-      const updateDescriptionResponse = await fetch(
-        `https://localhost:7053/api/edit-user-profile/update-user-data/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            description: studentData.description,
-            Firstname: studentData.firstName,
-            Lastname: studentData.lastName,
-          }),
-        }
-      );
-
-      if (updateStudentResponse.ok && updateDescriptionResponse.ok) {
-        toast.success("Profile updated successfully!", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-        router.push("/student/profile");
-      } else {
-        toast.error("Failed to update profile.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
+          body: JSON.stringify(base64Image),
+        })
       }
-    } catch (error) {
-      toast.error("An error occurred. Please try again later.", {
-        position: "top-center",
-        autoClose: 3000,
-      });
-    } finally {
-      setLoading(false);
+
+      toast.success("Profile updated successfully!")
+      router.push("/student/profile") // Redirect to dashboard
+    } catch (err) {
+      console.error("Error updating profile:", err)
+      toast.error("Failed to update profile.")
     }
-  };
+  }
+
+  if (loading) return <div className="text-center text-gray-400">Loading...</div>
+  if (error) return <div className="text-center text-red-500">{error}</div>
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-900 text-gray-200 p-8">
-      <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">
-        Update Profile
-      </h1>
-      <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-200 p-8">
+      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg relative">
+        {/* Header Section */}
+        <div className="flex items-center justify-center mb-8">
+          {/* Logo Image */}
+          <Image src="/logo.jpg" alt="Logo" width={60} height={60} className="mr-4 rounded-full shadow-md" />
+          <h1 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+            Edit Profile
+          </h1>
+        </div>
+
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* First Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              First Name
-            </label>
+            <label className="block text-sm text-gray-700">First Name</label>
             <input
               type="text"
               name="firstName"
-              value={studentData.firstName}
+              value={form.firstName}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full p-4 bg-gray-100 text-gray-800 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
+
+          {/* Last Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              Last Name
-            </label>
+            <label className="block text-sm text-gray-700">Last Name</label>
             <input
               type="text"
               name="lastName"
-              value={studentData.lastName}
+              value={form.lastName}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full p-4 bg-gray-100 text-gray-800 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
-         
+
+          {/* Description */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              Roll Number
-            </label>
-            <input
-              type="text"
-              name="rollNumber"
-              value={studentData.rollNumber}
-              onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-300">
-              Description
-            </label>
+            <label className="block text-sm text-gray-700">Description</label>
             <textarea
               name="description"
-              value={studentData.description}
+              value={form.description}
               onChange={handleInputChange}
-              className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 bg-gray-100 text-gray-800 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
               rows={4}
-              placeholder="Tell us something about yourself..."
-            />
+            ></textarea>
           </div>
-          <div className="flex justify-center">
-            <motion.button
-              type="submit"
-              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-              disabled={loading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {loading ? "Updating..." : "Update Profile"}
-            </motion.button>
-          </div>
-        </form>
-      </div>
-      <ToastContainer />
-    </div>
-  );
-};
 
-export default UpdateStudentPage;
+          {/* Profile Image */}
+          <div>
+            <label className="block text-sm text-gray-700">Profile Image</label>
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className="space-y-1 text-center">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <div className="flex text-sm text-gray-600">
+                  <label
+                    htmlFor="file-upload"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
+                  >
+                    <span>Upload a file</span>
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+              </div>
+            </div>
+            {form.profileImage && (
+              <div className="mt-4 flex justify-center">
+                <img
+                  src={form.profileImage || "/placeholder.svg"}
+                  alt="Profile Preview"
+                  className="w-32 h-32 rounded-full"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Save Button */}
+          <button
+            type="submit"
+            className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
+          >
+            Save Changes
+          </button>
+        </form>
+        <ToastContainer />
+      </div>
+    </div>
+  )
+}
+
+export default EditStudentProfilePage
+

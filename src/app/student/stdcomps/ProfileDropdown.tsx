@@ -1,135 +1,102 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { FaChevronDown, FaUserEdit, FaSignOutAlt, FaImage, FaLock } from "react-icons/fa";
+"use client"
+import type React from "react"
+import { Fragment } from "react"
+import { Menu, Transition } from "@headlessui/react"
+import { useRouter } from "next/navigation"
 
-interface ProfileDropdownProps {
-  userProfile: {
-    userId: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-    imageData: string;
-  };
-  onLogoutClick: () => void; // Updated prop name
+interface UserProfile {
+  userId: string
+  firstName: string
+  lastName: string
+  role: string
+  imageData: string
 }
 
-const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
-  userProfile,
-  onLogoutClick,
-}) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const router = useRouter();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+interface ProfileDropdownProps {
+  userProfile: UserProfile
+  onLogoutClick: () => void
+}
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-  const handleEditProfile = () => {
-    router.push("/student/profile/edit");
-    setDropdownOpen(false);
-  };
-
-  const handleViewProfile = () => {
-    router.push("/student/profile");
-    setDropdownOpen(false);
-  };
-
-  const updateImage = () => {
-    router.push("/student/profile/management");
-    setDropdownOpen(false);
-  };
-
-  const updatePassword = () => {
-    router.push("student/profile/edit");
-    setDropdownOpen(false);
-  };
-
-  const handleLogoutClickLocal = () => {
-    setDropdownOpen(false);
-    onLogoutClick(); // Trigger the dialog in NavBar
-  };
-
-  // Close the dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userProfile, onLogoutClick }) => {
+  const router = useRouter()
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
-      <button
-        onClick={toggleDropdown}
-        className="flex items-center focus:outline-none"
+    <Menu as="div" className="relative ml-3">
+      <div>
+        <Menu.Button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 hover:text-blue-600 rounded-md transition duration-300">
+          <span>Account</span>
+          <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </Menu.Button>
+      </div>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
       >
-        <img
-          src={`data:image/jpeg;base64,${userProfile.imageData}`}
-          alt="Profile"
-          className="w-10 h-10 rounded-full border-2 border-green-500"
-        />
-        <FaChevronDown className="ml-2 text-gray-300 hover:text-green-500 transition duration-300" />
-      </button>
-      {dropdownOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
-          <div className="py-1" role="menu" aria-orientation="vertical">
-            <div className="px-4 py-2 border-b border-gray-700 bg-gray-700 rounded-t-md">
-              <p className="text-sm font-medium text-gray-200">
-                {userProfile.firstName} {userProfile.lastName}
-              </p>
-            </div>
-
-            <button
-              onClick={handleViewProfile}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
-            >
-              <FaUserEdit className="mr-2" /> View Profile
-            </button>
-
-            <button
-              onClick={handleEditProfile}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
-            >
-              <FaUserEdit className="mr-2" /> Edit Profile
-            </button>
-
-            <button
-              onClick={updateImage}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
-            >
-              <FaImage className="mr-2" /> Upload Image
-            </button>
-
-            <button
-              onClick={updatePassword}
-              className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-green-500 transition duration-300"
-            >
-              <FaLock className="mr-2" /> Update Password
-            </button>
-
-            <div className="border-t border-gray-700 my-2"></div>
-
-            {/* Beautified Logout Button */}
-            <button
-              onClick={handleLogoutClickLocal}
-              className="flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-red-500 hover:text-red-700 hover:bg-gray-700 transition duration-300 bg-gray-800 rounded-b-md"
-            >
-              <FaSignOutAlt className="mr-2" /> Logout
-            </button>
+        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          {/* User Info */}
+          <div className="px-4 py-3 border-b border-gray-200">
+            <p className="text-sm font-medium text-gray-900">
+              {userProfile.firstName} {userProfile.lastName}
+            </p>
+            <p className="text-xs text-gray-500 truncate">{userProfile.role}</p>
           </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
-export default ProfileDropdown;
+          {/* Menu Items */}
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                onClick={() => router.push("/student/profile")}
+                className={`${active ? "bg-gray-100" : ""} flex w-full px-4 py-2 text-sm text-gray-700 text-left`}
+              >
+                View Profile
+              </button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                onClick={() => router.push("/student/profile/edit")}
+                className={`${active ? "bg-gray-100" : ""} flex w-full px-4 py-2 text-sm text-gray-700 text-left`}
+              >
+                Edit Profile
+              </button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                onClick={() => router.push("/student/profile/management")}
+                className={`${active ? "bg-gray-100" : ""} flex w-full px-4 py-2 text-sm text-gray-700 text-left`}
+              >
+                Account Settings
+              </button>
+            )}
+          </Menu.Item>
+
+          <div className="border-t border-gray-200 my-1"></div>
+
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                onClick={onLogoutClick}
+                className={`${active ? "bg-gray-100" : ""} flex w-full px-4 py-2 text-sm text-gray-700 text-left`}
+              >
+                Logout
+              </button>
+            )}
+          </Menu.Item>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  )
+}
+
+export default ProfileDropdown
+
