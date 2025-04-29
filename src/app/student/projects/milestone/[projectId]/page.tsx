@@ -101,8 +101,9 @@ const ProjectProgressTracker: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Determine if project is completed
+  // Determine if project is completed or pending completion
   const isProjectComplete = project?.status === "Completed"
+  const isPendingCompletion = project?.status === "PendingCompletion"
 
   // -----------------------------
   // 1) Fetch Project Details, Milestones, and Authorized User Info
@@ -220,6 +221,17 @@ const ProjectProgressTracker: React.FC = () => {
   const handleSaveItem = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
+
+    // Validate form data
+    if (!itemFormData.title.trim()) {
+      toast.error("Milestone title is required")
+      return
+    }
+    if (!itemFormData.achievementDate) {
+      toast.error("Target date is required")
+      return
+    }
+
     try {
       if (editItemId) {
         // Edit milestone
@@ -231,8 +243,13 @@ const ProjectProgressTracker: React.FC = () => {
           },
           body: JSON.stringify(itemFormData),
         })
-        if (!res.ok) console.error("Failed to update milestone. Status:", res.status)
-        else await refreshProgressItems()
+        if (!res.ok) {
+          console.error("Failed to update milestone. Status:", res.status)
+          toast.error("Failed to update milestone")
+        } else {
+          toast.success("Milestone updated successfully")
+          await refreshProgressItems()
+        }
       } else {
         // Add milestone
         const res = await fetch(`https://localhost:7053/api/milestone/add-milestone/${projectId}`, {
@@ -243,11 +260,17 @@ const ProjectProgressTracker: React.FC = () => {
           },
           body: JSON.stringify(itemFormData),
         })
-        if (!res.ok) console.error("Failed to add milestone. Status:", res.status)
-        else await refreshProgressItems()
+        if (!res.ok) {
+          console.error("Failed to add milestone. Status:", res.status)
+          toast.error("Failed to add milestone")
+        } else {
+          toast.success("Milestone added successfully")
+          await refreshProgressItems()
+        }
       }
     } catch (err) {
       console.error("Error saving milestone:", err)
+      toast.error("Error saving milestone")
     } finally {
       setShowModal(false)
       setItemFormData({ title: "", description: "", achievementDate: "" })
@@ -317,50 +340,19 @@ const ProjectProgressTracker: React.FC = () => {
       })
       if (res.ok) {
         setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: newStatus } : t)))
+        toast.success(`Task marked as ${newStatus.toLowerCase()}`)
       } else {
         console.error("Failed to update task status:", res.status)
+        toast.error("Failed to update task status")
       }
     } catch (err) {
       console.error("Error updating task status:", err)
+      toast.error("Error updating task status")
     }
   }
 
   // -----------------------------
-  // 7) Handle Add Task (Industry Expert adds a new task)
-  // -----------------------------
-  const handleAddTask = async () => {
-    const token = localStorage.getItem("jwtToken")
-    if (!token || !projectId) return
-    if (!newTask.trim() || !newTaskDescription.trim()) {
-      toast.error("Please provide both task title and description.")
-      return
-    }
-    try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/add-tasks/${projectId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ task: newTask, description: newTaskDescription }),
-      })
-      if (res.ok) {
-        toast.success("Task added successfully.")
-        setNewTask("")
-        setNewTaskDescription("")
-        await fetchTasks()
-      } else {
-        console.error("Failed to add task:", res.status)
-        toast.error("Failed to add task.")
-      }
-    } catch (err) {
-      console.error("Error adding task:", err)
-      toast.error("Error adding task.")
-    }
-  }
-
-  // -----------------------------
-  // 8) Handle Add Review (Industry Expert adds review)
+  // 7) Handle Add Review (Student adds review)
   // -----------------------------
   const handleAddReview = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -377,7 +369,7 @@ const ProjectProgressTracker: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ReviewerId: expertUserId,
+          ReviewerId: studentUserId,
           Review: newReviewText,
           Rating: newReviewRating,
         }),
@@ -397,7 +389,7 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   // -----------------------------
-  // 9) Fetch Reviews (if project is completed)
+  // 8) Fetch Reviews (if project is completed)
   // -----------------------------
   const fetchReviews = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -418,35 +410,60 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   // -----------------------------
-  // 10) Handle Mark Project as Complete (Student requests completion)
+  // 9) Handle Request Project Completion (Student requests completion)
   // -----------------------------
-  const handleCompleteProject = async () => {
+  const handleRequestCompletion = async () => {
     if (
       !window.confirm(
-        "Are you sure you want to mark this project as complete? Once complete, editing will be disabled.",
+        "Are you sure you want to request project completion? This will notify the industry expert for approval.",
       )
     )
       return
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/projects/${projectId}/complete`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
+      // Using the correct API endpoint from the controller
+      // The API expects a raw GUID in the request body, not a JSON object
+      const res = await fetch(`https://localhost:7053/api/request-for-project-completion/put-completion-request`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectId), // Send the projectId as a raw string
       })
+
       if (res.ok) {
-        toast.success("Project marked as complete.")
-        // Update local project state to reflect complete status
-        setProject((prev) =>
-          prev ? { ...prev, status: "Completed", endDate: new Date().toISOString().split("T")[0] } : prev,
-        )
+        toast.success("Completion request sent. Awaiting industry expert approval.")
+        // Update local project state to reflect pending completion status
+        setProject((prev) => (prev ? { ...prev, status: "PendingCompletion" } : prev))
       } else {
-        console.error("Failed to complete project:", res.status)
-        toast.error("Failed to mark project as complete.")
+        // Log more detailed error information
+        const errorText = await res.text()
+        console.error("Failed to request project completion:", res.status, errorText)
+        toast.error(`Failed to request project completion: ${res.status} ${errorText || ""}`)
       }
     } catch (err) {
-      console.error("Error completing project:", err)
-      toast.error("Error marking project as complete.")
+      console.error("Error requesting project completion:", err)
+      toast.error(`Error requesting project completion: ${err || "Unknown error"}`)
+    }
+  }
+
+  // -----------------------------
+  // 10) Handle Payment Process (After project is completed)
+  // -----------------------------
+  const handlePaymentProcess = async () => {
+    if (!isProjectComplete) return
+
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+
+    try {
+      // Redirect to payment page
+      router.push(`/student/payment/${projectId}`)
+    } catch (err) {
+      console.error("Error initiating payment:", err)
+      toast.error("Error initiating payment process.")
     }
   }
 
@@ -467,7 +484,10 @@ const ProjectProgressTracker: React.FC = () => {
   if (loading) {
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
-        <p>Loading...</p>
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-t-green-500 border-gray-700 rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg">Loading project data...</p>
+        </div>
       </div>
     )
   }
@@ -485,7 +505,18 @@ const ProjectProgressTracker: React.FC = () => {
             <strong className="text-green-300">Description:</strong> {project?.description}
           </p>
           <p className="mb-1">
-            <strong className="text-green-300">Status:</strong> {project?.status}
+            <strong className="text-green-300">Status:</strong>{" "}
+            <span
+              className={`px-2 py-1 text-xs rounded-full ${
+                project?.status === "Completed"
+                  ? "bg-green-900 text-green-300"
+                  : project?.status === "PendingCompletion"
+                    ? "bg-yellow-900 text-yellow-300"
+                    : "bg-blue-900 text-blue-300"
+              }`}
+            >
+              {project?.status}
+            </span>
           </p>
           <p className="mb-1">
             <strong className="text-green-300">End Date:</strong> {project?.endDate}
@@ -504,19 +535,59 @@ const ProjectProgressTracker: React.FC = () => {
             )}
           </p>
         </div>
-        {project?.status !== "Completed" && (
+
+        {/* Project Status Actions */}
+        {!isProjectComplete && !isPendingCompletion && (
           <div className="mt-4 flex justify-end">
             <button
-              onClick={handleCompleteProject}
-              className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition"
+              onClick={handleRequestCompletion}
+              className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center"
             >
-              Mark Project as Complete
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Request Project Completion
             </button>
           </div>
         )}
-        {project?.status === "Completed" && (
-          <div className="mt-4 text-center text-lg font-semibold text-green-500">
-            This project is complete. Editing is disabled.
+
+        {isPendingCompletion && (
+          <div className="mt-4 bg-yellow-900 border border-yellow-700 text-yellow-300 p-4 rounded-lg flex items-center">
+            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>Completion request sent. Awaiting industry expert approval.</span>
+          </div>
+        )}
+
+        {isProjectComplete && (
+          <div className="mt-4 flex flex-col space-y-4">
+            <div className="bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg flex items-center">
+              <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>This project is complete. Editing is disabled.</span>
+            </div>
+
+            <button
+              onClick={handlePaymentProcess}
+              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition self-end flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
+                />
+              </svg>
+              Proceed to Payment
+            </button>
           </div>
         )}
       </div>
@@ -525,12 +596,15 @@ const ProjectProgressTracker: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-green-300">Milestones</h2>
-          {project?.status !== "Completed" && (
+          {!isProjectComplete && !isPendingCompletion && (
             <button
               onClick={() => handleOpenModal()}
-              className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-sm"
+              className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white flex items-center"
             >
-              + Add Milestone
+              <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Milestone
             </button>
           )}
         </div>
@@ -563,7 +637,7 @@ const ProjectProgressTracker: React.FC = () => {
                       </div>
                     </div>
 
-                    {project?.status !== "Completed" && (
+                    {!isProjectComplete && !isPendingCompletion && (
                       <button
                         onClick={() => handleOpenModal(milestone)}
                         className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
@@ -600,14 +674,25 @@ const ProjectProgressTracker: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center text-gray-300">
-            <p>No milestones found.</p>
-            {project?.status !== "Completed" && (
+          <div className="text-center py-10 bg-gray-800 rounded-lg">
+            <svg className="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <p className="text-gray-400 mb-6">No milestones found for this project.</p>
+            {!isProjectComplete && !isPendingCompletion && (
               <button
                 onClick={() => handleOpenModal()}
-                className="bg-blue-600 hover:bg-blue-500 text-white mt-3 px-4 py-2 rounded text-sm"
+                className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium flex items-center mx-auto"
               >
-                Add First Milestone
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Your First Milestone
               </button>
             )}
           </div>
@@ -620,7 +705,7 @@ const ProjectProgressTracker: React.FC = () => {
 
         {/* Task list - Students can only view and toggle tasks */}
         {tasks.length === 0 ? (
-          <p className="text-gray-400 mt-4">No tasks assigned.</p>
+          <p className="text-gray-400 mt-4 bg-gray-800 p-4 rounded">No tasks assigned.</p>
         ) : (
           <div className="mt-4 bg-gray-800 rounded-lg p-4">
             <ul className="divide-y divide-gray-700">
@@ -632,7 +717,7 @@ const ProjectProgressTracker: React.FC = () => {
                       checked={task.taskStatus === "COMPLETED"}
                       onChange={() => handleTaskToggle(task)}
                       className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={project?.status === "Completed"}
+                      disabled={isProjectComplete || isPendingCompletion}
                     />
                   </div>
                   <div className="ml-3 flex-1">
@@ -672,11 +757,11 @@ const ProjectProgressTracker: React.FC = () => {
       </div>
 
       {/* Review Section (visible when project is completed) */}
-      {project?.status === "Completed" && (
+      {isProjectComplete && (
         <div className="max-w-4xl mx-auto mt-8">
           <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
           {reviews.length === 0 ? (
-            <p className="text-gray-400">No reviews yet.</p>
+            <p className="text-gray-400 bg-gray-800 p-4 rounded">No reviews have been submitted yet.</p>
           ) : (
             <ul className="space-y-4">
               {reviews.map((r) => (
@@ -690,26 +775,35 @@ const ProjectProgressTracker: React.FC = () => {
               ))}
             </ul>
           )}
-          <div className="mt-4">
+          <div className="mt-4 bg-gray-800 p-4 rounded">
             <h3 className="text-xl font-bold mb-2">Add a Review</h3>
             <textarea
               value={newReviewText}
               onChange={(e) => setNewReviewText(e.target.value)}
               placeholder="Write your review..."
-              className="w-full p-2 bg-gray-700 rounded mb-2"
+              className="w-full p-3 bg-gray-700 rounded mb-3 border border-gray-600"
+              rows={4}
             />
-            <input
-              type="number"
-              value={newReviewRating}
-              onChange={(e) => setNewReviewRating(Number.parseInt(e.target.value))}
-              placeholder="Rating (1-5)"
-              className="w-full p-2 bg-gray-700 rounded mb-2"
-              min={1}
-              max={5}
-            />
+            <div className="mb-3">
+              <label className="block text-sm font-medium mb-1">Rating</label>
+              <div className="flex space-x-2">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <button
+                    key={rating}
+                    type="button"
+                    onClick={() => setNewReviewRating(rating)}
+                    className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                      newReviewRating >= rating ? "bg-yellow-500 text-yellow-900" : "bg-gray-700 text-gray-400"
+                    }`}
+                  >
+                    {rating}
+                  </button>
+                ))}
+              </div>
+            </div>
             <button
               onClick={handleAddReview}
-              className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
             >
               Submit Review
             </button>
@@ -719,49 +813,70 @@ const ProjectProgressTracker: React.FC = () => {
 
       {/* Chat Section */}
       {studentUserId && project?.iExptUserId ? (
-        <div className="mt-6">
-          <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
+        <div className="max-w-4xl mx-auto mt-8">
+          <h2 className="text-xl font-semibold text-green-300 mb-4">Chat with Expert</h2>
+          <div className="bg-gray-800 rounded-lg overflow-hidden">
+            <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
+          </div>
         </div>
       ) : (
-        <p className="text-gray-400">Chat is unavailable at the moment.</p>
+        <p className="text-gray-400 mt-8 text-center">Chat is unavailable at the moment.</p>
       )}
 
       {/* Milestone Modal */}
-      {project?.status !== "Completed" && showModal && (
+      {!isProjectComplete && !isPendingCompletion && showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
             <h3 className="text-xl font-bold text-green-400 mb-4">{editItemId ? "Edit Milestone" : "Add Milestone"}</h3>
-            <input
-              type="text"
-              placeholder="Title"
-              value={itemFormData.title}
-              onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
-              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
-            />
-            <textarea
-              placeholder="Description"
-              value={itemFormData.description}
-              onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
-              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
-            />
-            <input
-              type="date"
-              value={itemFormData.achievementDate}
-              onChange={(e) => setItemFormData({ ...itemFormData, achievementDate: e.target.value })}
-              className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
-            />
-            <div className="flex justify-end gap-3">
-              <button onClick={handleSaveItem} className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded">
-                Save
-              </button>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Complete Research Phase"
+                  value={itemFormData.title}
+                  onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
+                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  placeholder="Describe what needs to be accomplished"
+                  value={itemFormData.description}
+                  onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
+                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Target Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={itemFormData.achievementDate}
+                  onChange={(e) => setItemFormData({ ...itemFormData, achievementDate: e.target.value })}
+                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => {
                   setShowModal(false)
                   setItemFormData({ title: "", description: "", achievementDate: "" })
                 }}
-                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded"
+                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded text-white"
               >
                 Cancel
+              </button>
+              <button onClick={handleSaveItem} className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded">
+                {editItemId ? "Update" : "Save"}
               </button>
             </div>
           </div>

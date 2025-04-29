@@ -67,6 +67,15 @@ interface ProjectDetailsExtended {
   iExptUserId: string
 }
 
+interface CompletionRequest {
+  id: string
+  projectId: string
+  projectTitle: string
+  studentName: string
+  requestDate: string
+  status: string
+}
+
 const MilestonePage: React.FC = () => {
   const { projectId } = useParams()
   const router = useRouter()
@@ -90,6 +99,9 @@ const MilestonePage: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([])
   const [newReviewText, setNewReviewText] = useState("")
   const [newReviewRating, setNewReviewRating] = useState<number>(0)
+  // Completion requests
+  const [completionRequests, setCompletionRequests] = useState<CompletionRequest[]>([])
+  const [currentRequest, setCurrentRequest] = useState<CompletionRequest | null>(null)
   // Modal state for adding/editing milestones
   const [showModal, setShowModal] = useState(false)
   const [editItemId, setEditItemId] = useState<string | null>(null)
@@ -102,8 +114,9 @@ const MilestonePage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Determine if the project is completed
+  // Determine if the project is completed or pending completion
   const isProjectComplete = project?.status === "Completed"
+  const isPendingCompletion = project?.status === "PendingCompletion"
 
   // -----------------------------
   // 1) Fetch Expert, Project Details, and Milestones
@@ -169,9 +182,12 @@ const MilestonePage: React.FC = () => {
         }))
 
         setMilestones(processedMilestones)
+
+        // Fetch completion requests for this expert
+        await fetchCompletionRequests(expertData.indExptId)
       } catch (err) {
         console.error(err)
-        setError("No progress for now")
+        setError("Failed to load project data")
       } finally {
         setLoading(false)
       }
@@ -180,7 +196,37 @@ const MilestonePage: React.FC = () => {
   }, [projectId, router])
 
   // -----------------------------
-  // 2) Fetch Comments for a Milestone
+  // 2) Fetch Completion Requests
+  // -----------------------------
+  const fetchCompletionRequests = async (expertId: string) => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token) return
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      if (res.ok) {
+        const data = await res.json()
+        setCompletionRequests(data)
+        
+        // Find if there's a request for the current project
+        const currentProjectRequest = data.find((req: CompletionRequest) => req.projectId === projectId)
+        if (currentProjectRequest) {
+          setCurrentRequest(currentProjectRequest)
+        }
+      } else {
+        console.error("Failed to fetch completion requests:", res.status)
+      }
+    } catch (err) {
+      console.error("Error fetching completion requests:", err)
+    }
+  }
+
+  // -----------------------------
+  // 3) Fetch Comments for a Milestone
   // -----------------------------
   const fetchComments = async (milestoneId: string) => {
     const token = localStorage.getItem("jwtToken")
@@ -203,12 +249,16 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 3) Add a new comment
+  // 4) Add a new comment
   // -----------------------------
   const handleAddComment = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !expertProfile || !currentMilestoneId) return
-    if (!newComment.trim()) return
+    if (!newComment.trim()) {
+      toast.error("Please enter a comment")
+      return
+    }
+
     try {
       const res = await fetch(
         `https://localhost:7053/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
@@ -236,7 +286,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 4) Fetch Tasks
+  // 5) Fetch Tasks
   // -----------------------------
   const fetchTasks = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -257,7 +307,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 5) Handle Task Toggle (Update Task Status)
+  // 6) Handle Task Toggle (Update Task Status)
   // -----------------------------
   const handleTaskToggle = async (task: TaskItem) => {
     const token = localStorage.getItem("jwtToken")
@@ -286,7 +336,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 6) Handle Add Task (Industry Expert adds a new task)
+  // 7) Handle Add Task (Industry Expert adds a new task)
   // -----------------------------
   const handleAddTask = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -320,7 +370,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 7) Fetch Reviews (if project is completed)
+  // 8) Fetch Reviews (if project is completed)
   // -----------------------------
   const fetchReviews = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -341,7 +391,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 8) Handle Add Review (Industry Expert adds a review)
+  // 9) Handle Add Review (Industry Expert adds a review)
   // -----------------------------
   const handleAddReview = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -378,33 +428,98 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 9) Handle Mark Project as Complete (Student requests completion)
+  // 10) Handle Approve Project Completion (Expert approves student's request)
   // -----------------------------
-  const handleCompleteProject = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to mark this project as complete? This will send a completion request for industry expert approval.",
-      )
-    )
+  const handleApproveCompletion = async () => {
+    if (!currentRequest) {
+      toast.error("No completion request found for this project")
       return
+    }
+    
+    if (!window.confirm("Are you sure you want to approve this project completion request?")) return
+
     const token = localStorage.getItem("jwtToken")
-    if (!token || !projectId) return
+    if (!token) return
+
     try {
-      const res = await fetch(`https://localhost:7053/api/projects/${projectId}/complete`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify("ACCEPTED"), // The status should be "ACCEPTED" as per the API
+        },
+      )
+
       if (res.ok) {
-        toast.success("Completion request sent. Await industry expert approval.")
-        // Update local project status to indicate pending completion
-        setProject((prev) => (prev ? { ...prev, status: "PendingCompletion" } : prev))
+        toast.success("Project completion approved. The project is now marked as completed.")
+        // Update local project state to reflect completed status
+        setProject((prev) => (prev ? { ...prev, status: "Completed" } : prev))
+        // Remove the current request
+        setCurrentRequest(null)
+        // Refresh completion requests
+        if (expertProfile) {
+          await fetchCompletionRequests(expertProfile.indExptId)
+        }
       } else {
-        console.error("Failed to request project completion:", res.status)
-        toast.error("Failed to send completion request.")
+        const errorText = await res.text()
+        console.error("Failed to approve project completion:", res.status, errorText)
+        toast.error(`Failed to approve project completion: ${errorText || res.status}`)
       }
     } catch (err) {
-      console.error("Error sending completion request:", err)
-      toast.error("Error sending completion request.")
+      console.error("Error approving project completion:", err)
+      toast.error(`Error approving project completion: ${err || "Unknown error"}`)
+    }
+  }
+
+  // -----------------------------
+  // 11) Handle Reject Project Completion (Expert rejects student's request)
+  // -----------------------------
+  const handleRejectCompletion = async () => {
+    if (!currentRequest) {
+      toast.error("No completion request found for this project")
+      return
+    }
+    
+    if (!window.confirm("Are you sure you want to reject this project completion request?")) return
+
+    const token = localStorage.getItem("jwtToken")
+    if (!token) return
+
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify("REJECTED"), // The status should be "REJECTED" as per the API
+        },
+      )
+
+      if (res.ok) {
+        toast.success("Project completion request rejected. The project is now back to active status.")
+        // Update local project state to reflect active status
+        setProject((prev) => (prev ? { ...prev, status: "Active" } : prev))
+        // Remove the current request
+        setCurrentRequest(null)
+        // Refresh completion requests
+        if (expertProfile) {
+          await fetchCompletionRequests(expertProfile.indExptId)
+        }
+      } else {
+        const errorText = await res.text()
+        console.error("Failed to reject project completion:", res.status, errorText)
+        toast.error(`Failed to reject project completion: ${errorText || res.status}`)
+      }
+    } catch (err) {
+      console.error("Error rejecting project completion:", err)
+      toast.error(`Error rejecting project completion: ${err|| "Unknown error"}`)
     }
   }
 
@@ -425,7 +540,10 @@ const MilestonePage: React.FC = () => {
   if (loading) {
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
-        <p>Loading...</p>
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-t-green-500 border-gray-700 rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg">Loading project data...</p>
+        </div>
       </div>
     )
   }
@@ -450,7 +568,18 @@ const MilestonePage: React.FC = () => {
             <strong className="text-green-300">Description:</strong> {project?.description}
           </p>
           <p className="mb-1">
-            <strong className="text-green-300">Status:</strong> {project?.status}
+            <strong className="text-green-300">Status:</strong>{" "}
+            <span
+              className={`px-2 py-1 text-xs rounded-full ${
+                project?.status === "Completed"
+                  ? "bg-green-900 text-green-300"
+                  : project?.status === "PendingCompletion"
+                    ? "bg-yellow-900 text-yellow-300"
+                    : "bg-blue-900 text-blue-300"
+              }`}
+            >
+              {project?.status}
+            </span>
           </p>
           <p className="mb-1">
             <strong className="text-green-300">End Date:</strong> {project?.endDate}
@@ -463,17 +592,117 @@ const MilestonePage: React.FC = () => {
           </p>
         </div>
 
-        {project?.status === "PendingCompletion" && (
-          <div className="mt-4 text-center text-lg font-semibold text-yellow-500">
-            Completion request sent. Awaiting industry expert approval.
+        {/* Project Completion Request Actions */}
+        {currentRequest && (
+          <div className="mt-4 bg-yellow-900 border border-yellow-700 p-4 rounded-lg">
+            <div className="flex items-center mb-3">
+              <svg className="h-6 w-6 mr-2 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <span className="text-yellow-300 font-semibold">Completion request received from student</span>
+            </div>
+            <p className="text-gray-300 mb-2">
+              <strong>Request ID:</strong> {currentRequest.id}
+            </p>
+            <p className="text-gray-300 mb-2">
+              <strong>Student:</strong> {currentRequest.studentName}
+            </p>
+            <p className="text-gray-300 mb-2">
+              <strong>Request Date:</strong> {new Date(currentRequest.requestDate).toLocaleString()}
+            </p>
+            <p className="text-gray-300 mb-4">
+              The student has requested to mark this project as complete. Please review the project milestones and tasks
+              before approving or rejecting this request.
+            </p>
+            <div className="flex space-x-4">
+              <button
+                onClick={handleApproveCompletion}
+                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Approve Completion
+              </button>
+              <button
+                onClick={handleRejectCompletion}
+                className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Reject Request
+              </button>
+            </div>
           </div>
         )}
-        {project?.status === "Completed" && (
-          <div className="mt-4 text-center text-lg font-semibold text-green-500">
-            This project is complete. Editing is disabled.
+
+        {isProjectComplete && (
+          <div className="mt-4 bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg flex items-center">
+            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>This project is complete. Editing is disabled.</span>
           </div>
         )}
       </div>
+
+      {/* All Completion Requests Section */}
+      {completionRequests.length > 0 && (
+        <div className="max-w-4xl mx-auto mb-8">
+          <h2 className="text-2xl font-bold mb-4">All Completion Requests</h2>
+          <div className="bg-gray-800 p-4 rounded overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left">Project</th>
+                  <th className="px-4 py-2 text-left">Student</th>
+                  <th className="px-4 py-2 text-left">Date</th>
+                  <th className="px-4 py-2 text-left">Status</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {completionRequests.map((request) => (
+                  <tr key={request.id} className={request.projectId === projectId ? "bg-gray-700" : ""}>
+                    <td className="px-4 py-2">{request.projectTitle}</td>
+                    <td className="px-4 py-2">{request.studentName}</td>
+                    <td className="px-4 py-2">{new Date(request.requestDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          request.status === "PENDING"
+                            ? "bg-yellow-900 text-yellow-300"
+                            : request.status === "ACCEPTED"
+                              ? "bg-green-900 text-green-300"
+                              : "bg-red-900 text-red-300"
+                        }`}
+                      >
+                        {request.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2">
+                      {request.projectId !== projectId && (
+                        <button
+                          onClick={() => router.push(`/industry/project-milestone/${request.projectId}`)}
+                          className="text-green-400 hover:text-green-300"
+                        >
+                          View Project
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Milestones Section */}
       <div className="max-w-4xl mx-auto mb-8">
@@ -542,19 +771,23 @@ const MilestonePage: React.FC = () => {
                       <p className="text-gray-500 italic mb-4">No comments yet</p>
                     )}
 
-                    <textarea
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      className="w-full mt-3 p-3 rounded bg-gray-700 text-white border border-gray-600"
-                      placeholder="Add a comment..."
-                      rows={3}
-                    />
-                    <button
-                      onClick={handleAddComment}
-                      className="mt-2 py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-                    >
-                      Submit Comment
-                    </button>
+                    {!isProjectComplete && (
+                      <>
+                        <textarea
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          className="w-full mt-3 p-3 rounded bg-gray-700 text-white border border-gray-600"
+                          placeholder="Add a comment..."
+                          rows={3}
+                        />
+                        <button
+                          onClick={handleAddComment}
+                          className="mt-2 py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+                        >
+                          Submit Comment
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -568,39 +801,41 @@ const MilestonePage: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4">Tasks</h2>
 
         {/* Add Task Form */}
-        <div className="mb-6 p-4 bg-gray-800 rounded shadow">
-          <h3 className="text-xl font-bold mb-3">Add New Task</h3>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Task Title</label>
-              <input
-                type="text"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                placeholder="Enter task title"
-                className="p-3 rounded w-full bg-gray-700 text-white border border-gray-600"
-              />
-            </div>
+        {!isProjectComplete && (
+          <div className="mb-6 p-4 bg-gray-800 rounded shadow">
+            <h3 className="text-xl font-bold mb-3">Add New Task</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Task Title</label>
+                <input
+                  type="text"
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                  placeholder="Enter task title"
+                  className="p-3 rounded w-full bg-gray-700 text-white border border-gray-600"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Task Description</label>
-              <textarea
-                value={newTaskDescription}
-                onChange={(e) => setNewTaskDescription(e.target.value)}
-                placeholder="Enter task description"
-                className="p-3 rounded w-full bg-gray-700 text-white border border-gray-600"
-                rows={3}
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">Task Description</label>
+                <textarea
+                  value={newTaskDescription}
+                  onChange={(e) => setNewTaskDescription(e.target.value)}
+                  placeholder="Enter task description"
+                  className="p-3 rounded w-full bg-gray-700 text-white border border-gray-600"
+                  rows={3}
+                />
+              </div>
 
-            <button
-              onClick={handleAddTask}
-              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-            >
-              Add Task
-            </button>
+              <button
+                onClick={handleAddTask}
+                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+              >
+                Add Task
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* List of Tasks */}
         {tasks.length === 0 ? (
@@ -616,7 +851,7 @@ const MilestonePage: React.FC = () => {
                       checked={task.taskStatus === "COMPLETED"}
                       onChange={() => handleTaskToggle(task)}
                       className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={project?.status === "Completed"}
+                      disabled={isProjectComplete}
                     />
                   </div>
                   <div className="ml-3 flex-1">
@@ -656,7 +891,7 @@ const MilestonePage: React.FC = () => {
       </div>
 
       {/* Review Section (Visible only when project is Completed) */}
-      {project?.status === "Completed" && (
+      {isProjectComplete && (
         <div className="max-w-4xl mx-auto mb-8">
           <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
 
@@ -739,3 +974,4 @@ const MilestonePage: React.FC = () => {
 }
 
 export default MilestonePage
+
