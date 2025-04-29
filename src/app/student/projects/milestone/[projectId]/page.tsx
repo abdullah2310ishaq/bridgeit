@@ -1,3 +1,4 @@
+// File: src/app/student/projects/milestone/[projectId]/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -8,13 +9,12 @@ import MilestoneTimeline from "@/app/student/stdcomps/MilestoneTimeline";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// --------- Interfaces ---------
+/* ---------- TypeScript Interfaces ---------- */
 interface ProgressUpdate {
   id: string;
   content: string;
   date: string;
 }
-
 interface ProgressItem {
   id: string;
   title: string;
@@ -23,18 +23,6 @@ interface ProgressItem {
   isCompleted?: boolean;
   updates?: ProgressUpdate[];
 }
-
-interface ProjectDetails {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  endDate: string;
-  expertName: string;
-  indExpertId: string;
-  iExptUserId: string;
-}
-
 interface MilestoneComment {
   id: string;
   comment: string;
@@ -43,15 +31,13 @@ interface MilestoneComment {
   commenter_id: string;
   milestone_id: string;
 }
-
 interface TaskItem {
   id: string;
   projectId: string;
   task: string;
   description: string;
-  taskStatus: string;
+  taskStatus: "PENDING" | "COMPLETED";
 }
-
 interface Review {
   id: string;
   review: string;
@@ -59,33 +45,38 @@ interface Review {
   datePosted: string;
   reviewerName: string;
 }
-
-// This interface extends project details with student info (if needed)
-interface ProjectDetailsExtended extends ProjectDetails {
+interface ProjectDetailsExtended {
+  id: string;
+  title: string;
+  description: string;
+  status: "Active" | "PendingCompletion" | "Completed";
+  endDate: string | null;
+  indExpertId: string | null;
+  iExptUserId: string | null;
+  expertName: string | null;
   studentId: string;
   stdUserId: string;
   studentName: string;
 }
 
+/* ---------- Component ---------- */
 const ProjectProgressTracker: React.FC = () => {
-  const { projectId } = useParams();
+  const { projectId } = useParams<{ projectId: string }>();
   const router = useRouter();
 
-  // State for project details and user info
+  /* ----- State ----- */
   const [project, setProject] = useState<ProjectDetailsExtended | null>(null);
-  const [studentUserId, setStudentUserId] = useState<string>("");
-  const [expertUserId, setExpertUserId] = useState<string>("");
+  const [studentUserId, setStudentUserId] = useState("");
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
-  const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({});
-  const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null);
-  // Tasks state – tasks can be added by the expert and toggled by both expert and student (if allowed)
+  const [comments, setComments] = useState<Record<string, MilestoneComment[]>>(
+    {}
+  );
   const [tasks, setTasks] = useState<TaskItem[]>([]);
-  // Review state (displayed when project is completed)
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReviewText, setNewReviewText] = useState("");
   const [newReviewRating, setNewReviewRating] = useState<number>(0);
 
-  // Modal state for add/edit milestone
+  /* ----- Modal (Add / Edit Milestone) ----- */
   const [showModal, setShowModal] = useState(false);
   const [editItemId, setEditItemId] = useState<string | null>(null);
   const [itemFormData, setItemFormData] = useState({
@@ -93,108 +84,130 @@ const ProjectProgressTracker: React.FC = () => {
     description: "",
     achievementDate: "",
   });
-  // New Task inputs (visible only to industry experts)
-  const [newTask, setNewTask] = useState("");
-  const [newTaskDescription, setNewTaskDescription] = useState("");
 
+  /* ----- UI & Error ----- */
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Determine if project is completed
-  const isProjectComplete = project?.status === "Completed";
+  /* ----- Helpers ----- */
+  const token = () => localStorage.getItem("jwtToken") ?? "";
+  const disableEditing = project?.status !== "Active";
 
-  // -----------------------------
-  // 1) Fetch Project Details, Milestones, and Authorized User Info
-  // -----------------------------
+  /* =========================================================
+     1) INITIAL LOAD  (project ▸ milestones ▸ comments ▸ tasks)
+     ========================================================= */
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("jwtToken");
-      if (!token) {
+    const load = async () => {
+      if (!token()) {
         router.push("/auth/login-user");
         return;
       }
-      if (!projectId) return;
       try {
-        // Get authorized user info (student's userId)
-        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (authRes.ok) {
-          const authData = await authRes.json();
-          setStudentUserId(authData.userId);
-        }
-        // Fetch project details (which includes student info and expert info)
-        const resProject = await fetch(
+        /* Auth-user info (gets student userId) */
+        const auth = await fetch(
+          "https://localhost:7053/api/auth/authorized-user-info",
+          { headers: { Authorization: `Bearer ${token()}` } }
+        ).then((r) => (r.ok ? r.json() : null));
+        if (auth) setStudentUserId(auth.userId);
+
+        /* Project details */
+        const pj: ProjectDetailsExtended = await fetch(
           `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (resProject.ok) {
-          const projectData = await resProject.json();
-          setProject(projectData);
-          setExpertUserId(projectData.iExptUserId);
-        }
-        // Fetch milestones
-        const resMilestones = await fetch(
-          `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (resMilestones.ok) {
-          const data = await resMilestones.json();
-          const today = new Date().toISOString().split("T")[0];
-          const items = data.map((m: ProgressItem) => ({
-            ...m,
-            isCompleted: m.achievementDate <= today,
-            updates: [],
-          }));
-          setProgressItems(items);
-        } else {
-          setProgressItems([]);
-        }
-      } catch (err) {
-        console.error("Error:", err);
+          { headers: { Authorization: `Bearer ${token()}` } }
+        ).then((r) => {
+          if (!r.ok) throw new Error("Project load failed");
+          return r.json();
+        });
+        setProject(pj);
+
+        /* Milestones */
+        await refreshMilestones();
+
+        /* Tasks */
+        await fetchTasks();
+
+        /* Reviews (if already completed) */
+        if (pj.status === "Completed") await fetchReviews();
+      } catch (e) {
+        console.error(e);
         setError("Failed to load project data.");
       } finally {
         setLoading(false);
       }
     };
-    if (projectId) fetchData();
-  }, [projectId, router]);
+    if (projectId) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
-  // -----------------------------
-  // 2) Refresh Milestones
-  // -----------------------------
-  const refreshProgressItems = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token) return;
+  /* =========================================================
+     2) REFRESH MILESTONES (+ pull comments per milestone)
+     ========================================================= */
+  const refreshMilestones = async () => {
     try {
-      const res = await fetch(
+      const ms: ProgressItem[] = await fetch(
         `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token()}` } }
+      ).then((r) => (r.ok ? r.json() : []));
+      const today = new Date().toISOString().split("T")[0];
+      setProgressItems(
+        ms.map((m) => ({
+          ...m,
+          isCompleted: m.achievementDate <= today,
+          updates: [],
+        }))
       );
-      if (res.ok) {
-        const data = await res.json();
-        const today = new Date().toISOString().split("T")[0];
-        const updated = data.map((m: ProgressItem) => {
-          const existing = progressItems.find((x) => x.id === m.id);
-          return {
-            ...m,
-            isCompleted: m.achievementDate <= today,
-            updates: existing?.updates || [],
-          };
-        });
-        setProgressItems(updated);
-      } else {
-        setProgressItems([]);
-      }
-    } catch (err) {
-      console.error("Refresh error:", err);
+      /* comments for each milestone */
+      for (const m of ms) await fetchComments(m.id);
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  // -----------------------------
-  // 3) Milestone Modal: Add / Edit
-  // -----------------------------
-  const handleOpenModal = (item?: ProgressItem) => {
+  /* ---- fetchComments ---- */
+  const fetchComments = async (milestoneId: string) => {
+    try {
+      const data: MilestoneComment[] = await fetch(
+        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        { headers: { Authorization: `Bearer ${token()}` } }
+      ).then((r) => (r.ok ? r.json() : []));
+      setComments((prev) => ({ ...prev, [milestoneId]: data }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  /* =========================================================
+     3) PROJECT COMPLETION REQUEST  (student → expert)
+     ========================================================= */
+  const handleRequestCompletion = async () => {
+    if (disableEditing) return;
+    if (
+      !window.confirm(
+        "Submit completion request to the industry expert? Editing will be disabled."
+      )
+    )
+      return;
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/projects/request-completion/${projectId}`,
+        { method: "POST", headers: { Authorization: `Bearer ${token()}` } }
+      );
+      if (!res.ok) throw new Error();
+      toast.success("Completion request sent. Awaiting approval.");
+      setProject((p) => (p ? { ...p, status: "PendingCompletion" } : p));
+    } catch {
+      toast.error("Failed to send completion request.");
+    }
+  };
+
+  /* =========================================================
+     4) MILESTONE  (Add / Edit)   — industry expert creates;
+                                   student only views, but we keep
+                                   edit functionality guarded by
+                                   disableEditing flag
+     ========================================================= */
+  const openModal = (item?: ProgressItem) => {
+    if (disableEditing) return;
     if (item) {
       setEditItemId(item.id);
       setItemFormData({
@@ -209,172 +222,73 @@ const ProjectProgressTracker: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleSaveItem = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token) return;
+  const saveMilestone = async () => {
+    if (disableEditing) return;
     try {
-      if (editItemId) {
-        // Edit milestone
-        const res = await fetch(
-          `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(itemFormData),
-          }
-        );
-        if (!res.ok) console.error("Failed to update milestone. Status:", res.status);
-        else await refreshProgressItems();
-      } else {
-        // Add milestone
-        const res = await fetch(
-          `https://localhost:7053/api/milestone/add-milestone/${projectId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(itemFormData),
-          }
-        );
-        if (!res.ok) console.error("Failed to add milestone. Status:", res.status);
-        else await refreshProgressItems();
-      }
-    } catch (err) {
-      console.error("Error saving milestone:", err);
+      const endpoint = editItemId
+        ? `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`
+        : `https://localhost:7053/api/milestone/add-milestone/${projectId}`;
+      const method = editItemId ? "PUT" : "POST";
+
+      await fetch(endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token()}`,
+        },
+        body: JSON.stringify(itemFormData),
+      });
+      await refreshMilestones();
+      toast.success(editItemId ? "Milestone updated." : "Milestone added.");
+    } catch {
+      toast.error("Failed to save milestone.");
     } finally {
       setShowModal(false);
       setItemFormData({ title: "", description: "", achievementDate: "" });
     }
   };
 
-  // -----------------------------
-  // 4) Fetch Comments for a Milestone
-  // -----------------------------
-  const fetchComments = async (milestoneId: string) => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token) return;
-    try {
-      const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setComments((prev) => ({
-          ...prev,
-          [milestoneId]:
-            typeof data === "string" && data.includes("No comments") ? [] : data,
-        }));
-      }
-    } catch (err) {
-      console.error("Error fetching comments:", err);
-    }
-  };
-
-  // -----------------------------
-  // 5) Fetch Tasks
-  // -----------------------------
+  /* =========================================================
+     5) TASKS (student can mark COMPLETE / PENDING only)
+     ========================================================= */
   const fetchTasks = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
+    const data: TaskItem[] = await fetch(
+      `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
+      { headers: { Authorization: `Bearer ${token()}` } }
+    ).then((r) => (r.ok ? r.json() : []));
+    setTasks(data);
+  };
+
+  const toggleTask = async (task: TaskItem) => {
     try {
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      await fetch(
+        `https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
+        { method: "PUT", headers: { Authorization: `Bearer ${token()}` } }
       );
-      if (res.ok) {
-        const data = await res.json();
-        setTasks(data);
-      } else {
-        console.error("Failed to fetch tasks:", res.status);
-      }
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
+      await fetchTasks();
+    } catch {
+      toast.error("Failed to update task status.");
     }
   };
 
-  // -----------------------------
-  // 6) Handle Task Toggle (Update Task Status)
-  // -----------------------------
-  const handleTaskToggle = async (task: TaskItem) => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
-    // Toggle task status
-    const newStatus = task.taskStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
-    try {
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/update-task/${projectId}/${task.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ taskStatus: newStatus }),
-        }
-      );
-      if (res.ok) {
-        setTasks((prev) =>
-          prev.map((t) => (t.id === task.id ? { ...t, taskStatus: newStatus } : t))
-        );
-      } else {
-        console.error("Failed to update task status:", res.status);
-      }
-    } catch (err) {
-      console.error("Error updating task status:", err);
-    }
+  /* =========================================================
+     6) REVIEWS  (visible + add when Completed)
+     ========================================================= */
+  const fetchReviews = async () => {
+    const data: Review[] = await fetch(
+      `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
+      { headers: { Authorization: `Bearer ${token()}` } }
+    ).then((r) => (r.ok ? r.json() : []));
+    setReviews(data);
   };
 
-  // -----------------------------
-  // 7) Handle Add Task (Industry Expert adds a new task)
-  // -----------------------------
-  const handleAddTask = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
-    if (!newTask.trim() || !newTaskDescription.trim()) {
-      toast.error("Please provide both task title and description.");
-      return;
-    }
-    try {
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/add-tasks/${projectId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ task: newTask, description: newTaskDescription }),
-        }
-      );
-      if (res.ok) {
-        toast.success("Task added successfully.");
-        setNewTask("");
-        setNewTaskDescription("");
-        await fetchTasks();
-      } else {
-        console.error("Failed to add task:", res.status);
-        toast.error("Failed to add task.");
-      }
-    } catch (err) {
-      console.error("Error adding task:", err);
-      toast.error("Error adding task.");
-    }
-  };
-
-  // -----------------------------
-  // 8) Handle Add Review (Industry Expert adds review)
-  // -----------------------------
-  const handleAddReview = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
-    if (newReviewRating < 1 || newReviewRating > 5 || !newReviewText.trim()) {
-      toast.error("Please enter a valid review and a rating between 1 and 5.");
+  const addReview = async () => {
+    if (
+      newReviewRating < 1 ||
+      newReviewRating > 5 ||
+      !newReviewText.trim()
+    ) {
+      toast.error("Please enter review text and rating 1-5.");
       return;
     }
     try {
@@ -384,246 +298,189 @@ const ProjectProgressTracker: React.FC = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token()}`,
           },
           body: JSON.stringify({
-            ReviewerId: expertUserId,
             Review: newReviewText,
             Rating: newReviewRating,
           }),
         }
       );
-      if (res.ok) {
-        toast.success("Review added successfully.");
-        setNewReviewText("");
-        setNewReviewRating(0);
-        await fetchReviews();
-      } else {
-        toast.error("Failed to add review.");
-      }
-    } catch (err) {
-      console.error("Error adding review:", err);
-      toast.error("Error adding review.");
-    }
-  };
-
-  // -----------------------------
-  // 9) Fetch Reviews (if project is completed)
-  // -----------------------------
-  const fetchReviews = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
-    try {
-      const res = await fetch(
-        `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setReviews(data);
-      } else {
-        console.error("Failed to fetch reviews:", res.status);
-      }
-    } catch (err) {
-      console.error("Error fetching reviews:", err);
-    }
-  };
-
-  // -----------------------------
-  // 10) Handle Mark Project as Complete (Student requests completion)
-  // -----------------------------
-  const handleCompleteProject = async () => {
-    if (!window.confirm("Are you sure you want to mark this project as complete? Once complete, editing will be disabled.")) return;
-    const token = localStorage.getItem("jwtToken");
-    if (!token || !projectId) return;
-    try {
-      const res = await fetch(
-        `https://localhost:7053/api/projects/${projectId}/complete`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (res.ok) {
-        toast.success("Project marked as complete.");
-        // Update local project state to reflect complete status
-        setProject((prev) =>
-          prev ? { ...prev, status: "Completed", endDate: new Date().toISOString().split("T")[0] } : prev
-        );
-      } else {
-        console.error("Failed to complete project:", res.status);
-        toast.error("Failed to mark project as complete.");
-      }
-    } catch (err) {
-      console.error("Error completing project:", err);
-      toast.error("Error marking project as complete.");
-    }
-  };
-
-  // Fetch tasks when projectId changes
-  useEffect(() => {
-    if (projectId) {
-      fetchTasks();
-    }
-  }, [projectId]);
-
-  // When project becomes complete, fetch reviews
-  useEffect(() => {
-    if (project?.status === "Completed") {
+      if (!res.ok) throw new Error();
+      toast.success("Review added.");
+      setNewReviewText("");
+      setNewReviewRating(0);
       fetchReviews();
+    } catch {
+      toast.error("Failed to add review.");
     }
-  }, [project]);
+  };
 
-  if (loading) {
+  /* =========================================================
+     7) CONDITIONAL FETCH  (reviews after completion)
+     ========================================================= */
+  useEffect(() => {
+    if (project?.status === "Completed") fetchReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.status]);
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
+  if (loading)
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
-        <p>Loading...</p>
+        Loading...
       </div>
     );
-  }
+  if (error)
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center text-red-400">
+        {error}
+      </div>
+    );
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4">
-      {/* Header Section */}
+      {/* ---------- Header ---------- */}
       <div className="max-w-4xl mx-auto mb-6">
-        <h1 className="text-3xl font-bold text-green-400">Project Progress</h1>
+        <h1 className="text-3xl font-bold text-green-400">
+          Project Progress
+        </h1>
         <div className="mt-4 bg-gray-800 p-4 rounded">
           <p className="mb-1">
-            <strong className="text-green-300">Title:</strong> {project?.title}
+            <strong className="text-green-300">Title:</strong>{" "}
+            {project?.title}
           </p>
           <p className="mb-1">
-            <strong className="text-green-300">Description:</strong> {project?.description}
+            <strong className="text-green-300">Description:</strong>{" "}
+            {project?.description}
           </p>
           <p className="mb-1">
-            <strong className="text-green-300">Status:</strong> {project?.status}
+            <strong className="text-green-300">Status:</strong>{" "}
+            {project?.status}
           </p>
-          <p className="mb-1">
-            <strong className="text-green-300">End Date:</strong> {project?.endDate}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Industry Expert:</strong>{" "}
-            {project?.indExpertId ? (
+          {project?.endDate && (
+            <p className="mb-1">
+              <strong className="text-green-300">End Date:</strong>{" "}
+              {new Date(project.endDate).toLocaleDateString()}
+            </p>
+          )}
+          {project?.indExpertId && project.expertName && (
+            <p className="mb-1">
+              <strong className="text-green-300">Industry Expert:</strong>{" "}
               <Link
                 href={`/student/industry-profile/${project.indExpertId}`}
                 className="underline text-green-400 hover:text-green-300"
               >
                 {project.expertName}
               </Link>
-            ) : (
-              "N/A"
-            )}
-          </p>
+            </p>
+          )}
         </div>
-        {project?.status !== "Completed" && (
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleCompleteProject}
-              className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition"
-            >
-              Mark Project as Complete
-            </button>
-          </div>
-        )}
-        {project?.status === "Completed" && (
-          <div className="mt-4 text-center text-lg font-semibold text-green-500">
-            This project is complete. Editing is disabled.
-          </div>
-        )}
       </div>
 
-      {/* Milestones Section */}
+      {/* ---------- Pending Banner / Completion Button ---------- */}
+      {project?.status === "PendingCompletion" && (
+        <div className="max-w-4xl mx-auto mb-4 p-4 bg-yellow-700 text-black rounded">
+          Completion request sent. Awaiting industry expert approval.
+        </div>
+      )}
+      {project?.status === "Active" && (
+        <div className="max-w-4xl mx-auto flex justify-end mb-4">
+          <button
+            onClick={handleRequestCompletion}
+            className="py-2 px-4 bg-red-600 rounded hover:bg-red-500 transition"
+          >
+            Request Project Completion
+          </button>
+        </div>
+      )}
+
+      {/* ---------- Milestones ---------- */}
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-green-300">Milestones</h2>
-          {project?.status !== "Completed" && (
+          <h2 className="text-xl font-semibold text-green-300">
+            Milestones
+          </h2>
+          {!disableEditing && (
             <button
-              onClick={() => handleOpenModal()}
+              onClick={() => openModal()}
               className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-sm"
             >
               + Add Milestone
             </button>
           )}
         </div>
+
         {progressItems.length > 0 ? (
-          <div className="mt-4 mb-8">
-            <h2 className="text-xl font-bold text-green-300 mb-2">Overall Timeline</h2>
-            <MilestoneTimeline milestones={progressItems} />
-          </div>
+          <MilestoneTimeline milestones={progressItems} />
         ) : (
-          <div className="text-center text-gray-300">
-            <p>No milestones found.</p>
-            {project?.status !== "Completed" && (
-              <button
-                onClick={() => handleOpenModal()}
-                className="bg-blue-600 hover:bg-blue-500 text-white mt-3 px-4 py-2 rounded text-sm"
-              >
-                Add First Milestone
-              </button>
-            )}
-          </div>
+          <p className="text-center text-gray-400">No milestones found.</p>
         )}
+
+        {/* ------ Comments under each milestone ------ */}
+        <div className="mt-6">
+          <h3 className="text-lg font-bold text-green-300 mb-2">
+            Comments
+          </h3>
+          {progressItems.map((m) => (
+            <div key={m.id} className="mb-4 border-b border-gray-700 pb-2">
+              <h4 className="font-semibold">{m.title}</h4>
+              {(comments[m.id] || []).length > 0 ? (
+                comments[m.id].map((c) => (
+                  <div key={c.id} className="ml-4 mt-2">
+                    <p>{c.comment}</p>
+                    <small className="text-gray-400">
+                      – {c.commenterName},{" "}
+                      {new Date(c.commentDate).toLocaleString()}
+                    </small>
+                  </div>
+                ))
+              ) : (
+                <p className="ml-4 text-gray-500">No comments yet.</p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Tasks Section */}
+      {/* ---------- Tasks ---------- */}
       <div className="max-w-4xl mx-auto mt-8">
-        <h2 className="text-xl font-semibold text-green-300">Tasks</h2>
-        {/* Add Task form visible only to industry experts */}
-        {expertUserId && (
-          <div className="mb-6 p-4 bg-gray-800 rounded shadow">
-            <h3 className="text-xl font-bold mb-2">Add New Task</h3>
-            <input
-              type="text"
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-              placeholder="Task Title"
-              className="p-2 rounded w-full bg-gray-700 text-white mb-2"
-            />
-            <textarea
-              value={newTaskDescription}
-              onChange={(e) => setNewTaskDescription(e.target.value)}
-              placeholder="Task Description"
-              className="p-2 rounded w-full bg-gray-700 text-white mb-2"
-            />
-            <button
-              onClick={handleAddTask}
-              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-            >
-              Add Task
-            </button>
-          </div>
-        )}
+        <h2 className="text-xl font-semibold text-green-300 mb-2">
+          Tasks
+        </h2>
         {tasks.length === 0 ? (
           <p className="text-gray-400">No tasks assigned.</p>
         ) : (
-          <ul className="mt-4 space-y-2">
-            {tasks.map((task) => (
-              <li key={task.id} className="flex items-center">
+          <ul className="space-y-2">
+            {tasks.map((t) => (
+              <li key={t.id} className="flex items-start">
                 <input
                   type="checkbox"
-                  checked={task.taskStatus === "COMPLETED"}
-                  onChange={() => handleTaskToggle(task)}
-                  className="mt-1 mr-2"
-                  disabled={project?.status === "Completed"}
+                  checked={t.taskStatus === "COMPLETED"}
+                  onChange={() => toggleTask(t)}
+                  className="mr-2 mt-1"
                 />
                 <div>
                   <span
                     className={
-                      task.taskStatus === "COMPLETED"
-                        ? "line-through text-gray-500 font-bold"
-                        : "font-bold"
+                      t.taskStatus === "COMPLETED"
+                        ? "line-through text-gray-500 font-semibold"
+                        : "font-semibold"
                     }
                   >
-                    {task.task}
+                    {t.task}
                   </span>
-                  {task.description && (
+                  {t.description && (
                     <p
                       className={
-                        task.taskStatus === "COMPLETED"
+                        t.taskStatus === "COMPLETED"
                           ? "line-through text-gray-500"
                           : "text-gray-400"
                       }
                     >
-                      {task.description}
+                      {t.description}
                     </p>
                   )}
                 </div>
@@ -633,47 +490,51 @@ const ProjectProgressTracker: React.FC = () => {
         )}
       </div>
 
-      {/* Review Section (visible when project is completed) */}
+      {/* ---------- Reviews (after Completed) ---------- */}
       {project?.status === "Completed" && (
-        <div className="max-w-4xl mx-auto mt-8">
-          <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
+        <div className="max-w-4xl mx-auto mt-10">
+          <h2 className="text-2xl font-bold text-green-300 mb-4">
+            Reviews
+          </h2>
           {reviews.length === 0 ? (
             <p className="text-gray-400">No reviews yet.</p>
           ) : (
             <ul className="space-y-4">
               {reviews.map((r) => (
-                <li key={r.id} className="p-4 bg-gray-700 rounded shadow">
+                <li key={r.id} className="bg-gray-800 p-4 rounded shadow">
                   <p className="font-bold">
-                    {r.reviewerName} - Rating: {r.rating}
+                    {r.reviewerName} – Rating: {r.rating}
                   </p>
                   <p className="mt-2">{r.review}</p>
                   <small className="text-gray-400">
-                    Posted on: {new Date(r.datePosted).toLocaleDateString()}
+                    {new Date(r.datePosted).toLocaleDateString()}
                   </small>
                 </li>
               ))}
             </ul>
           )}
-          <div className="mt-4">
+
+          {/* Add review form */}
+          <div className="mt-6">
             <h3 className="text-xl font-bold mb-2">Add a Review</h3>
             <textarea
               value={newReviewText}
               onChange={(e) => setNewReviewText(e.target.value)}
-              placeholder="Write your review..."
+              placeholder="Write your review…"
               className="w-full p-2 bg-gray-700 rounded mb-2"
             />
             <input
               type="number"
               value={newReviewRating}
-              onChange={(e) => setNewReviewRating(parseInt(e.target.value))}
-              placeholder="Rating (1-5)"
-              className="w-full p-2 bg-gray-700 rounded mb-2"
+              onChange={(e) => setNewReviewRating(+e.target.value)}
+              placeholder="Rating 1-5"
               min={1}
               max={5}
+              className="w-full p-2 bg-gray-700 rounded mb-2"
             />
             <button
-              onClick={handleAddReview}
-              className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+              onClick={addReview}
+              className="py-2 px-4 bg-blue-600 rounded hover:bg-blue-500 transition"
             >
               Submit Review
             </button>
@@ -681,17 +542,22 @@ const ProjectProgressTracker: React.FC = () => {
         </div>
       )}
 
-      {/* Chat Section */}
+      {/* ---------- Chat ---------- */}
       {studentUserId && project?.iExptUserId ? (
-        <div className="mt-6">
-          <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
+        <div className="max-w-4xl mx-auto mt-10">
+          <ChatForStudent
+            studentId={studentUserId}
+            expertId={project.iExptUserId}
+          />
         </div>
       ) : (
-        <p className="text-gray-400">Chat is unavailable at the moment.</p>
+        <p className="text-center text-gray-400 mt-10">
+          Chat is unavailable at the moment.
+        </p>
       )}
 
-      {/* Milestone Modal */}
-      {project?.status !== "Completed" && showModal && (
+      {/* ---------- Add / Edit Milestone Modal ---------- */}
+      {!disableEditing && showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
             <h3 className="text-xl font-bold text-green-400 mb-4">
@@ -701,36 +567,43 @@ const ProjectProgressTracker: React.FC = () => {
               type="text"
               placeholder="Title"
               value={itemFormData.title}
-              onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
-              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
+              onChange={(e) =>
+                setItemFormData({ ...itemFormData, title: e.target.value })
+              }
+              className="w-full p-2 mb-2 bg-gray-700 rounded"
             />
             <textarea
               placeholder="Description"
               value={itemFormData.description}
-              onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
-              className="w-full p-2 mb-2 bg-gray-700 rounded focus:outline-none"
+              onChange={(e) =>
+                setItemFormData({
+                  ...itemFormData,
+                  description: e.target.value,
+                })
+              }
+              className="w-full p-2 mb-2 bg-gray-700 rounded"
             />
             <input
               type="date"
               value={itemFormData.achievementDate}
               onChange={(e) =>
-                setItemFormData({ ...itemFormData, achievementDate: e.target.value })
+                setItemFormData({
+                  ...itemFormData,
+                  achievementDate: e.target.value,
+                })
               }
-              className="w-full p-2 mb-4 bg-gray-700 rounded focus:outline-none"
+              className="w-full p-2 mb-4 bg-gray-700 rounded"
             />
             <div className="flex justify-end gap-3">
               <button
-                onClick={handleSaveItem}
-                className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded"
+                onClick={saveMilestone}
+                className="bg-green-600 px-4 py-2 rounded hover:bg-green-500"
               >
                 Save
               </button>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  setItemFormData({ title: "", description: "", achievementDate: "" });
-                }}
-                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded"
+                onClick={() => setShowModal(false)}
+                className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-500"
               >
                 Cancel
               </button>
