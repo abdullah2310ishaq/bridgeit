@@ -206,12 +206,12 @@ const MilestonePage: React.FC = () => {
         `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       )
       if (res.ok) {
         const data = await res.json()
         setCompletionRequests(data)
-        
+
         // Find if there's a request for the current project
         const currentProjectRequest = data.find((req: CompletionRequest) => req.projectId === projectId)
         if (currentProjectRequest) {
@@ -435,7 +435,7 @@ const MilestonePage: React.FC = () => {
       toast.error("No completion request found for this project")
       return
     }
-    
+
     if (!window.confirm("Are you sure you want to approve this project completion request?")) return
 
     const token = localStorage.getItem("jwtToken")
@@ -483,7 +483,7 @@ const MilestonePage: React.FC = () => {
       toast.error("No completion request found for this project")
       return
     }
-    
+
     if (!window.confirm("Are you sure you want to reject this project completion request?")) return
 
     const token = localStorage.getItem("jwtToken")
@@ -519,7 +519,7 @@ const MilestonePage: React.FC = () => {
       }
     } catch (err) {
       console.error("Error rejecting project completion:", err)
-      toast.error(`Error rejecting project completion: ${err|| "Unknown error"}`)
+      toast.error(`Error rejecting project completion: ${err || "Unknown error"}`)
     }
   }
 
@@ -643,11 +643,29 @@ const MilestonePage: React.FC = () => {
         )}
 
         {isProjectComplete && (
-          <div className="mt-4 bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg flex items-center">
-            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>This project is complete. Editing is disabled.</span>
+          <div className="mt-4 bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg">
+            <div className="flex items-center mb-3">
+              <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>This project is complete. Editing is disabled.</span>
+            </div>
+            <div className="mt-3">
+              <button
+                onClick={() => router.push(`/industryexpert/payment/${projectId}`)}
+                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Make Payment
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -974,4 +992,3 @@ const MilestonePage: React.FC = () => {
 }
 
 export default MilestonePage
-
