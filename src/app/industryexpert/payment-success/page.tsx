@@ -1,104 +1,83 @@
-"use client";
+"use client"
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
 
 const PaymentSuccessPage = () => {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const sessionId = searchParams.get("session_id");
-  const projectId = searchParams.get("project_id");
-  const title = searchParams.get("title");
-
-  const [loading, setLoading] = useState(true);
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [projectId, setProjectId] = useState<string | null>(null)
+  const [projectTitle, setProjectTitle] = useState<string | null>(null)
 
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
-  
-    if (!token) {
-      router.push("/auth/login-user");
-      return;
-    }
-  
-    if (!sessionId || !projectId) {
-      toast.error("Missing payment details from Stripe.");
-      setLoading(false);
-      return;
-    }
-  
-    const verifyPayment = async () => {
-      try {
-        // Verify auth
-        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!authRes.ok) throw new Error("Unauthorized");
-  
-        // Verify payment by checking payment details
-        const paymentRes = await fetch(`https://localhost:7053/api/payment-details/get-payment-details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!paymentRes.ok) throw new Error("Failed to fetch payment details");
-  
-        const paymentDetails = await paymentRes.json();
-        const payment = paymentDetails.find((p: any) => p.projectId === projectId && p.transactionId.includes(sessionId));
-        if (!payment) throw new Error("Payment not found");
-  
-        toast.success("Payment successful!");
-      } catch (err: any) {
-        console.error("Payment verification error:", err);
-        toast.error(`Failed to verify payment: ${err.message || "Unknown error"}`);
-        router.push("/auth/login-user");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    verifyPayment();
-  }, [sessionId, projectId, router]);
-  const handleViewReceipt = () => {
-    toast.info("Receipt download coming soon...");
-  };
+    // Get project ID from URL parameters if available
+    const id = searchParams.get("project_id")
+    const title = searchParams.get("title")
 
-  if (loading) {
-    return (
-      <div className="text-white min-h-screen flex items-center justify-center">
-        <p>Loading payment confirmation...</p>
-      </div>
-    );
-  }
+    if (id) setProjectId(id)
+    if (title) setProjectTitle(decodeURIComponent(title))
+
+    // Check if user is authenticated
+    const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      router.push("/auth/login-user")
+    }
+  }, [router, searchParams])
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-6">
-      <div className="max-w-xl mx-auto text-center">
-        <h1 className="text-3xl font-bold text-green-400 mb-4">Payment Successful 🎉</h1>
-        <p className="mb-2">
-          Thank you! Your payment for <strong>{title}</strong> was processed successfully.
-        </p>
-        <p className="mb-6">
-          Session ID: <code className="text-yellow-400">{sessionId}</code>
-        </p>
+    <div className="bg-gray-900 min-h-screen flex items-center justify-center p-6 text-white">
+      <div className="max-w-2xl w-full bg-gray-800 rounded-lg shadow-lg p-8">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mb-6">
+            <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
 
-        <button
-          onClick={() => router.push(`/industryexpert/projects/milestone/${projectId}`)}
-          className="py-2 px-6 bg-green-600 hover:bg-green-500 rounded text-white"
-        >
-          Back to Project
-        </button>
+          <h1 className="text-3xl font-bold text-green-400 mb-4">Payment Successful!</h1>
 
-        <button
-          onClick={handleViewReceipt}
-          className="mt-4 block mx-auto py-2 px-6 bg-blue-600 hover:bg-blue-500 rounded text-white"
-        >
-          Download Receipt (Coming Soon)
-        </button>
+          <p className="text-gray-300 mb-6">
+            Your payment has been processed successfully. Thank you for completing the transaction.
+            {projectTitle && (
+              <span>
+                {" "}
+                The payment for project <strong>"{projectTitle}"</strong> has been recorded.
+              </span>
+            )}
+          </p>
+
+          <div className="bg-gray-700 p-4 rounded-lg w-full mb-8">
+            <h3 className="font-semibold text-green-300 mb-2">Payment Details:</h3>
+            <ul className="space-y-2 text-left text-gray-300">
+              <li>
+                • Status: <span className="text-green-400">Completed</span>
+              </li>
+              <li>• Date: {new Date().toLocaleDateString()}</li>
+              <li>• Time: {new Date().toLocaleTimeString()}</li>
+              <li>• Payment Method: Credit/Debit Card</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <Link
+              href="/industryexpert"
+              className="flex-1 py-3 px-6 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-center transition"
+            >
+              Go to Dashboard
+            </Link>
+
+            <Link
+              href="/industryexpert/payment-history"
+              className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-500 text-white rounded-lg text-center transition"
+            >
+              View Payment History
+            </Link>
+          </div>
+        </div>
       </div>
-      <ToastContainer />
     </div>
-  );
-};
+  )
+}
 
-export default PaymentSuccessPage;
+export default PaymentSuccessPage

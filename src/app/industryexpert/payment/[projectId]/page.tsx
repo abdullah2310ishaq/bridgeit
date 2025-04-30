@@ -79,9 +79,9 @@ const PaymentPage = () => {
         throw new Error(errorData.Error || errorData.Details || "Failed to create checkout session");
       }
 
-      const { CheckoutUrl } = await res.json();
-      console.log("Redirecting to Stripe Checkout URL:", CheckoutUrl);
-      window.location.href = CheckoutUrl;
+      const { checkoutUrl } = await res.json();
+      console.log("Redirecting to Stripe Checkout URL:", checkoutUrl);
+      window.location.href = checkoutUrl;
     } catch (err: any) {
       console.error("Payment error:", err);
       toast.error(`Payment failed: ${err.message || "Unknown error"}`);
@@ -138,7 +138,6 @@ const PaymentPage = () => {
           <p className="mb-2"><strong>Title:</strong> {project.title}</p>
           <p className="mb-2"><strong>Description:</strong> {project.description}</p>
           <p className="mb-2"><strong>Student:</strong> {project.studentName}</p>
-          <p className="mb-2"><strong>Amount:</strong> PKR {project.budget.toLocaleString()}</p>
           <p className="mb-2">
             <strong>Status:</strong>{" "}
             <span
