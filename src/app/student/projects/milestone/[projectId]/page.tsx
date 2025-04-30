@@ -165,7 +165,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (projectId) fetchData()
   }, [projectId, router])
 
-  // -----------------------------
+  // ----------------كنولوجيا المعلومات-------------
   // 2) Refresh Milestones
   // -----------------------------
   const refreshProgressItems = async () => {
@@ -327,27 +327,34 @@ const ProjectProgressTracker: React.FC = () => {
   const handleTaskToggle = async (task: TaskItem) => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
-    // Toggle task status
-    const newStatus = task.taskStatus === "COMPLETED" ? "PENDING" : "COMPLETED"
+    
+    // Only allow marking tasks as complete (not toggling back to pending)
+    // This matches the controller's functionality
+    if (task.taskStatus === "COMPLETED") {
+      toast.info("Task is already completed")
+      return
+    }
+    
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/update-task/${projectId}/${task.id}`, {
+      // Use the marks-as-complete endpoint from the controller
+      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ taskStatus: newStatus }),
       })
+      
       if (res.ok) {
-        setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: newStatus } : t)))
-        toast.success(`Task marked as ${newStatus.toLowerCase()}`)
+        // Update local state to show task as completed
+        setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: "COMPLETED" } : t)))
+        toast.success("Task marked as completed")
       } else {
-        console.error("Failed to update task status:", res.status)
-        toast.error("Failed to update task status")
+        console.error("Failed to mark task as complete:", res.status)
+        toast.error("Failed to mark task as complete")
       }
     } catch (err) {
-      console.error("Error updating task status:", err)
-      toast.error("Error updating task status")
+      console.error("Error marking task as complete:", err)
+      toast.error("Error marking task as complete")
     }
   }
 

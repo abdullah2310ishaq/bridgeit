@@ -113,6 +113,8 @@ const MilestonePage: React.FC = () => {
   // Loading and error state
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Debug state
+  const [debugInfo, setDebugInfo] = useState<string | null>(null)
 
   // Determine if the project is completed or pending completion
   const isProjectComplete = project?.status === "Completed"
@@ -201,27 +203,108 @@ const MilestonePage: React.FC = () => {
   const fetchCompletionRequests = async (expertId: string) => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
+
+    setDebugInfo(`Fetching completion requests for expert ID: ${expertId}`)
+
     try {
+      // First, try to fetch using the expert ID
       const res = await fetch(
         `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       )
+
       if (res.ok) {
         const data = await res.json()
-        setCompletionRequests(data)
+        setDebugInfo((prev) => `${prev}\nReceived ${data.length} requests from API`)
 
-        // Find if there's a request for the current project
-        const currentProjectRequest = data.find((req: CompletionRequest) => req.projectId === projectId)
-        if (currentProjectRequest) {
-          setCurrentRequest(currentProjectRequest)
+        // Check if we got an empty array or error message
+        if (Array.isArray(data) && data.length === 0) {
+          setDebugInfo((prev) => `${prev}\nNo completion requests found for this expert`)
+          setCompletionRequests([])
+        } else if (typeof data === "string") {
+          setDebugInfo((prev) => `${prev}\nAPI returned string: ${data}`)
+          setCompletionRequests([])
+        } else {
+          setCompletionRequests(data)
+
+          // Find if there's a request for the current project
+          const currentProjectRequest = data.find((req: CompletionRequest) => req.projectId === projectId)
+          if (currentProjectRequest) {
+            setCurrentRequest(currentProjectRequest)
+            setDebugInfo((prev) => `${prev}\nFound request for current project: ${currentProjectRequest.id}`)
+          } else {
+            setDebugInfo((prev) => `${prev}\nNo request found for current project ID: ${projectId}`)
+
+            // If no request found for this project, check project status
+            if (project?.status === "PendingCompletion") {
+              // If project status is PendingCompletion but no request found, try to fetch directly by project ID
+              await fetchCompletionRequestByProject()
+            }
+          }
         }
       } else {
-        console.error("Failed to fetch completion requests:", res.status)
+        const errorText = await res.text()
+        setDebugInfo((prev) => `${prev}\nError fetching requests: ${res.status} - ${errorText}`)
+        console.error("Failed to fetch completion requests:", res.status, errorText)
+
+        // If expert ID fetch fails, try fetching by project ID as fallback
+        await fetchCompletionRequestByProject()
       }
     } catch (err) {
+      setDebugInfo((prev) => `${prev}\nException fetching requests: ${err}`)
       console.error("Error fetching completion requests:", err)
+
+      // If expert ID fetch throws exception, try fetching by project ID as fallback
+      await fetchCompletionRequestByProject()
+    }
+  }
+
+  // Fallback method to fetch completion request by project ID
+  const fetchCompletionRequestByProject = async () => {
+    if (!projectId) return
+
+    const token = localStorage.getItem("jwtToken")
+    if (!token) return
+
+    setDebugInfo((prev) => `${prev}\nTrying fallback: Fetching completion request by project ID: ${projectId}`)
+
+    try {
+      // Try to fetch the specific request for this project
+      const res = await fetch(
+        `https://localhost:7053/api/request-for-project-completion/get-project-request/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
+
+      if (res.ok) {
+        const data = await res.json()
+        setDebugInfo((prev) => `${prev}\nReceived project-specific request data`)
+
+        if (data && data.id) {
+          setCurrentRequest(data)
+          setDebugInfo((prev) => `${prev}\nSet current request from project-specific endpoint: ${data.id}`)
+
+          // Add this request to the completionRequests array if it's not already there
+          setCompletionRequests((prev) => {
+            if (prev.some((req) => req.id === data.id)) {
+              return prev
+            }
+            return [...prev, data]
+          })
+        } else {
+          setDebugInfo((prev) => `${prev}\nNo project-specific request found or invalid data format`)
+        }
+      } else {
+        const errorText = await res.text()
+        setDebugInfo((prev) => `${prev}\nError fetching project-specific request: ${res.status} - ${errorText}`)
+        console.error("Failed to fetch project-specific completion request:", res.status, errorText)
+      }
+    } catch (err) {
+      setDebugInfo((prev) => `${prev}\nException fetching project-specific request: ${err}`)
+      console.error("Error fetching project-specific completion request:", err)
     }
   }
 
@@ -312,26 +395,34 @@ const MilestonePage: React.FC = () => {
   const handleTaskToggle = async (task: TaskItem) => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
-    const newStatus = task.taskStatus === "COMPLETED" ? "PENDING" : "COMPLETED"
+
+    // Only allow marking tasks as complete (not toggling back to pending)
+    // This matches the controller's functionality
+    if (task.taskStatus === "COMPLETED") {
+      toast.info("Task is already completed")
+      return
+    }
+
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/update-task/${projectId}/${task.id}`, {
+      // Use the marks-as-complete endpoint from the controller
+      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ taskStatus: newStatus }),
       })
+
       if (res.ok) {
-        setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: newStatus } : t)))
-        toast.success(`Task marked as ${newStatus.toLowerCase()}`)
+        // Update local state to show task as completed
+        setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: "COMPLETED" } : t)))
+        toast.success("Task marked as completed")
       } else {
-        console.error("Failed to update task status:", res.status)
-        toast.error("Failed to update task status")
+        console.error("Failed to mark task as complete:", res.status)
+        toast.error("Failed to mark task as complete")
       }
     } catch (err) {
-      console.error("Error updating task status:", err)
-      toast.error("Error updating task status")
+      console.error("Error marking task as complete:", err)
+      toast.error("Error marking task as complete")
     }
   }
 
@@ -455,15 +546,20 @@ const MilestonePage: React.FC = () => {
       )
 
       if (res.ok) {
-        toast.success("Project completion approved. The project is now marked as completed.")
-        // Update local project state to reflect completed status
-        setProject((prev) => (prev ? { ...prev, status: "Completed" } : prev))
+        toast.success("Project completion approved. Please proceed to payment to complete the project.")
+        // Update local project state to reflect payment pending status instead of completed
+        setProject((prev) => (prev ? { ...prev, status: "PaymentPending" } : prev))
         // Remove the current request
         setCurrentRequest(null)
         // Refresh completion requests
         if (expertProfile) {
           await fetchCompletionRequests(expertProfile.indExptId)
         }
+
+        // Show payment button
+        toast.info("Please click the 'Make Payment' button to complete the transaction.", {
+          autoClose: 10000, // Keep this message visible longer
+        })
       } else {
         const errorText = await res.text()
         console.error("Failed to approve project completion:", res.status, errorText)
@@ -523,6 +619,26 @@ const MilestonePage: React.FC = () => {
     }
   }
 
+  // Manually check for completion requests
+  const handleManualRefresh = async () => {
+    if (!expertProfile) {
+      toast.error("Expert profile not loaded yet")
+      return
+    }
+
+    setDebugInfo("Manually refreshing completion requests...")
+    toast.info("Refreshing completion requests...")
+
+    await fetchCompletionRequests(expertProfile.indExptId)
+
+    // Also check if the current project status is PendingCompletion
+    if (project?.status === "PendingCompletion") {
+      await fetchCompletionRequestByProject()
+    }
+
+    toast.success("Refresh complete")
+  }
+
   // Fetch tasks when projectId changes
   useEffect(() => {
     if (projectId) {
@@ -536,6 +652,14 @@ const MilestonePage: React.FC = () => {
       fetchReviews()
     }
   }, [project])
+
+  // Check for completion requests when project status changes to PendingCompletion
+  useEffect(() => {
+    if (project?.status === "PendingCompletion" && expertProfile) {
+      // If project status is PendingCompletion, try to fetch completion requests again
+      fetchCompletionRequests(expertProfile.indExptId)
+    }
+  }, [project?.status, expertProfile])
 
   if (loading) {
     return (
@@ -575,7 +699,9 @@ const MilestonePage: React.FC = () => {
                   ? "bg-green-900 text-green-300"
                   : project?.status === "PendingCompletion"
                     ? "bg-yellow-900 text-yellow-300"
-                    : "bg-blue-900 text-blue-300"
+                    : project?.status === "PaymentPending"
+                      ? "bg-blue-900 text-blue-300"
+                      : "bg-gray-700 text-gray-300"
               }`}
             >
               {project?.status}
@@ -591,6 +717,41 @@ const MilestonePage: React.FC = () => {
             <strong className="text-green-300">Industry Expert:</strong> {project?.expertName || "N/A"}
           </p>
         </div>
+
+        {/* Manual refresh button for completion requests */}
+        {project?.status === "PendingCompletion" && !currentRequest && (
+          <div className="mt-4 bg-yellow-900 border border-yellow-700 p-4 rounded-lg">
+            <div className="flex items-center mb-3">
+              <svg className="h-6 w-6 mr-2 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <span className="text-yellow-300 font-semibold">Project is pending completion</span>
+            </div>
+            <p className="text-gray-300 mb-4">
+              This project has a pending completion request, but the details couldn't be loaded. Click the button below
+              to refresh and check for completion requests.
+            </p>
+            <button
+              onClick={handleManualRefresh}
+              className="py-2 px-4 bg-yellow-600 text-white rounded hover:bg-yellow-500 transition flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              Refresh Completion Requests
+            </button>
+          </div>
+        )}
 
         {/* Project Completion Request Actions */}
         {currentRequest && (
@@ -642,17 +803,37 @@ const MilestonePage: React.FC = () => {
           </div>
         )}
 
-        {isProjectComplete && (
+        {(isProjectComplete || project?.status === "PaymentPending") && (
           <div className="mt-4 bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg">
             <div className="flex items-center mb-3">
               <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                {project?.status === "PaymentPending" ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                )}
               </svg>
-              <span>This project is complete. Editing is disabled.</span>
+              <span>
+                {project?.status === "PaymentPending"
+                  ? "Project completion approved. Payment is required to finalize the project."
+                  : "This project is complete. Editing is disabled."}
+              </span>
             </div>
             <div className="mt-3">
               <button
-                onClick={() => router.push(`/industryexpert/payment/${projectId}`)}
+                onClick={() => {
+                  console.log("Project ID for payment:", projectId)
+                  if (projectId) {
+                    router.push(`/industryexpert/payment/${projectId}`)
+                  } else {
+                    toast.error("Project ID is missing. Cannot proceed to payment.")
+                  }
+                }}
                 className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -663,12 +844,26 @@ const MilestonePage: React.FC = () => {
                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                Make Payment
+                {project?.status === "PaymentPending" ? "Make Payment" : "View Payment Details"}
               </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Debug Information (only visible during development) */}
+      {debugInfo && (
+        <div className="max-w-4xl mx-auto mb-8 bg-gray-800 p-4 rounded border border-gray-700">
+          <h3 className="text-lg font-bold text-yellow-400 mb-2">Debug Information</h3>
+          <pre className="whitespace-pre-wrap text-xs text-gray-400">{debugInfo}</pre>
+          <button
+            onClick={() => setDebugInfo(null)}
+            className="mt-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded hover:bg-gray-600"
+          >
+            Clear Debug Info
+          </button>
+        </div>
+      )}
 
       {/* All Completion Requests Section */}
       {completionRequests.length > 0 && (
@@ -707,7 +902,7 @@ const MilestonePage: React.FC = () => {
                     <td className="px-4 py-2">
                       {request.projectId !== projectId && (
                         <button
-                          onClick={() => router.push(`/industry/project-milestone/${request.projectId}`)}
+                          onClick={() => router.push(`/industryexpert/projects/milestone/${request.projectId}`)}
                           className="text-green-400 hover:text-green-300"
                         >
                           View Project
@@ -869,7 +1064,7 @@ const MilestonePage: React.FC = () => {
                       checked={task.taskStatus === "COMPLETED"}
                       onChange={() => handleTaskToggle(task)}
                       className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={isProjectComplete}
+                      disabled={isProjectComplete || task.taskStatus === "COMPLETED"}
                     />
                   </div>
                   <div className="ml-3 flex-1">
