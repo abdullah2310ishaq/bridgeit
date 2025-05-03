@@ -28,7 +28,7 @@ const CreateIdea: React.FC = () => {
       try {
         // Fetch authorized user info to get `userId`
         const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -46,7 +46,7 @@ const CreateIdea: React.FC = () => {
 
         // Fetch faculty details to get `facultyId`
         const facultyResponse = await fetch(
-          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -102,7 +102,7 @@ const CreateIdea: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://localhost:7053/api/ideas/add-idea/${facultyId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/add-idea/${facultyId}`,
         {
           method: "POST",
           headers: {

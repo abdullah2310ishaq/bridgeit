@@ -1,93 +1,99 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 interface Project {
-  id: string;
-  title: string;
-  description: string;
-  studentName: string;
-  budget: number;
-  status: string;
+  id: string
+  title: string
+  description: string
+  studentName: string
+  budget: number
+  status: string
 }
 
 const PaymentPage = () => {
-  const { projectId } = useParams();
-  const router = useRouter();
+  const { projectId } = useParams()
+  const router = useRouter()
 
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [project, setProject] = useState<Project | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [processing, setProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchProject = async () => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("jwtToken")
     if (!token) {
-      toast.error("Please log in to continue.");
-      router.push("/auth/login-user");
-      return;
+      toast.error("Please log in to continue.")
+      router.push("/auth/login-user")
+      return
     }
 
     try {
-      const res = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Failed to fetch project");
+        const errorData = await res.json()
+        throw new Error(errorData.message || "Failed to fetch project")
       }
-      const data = await res.json();
-      setProject(data);
+      const data = await res.json()
+      setProject(data)
       if (data.status.toLowerCase() !== "paymentpending") {
-        toast.warning("Project is not in Payment Pending status. Please refresh or verify completion request.");
+        toast.warning("Project is not in Payment Pending status. Please refresh or verify completion request.")
       }
     } catch (err: any) {
-      setError(err.message || "Could not load project details.");
-      toast.error(err.message || "Could not load project details.");
+      setError(err.message || "Could not load project details.")
+      toast.error(err.message || "Could not load project details.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    if (projectId) fetchProject();
-  }, [projectId, router]);
+    if (projectId) fetchProject()
+  }, [projectId, router])
 
   const handlePayment = async () => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) {
-      toast.error("Unauthorized or missing project ID");
-      return;
+      toast.error("Unauthorized or missing project ID")
+      return
     }
 
-    setProcessing(true);
+    setProcessing(true)
 
     try {
-      const res = await fetch(`https://localhost:7053/api/payments/create-checkout-session/${projectId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         },
-      });
+      )
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.Error || errorData.Details || "Failed to create checkout session");
+        const errorData = await res.json()
+        throw new Error(errorData.Error || errorData.Details || "Failed to create checkout session")
       }
 
-      const { checkoutUrl } = await res.json();
-      console.log("Redirecting to Stripe Checkout URL:", checkoutUrl);
-      window.location.href = checkoutUrl;
+      const { checkoutUrl } = await res.json()
+      console.log("Redirecting to Stripe Checkout URL:", checkoutUrl)
+      window.location.href = checkoutUrl
     } catch (err: any) {
-      console.error("Payment error:", err);
-      toast.error(`Payment failed: ${err.message || "Unknown error"}`);
-      setProcessing(false);
+      console.error("Payment error:", err)
+      toast.error(`Payment failed: ${err.message || "Unknown error"}`)
+      setProcessing(false)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -97,7 +103,7 @@ const PaymentPage = () => {
           <p className="mt-4 text-lg">Loading project details...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error || !project) {
@@ -109,9 +115,9 @@ const PaymentPage = () => {
           <div className="mt-4 flex space-x-4">
             <button
               onClick={() => {
-                setLoading(true);
-                setError(null);
-                fetchProject();
+                setLoading(true)
+                setError(null)
+                fetchProject()
               }}
               className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
             >
@@ -126,7 +132,7 @@ const PaymentPage = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -135,9 +141,15 @@ const PaymentPage = () => {
         <h1 className="text-3xl font-bold text-green-400 mb-6">Confirm Payment</h1>
 
         <div className="bg-gray-800 p-6 rounded shadow mb-6">
-          <p className="mb-2"><strong>Title:</strong> {project.title}</p>
-          <p className="mb-2"><strong>Description:</strong> {project.description}</p>
-          <p className="mb-2"><strong>Student:</strong> {project.studentName}</p>
+          <p className="mb-2">
+            <strong>Title:</strong> {project.title}
+          </p>
+          <p className="mb-2">
+            <strong>Description:</strong> {project.description}
+          </p>
+          <p className="mb-2">
+            <strong>Student:</strong> {project.studentName}
+          </p>
           <p className="mb-2">
             <strong>Status:</strong>{" "}
             <span
@@ -159,12 +171,13 @@ const PaymentPage = () => {
         {project.status.toLowerCase() !== "paymentpending" && (
           <div className="mb-4">
             <p className="text-yellow-400 mb-2">
-              This project is not ready for payment. Please ensure the project is in "Payment Pending" status by approving the completion request.
+              This project is not ready for payment. Please ensure the project is in "Payment Pending" status by
+              approving the completion request.
             </p>
             <button
               onClick={() => {
-                setLoading(true);
-                fetchProject();
+                setLoading(true)
+                fetchProject()
               }}
               className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
             >
@@ -190,14 +203,7 @@ const PaymentPage = () => {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -220,7 +226,7 @@ const PaymentPage = () => {
       </div>
       <ToastContainer />
     </div>
-  );
-};
+  )
+}
 
-export default PaymentPage;
+export default PaymentPage

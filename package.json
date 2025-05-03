@@ -30,8 +30,10 @@
     "cookies-next": "^4.2.1",
     "emailjs-com": "^3.2.0",
     "framer-motion": "^11.3.28",
+    "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.1",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.447.0",
     "motion": "^10.18.0",
@@ -51,6 +53,7 @@
     "react-redux": "^9.1.2",
     "react-select": "^5.8.1",
     "react-slick": "^0.30.2",
+    "react-to-print": "^3.1.0",
     "react-toastify": "^10.0.5",
     "slick-carousel": "^1.8.1",
     "zustand": "^5.0.0"

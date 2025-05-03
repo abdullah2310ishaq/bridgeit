@@ -55,6 +55,7 @@ interface Review {
 }
 
 interface ProjectDetailsExtended {
+  id: string
   studentId: string
   stdUserId: string
   studentName: string
@@ -65,6 +66,7 @@ interface ProjectDetailsExtended {
   expertName: string
   indExpertId: string
   iExptUserId: string
+  budget?: number
 }
 
 interface CompletionRequest {
@@ -119,6 +121,7 @@ const MilestonePage: React.FC = () => {
   // Determine if the project is completed or pending completion
   const isProjectComplete = project?.status === "Completed"
   const isPendingCompletion = project?.status === "PendingCompletion"
+  const isPaymentPending = project?.status === "PaymentPending"
 
   // -----------------------------
   // 1) Fetch Expert, Project Details, and Milestones
@@ -134,15 +137,18 @@ const MilestonePage: React.FC = () => {
 
       try {
         // Get authorized user info
-        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const authRes = await fetch(
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (!authRes.ok) throw new Error("Failed to get authorized user info.")
         const authData = await authRes.json()
 
         // Fetch industry expert profile using logged-in user ID
         const expertRes = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (!expertRes.ok) throw new Error("Failed to fetch industry expert profile.")
@@ -156,9 +162,12 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch project details (includes student info)
-        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const projectRes = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (!projectRes.ok) throw new Error("Failed to fetch project details.")
         const projectData = await projectRes.json()
         setProject(projectData)
@@ -170,9 +179,12 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch milestones
-        const milestonesRes = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const milestonesRes = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (!milestonesRes.ok) throw new Error("Failed to fetch milestones.")
         const milestonesData = await milestonesRes.json()
 
@@ -187,6 +199,14 @@ const MilestonePage: React.FC = () => {
 
         // Fetch completion requests for this expert
         await fetchCompletionRequests(expertData.indExptId)
+
+        // If project is completed, fetch reviews
+        if (projectData.status === "Completed") {
+          await fetchReviews()
+        }
+
+        // Fetch tasks
+        await fetchTasks()
       } catch (err) {
         console.error(err)
         setError("Failed to load project data")
@@ -209,7 +229,7 @@ const MilestonePage: React.FC = () => {
     try {
       // First, try to fetch using the expert ID
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -273,7 +293,7 @@ const MilestonePage: React.FC = () => {
     try {
       // Try to fetch the specific request for this project
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-project-request/${projectId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-project-request/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -316,7 +336,7 @@ const MilestonePage: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -344,7 +364,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
         {
           method: "POST",
           headers: {
@@ -375,9 +395,12 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/get-tasks/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setTasks(data)
@@ -405,12 +428,15 @@ const MilestonePage: React.FC = () => {
 
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
+      )
 
       if (res.ok) {
         // Update local state to show task as completed
@@ -437,14 +463,17 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/add-tasks/${projectId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/add-tasks/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ task: newTask, description: newTaskDescription }),
         },
-        body: JSON.stringify({ task: newTask, description: newTaskDescription }),
-      })
+      )
       if (res.ok) {
         toast.success("Task added successfully.")
         setNewTask("")
@@ -467,9 +496,12 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/get-reviews/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setReviews(data)
@@ -492,25 +524,30 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/add-review/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ReviewerId: expertProfile.userId,
+            Review: newReviewText,
+            Rating: newReviewRating,
+          }),
         },
-        body: JSON.stringify({
-          ReviewerId: expertProfile.userId,
-          Review: newReviewText,
-          Rating: newReviewRating,
-        }),
-      })
+      )
       if (res.ok) {
         toast.success("Review added successfully.")
         setNewReviewText("")
         setNewReviewRating(0)
         await fetchReviews()
       } else {
-        toast.error("Failed to add review.")
+        const errorText = await res.text()
+        console.error("Failed to add review:", res.status, errorText)
+        toast.error(`Failed to add review: ${errorText || "Unknown error"}`)
       }
     } catch (err) {
       console.error("Error adding review:", err)
@@ -534,7 +571,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/handle-request/${currentRequest.id}`,
         {
           method: "PATCH",
           headers: {
@@ -547,7 +584,7 @@ const MilestonePage: React.FC = () => {
 
       if (res.ok) {
         toast.success("Project completion approved. Please proceed to payment to complete the project.")
-        // Update local project state to reflect payment pending status instead of completed
+        // Update local project state to reflect payment pending status
         setProject((prev) => (prev ? { ...prev, status: "PaymentPending" } : prev))
         // Remove the current request
         setCurrentRequest(null)
@@ -587,7 +624,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/handle-request/${currentRequest.id}`,
         {
           method: "PATCH",
           headers: {
@@ -619,6 +656,19 @@ const MilestonePage: React.FC = () => {
     }
   }
 
+  // -----------------------------
+  // 12) Handle Payment Process
+  // -----------------------------
+  const handlePaymentProcess = () => {
+    if (!projectId) {
+      toast.error("Project ID is missing. Cannot proceed to payment.")
+      return
+    }
+
+    // Navigate to payment page
+    router.push(`/industryexpert/payment/${projectId}`)
+  }
+
   // Manually check for completion requests
   const handleManualRefresh = async () => {
     if (!expertProfile) {
@@ -634,6 +684,25 @@ const MilestonePage: React.FC = () => {
     // Also check if the current project status is PendingCompletion
     if (project?.status === "PendingCompletion") {
       await fetchCompletionRequestByProject()
+    }
+
+    // Refresh project details to get the latest status
+    const token = localStorage.getItem("jwtToken")
+    if (token && projectId) {
+      try {
+        const projectRes = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
+        if (projectRes.ok) {
+          const projectData = await projectRes.json()
+          setProject(projectData)
+        }
+      } catch (err) {
+        console.error("Error refreshing project details:", err)
+      }
     }
 
     toast.success("Refresh complete")
@@ -658,6 +727,9 @@ const MilestonePage: React.FC = () => {
     if (project?.status === "PendingCompletion" && expertProfile) {
       // If project status is PendingCompletion, try to fetch completion requests again
       fetchCompletionRequests(expertProfile.indExptId)
+    }
+    if (project?.status === "Completed") {
+      fetchReviews()
     }
   }, [project?.status, expertProfile])
 
@@ -803,11 +875,12 @@ const MilestonePage: React.FC = () => {
           </div>
         )}
 
-        {(isProjectComplete || project?.status === "PaymentPending") && (
+        {/* Payment Pending or Completed Status */}
+        {(isProjectComplete || isPaymentPending) && (
           <div className="mt-4 bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg">
             <div className="flex items-center mb-3">
               <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {project?.status === "PaymentPending" ? (
+                {isPaymentPending ? (
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -819,21 +892,14 @@ const MilestonePage: React.FC = () => {
                 )}
               </svg>
               <span>
-                {project?.status === "PaymentPending"
+                {isPaymentPending
                   ? "Project completion approved. Payment is required to finalize the project."
                   : "This project is complete. Editing is disabled."}
               </span>
             </div>
             <div className="mt-3">
               <button
-                onClick={() => {
-                  console.log("Project ID for payment:", projectId)
-                  if (projectId) {
-                    router.push(`/industryexpert/payment/${projectId}`)
-                  } else {
-                    toast.error("Project ID is missing. Cannot proceed to payment.")
-                  }
-                }}
+                onClick={handlePaymentProcess}
                 className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -844,7 +910,7 @@ const MilestonePage: React.FC = () => {
                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                {project?.status === "PaymentPending" ? "Make Payment" : "View Payment Details"}
+                {isPaymentPending ? "Make Payment" : "View Payment Details"}
               </button>
             </div>
           </div>
@@ -984,7 +1050,7 @@ const MilestonePage: React.FC = () => {
                       <p className="text-gray-500 italic mb-4">No comments yet</p>
                     )}
 
-                    {!isProjectComplete && (
+                    {!isProjectComplete && !isPaymentPending && (
                       <>
                         <textarea
                           value={newComment}
@@ -1014,7 +1080,7 @@ const MilestonePage: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4">Tasks</h2>
 
         {/* Add Task Form */}
-        {!isProjectComplete && (
+        {!isProjectComplete && !isPaymentPending && (
           <div className="mb-6 p-4 bg-gray-800 rounded shadow">
             <h3 className="text-xl font-bold mb-3">Add New Task</h3>
             <div className="space-y-3">
@@ -1064,7 +1130,7 @@ const MilestonePage: React.FC = () => {
                       checked={task.taskStatus === "COMPLETED"}
                       onChange={() => handleTaskToggle(task)}
                       className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={isProjectComplete || task.taskStatus === "COMPLETED"}
+                      disabled={isProjectComplete || isPaymentPending || task.taskStatus === "COMPLETED"}
                     />
                   </div>
                   <div className="ml-3 flex-1">

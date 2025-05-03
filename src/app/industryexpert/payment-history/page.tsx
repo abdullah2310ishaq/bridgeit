@@ -3,16 +3,17 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 interface PaymentDetail {
   id: string
   projectId: string
-  project: {
-    title: string
-    studentName: string
-  }
+  studentName: string
+  projectOwnerName: string
+  projectName: string
   paidAt: string
-  paymentSlip: string | null
+  amount?: number
 }
 
 const PaymentHistoryPage = () => {
@@ -30,9 +31,12 @@ const PaymentHistoryPage = () => {
       }
 
       try {
-        const res = await fetch("https://localhost:7053/api/payment-details/get-payment-details", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const res = await fetch(
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payment-details/payment-details",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
 
         if (!res.ok) {
           throw new Error("Failed to fetch payment history")
@@ -40,9 +44,10 @@ const PaymentHistoryPage = () => {
 
         const data = await res.json()
         setPayments(data)
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error fetching payment history:", err)
-        setError("Failed to load payment history. Please try again.")
+        setError(err.message || "Failed to load payment history")
+        toast.error(err.message || "Failed to load payment history")
       } finally {
         setLoading(false)
       }
@@ -51,9 +56,13 @@ const PaymentHistoryPage = () => {
     fetchPaymentHistory()
   }, [router])
 
-  const downloadPaymentSlip = (paymentId: string) => {
-    // Implement download functionality if needed
-    console.log(`Downloading payment slip for payment ID: ${paymentId}`)
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
   }
 
   if (loading) {
@@ -67,53 +76,37 @@ const PaymentHistoryPage = () => {
     )
   }
 
-  if (error) {
-    return (
-      <div className="bg-gray-900 min-h-screen p-6 text-white">
-        <div className="max-w-4xl mx-auto bg-red-900/30 border border-red-700 p-6 rounded-lg">
-          <h1 className="text-2xl font-bold text-red-400 mb-4">Error</h1>
-          <p className="text-white mb-6">{error}</p>
-          <button
-            onClick={() => router.push("/industryexpert/dashboard")}
-            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
-          >
-            Go to Dashboard
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="bg-gray-900 min-h-screen p-6 text-white">
+    <div className="bg-gray-900 text-white min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-green-400">Payment History</h1>
           <Link
-            href="/industryexpert/dashboard"
-            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition flex items-center"
+            href="/industryexpert"
+            className="py-2 px-4 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
             Back to Dashboard
           </Link>
         </div>
 
+        {error ? (
+          <div className="bg-red-900 text-white p-4 rounded-lg mb-6">
+            <p>{error}</p>
+          </div>
+        ) : null}
+
         {payments.length === 0 ? (
           <div className="bg-gray-800 rounded-lg p-8 text-center">
-            <svg className="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                strokeWidth={1.5}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h2 className="text-xl font-semibold mb-2">No Payment Records Found</h2>
-            <p className="text-gray-400">
-              You haven't made any payments yet. When you complete payments for projects, they will appear here.
-            </p>
+            <p className="text-gray-400 text-lg">No payment records found.</p>
+            <p className="text-gray-500 mt-2">When you make payments for completed projects, they will appear here.</p>
           </div>
         ) : (
           <div className="bg-gray-800 rounded-lg overflow-hidden">
@@ -121,56 +114,69 @@ const PaymentHistoryPage = () => {
               <table className="min-w-full divide-y divide-gray-700">
                 <thead className="bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
                       Project
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
                       Student
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Status
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Amount
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="bg-gray-800 divide-y divide-gray-700">
                   {payments.map((payment) => (
-                    <tr key={payment.id}>
+                    <tr key={payment.id} className="hover:bg-gray-750">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium">{payment.project.title}</div>
+                        <div className="text-sm font-medium text-white">{payment.projectName}</div>
+                        <div className="text-sm text-gray-400">ID: {payment.projectId.substring(0, 8)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm">{payment.project.studentName}</div>
+                        <div className="text-sm text-white">{payment.studentName}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm">{new Date(payment.paidAt).toLocaleDateString()}</div>
-                        <div className="text-xs text-gray-400">{new Date(payment.paidAt).toLocaleTimeString()}</div>
+                        <div className="text-sm text-white">{formatDate(payment.paidAt)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 text-xs rounded-full bg-green-900 text-green-300">Completed</span>
+                        <div className="text-sm text-green-400">
+                          ${payment.amount ? payment.amount.toFixed(2) : "N/A"}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        {payment.paymentSlip && (
-                          <button
-                            onClick={() => downloadPaymentSlip(payment.id)}
-                            className="text-green-400 hover:text-green-300 flex items-center justify-end ml-auto"
-                          >
-                            <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                              />
-                            </svg>
-                            Download Receipt
-                          </button>
-                        )}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <Link
+                          href={`/industryexpert/payment-receipt/${payment.projectId}`}
+                          className="text-green-400 hover:text-green-300 mr-4"
+                        >
+                          View Receipt
+                        </Link>
+                        <Link
+                          href={`/industryexpert/projects/milestone/${payment.projectId}`}
+                          className="text-blue-400 hover:text-blue-300"
+                        >
+                          View Project
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -179,7 +185,30 @@ const PaymentHistoryPage = () => {
             </div>
           </div>
         )}
+
+        <div className="mt-8 bg-gray-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-green-400 mb-4">Payment Information</h2>
+          <div className="space-y-4 text-gray-300">
+            <p>
+              <strong>Payment Processing:</strong> All payments are securely processed through Stripe. Your payment
+              information is never stored on our servers.
+            </p>
+            <p>
+              <strong>Receipts:</strong> Digital receipts are generated for all transactions and can be accessed at any
+              time from this page.
+            </p>
+            <p>
+              <strong>Project Status:</strong> Once payment is completed, the project status is automatically updated to
+              "Completed" and both you and the student will be notified.
+            </p>
+            <p>
+              <strong>Need Help?</strong> If you have any questions about payments or need assistance, please contact
+              our support team at support@bridgeit.com.
+            </p>
+          </div>
+        </div>
       </div>
+      <ToastContainer />
     </div>
   )
 }

@@ -32,7 +32,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`https://localhost:7053/chathub?userId=${expertId}`, { // Pass expertId in query string
+      .withUrl(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/chathub?userId=${expertId}`, { // Pass expertId in query string
         accessTokenFactory: () => token,
       })
       .withAutomaticReconnect()
@@ -80,7 +80,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
 
       try {
         const response = await fetch(
-          `https://localhost:7053/api/chats/message-history/${studentId}/${expertId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/chats/message-history/${studentId}/${expertId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

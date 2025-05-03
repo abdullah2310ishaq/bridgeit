@@ -44,7 +44,7 @@ const FypDetailPage: React.FC = () => {
 
     const fetchFypDetails = async () => {
       try {
-        const response = await fetch(`https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
+        const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ const FypDetailPage: React.FC = () => {
     const fetchFacultyDetails = async (facultyId: string, token: string) => {
       try {
         const response = await fetch(
-          `https://localhost:7053/api/get-faculty/faculty-by-faculity-id/${facultyId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-faculity-id/${facultyId}`,
           {
             method: "GET",
             headers: {
@@ -96,7 +96,7 @@ const FypDetailPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://localhost:7053/api/uni-admin-for-fyp/approve-fyp?fypId=${fypId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/uni-admin-for-fyp/approve-fyp?fypId=${fypId}`,
         {
           method: "PUT",
           headers: {
@@ -122,7 +122,7 @@ const FypDetailPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://localhost:7053/api/uni-admin-for-fyp/reject-fyp?fypId=${fypId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/uni-admin-for-fyp/reject-fyp?fypId=${fypId}`,
         {
           method: "PUT",
           headers: {

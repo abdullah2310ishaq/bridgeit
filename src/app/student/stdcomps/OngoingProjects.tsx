@@ -1,32 +1,33 @@
-"use client";
-import React from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+"use client"
+import type React from "react"
+import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 
 interface OngoingProject {
-  id: string;
-  title: string;
-  description: string;
-  expertName: string;
-  status: string;
-  endDate: string;
+  id: string
+  title: string
+  description: string
+  expertName: string
+  status: string
+  endDate: string
 }
 
 interface Props {
-  ongoingProjects: OngoingProject[];
+  ongoingProjects: OngoingProject[]
 }
 
 const OngoingProjectsSection: React.FC<Props> = ({ ongoingProjects }) => {
-  const router = useRouter();
+  const router = useRouter()
 
-  // Filter out completed projects
+  // Filter out completed projects and also projects with PaymentPending status
+  // as they are essentially in the final stage of completion
   const filteredProjects = ongoingProjects.filter(
-    (project) => project.status !== "Completed"
-  );
+    (project) => project.status !== "Completed" && project.status !== "PaymentPending",
+  )
 
   const handleProjectClick = (projectId: string) => {
-    router.push(`/student/projects/milestone/${projectId}`);
-  };
+    router.push(`/student/projects/milestone/${projectId}`)
+  }
 
   return (
     <section className="py-16 bg-gray-200">
@@ -45,29 +46,33 @@ const OngoingProjectsSection: React.FC<Props> = ({ ongoingProjects }) => {
               className="bg-white border border-gray-300 p-6 rounded-xl shadow-md hover:shadow-xl transition-transform cursor-pointer"
               onClick={() => handleProjectClick(project.id)}
             >
-              <h3 className="text-xl font-bold text-blue-800 mb-3">
-                {project.title}
-              </h3>
+              <h3 className="text-xl font-bold text-blue-800 mb-3">{project.title}</h3>
               <p className="text-gray-700 mb-4">{project.description}</p>
               <p className="text-sm text-gray-600">
                 <strong>Expert:</strong> {project.expertName}
               </p>
-              <p className="text-sm text-gray-600">
-                <strong>Status:</strong> {project.status}
-              </p>
-              <p className="text-sm text-gray-600">
+              <div className="mt-2">
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    project.status === "PendingCompletion"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {project.status}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">
                 <strong>End Date:</strong> {project.endDate}
               </p>
             </motion.div>
           ))
         ) : (
-          <p className="text-gray-500 text-center col-span-full">
-            No ongoing projects available.
-          </p>
+          <p className="text-gray-500 text-center col-span-full">No ongoing projects available.</p>
         )}
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default OngoingProjectsSection;
+export default OngoingProjectsSection

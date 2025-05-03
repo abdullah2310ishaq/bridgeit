@@ -1,83 +1,86 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import type React from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 // Import your custom components
-import IndustryProfile from "./industrycomponents/IndustryProfile";
-import CompanyProfile from "./industrycomponents/CompanyProfile";
-import ProjectCard from "./industrycomponents/ProjectsCardd";
+import IndustryProfile from "./industrycomponents/IndustryProfile"
+import CompanyProfile from "./industrycomponents/CompanyProfile"
+import ProjectCard from "./industrycomponents/ProjectsCardd"
+import CompletedProjects from "./industrycomponents/CompletedProjects"
 
 // Interface for the expert's main profile data
 interface IndustryExpertProfile {
-  userId: string;
-  indExptId: string;
-  companyId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  description:string;
-  companyName: string;
-  address: string;
-  contact: string;
-  imageData: string;
+  userId: string
+  indExptId: string
+  companyId: string
+  firstName: string
+  lastName: string
+  email: string
+  description: string
+  companyName: string
+  address: string
+  contact: string
+  imageData: string
 }
 
 // Interface for each project
 interface Project {
-  id: string;
-  title: string;
-  description: string;
-  endDate: string;
-  name: string;
+  id: string
+  title: string
+  description: string
+  endDate: string
+  name: string
+  status: string
 }
 
 const IndustryExpertPage: React.FC = () => {
-  const router = useRouter();
+  const router = useRouter()
 
   // Basic state
-  const [expertProfile, setExpertProfile] = useState<IndustryExpertProfile | null>(null);
-  const [unassignedProjects, setUnassignedProjects] = useState<Project[]>([]);
-  const [assignedProjects, setAssignedProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [expertProfile, setExpertProfile] = useState<IndustryExpertProfile | null>(null)
+  const [unassignedProjects, setUnassignedProjects] = useState<Project[]>([])
+  const [assignedProjects, setAssignedProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // For toggling between “unassigned” & “assigned”
-  const [activeTab, setActiveTab] = useState<"unassigned" | "assigned">("unassigned");
+  // For toggling between tabs
+  const [activeTab, setActiveTab] = useState<"unassigned" | "assigned" | "completed">("unassigned")
 
   useEffect(() => {
     const fetchProfileAndProjects = async () => {
-      const token = localStorage.getItem("jwtToken");
+      const token = localStorage.getItem("jwtToken")
       if (!token) {
-        router.push("/auth/login-user");
-        return;
+        router.push("/auth/login-user")
+        return
       }
 
       try {
         // 1) Fetch basic user info
         const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!profileResponse.ok) throw new Error("Failed to fetch profile.");
+          },
+        )
+        if (!profileResponse.ok) throw new Error("Failed to fetch profile.")
 
-        const profileData = await profileResponse.json();
-        const userId = profileData.userId;
+        const profileData = await profileResponse.json()
+        const userId = profileData.userId
 
         // 2) Fetch the full industry-expert profile
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!expertResponse.ok) throw new Error("Failed to fetch expert profile.");
+          },
+        )
+        if (!expertResponse.ok) throw new Error("Failed to fetch expert profile.")
 
-        const expertData = await expertResponse.json();
+        const expertData = await expertResponse.json()
         setExpertProfile({
           userId: expertData.userId,
           indExptId: expertData.indExptId,
@@ -90,61 +93,63 @@ const IndustryExpertPage: React.FC = () => {
           address: expertData.address,
           contact: expertData.contact,
           imageData: expertData.imageData,
-        });
+        })
 
-        // 3) Fetch “Assigned” Projects
+        // 3) Fetch "Assigned" Projects
         const assignedRes = await fetch(
-          `https://localhost:7053/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+          },
+        )
         if (assignedRes.ok) {
-          const assignedData = await assignedRes.json();
-          setAssignedProjects(assignedData);
+          const assignedData = await assignedRes.json()
+          // Filter out completed projects from assigned projects
+          const activeProjects = assignedData.filter((project: Project) => project.status !== "Completed")
+          setAssignedProjects(activeProjects)
         }
 
-        // 4) Fetch “Unassigned” Projects
+        // 4) Fetch "Unassigned" Projects
         const unassignedRes = await fetch(
-          `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+          },
+        )
         if (unassignedRes.ok) {
-          const unassignedData = await unassignedRes.json();
-          setUnassignedProjects(unassignedData);
+          const unassignedData = await unassignedRes.json()
+          setUnassignedProjects(unassignedData)
         }
       } catch (err) {
-        console.error("Failed to fetch data:", err);
-        setError("Failed to fetch data");
-        // Potentially route to "unauthorized" page if needed
-        router.push("/unauthorized");
+        console.error("Failed to fetch data:", err)
+        setError("Failed to fetch data")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchProfileAndProjects();
-  }, [router]);
+    fetchProfileAndProjects()
+  }, [router])
 
   if (loading) {
-    return <div className="text-center text-gray-400">Loading...</div>;
+    return <div className="text-center p-8">Loading...</div>
   }
+
   if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
+    return <div className="text-center text-red-500 p-8">{error}</div>
   }
+
   if (!expertProfile) {
-    return <div className="text-center text-gray-400">No profile found</div>;
+    return <div className="text-center p-8">No profile found</div>
   }
 
   // For logging out
   const handleLogout = () => {
-    localStorage.removeItem("jwtToken");
-    router.push("/auth/login-user");
-  };
+    localStorage.removeItem("jwtToken")
+    router.push("/auth/login-user")
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
@@ -171,18 +176,16 @@ const IndustryExpertPage: React.FC = () => {
           contact={expertProfile.contact}
           onEditCompany={() => {
             // Placeholder for editing company details
-            alert("Editing company not implemented yet.");
+            alert("Editing company not implemented yet.")
           }}
         />
 
-        {/* (C) Tabs for “Assigned” / “Unassigned” Projects */}
-        <div className="flex space-x-4">
+        {/* (C) Tabs for Projects */}
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab("unassigned")}
             className={`py-2 px-4 rounded-lg ${
-              activeTab === "unassigned"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 text-gray-300"
+              activeTab === "unassigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
             }`}
           >
             Unassigned Projects
@@ -190,19 +193,26 @@ const IndustryExpertPage: React.FC = () => {
           <button
             onClick={() => setActiveTab("assigned")}
             className={`py-2 px-4 rounded-lg ${
-              activeTab === "assigned"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 text-gray-300"
+              activeTab === "assigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
             }`}
           >
-            Assigned Projects
+            Active Projects
+          </button>
+          <button
+            onClick={() => setActiveTab("completed")}
+            className={`py-2 px-4 rounded-lg ${
+              activeTab === "completed" ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300"
+            }`}
+          >
+            Completed Projects
           </button>
         </div>
 
-        {/* (D) List Projects */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activeTab === "unassigned"
-            ? unassignedProjects.map((proj) => (
+        {/* (D) Project Lists */}
+        {activeTab === "unassigned" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {unassignedProjects.length > 0 ? (
+              unassignedProjects.map((proj) => (
                 <ProjectCard
                   key={proj.id}
                   projectId={proj.id}
@@ -211,7 +221,18 @@ const IndustryExpertPage: React.FC = () => {
                   endDate={proj.endDate}
                 />
               ))
-            : assignedProjects.map((proj) => (
+            ) : (
+              <div className="col-span-full text-center p-8 bg-gray-800 rounded-lg">
+                No unassigned projects available
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "assigned" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {assignedProjects.length > 0 ? (
+              assignedProjects.map((proj) => (
                 <ProjectCard
                   key={proj.id}
                   projectId={proj.id}
@@ -219,21 +240,24 @@ const IndustryExpertPage: React.FC = () => {
                   description={proj.description}
                   endDate={proj.endDate}
                 />
-              ))}
-        </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center p-8 bg-gray-800 rounded-lg">No active projects available</div>
+            )}
+          </div>
+        )}
 
-        {/* Example: Logout button (optional) */}
+        {activeTab === "completed" && <CompletedProjects expertId={expertProfile.indExptId} />}
+
+        {/* Logout button */}
         <div className="mt-10">
-          <button
-            onClick={handleLogout}
-            className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500"
-          >
+          <button onClick={handleLogout} className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500">
             Logout
           </button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default IndustryExpertPage;
+export default IndustryExpertPage

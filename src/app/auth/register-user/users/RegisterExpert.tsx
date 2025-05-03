@@ -31,8 +31,8 @@ const RegisterIndustryExpert: React.FC = () => {
     const fetchData = async () => {
       try {
         const [companiesRes, emailsRes] = await Promise.all([
-          fetch('https://localhost:7053/api/companies/get-all-companies'),
-          fetch('https://localhost:7053/api/register-user/get-all-emails'),
+          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/companies/get-all-companies'),
+          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/get-all-emails'),
         ]);
 
         if (companiesRes.ok) {
@@ -181,7 +181,7 @@ const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       sessionStorage.setItem("industryExpertRegistrationData", JSON.stringify(registrationData));
 
-      const generateOtpResponse = await fetch("https://localhost:7053/api/otp/generate-otp", {
+      const generateOtpResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/generate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -190,7 +190,7 @@ const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       });
 
       if (generateOtpResponse.ok) {
-        const sendOtpResponse = await fetch("https://localhost:7053/api/otp/send-otp", {
+        const sendOtpResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

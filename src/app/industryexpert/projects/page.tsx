@@ -28,7 +28,7 @@ const ExpertProjectsPage: React.FC = () => {
       try {
         // Fetch expert ID
         const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -41,7 +41,7 @@ const ExpertProjectsPage: React.FC = () => {
 
         // Fetch expert profile
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +53,7 @@ const ExpertProjectsPage: React.FC = () => {
 
         // Fetch assigned projects
         const assignedResponse = await fetch(
-          `https://localhost:7053/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -69,7 +69,7 @@ const ExpertProjectsPage: React.FC = () => {
 
         // Fetch unassigned projects
         const unassignedResponse = await fetch(
-          `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },

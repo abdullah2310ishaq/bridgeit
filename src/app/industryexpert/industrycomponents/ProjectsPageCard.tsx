@@ -32,7 +32,7 @@ const ProjecttCard: React.FC<ProjectCardProps> = ({
     const fetchStudentDetails = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`
         );
 
         if (!response.ok) throw new Error("Failed to fetch student details.");

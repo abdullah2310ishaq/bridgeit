@@ -61,7 +61,7 @@ interface Review {
   reviewerName: string
 }
 
-// This interface extends project details with student info (if needed)
+// This interface extends project details with student info
 interface ProjectDetailsExtended extends ProjectDetails {
   studentId: string
   stdUserId: string
@@ -101,9 +101,13 @@ const ProjectProgressTracker: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Determine if project is completed or pending completion
+  // Determine if project is completed, pending completion, or payment pending
   const isProjectComplete = project?.status === "Completed"
   const isPendingCompletion = project?.status === "PendingCompletion"
+  const isPaymentPending = project?.status === "PaymentPending"
+
+  // Any of these statuses means the project is in final stages and editing should be disabled
+  const isEditingDisabled = isProjectComplete || isPendingCompletion || isPaymentPending
 
   // -----------------------------
   // 1) Fetch Project Details, Milestones, and Authorized User Info
@@ -118,26 +122,35 @@ const ProjectProgressTracker: React.FC = () => {
       if (!projectId) return
       try {
         // Get authorized user info (student's userId)
-        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const authRes = await fetch(
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (authRes.ok) {
           const authData = await authRes.json()
           setStudentUserId(authData.userId)
         }
         // Fetch project details (which includes student info and expert info)
-        const resProject = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const resProject = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (resProject.ok) {
           const projectData = await resProject.json()
           setProject(projectData)
           setExpertUserId(projectData.iExptUserId)
         }
         // Fetch milestones
-        const resMilestones = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const resMilestones = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (resMilestones.ok) {
           const data = await resMilestones.json()
           const today = new Date().toISOString().split("T")[0]
@@ -155,6 +168,17 @@ const ProjectProgressTracker: React.FC = () => {
         } else {
           setProgressItems([])
         }
+
+        // Check completion request status
+        await checkCompletionRequestStatus()
+
+        // Fetch tasks
+        await fetchTasks()
+
+        // If project is completed, fetch reviews
+        if (project && (project.status === "Completed" || project.status === "PaymentPending")) {
+          await fetchReviews()
+        }
       } catch (err) {
         console.error("Error:", err)
         setError("Failed to load project data.")
@@ -165,16 +189,19 @@ const ProjectProgressTracker: React.FC = () => {
     if (projectId) fetchData()
   }, [projectId, router])
 
-  // ----------------كنولوجيا المعلومات-------------
+  // -----------------------------
   // 2) Refresh Milestones
   // -----------------------------
   const refreshProgressItems = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
     try {
-      const res = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         const today = new Date().toISOString().split("T")[0]
@@ -204,6 +231,12 @@ const ProjectProgressTracker: React.FC = () => {
   // 3) Milestone Modal: Add / Edit
   // -----------------------------
   const handleOpenModal = (item?: ProgressItem) => {
+    // Prevent editing if project is completed, pending completion, or payment pending
+    if (isEditingDisabled) {
+      toast.info("Editing is disabled while the project is pending completion, payment, or completed.")
+      return
+    }
+
     if (item) {
       setEditItemId(item.id)
       setItemFormData({
@@ -219,6 +252,12 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   const handleSaveItem = async () => {
+    // Prevent saving if project is completed, pending completion, or payment pending
+    if (isEditingDisabled) {
+      toast.info("Editing is disabled while the project is pending completion, payment, or completed.")
+      return
+    }
+
     const token = localStorage.getItem("jwtToken")
     if (!token) return
 
@@ -235,14 +274,17 @@ const ProjectProgressTracker: React.FC = () => {
     try {
       if (editItemId) {
         // Edit milestone
-        const res = await fetch(`https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/update-milestone?milesstoneId=${editItemId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(itemFormData),
           },
-          body: JSON.stringify(itemFormData),
-        })
+        )
         if (!res.ok) {
           console.error("Failed to update milestone. Status:", res.status)
           toast.error("Failed to update milestone")
@@ -252,14 +294,17 @@ const ProjectProgressTracker: React.FC = () => {
         }
       } else {
         // Add milestone
-        const res = await fetch(`https://localhost:7053/api/milestone/add-milestone/${projectId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/add-milestone/${projectId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(itemFormData),
           },
-          body: JSON.stringify(itemFormData),
-        })
+        )
         if (!res.ok) {
           console.error("Failed to add milestone. Status:", res.status)
           toast.error("Failed to add milestone")
@@ -285,7 +330,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -307,9 +352,12 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/get-tasks/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setTasks(data)
@@ -325,25 +373,34 @@ const ProjectProgressTracker: React.FC = () => {
   // 6) Handle Task Toggle (Update Task Status)
   // -----------------------------
   const handleTaskToggle = async (task: TaskItem) => {
+    // Prevent toggling if project is completed, pending completion, or payment pending
+    if (isEditingDisabled) {
+      toast.info("Task updates are disabled while the project is pending completion, payment, or completed.")
+      return
+    }
+
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
-    
+
     // Only allow marking tasks as complete (not toggling back to pending)
     // This matches the controller's functionality
     if (task.taskStatus === "COMPLETED") {
       toast.info("Task is already completed")
       return
     }
-    
+
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
-      
+      )
+
       if (res.ok) {
         // Update local state to show task as completed
         setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: "COMPLETED" } : t)))
@@ -369,18 +426,21 @@ const ProjectProgressTracker: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/add-review/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ReviewerId: studentUserId,
+            Review: newReviewText,
+            Rating: newReviewRating,
+          }),
         },
-        body: JSON.stringify({
-          ReviewerId: studentUserId,
-          Review: newReviewText,
-          Rating: newReviewRating,
-        }),
-      })
+      )
       if (res.ok) {
         toast.success("Review added successfully.")
         setNewReviewText("")
@@ -402,9 +462,12 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/get-reviews/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setReviews(data)
@@ -420,6 +483,12 @@ const ProjectProgressTracker: React.FC = () => {
   // 9) Handle Request Project Completion (Student requests completion)
   // -----------------------------
   const handleRequestCompletion = async () => {
+    // Prevent sending another request if one is already pending
+    if (isPendingCompletion || isPaymentPending || isProjectComplete) {
+      toast.info("A completion request is already pending or the project is already completed.")
+      return
+    }
+
     if (
       !window.confirm(
         "Are you sure you want to request project completion? This will notify the industry expert for approval.",
@@ -431,14 +500,17 @@ const ProjectProgressTracker: React.FC = () => {
     try {
       // Using the correct API endpoint from the controller
       // The API expects a raw GUID in the request body, not a JSON object
-      const res = await fetch(`https://localhost:7053/api/request-for-project-completion/put-completion-request`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/put-completion-request`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(projectId), // Send the projectId as a raw string
         },
-        body: JSON.stringify(projectId), // Send the projectId as a raw string
-      })
+      )
 
       if (res.ok) {
         toast.success("Completion request sent. Awaiting industry expert approval.")
@@ -474,6 +546,35 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
+  // Add a function to check completion request status on component load
+  const checkCompletionRequestStatus = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId || !studentUserId) return
+
+    try {
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-completion-request/${studentUserId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
+
+      if (res.ok) {
+        const data = await res.json()
+        // Check if there's a pending request for this project
+        const pendingRequest =
+          Array.isArray(data) && data.find((req: any) => req.projectId === projectId && req.status === "PENDING")
+
+        if (pendingRequest) {
+          // Update local state to reflect pending completion status
+          setProject((prev) => (prev ? { ...prev, status: "PendingCompletion" } : prev))
+        }
+      }
+    } catch (err) {
+      console.error("Error checking completion request status:", err)
+    }
+  }
+
   // Fetch tasks when projectId changes
   useEffect(() => {
     if (projectId) {
@@ -481,9 +582,9 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }, [projectId])
 
-  // When project becomes complete, fetch reviews
+  // When project becomes complete or payment pending, fetch reviews
   useEffect(() => {
-    if (project?.status === "Completed") {
+    if (project?.status === "Completed" || project?.status === "PaymentPending") {
       fetchReviews()
     }
   }, [project])
@@ -518,8 +619,10 @@ const ProjectProgressTracker: React.FC = () => {
                 project?.status === "Completed"
                   ? "bg-green-900 text-green-300"
                   : project?.status === "PendingCompletion"
-                    ? "bg-yellow-900 text-yellow-300"
-                    : "bg-blue-900 text-blue-300"
+                  ? "bg-yellow-900 text-yellow-300"
+                  : project?.status === "PaymentPending"
+                  ? "bg-blue-900 text-blue-300"
+                  : "bg-blue-900 text-blue-300"
               }`}
             >
               {project?.status}
@@ -544,7 +647,7 @@ const ProjectProgressTracker: React.FC = () => {
         </div>
 
         {/* Project Status Actions */}
-        {!isProjectComplete && !isPendingCompletion && (
+        {!isEditingDisabled && (
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleRequestCompletion}
@@ -568,7 +671,31 @@ const ProjectProgressTracker: React.FC = () => {
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
               />
             </svg>
-            <span>Completion request sent. Awaiting industry expert approval.</span>
+            <div>
+              <p className="font-semibold">Completion request pending</p>
+              <p className="text-sm">
+                Awaiting industry expert approval. Editing is disabled until the request is processed.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isPaymentPending && (
+          <div className="mt-4 bg-blue-900 border border-blue-700 text-blue-300 p-4 rounded-lg flex items-center">
+            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div>
+              <p className="font-semibold">Payment pending</p>
+              <p className="text-sm">
+                Your completion request has been approved. The industry expert will now process the payment.
+              </p>
+            </div>
           </div>
         )}
 
@@ -581,8 +708,8 @@ const ProjectProgressTracker: React.FC = () => {
               <span>This project is complete. Editing is disabled.</span>
             </div>
 
-            <button
-              onClick={handlePaymentProcess}
+            <Link
+              href={`/student/project-certificate/${projectId}`}
               className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition self-end flex items-center"
             >
               <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -590,11 +717,11 @@ const ProjectProgressTracker: React.FC = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              Proceed to Payment
-            </button>
+              View Completion Certificate
+            </Link>
           </div>
         )}
       </div>
@@ -603,7 +730,7 @@ const ProjectProgressTracker: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-green-300">Milestones</h2>
-          {!isProjectComplete && !isPendingCompletion && (
+          {!isEditingDisabled && (
             <button
               onClick={() => handleOpenModal()}
               className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white flex items-center"
@@ -644,10 +771,10 @@ const ProjectProgressTracker: React.FC = () => {
                       </div>
                     </div>
 
-                    {!isProjectComplete && !isPendingCompletion && (
+                    {!isEditingDisabled && (
                       <button
                         onClick={() => handleOpenModal(milestone)}
-                        className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+                        className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded mt-2"
                       >
                         Edit
                       </button>
@@ -657,7 +784,6 @@ const ProjectProgressTracker: React.FC = () => {
                   {/* Comments Section */}
                   <div className="mt-4 border-t border-gray-700 pt-3">
                     <h4 className="text-sm font-semibold text-green-300 mb-2">Expert Comments</h4>
-
                     {comments[milestone.id] && comments[milestone.id].length > 0 ? (
                       <div className="space-y-3">
                         {comments[milestone.id].map((comment) => (
@@ -682,7 +808,12 @@ const ProjectProgressTracker: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-800 rounded-lg">
-            <svg className="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-16 h-16 mx-auto text-gray-600 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -691,7 +822,7 @@ const ProjectProgressTracker: React.FC = () => {
               />
             </svg>
             <p className="text-gray-400 mb-6">No milestones found for this project.</p>
-            {!isProjectComplete && !isPendingCompletion && (
+            {!isEditingDisabled && (
               <button
                 onClick={() => handleOpenModal()}
                 className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium flex items-center mx-auto"
@@ -709,8 +840,6 @@ const ProjectProgressTracker: React.FC = () => {
       {/* Tasks Section */}
       <div className="max-w-4xl mx-auto mt-8">
         <h2 className="text-xl font-semibold text-green-300">Tasks</h2>
-
-        {/* Task list - Students can only view and toggle tasks */}
         {tasks.length === 0 ? (
           <p className="text-gray-400 mt-4 bg-gray-800 p-4 rounded">No tasks assigned.</p>
         ) : (
@@ -724,7 +853,7 @@ const ProjectProgressTracker: React.FC = () => {
                       checked={task.taskStatus === "COMPLETED"}
                       onChange={() => handleTaskToggle(task)}
                       className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={isProjectComplete || isPendingCompletion}
+                      disabled={isEditingDisabled}
                     />
                   </div>
                   <div className="ml-3 flex-1">
@@ -764,7 +893,7 @@ const ProjectProgressTracker: React.FC = () => {
       </div>
 
       {/* Review Section (visible when project is completed) */}
-      {isProjectComplete && (
+      {(isProjectComplete || isPaymentPending) && (
         <div className="max-w-4xl mx-auto mt-8">
           <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
           {reviews.length === 0 ? (
@@ -831,7 +960,7 @@ const ProjectProgressTracker: React.FC = () => {
       )}
 
       {/* Milestone Modal */}
-      {!isProjectComplete && !isPendingCompletion && showModal && (
+      {!isEditingDisabled && showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
             <h3 className="text-xl font-bold text-green-400 mb-4">{editItemId ? "Edit Milestone" : "Add Milestone"}</h3>
@@ -882,7 +1011,10 @@ const ProjectProgressTracker: React.FC = () => {
               >
                 Cancel
               </button>
-              <button onClick={handleSaveItem} className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded">
+              <button
+                onClick={handleSaveItem}
+                className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white"
+              >
                 {editItemId ? "Update" : "Save"}
               </button>
             </div>
