@@ -39,11 +39,23 @@ const PaymentHistoryPage = () => {
         )
 
         if (!res.ok) {
-          throw new Error("Failed to fetch payment history")
+          throw new Error(`Failed to fetch payment history: ${res.status}`)
         }
 
         const data = await res.json()
-        setPayments(data)
+        
+        // Transform the data to match our interface if needed
+        const formattedPayments = Array.isArray(data) ? data.map((payment: any) => ({
+          id: payment.id,
+          projectId: payment.projectId,
+          studentName: payment.project?.student?.user?.firstName + " " + payment.project?.student?.user?.lastName || "Unknown Student",
+          projectOwnerName: payment.project?.indExpert?.user?.firstName + " " + payment.project?.indExpert?.user?.lastName || "Unknown Expert",
+          projectName: payment.project?.title || "Unknown Project",
+          paidAt: payment.paidAt,
+          amount: payment.project?.budget || 0
+        })) : []
+        
+        setPayments(formattedPayments)
       } catch (err: any) {
         console.error("Error fetching payment history:", err)
         setError(err.message || "Failed to load payment history")
@@ -161,7 +173,7 @@ const PaymentHistoryPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-green-400">
-                          ${payment.amount ? payment.amount.toFixed(2) : "N/A"}
+                          ${payment.amount ? (payment.amount / 100).toFixed(2) : "N/A"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

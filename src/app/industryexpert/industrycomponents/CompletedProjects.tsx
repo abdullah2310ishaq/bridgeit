@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle, Calendar, FileText, Award, User } from "lucide-react"
+import { CheckCircle } from "lucide-react"
 
 interface CompletedProject {
   id: string
@@ -23,6 +23,20 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // A few random background gradients for visual variety
+  const gradientStyles = [
+    "bg-gradient-to-r from-green-400 via-teal-500 to-blue-500",
+    "bg-gradient-to-r from-purple-400 via-pink-500 to-red-500",
+    "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500",
+  ]
+
+  // Get a random gradient for each project (but keep it consistent)
+  const getGradient = (id: string) => {
+    // Use the last character of the ID as a simple hash
+    const index = id.charCodeAt(id.length - 1) % gradientStyles.length
+    return gradientStyles[index]
+  }
+
   useEffect(() => {
     const fetchCompletedProjects = async () => {
       const token = localStorage.getItem("jwtToken")
@@ -32,7 +46,7 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
       }
 
       try {
-        // Fetch assigned projects that are completed
+        // Fetch assigned projects
         const res = await fetch(
           `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertId}`,
           {
@@ -46,8 +60,12 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
 
         const data = await res.json()
 
-        // Filter only completed projects
-        const completedProjects = data.filter((project: CompletedProject) => project.status === "Completed")
+        // Filter projects that are either Completed or PaymentPending
+        // PaymentPending projects are essentially completed from the expert's perspective
+        // and are just waiting for payment to be finalized
+        const completedProjects = data.filter(
+          (project: CompletedProject) => project.status === "Completed" || project.status === "PaymentPending",
+        )
 
         setProjects(completedProjects)
       } catch (err) {
@@ -63,26 +81,25 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
     }
   }, [expertId, router])
 
-  const handleViewDetails = (projectId: string) => {
+  const handleViewProgress = (projectId: string) => {
     router.push(`/industryexpert/projects/milestone/${projectId}`)
   }
 
-  const handleViewReceipt = (projectId: string) => {
-    router.push(`/industryexpert/payment-receipt/${projectId}`)
+  const handleViewProfile = (studentId: string) => {
+    router.push(`/industryexpert/student-profile/${studentId}`)
   }
 
   if (loading) {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="w-8 h-8 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
-        <p className="ml-3 text-gray-500">Loading completed projects...</p>
+        <div className="w-8 h-8 border-4 border-t-green-500 border-gray-200 rounded-full animate-spin"></div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
+      <div className="text-red-500 p-4 bg-gray-800 rounded">
         <p>{error}</p>
       </div>
     )
@@ -90,68 +107,70 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
 
   if (projects.length === 0) {
     return (
-      <div className="text-center p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">No Completed Projects</h3>
-        <p className="text-gray-500">Projects will appear here once they are marked as completed.</p>
+      <div className="bg-gray-800 rounded-lg p-12 text-center">
+        <CheckCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-300 mb-2">No Completed Projects</h3>
+        <p className="text-gray-400">Projects will appear here once they are marked as completed.</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-green-600 flex items-center">
-        <CheckCircle className="w-6 h-6 mr-2" />
-        Completed Projects
-      </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {projects.map((project) => (
+        <div
+          key={project.id}
+          className={`relative p-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all overflow-hidden cursor-pointer ${getGradient(
+            project.id,
+          )}`}
+        >
+          <div className="absolute inset-0 opacity-20 bg-cover bg-center"></div>
+          <div className="relative z-10">
+            {/* Project Title */}
+            <h3 className="text-xl font-semibold text-white mb-2">{project.title}</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100"
-          >
-            <div className="bg-gradient-to-r from-green-500 to-green-600 p-3">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-bold text-white truncate">{project.title}</h3>
-                <span className="bg-white text-green-600 text-xs px-2 py-1 rounded-full font-medium">Completed</span>
-              </div>
+            {/* Project Description */}
+            <p className="text-gray-200 mb-2">{project.description}</p>
+
+            {/* End Date */}
+            <p className="text-gray-300 mb-1">
+              <strong>End Date:</strong> {project.endDate}
+            </p>
+
+            {/* Student Name */}
+            <p className="text-gray-300 mb-4">
+              <strong>Student:</strong> {project.studentName}
+            </p>
+
+            {/* Status Badge */}
+            <div className="mb-4">
+              <span
+                className={`px-2 py-1 text-xs rounded-full ${
+                  project.status === "Completed" ? "bg-green-900 text-green-300" : "bg-blue-900 text-blue-300"
+                }`}
+              >
+                {project.status}
+              </span>
             </div>
 
-            <div className="p-4">
-              <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-sm">
-                  <User className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-700">Student: {project.studentName}</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-700">Completed: {new Date(project.endDate).toLocaleDateString()}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2">
-                <button
-                  onClick={() => handleViewDetails(project.id)}
-                  className="py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded text-sm transition flex-1 flex items-center justify-center"
-                >
-                  <Award className="w-4 h-4 mr-1" />
-                  View Details
-                </button>
-                <button
-                  onClick={() => handleViewReceipt(project.id)}
-                  className="py-2 px-3 bg-green-100 hover:bg-green-200 text-green-800 rounded text-sm transition flex-1 flex items-center justify-center"
-                >
-                  <FileText className="w-4 h-4 mr-1" />
-                  View Receipt
-                </button>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <button
+                onClick={() => handleViewProgress(project.id)}
+                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+              >
+                View Progress
+              </button>
+              <button
+                onClick={() => handleViewProfile(project.id)}
+                className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
+              >
+                View Profile
+              </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   )
 }

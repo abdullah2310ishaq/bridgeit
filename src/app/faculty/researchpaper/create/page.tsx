@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -64,7 +65,8 @@ const CreateResearchPaperPage: React.FC = () => {
     authorizeUserAndFetchFacultyId();
   }, [router]);
 
-  const handleCreateResearchPaper = async () => {
+  const handleCreateResearchPaper = async (e: React.FormEvent) => {
+    e.preventDefault();
     const facultyId = localStorage.getItem('facultyId');
     const token = localStorage.getItem('jwtToken');
 

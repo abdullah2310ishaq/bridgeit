@@ -43,7 +43,7 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
       >
         <span className="flex items-center justify-center">
           <Eye className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
-          See More Projects
+          See Research Papers
         </span>
       </button>
             <button
@@ -52,7 +52,7 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
               >
                 <span className="flex items-center justify-center">
                   <Eye className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
-                  See More Projects
+                  Add Research Page
                 </span>
               </button>
           </div>

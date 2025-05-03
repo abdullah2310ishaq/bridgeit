@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfileSection from "./facultycomponents/FacultyProfile";
@@ -85,9 +86,6 @@ const FacultyPage: React.FC = () => {
           if (facultyResponse.ok) {
             const facultyData = await facultyResponse.json();
 
-            // If imageData and uniImage are byte arrays, we need to convert them
-            // Assuming your backend returns image data as Base64 strings
-
             setFacultyProfile({
               id: facultyData.id,
               userId: facultyData.userId,
@@ -164,11 +162,11 @@ const FacultyPage: React.FC = () => {
   };
 
   const onSeeMoreResearch = () => {
-    router.push("/faculty/research");
+    router.push("/faculty/researchpaper");
   };
 
   const onCreateResearchPaper = () => {
-    router.push("/faculty/research/create");
+    router.push("/faculty/researchpaper/create");
   };
 
   const onSeeMoreEvents = () => {
@@ -191,22 +189,22 @@ const FacultyPage: React.FC = () => {
         onViewProfile={onViewProfile}
         onEditProfile={onEditProfile}
       />
- <div className="space-y-4 mt-8">
-  <button
-    onClick={() => router.push("/faculty/idea")}
-    className="py-3 px-6 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-600"
-  >
-    Create New Idea
-  </button>
-  <button
-    onClick={() => router.push("/faculty/idea/viewidea")}
-    className="py-3 px-6 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600"
-  >
-    View My Ideas
-  </button>
-</div>
 
-
+      {/* Centered Buttons for Create New Idea and View My Ideas */}
+      <div className="flex justify-center items-center mt-8 space-x-4">
+        <button
+          onClick={() => router.push("/faculty/idea")}
+          className="py-3 px-6 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition duration-200"
+        >
+          Create New Idea
+        </button>
+        <button
+          onClick={() => router.push("/faculty/idea/viewidea")}
+          className="py-3 px-6 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600 transition duration-200"
+        >
+          View My Ideas
+        </button>
+      </div>
 
       {/* Research Section */}
       <ResearchSection
