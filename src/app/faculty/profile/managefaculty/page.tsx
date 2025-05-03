@@ -152,10 +152,10 @@ const FacultyProfileManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-gray-900 text-gray-200 p-8 space-x-8">
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-white text-gray-900 p-8 space-x-8">
       {/* Left Side with Gradient Text, Logo, and Edit Image */}
       <div className="flex flex-col items-center lg:items-start lg:ml-16">
-        <h1 className="text-6xl font-extrabold text-white mb-4 flex items-center">
+        <h1 className="text-6xl font-extrabold text-gray-900 mb-4 flex items-center">
           {/* Logo Image */}
           <Image
             src="/logo.jpg"
@@ -181,13 +181,13 @@ const FacultyProfileManagement: React.FC = () => {
           />
         </div>
       </div>
-
+  
       {/* Right Side with Toggle and Forms */}
-      <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
+      <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-100">
         <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">
           Profile Management
         </h1>
-
+  
         {/* Toggle Buttons */}
         <div className="flex justify-center mb-8 space-x-4">
           <button
@@ -195,7 +195,7 @@ const FacultyProfileManagement: React.FC = () => {
             className={`py-2 px-6 font-semibold rounded-lg ${
               activeTab === "password"
                 ? "bg-blue-600 text-white"
-                : "bg-gray-600 text-gray-300"
+                : "bg-gray-300 text-gray-900"
             }`}
           >
             Change Password
@@ -205,70 +205,69 @@ const FacultyProfileManagement: React.FC = () => {
             className={`py-2 px-6 font-semibold rounded-lg ${
               activeTab === "image"
                 ? "bg-blue-600 text-white"
-                : "bg-gray-600 text-gray-300"
+                : "bg-gray-300 text-gray-900"
             }`}
           >
             Upload Profile Image
           </button>
         </div>
-
+  
         {/* Conditional Rendering */}
         {activeTab === "password" && (
           <form onSubmit={handlePasswordChange} className="space-y-6">
             <div className="relative">
-              <label className="block text-sm font-semibold text-gray-300">
+              <label className="block text-sm font-semibold text-gray-700">
                 Current Password
               </label>
               <input
                 type={showPassword ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full p-4 bg-gray-200 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600"
               >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
             <div className="relative">
-              <label className="block text-sm font-semibold text-gray-300">
+              <label className="block text-sm font-semibold text-gray-700">
                 New Password
               </label>
               <input
                 type={showPassword ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full p-4 bg-gray-200 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600"
               >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
             <div className="relative">
-              <label className="block text-sm font-semibold
-                text-gray-300">
+              <label className="block text-sm font-semibold text-gray-700">
                 Confirm New Password
               </label>
               <input
                 type={showPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full p-4 bg-gray-200 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600"
               >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
@@ -283,24 +282,24 @@ const FacultyProfileManagement: React.FC = () => {
             </div>
           </form>
         )}
-
+  
         {activeTab === "image" && (
           <form onSubmit={handleImageUpload} className="mt-8 space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-300">
+              <label className="block text-sm font-semibold text-gray-700">
                 Upload Profile Image
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="mt-1 block w-full p-4 bg-gray-200 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               {imageData && (
                 <img
                   src={imageData}
                   alt="Profile Preview"
-                  className="mt-4 w-32 h-32 rounded-full mx-auto border-4 border-gray-600 shadow-lg"
+                  className="mt-4 w-32 h-32 rounded-full mx-auto border-4 border-gray-300 shadow-lg"
                 />
               )}
             </div>
@@ -317,7 +316,7 @@ const FacultyProfileManagement: React.FC = () => {
       </div>
       <ToastContainer />
     </div>
-  );
+  );  
 };
 
 export default FacultyProfileManagement;

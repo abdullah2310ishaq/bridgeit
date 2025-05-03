@@ -233,7 +233,7 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
                       isActiveLink(link)
-                        ? "text-green-500 bg-gray-700"
+                        ? "text-green-500 bg-gray-200"
                         : "text-gray-300 hover:text-green-500"
                     }`}
                   >
@@ -244,7 +244,7 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
             ))}
 
             {/* Profile Options */}
-            <div className="border-t border-gray-700"></div>
+            <div className="border-t border-grey-700"></div>
             <button
               onClick={() => {
                 router.push("/faculty/profile");
@@ -291,65 +291,65 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
           >
             <div className="fixed inset-0 bg-black bg-opacity-50" />
           </Transition.Child>
+{/* Dialog panel */}
+<div className="fixed inset-0 overflow-y-auto">
+  <div className="flex items-center justify-center min-h-full p-4 text-center">
+    <Transition.Child
+      as={React.Fragment}
+      enter="ease-out duration-300"
+      enterFrom="opacity-0 scale-95"
+      enterTo="opacity-100 scale-100"
+      leave="ease-in duration-200"
+      leaveFrom="opacity-100 scale-100"
+      leaveTo="opacity-0 scale-95"
+    >
+      <Dialog.Panel className="max-w-md w-full bg-white rounded-lg p-6 shadow-lg transform transition-all">
+        <div className="flex items-center space-x-4">
+          {/* Icon to enhance dialog appearance */}
+          <div className="bg-red-100 p-3 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 17v2a2 2 0 002 2h2a2 2 0 002-2v-2m4-10V7a2 2 0 00-2-2H9a2 2 0 00-2 2v4m12 5v-5m-4 0a2 2 0 01-2 2h-4a2 2 0 01-2-2v5m2 2H7"
+              />
+            </svg>
+          </div>
+          <Dialog.Title className="text-xl font-semibold text-gray-900">
+            Confirm Logout
+          </Dialog.Title>
+        </div>
 
-          {/* Dialog panel */}
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-full p-4 text-center">
-              <Transition.Child
-                as={React.Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="max-w-md w-full bg-gray-800 rounded-lg p-6 shadow-lg transform transition-all">
-                  <div className="flex items-center space-x-4">
-                    {/* Icon to enhance dialog appearance */}
-                    <div className="bg-red-100 p-3 rounded-full">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-red-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 17v2a2 2 0 002 2h2a2 2 0 002-2v-2m4-10V7a2 2 0 00-2-2H9a2 2 0 00-2 2v4m12 5v-5m-4 0a2 2 0 01-2 2h-4a2 2 0 01-2-2v5m2 2H7"
-                        />
-                      </svg>
-                    </div>
-                    <Dialog.Title className="text-xl font-semibold text-gray-100">
-                      Confirm Logout
-                    </Dialog.Title>
-                  </div>
-
-                  {/* Description */}
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-300">
-                      Are you sure you want to log out? You will need to log back in to access your account.
-                    </p>
-                  </div>
+        {/* Description */}
+        <div className="mt-4">
+          <p className="text-sm text-gray-700">
+            Are you sure you want to log out? You will need to log back in to access your account.
+          </p>
+        </div>
 
                   {/* Action buttons */}
-                  <div className="mt-6 flex justify-end space-x-4">
-                    <button
-                      onClick={handleCancelLogout}
-                      className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md transition"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleConfirmLogout}
-                      className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition"
-                    >
-                      Logout
-                    </button>
-                  </div>
+<div className="mt-6 flex justify-end space-x-4">
+  <button
+    onClick={handleCancelLogout}
+    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition"
+  >
+    Cancel
+  </button>
+  <button
+    onClick={handleConfirmLogout}
+    className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition"
+  >
+    Logout
+  </button>
+</div>
+
                 </Dialog.Panel>
               </Transition.Child>
             </div>

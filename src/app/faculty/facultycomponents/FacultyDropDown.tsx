@@ -98,7 +98,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         <FaChevronDown className="ml-2 text-gray-300 hover:text-green-500 transition duration-300" />
       </button>
       {dropdownOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white-100 ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-1" role="menu" aria-orientation="vertical">
             <div className="px-4 py-2 border-b border-gray-700 bg-gray-700 rounded-t-md">
               <p className="text-sm font-medium text-gray-200">

@@ -22,7 +22,7 @@ const ResearchWork: React.FC<ResearchWorkProps> = ({ papers }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {papers.length > 0 ? (
           papers.map((paper) => (
-            <div key={paper.id} className="flex items-center bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+            <div key={paper.id} className="flex items-center bg-gray-100 p-6 rounded-lg shadow-lg border border-gray-700">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-100 mb-2">{paper.paperName}</h3>
                 <p className="text-gray-400 mb-2">{paper.category}</p>

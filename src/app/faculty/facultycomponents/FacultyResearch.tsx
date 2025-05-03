@@ -26,12 +26,12 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
   return (
     <div>
       {/* Research Work Section Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center bg-gray-900 p-12 rounded-lg shadow-2xl mb-12 overflow-hidden mt-16 relative">
+      <div className="flex flex-col md:flex-row justify-between items-center bg-gray-100 p-12 rounded-lg shadow-2xl mb-12 overflow-hidden mt-16 relative">
         <div className="md:w-1/2 space-y-6 text-left text-white relative z-10">
           <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
             Explore Cutting-Edge Research
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-gray-700">
             Our dedicated faculty members contribute groundbreaking research across various fields. Dive
             into the innovation that
             s shaping the future.
@@ -61,7 +61,7 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
           <img
             src="/Research-Work.png"
             alt="Research Work"
-            className="w-full max-w-lg object-cover rounded-lg shadow-2xl transform hover:scale-105 transition"
+            className="w-full max-w-lg object-cover transform hover:scale-105 transition"
           />
         </div>
       </div>
@@ -71,7 +71,7 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
         {researchPapers.map((paper) => (
           <div
             key={paper.id}
-            className="bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"
+            className="bg-gray-100 p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:scale-105"
           >
             <h3 className="text-2xl font-semibold text-green-400">{paper.paperName}</h3>
             <p className="text-gray-400 mt-4">Published in: {paper.publishChannel}</p>

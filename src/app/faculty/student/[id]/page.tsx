@@ -65,35 +65,36 @@ const StudentProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+    <div className="min-h-screen bg-white text-gray-900 p-6">
       <h1 className="text-2xl font-bold mb-6">
         {student.firstName} {student.lastName}
       </h1>
-      <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg">
+      <div className="p-4 bg-gray-100 border border-gray-200 rounded-lg">
         <h2 className="text-lg font-semibold">Details</h2>
-        <p className="text-sm text-gray-400">Email: {student.email}</p>
-        <p className="text-sm text-gray-400">Department: {student.department}</p>
-        <p className="text-sm text-gray-400">University: {student.universityName}</p>
-        <p className="text-sm text-gray-400">Roll Number: {student.rollNumber}</p>
+        <p className="text-sm text-gray-600">Email: {student.email}</p>
+        <p className="text-sm text-gray-600">Department: {student.department}</p>
+        <p className="text-sm text-gray-600">University: {student.universityName}</p>
+        <p className="text-sm text-gray-600">Roll Number: {student.rollNumber}</p>
       </div>
-      <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg mt-6">
+      <div className="p-4 bg-gray-100 border border-gray-200 rounded-lg mt-6">
         <h2 className="text-lg font-semibold">Skills</h2>
         <ul>
           {student.skills.map((skill, index) => (
-            <li key={index} className="text-sm text-gray-300">
+            <li key={index} className="text-sm text-gray-700">
               {skill}
             </li>
           ))}
         </ul>
       </div>
       {student.description && (
-        <div className="p-4 bg-gray-800 border border-gray-700 rounded-lg mt-6">
+        <div className="p-4 bg-gray-100 border border-gray-200 rounded-lg mt-6">
           <h2 className="text-lg font-semibold">About</h2>
-          <p className="text-sm text-gray-300">{student.description}</p>
+          <p className="text-sm text-gray-700">{student.description}</p>
         </div>
       )}
     </div>
   );
+  
 };
 
 export default StudentProfilePage;

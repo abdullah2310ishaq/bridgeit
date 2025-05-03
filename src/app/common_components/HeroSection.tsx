@@ -51,7 +51,7 @@ export default function HeroSection() {
             alt="Hero Image"
             width={600}
             height={400}
-            className="rounded-2xl shadow-2xl relative z-10"
+            className="rounded-2xl relative z-10"
           />
         </div>
       </motion.div>

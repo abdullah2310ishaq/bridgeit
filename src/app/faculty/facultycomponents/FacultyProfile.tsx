@@ -110,7 +110,7 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
       }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gray-900 opacity-70"></div>
+      <div className="absolute inset-0 bg-gray-200 opacity-20"></div>
 
       {/* Profile Image */}
       <motion.div
@@ -137,17 +137,17 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
           {facultyProfile.firstName} {facultyProfile.lastName}
         </h2>
 
-        <p className="text-lg mt-4 text-gray-200 font-light">
+        <p className="text-lg mt-4 text-gray-100 font-light">
           Post: <span className="font-bold text-white">{facultyProfile.post}</span>
         </p>
-        <p className="text-lg mt-4 text-gray-200 font-light">
+        <p className="text-lg mt-4 text-gray-100 font-light">
           Department: <span className="font-bold text-white">{facultyProfile.department}</span>
         </p>
-        <p className="text-lg mt-4 text-gray-200 font-light">
+        <p className="text-lg mt-4 text-gray-100 font-light">
           Interests:{" "}
           <span className="font-bold text-white">{facultyProfile.interest.join(", ")}</span>
         </p>
-        <p className="text-lg mt-4 text-gray-200 font-light">
+        <p className="text-lg mt-4 text-gray-100 font-light">
           University: <span className="font-bold text-white">{facultyProfile.universityName}</span>
         </p>
 

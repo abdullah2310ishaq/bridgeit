@@ -184,7 +184,7 @@ const FacultyPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+    <div className="min-h-screen bg-gray-50 text-gray-600 p-6">
       {/* Profile Section */}
       <ProfileSection
         facultyProfile={facultyProfile}
@@ -194,13 +194,13 @@ const FacultyPage: React.FC = () => {
  <div className="space-y-4 mt-8">
   <button
     onClick={() => router.push("/faculty/idea")}
-    className="w-full py-3 px-6 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600"
+    className="py-3 px-6 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-600"
   >
     Create New Idea
   </button>
   <button
     onClick={() => router.push("/faculty/idea/viewidea")}
-    className="w-full py-3 px-6 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600"
+    className="py-3 px-6 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600"
   >
     View My Ideas
   </button>

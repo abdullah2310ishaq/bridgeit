@@ -180,141 +180,140 @@ const UpdateFacultyPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-gray-900 text-gray-200 p-8 space-x-8">
-  {/* Left Side with Gradient Text, Logo, and Edit Image */}
-  <div className="flex flex-col items-center lg:items-start lg:ml-16">
-    <h1 className="text-6xl font-extrabold text-white mb-4 flex items-center">
-      {/* Logo Image */}
-      <Image
-        src="/logo.jpg"
-        alt="Logo"
-        width={100}
-        height={100}
-        className="mx-4"
-      />
-      <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
-        Edit
-      </span>
-      <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 ml-2">
-        Profile
-      </span>
-    </h1>
-    {/* Edit Profile Image */}
-    <div className="mt-6">
-      <Image
-        src="/editpr.png"
-        alt="Edit Profile"
-        width={400}
-        height={300}
-        className="rounded-lg"
-      />
-    </div>
-  </div>
-
-  {/* Right Side with Form */}
-  <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-800">
-    <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">
-      Update Profile
-    </h1>
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* First Name */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-300">
-          First Name
-        </label>
-        <input
-          type="text"
-          name="firstName"
-          value={facultyData.firstName}
-          onChange={handleInputChange}
-          className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between bg-white text-gray-900 p-8 space-x-8">
+      {/* Left Side with Gradient Text, Logo, and Edit Image */}
+      <div className="flex flex-col items-center lg:items-start lg:ml-16">
+        <h1 className="text-6xl font-extrabold text-gray-900 mb-4 flex items-center">
+          {/* Logo Image */}
+          <Image
+            src="/logo.jpg"
+            alt="Logo"
+            width={100}
+            height={100}
+            className="mx-4"
+          />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+            Edit
+          </span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 ml-2">
+            Profile
+          </span>
+        </h1>
+        {/* Edit Profile Image */}
+        <div className="mt-6">
+          <Image
+            src="/editpr.png"
+            alt="Edit Profile"
+            width={400}
+            height={300}
+            className="rounded-lg"
+          />
+        </div>
       </div>
-
-      {/* Last Name */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-300">
-          Last Name
-        </label>
-        <input
-          type="text"
-          name="lastName"
-          value={facultyData.lastName}
-          onChange={handleInputChange}
-          className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-      </div>
-
-      {/* Email */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-300">
-          Email
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={facultyData.email}
-          onChange={handleInputChange}
-          className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-      </div>
-
-      {/* Post */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-300">
-          Post
-        </label>
-        <input
-          type="text"
-          name="post"
-          value={facultyData.post}
-          onChange={handleInputChange}
-          className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {/* Interest */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-300">
-          Interest (separated by commas)
-        </label>
-        <input
-          type="text"
-          name="interest"
-          value={facultyData.interest.join(",")}
-          onChange={handleInterestChange}
-          className="mt-1 block w-full p-4 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {/* Submit Button */}
-      <div className="flex justify-center">
-        <motion.button
-          type="submit"
-          className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-          disabled={loading}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+  
+      {/* Right Side with Form */}
+      <div className="w-full lg:max-w-xl p-6 rounded-lg shadow-lg bg-gray-100">
+        <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-8">
+          Update Profile
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* First Name */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              First Name
+            </label>
+            <input
+              type="text"
+              name="firstName"
+              value={facultyData.firstName}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 bg-gray-100 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+  
+          {/* Last Name */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              Last Name
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              value={facultyData.lastName}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 bg-gray-100 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+  
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={facultyData.email}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 bg-gray-100 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+  
+          {/* Post */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              Post
+            </label>
+            <input
+              type="text"
+              name="post"
+              value={facultyData.post}
+              onChange={handleInputChange}
+              className="mt-1 block w-full p-4 bg-gray-100 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+  
+          {/* Interest */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              Interest (separated by commas)
+            </label>
+            <input
+              type="text"
+              name="interest"
+              value={facultyData.interest.join(",")}
+              onChange={handleInterestChange}
+              className="mt-1 block w-full p-4 bg-gray-100 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+  
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <motion.button
+              type="submit"
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+              disabled={loading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {loading ? "Updating..." : "Update Profile"}
+            </motion.button>
+          </div>
+        </form>
+        {/* Back to Profile Button */}
+        <button
+          onClick={() => router.push("/faculty/profile")}
+          className="mt-6 py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300 w-full"
         >
-          {loading ? "Updating..." : "Update Profile"}
-        </motion.button>
+          Back to Profile
+        </button>
       </div>
-    </form>
-    {/* Back to Profile Button */}
-    <button
-      onClick={() => router.push("/faculty/profile")}
-      className="mt-6 py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-400 hover:to-purple-500 transition duration-300 w-full"
-    >
-      Back to Profile
-    </button>
-  </div>
-  <ToastContainer />
-</div>
-
-  );
+      <ToastContainer />
+    </div>
+  );  
 };
 
 export default UpdateFacultyPage;
