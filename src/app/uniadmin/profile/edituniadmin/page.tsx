@@ -108,11 +108,11 @@ const EditUniAdminProfile: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="text-center text-gray-400">Loading...</div>;
+  if (loading) return <div className="text-center text-gray-500">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-200 flex items-center justify-center p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-100 text-gray-700 flex items-center justify-center p-8 relative overflow-hidden">
       {/* Background Graphics */}
       <div className="absolute inset-0 z-0">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
@@ -120,7 +120,7 @@ const EditUniAdminProfile: React.FC = () => {
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-teal-500 to-indigo-500 rounded-full opacity-10 blur-2xl"></div>
       </div>
 
-      <div className="max-w-4xl w-full bg-gray-800 p-8 rounded-lg shadow-2xl relative z-10">
+      <div className="max-w-4xl w-full bg-gray-100 p-8 rounded-lg shadow-2xl relative z-10">
         {/* Header Section */}
         <div className="flex items-center justify-center mb-8">
           {/* Logo Image */}
@@ -147,7 +147,7 @@ const EditUniAdminProfile: React.FC = () => {
                   className="w-32 h-32 rounded-full border-4 border-blue-500 shadow-md hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gray-700 border-4 border-blue-500 flex items-center justify-center text-gray-400">
+                <div className="w-32 h-32 rounded-full bg-gray-100 border-4 border-blue-500 flex items-center justify-center text-gray-400">
                   No Image
                 </div>
               )}
@@ -158,7 +158,7 @@ const EditUniAdminProfile: React.FC = () => {
                 title="Upload Image"
               />
             </div>
-            <p className="text-sm text-gray-400 mt-3">
+            <p className="text-sm text-gray-700 mt-3">
               Click to upload a new profile image
             </p>
           </div>
@@ -171,11 +171,11 @@ const EditUniAdminProfile: React.FC = () => {
                 name="firstName"
                 value={form.firstName}
                 onChange={handleInputChange}
-                className="peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="peer w-full bg-gray-100 p-4 text-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=" "
               />
               <label
-                className="absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
+                className="absolute left-4 top-2 text-gray-700 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
               >
                 First Name
               </label>
@@ -186,11 +186,11 @@ const EditUniAdminProfile: React.FC = () => {
                 name="lastName"
                 value={form.lastName}
                 onChange={handleInputChange}
-                className="peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="peer w-full bg-gray-100 p-4 text-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=" "
               />
               <label
-                className="absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
+                className="absolute left-4 top-2 text-gray-700 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
               >
                 Last Name
               </label>
@@ -201,11 +201,11 @@ const EditUniAdminProfile: React.FC = () => {
                 name="officeAddress"
                 value={form.officeAddress}
                 onChange={handleInputChange}
-                className="peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="peer w-full bg-gray-100 p-4 text-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=" "
               />
               <label
-                className="absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
+                className="absolute left-4 top-2 text-gray-700 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
               >
                 Office Address
               </label>
@@ -216,11 +216,11 @@ const EditUniAdminProfile: React.FC = () => {
                 name="contact"
                 value={form.contact}
                 onChange={handleInputChange}
-                className="peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="peer w-full bg-gray-100 p-4 text-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=" "
               />
               <label
-                className="absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
+                className="absolute left-4 top-2 text-gray-700 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-700 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
               >
                 Contact
               </label>
@@ -231,11 +231,11 @@ const EditUniAdminProfile: React.FC = () => {
                 value={form.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="peer w-full bg-gray-700 p-4 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="peer w-full bg-gray-100 p-4 text-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder=" "
               />
               <label
-                className="absolute left-4 top-2 text-gray-400 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
+                className="absolute left-4 top-2 text-gray-700 text-sm peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-blue-400 transition-all"
               >
                 Description
               </label>

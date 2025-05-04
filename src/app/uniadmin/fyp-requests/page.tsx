@@ -177,7 +177,7 @@ const FypRequestsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <FaSpinner className="animate-spin text-4xl text-blue-500 mx-auto mb-4" />
           <p className="text-xl text-gray-300">Loading FYP requests...</p>
@@ -187,7 +187,7 @@ const FypRequestsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white py-10 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-100 text-white py-10 px-4 relative overflow-hidden">
       {/* Background Graphics */}
       <div className="absolute inset-0 z-0">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
