@@ -46,10 +46,10 @@ const StudentRegistration: React.FC = () => {
     const fetchData = async () => {
       try {
         const [universitiesRes, skillsRes, departmentsRes, emailsRes] = await Promise.all([
-          fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities"),
-          fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/skills/get-skills"),
-          fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Department/get-departments"),
-          fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/get-all-emails"),
+          fetch("https://localhost:7053/api/universities/get-all-universities"),
+          fetch("https://localhost:7053/api/skills/get-skills"),
+          fetch("https://localhost:7053/api/Department/get-departments"),
+          fetch("https://localhost:7053/api/register-user/get-all-emails"),
         ]);
 
         if (universitiesRes.ok) {
@@ -128,15 +128,15 @@ const StudentRegistration: React.FC = () => {
    // Regex for validating university email
     const universityEmailRegex = /^[0-9]+@students\.au\.edu\.pk$/;
   
-    if (!universityEmailRegex.test(enteredEmail)) {
-      setEmailError("Please use a valid university email (e.g., 210909@students.au.edu.pk).");
-      setIsSubmitDisabled(true);
-    } else if (registeredEmails.includes(enteredEmail)) {
-      setEmailError("This email is already registered.");
-      setIsSubmitDisabled(true);
-    } else {
-      setEmailError(null);
-    }
+    // if (!universityEmailRegex.test(enteredEmail)) {
+    //   setEmailError("Please use a valid university email (e.g., 210909@students.au.edu.pk).");
+    //   setIsSubmitDisabled(true);
+    // } else if (registeredEmails.includes(enteredEmail)) {
+    //   setEmailError("This email is already registered.");
+    //   setIsSubmitDisabled(true);
+    // } else {
+    //   setEmailError(null);
+    // }
   };
   
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,7 +213,7 @@ const StudentRegistration: React.FC = () => {
     try {
       sessionStorage.setItem("registrationData", JSON.stringify(registrationData));
 
-      const generateOtpResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/generate-otp", {
+      const generateOtpResponse = await fetch("https://localhost:7053/api/otp/generate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -222,7 +222,7 @@ const StudentRegistration: React.FC = () => {
       });
 
       if (generateOtpResponse.ok) {
-        const sendOtpResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/send-otp", {
+        const sendOtpResponse = await fetch("https://localhost:7053/api/otp/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

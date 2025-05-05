@@ -31,7 +31,7 @@ const IndustryFypPage: React.FC = () => {
       try {
         // Step 1: Fetch user info to get userId
         const authResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -47,7 +47,7 @@ const IndustryFypPage: React.FC = () => {
 
         // Step 2: Fetch faculty ID using userId
         const facultyResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -63,7 +63,7 @@ const IndustryFypPage: React.FC = () => {
 
         // Step 3: Fetch FYPs using facultyId
         const fypResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-fyp-by-faculty-id/${facultyId}`,
+          `https://localhost:7053/api/fyp/get-fyp-by-faculty-id/${facultyId}`,
           {
             method: "GET",
             headers: {

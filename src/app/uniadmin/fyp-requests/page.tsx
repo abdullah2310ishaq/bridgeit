@@ -39,7 +39,7 @@ const FypRequestsPage: React.FC = () => {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -54,7 +54,7 @@ const FypRequestsPage: React.FC = () => {
 
         // Step 2: Get university admin details
         const adminResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${userId}`,
+          `https://localhost:7053/api/get-uni-admins/admins-by-id/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ const FypRequestsPage: React.FC = () => {
 
         // Step 3: Fetch pending FYP requests for this university
         const requestsResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/pending-for-admin/${universityId}`,
+          `https://localhost:7053/api/ind-expert-request-fyp/pending-for-admin/${universityId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ const FypRequestsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/approve/${requestId}`,
+        `https://localhost:7053/api/ind-expert-request-fyp/approve/${requestId}`,
         {
           method: "PUT",
           headers: {
@@ -147,7 +147,7 @@ const FypRequestsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/reject/${requestId}`,
+        `https://localhost:7053/api/ind-expert-request-fyp/reject/${requestId}`,
         {
           method: "PUT",
           headers: {
@@ -172,7 +172,7 @@ const FypRequestsPage: React.FC = () => {
   }
 
   const viewFypDetails = (fypId: string) => {
-    router.push(`/uni-admin/fyp-details/${fypId}`)
+    router.push(`/uniadmin/fyp-details/${fypId}`)
   }
 
   if (loading) {

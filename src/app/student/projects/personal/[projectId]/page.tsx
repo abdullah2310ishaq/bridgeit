@@ -32,7 +32,7 @@ const ProjectDetailsPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

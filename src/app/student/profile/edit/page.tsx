@@ -41,7 +41,7 @@ const UpdateStudentPage: React.FC = () => {
       try {
         // Fetch authenticated user info
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -57,7 +57,7 @@ const UpdateStudentPage: React.FC = () => {
 
           // Fetch student-specific data
           const studentResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`,
+            `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -123,7 +123,7 @@ const UpdateStudentPage: React.FC = () => {
     try {
       // Update student basic info
       const updateStudentResponse = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/students/update-student/${studentId}`,
+        `https://localhost:7053/api/students/update-student/${studentId}`,
         {
           method: "PUT",
           headers: {
@@ -141,7 +141,7 @@ const UpdateStudentPage: React.FC = () => {
 
       // Update user description
       const updateDescriptionResponse = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/update-user-data/${userId}`,
+        `https://localhost:7053/api/edit-user-profile/update-user-data/${userId}`,
         {
           method: "PUT",
           headers: {

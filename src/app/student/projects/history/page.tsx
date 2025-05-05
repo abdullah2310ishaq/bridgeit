@@ -29,7 +29,7 @@ const ProposalHistoryPage: React.FC = () => {
       try {
         // Fetch the authorized user's profile (student)
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -48,7 +48,7 @@ const ProposalHistoryPage: React.FC = () => {
 
         // Fetch the student ID using the userId
         const studentResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`,
+          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -67,7 +67,7 @@ const ProposalHistoryPage: React.FC = () => {
 
         // Fetch proposals for the student using their student ID
         const proposalsResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-proposals/get-proposal-for-student/${studentId}`,
+          `https://localhost:7053/api/project-proposals/get-proposal-for-student/${studentId}`,
           {
             method: "GET",
             headers: {

@@ -44,7 +44,7 @@ const UpdateFacultyPage: React.FC = () => {
       try {
         // Step 1: Fetch authorized user info
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -60,7 +60,7 @@ const UpdateFacultyPage: React.FC = () => {
 
           // Step 2: Fetch faculty data using userId
           const facultyResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+            `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -133,7 +133,7 @@ const UpdateFacultyPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/faculties/update-faculty/${userId}`,
+        `https://localhost:7053/api/faculties/update-faculty/${userId}`,
         {
           method: "PUT",
           headers: {

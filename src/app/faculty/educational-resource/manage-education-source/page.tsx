@@ -48,7 +48,7 @@ const ManageEducationalResources = () => {
 
         // First get the faculty ID
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -64,7 +64,7 @@ const ManageEducationalResources = () => {
 
         // Get faculty details
         const facultyResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -81,7 +81,7 @@ const ManageEducationalResources = () => {
 
         // Get resources by faculty ID
         const resourcesResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-by-id/${facultyId}`,
+          `https://localhost:7053/api/educational-resources/get-by-id/${facultyId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -124,7 +124,7 @@ const ManageEducationalResources = () => {
       }
 
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/delete/${id}`,
+        `https://localhost:7053/api/educational-resources/delete/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -174,7 +174,7 @@ const ManageEducationalResources = () => {
       }
 
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/update/${editingResource.id}`,
+        `https://localhost:7053/api/educational-resources/update/${editingResource.id}`,
         {
           method: "PUT",
           headers: {

@@ -26,7 +26,7 @@ const CreateResearchPaperPage: React.FC = () => {
 
       try {
         // Fetch authorized user info
-        const userResponse = await fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info', {
+        const userResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ const CreateResearchPaperPage: React.FC = () => {
           const userId = userData.userId;
 
           // Fetch faculty details using userId
-          const facultyResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`, {
+          const facultyResponse = await fetch(`https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ const CreateResearchPaperPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ResearchWork/add-researchpaper', {
+      const response = await fetch('https://localhost:7053/api/ResearchWork/add-researchpaper', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
