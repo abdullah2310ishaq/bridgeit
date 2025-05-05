@@ -40,7 +40,7 @@ const IdeaRequestHistoryPage: React.FC = () => {
 
       try {
         const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -57,7 +57,7 @@ const IdeaRequestHistoryPage: React.FC = () => {
         const facultyId = profileData.userId;
 
         const response = await fetch(
-          `https://localhost:7053/api/interested-for-idea/get-interested-students-requests/${facultyId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/get-interested-students-requests/${facultyId}`,
           {
             method: "GET",
             headers: {

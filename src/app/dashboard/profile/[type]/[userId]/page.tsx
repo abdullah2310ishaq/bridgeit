@@ -37,13 +37,13 @@ async function fetchProfile(type: string, userId: string): Promise<UserProfile |
 
     switch (type) {
       case 'student':
-        url = `https://localhost:7053/api/get-student/student-by-id/${userId}`;
+        url = `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`;
         break;
       case 'faculty':
-        url = `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`;
+        url = `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`;
         break;
       case 'industry':
-        url = `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`;
+        url = `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`;
         break;
       default:
         throw new Error('Invalid type');
@@ -64,7 +64,7 @@ async function fetchProfile(type: string, userId: string): Promise<UserProfile |
 
 async function fetchUniversityById(universityId: string): Promise<UniversityDTO | null> {
   try {
-    const response = await fetch(`https://localhost:7053/api/universities/get-university-by-id/${universityId}`);
+    const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-university-by-id/${universityId}`);
     if (!response.ok) {
       return null;
     }

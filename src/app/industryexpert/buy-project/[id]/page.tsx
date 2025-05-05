@@ -56,7 +56,7 @@ export default function BuyProjectPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -69,7 +69,7 @@ export default function BuyProjectPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -82,7 +82,7 @@ export default function BuyProjectPage() {
 
         // Step 3: Fetch FYP details
         const fypResponse = await fetch(
-          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -122,7 +122,7 @@ export default function BuyProjectPage() {
 
     try {
       const response = await fetch(
-        `https://localhost:7053/api/payments/create-checkout-session/fyp/${fyp.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/fyp/${fyp.id}`,
         {
           method: "POST",
           headers: {

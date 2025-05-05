@@ -37,7 +37,7 @@ const AddEducationalResource = () => {
 
       // First get the faculty ID
       const profileResponse = await fetch(
-        "https://localhost:7053/api/auth/authorized-user-info",
+        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +53,7 @@ const AddEducationalResource = () => {
 
       // Get faculty details
       const facultyResponse = await fetch(
-        `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -69,7 +69,7 @@ const AddEducationalResource = () => {
 
       // Add the educational resource
       const response = await fetch(
-        "https://localhost:7053/api/educational-resources/add",
+        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/add",
         {
           method: "POST",
           headers: {

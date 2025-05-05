@@ -78,7 +78,7 @@ export default function FYPMarketplacePage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -91,7 +91,7 @@ export default function FYPMarketplacePage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -104,7 +104,7 @@ export default function FYPMarketplacePage() {
 
         // Step 3: Fetch all faculties
         const facultiesResponse = await fetch(
-          "https://localhost:7053/api/get-faculty/faculties",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculties",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -121,7 +121,7 @@ export default function FYPMarketplacePage() {
         for (const faculty of facultiesData) {
           try {
             const fypResponse = await fetch(
-              `https://localhost:7053/api/fyp/get-fyp-by-faculty-id/${faculty.id}`,
+              `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-fyp-by-faculty-id/${faculty.id}`,
               {
                 headers: { Authorization: `Bearer ${token}` },
               },
@@ -150,7 +150,7 @@ export default function FYPMarketplacePage() {
         try {
           // Try to fetch "Buy" FYPs (completed projects)
           const buyFypsResponse = await fetch(
-            "https://localhost:7053/api/fyp/for-marketplace/buy",
+            "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/for-marketplace/buy",
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -158,7 +158,7 @@ export default function FYPMarketplacePage() {
 
           // Try to fetch "Sponsor" FYPs (ongoing projects)
           const sponsorFypsResponse = await fetch(
-            "https://localhost:7053/api/fyp/for-marketplace/sponsor",
+            "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/for-marketplace/sponsor",
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -283,7 +283,7 @@ export default function FYPMarketplacePage() {
 
     try {
       const response = await fetch(
-        `https://localhost:7053/api/ind-expert-request-fyp/add/${selectedFyp.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/add/${selectedFyp.id}`,
         {
           method: "POST",
           headers: {

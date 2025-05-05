@@ -23,7 +23,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "https://localhost:7053/api/forgot-password/generate-otp",
+        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/forgot-password/generate-otp",
         {
           method: "POST",
           headers: {

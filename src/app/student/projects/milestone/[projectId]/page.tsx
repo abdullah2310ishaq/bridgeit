@@ -34,8 +34,6 @@ interface ProjectDetails {
   expertName: string
   indExpertId: string
   iExptUserId: string
-
-  link?: string
 }
 
 interface MilestoneComment {
@@ -87,9 +85,6 @@ const ProjectProgressTracker: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([])
   const [newReviewText, setNewReviewText] = useState("")
   const [newReviewRating, setNewReviewRating] = useState<number>(0)
-  // Project link for deployment
-  const [projectLink, setProjectLink] = useState<string>("")
-  const [showLinkModal, setShowLinkModal] = useState<boolean>(false)
 
   // Modal state for add/edit milestone
   const [showModal, setShowModal] = useState(false)
@@ -127,29 +122,35 @@ const ProjectProgressTracker: React.FC = () => {
       if (!projectId) return
       try {
         // Get authorized user info (student's userId)
-        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const authRes = await fetch(
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (authRes.ok) {
           const authData = await authRes.json()
           setStudentUserId(authData.userId)
         }
         // Fetch project details (which includes student info and expert info)
-        const resProject = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const resProject = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (resProject.ok) {
           const projectData = await resProject.json()
           setProject(projectData)
           setExpertUserId(projectData.iExptUserId)
-          if (projectData.link) {
-            setProjectLink(projectData.link)
-          }
         }
         // Fetch milestones
-        const resMilestones = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const resMilestones = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
         if (resMilestones.ok) {
           const data = await resMilestones.json()
           const today = new Date().toISOString().split("T")[0]
@@ -195,9 +196,12 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
     try {
-      const res = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         const today = new Date().toISOString().split("T")[0]
@@ -270,14 +274,17 @@ const ProjectProgressTracker: React.FC = () => {
     try {
       if (editItemId) {
         // Edit milestone
-        const res = await fetch(`https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/update-milestone?milesstoneId=${editItemId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(itemFormData),
           },
-          body: JSON.stringify(itemFormData),
-        })
+        )
         if (!res.ok) {
           console.error("Failed to update milestone. Status:", res.status)
           toast.error("Failed to update milestone")
@@ -287,14 +294,17 @@ const ProjectProgressTracker: React.FC = () => {
         }
       } else {
         // Add milestone
-        const res = await fetch(`https://localhost:7053/api/milestone/add-milestone/${projectId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/add-milestone/${projectId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(itemFormData),
           },
-          body: JSON.stringify(itemFormData),
-        })
+        )
         if (!res.ok) {
           console.error("Failed to add milestone. Status:", res.status)
           toast.error("Failed to add milestone")
@@ -320,7 +330,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -342,9 +352,12 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/get-tasks/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setTasks(data)
@@ -378,12 +391,15 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
+      )
 
       if (res.ok) {
         // Update local state to show task as completed
@@ -410,18 +426,21 @@ const ProjectProgressTracker: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/add-review/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ReviewerId: studentUserId,
+            Review: newReviewText,
+            Rating: newReviewRating,
+          }),
         },
-        body: JSON.stringify({
-          ReviewerId: studentUserId,
-          Review: newReviewText,
-          Rating: newReviewRating,
-        }),
-      })
+      )
       if (res.ok) {
         toast.success("Review added successfully.")
         setNewReviewText("")
@@ -443,9 +462,12 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/get-reviews/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         setReviews(data)
@@ -458,47 +480,7 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   // -----------------------------
-  // 9) Handle Project Link Submission
-  // -----------------------------
-  const handleSubmitProjectLink = async () => {
-    if (!projectLink.trim()) {
-      toast.error("Please enter a valid project link")
-      return
-    }
-
-    const token = localStorage.getItem("jwtToken")
-    if (!token || !projectId) return
-
-    try {
-      const res = await fetch(`https://localhost:7053/api/projects/deployement/${projectId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(projectLink),
-      })
-
-      if (res.ok) {
-        toast.success("Project link submitted successfully")
-        setProject((prev) => (prev ? { ...prev, link: projectLink } : prev))
-        setShowLinkModal(false)
-
-        // Now proceed with the completion request
-        await submitCompletionRequest()
-      } else {
-        const errorText = await res.text()
-        console.error("Failed to submit project link:", res.status, errorText)
-        toast.error(`Failed to submit project link: ${errorText || "Unknown error"}`)
-      }
-    } catch (err) {
-      console.error("Error submitting project link:", err)
-      toast.error(`Error submitting project link: ${err || "Unknown error"}`)
-    }
-  }
-
-  // -----------------------------
-  // 10) Handle Request Project Completion (Student requests completion)
+  // 9) Handle Request Project Completion (Student requests completion)
   // -----------------------------
   const handleRequestCompletion = async () => {
     // Prevent sending another request if one is already pending
@@ -507,26 +489,28 @@ const ProjectProgressTracker: React.FC = () => {
       return
     }
 
-    // Always show the link modal first when requesting completion
-    setShowLinkModal(true)
-  }
-
-  // Add a new function to handle the actual completion request submission
-  const submitCompletionRequest = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to request project completion? This will notify the industry expert for approval.",
+      )
+    )
+      return
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
-
     try {
       // Using the correct API endpoint from the controller
       // The API expects a raw GUID in the request body, not a JSON object
-      const res = await fetch(`https://localhost:7053/api/request-for-project-completion/put-completion-request`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/put-completion-request`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(projectId), // Send the projectId as a raw string
         },
-        body: JSON.stringify(projectId), // Send the projectId as a raw string
-      })
+      )
 
       if (res.ok) {
         toast.success("Completion request sent. Awaiting industry expert approval.")
@@ -545,7 +529,7 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   // -----------------------------
-  // 11) Handle Payment Process (After project is completed)
+  // 10) Handle Payment Process (After project is completed)
   // -----------------------------
   const handlePaymentProcess = async () => {
     if (!isProjectComplete) return
@@ -569,7 +553,7 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${studentUserId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-completion-request/${studentUserId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -635,10 +619,10 @@ const ProjectProgressTracker: React.FC = () => {
                 project?.status === "Completed"
                   ? "bg-green-900 text-green-300"
                   : project?.status === "PendingCompletion"
-                    ? "bg-yellow-900 text-yellow-300"
-                    : project?.status === "PaymentPending"
-                      ? "bg-blue-900 text-blue-300"
-                      : "bg-blue-900 text-blue-300"
+                  ? "bg-yellow-900 text-yellow-300"
+                  : project?.status === "PaymentPending"
+                  ? "bg-blue-900 text-blue-300"
+                  : "bg-blue-900 text-blue-300"
               }`}
             >
               {project?.status}
@@ -660,19 +644,6 @@ const ProjectProgressTracker: React.FC = () => {
               "N/A"
             )}
           </p>
-          {project?.link && (
-            <p className="mb-1">
-              <strong className="text-green-300">Project Link:</strong>{" "}
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-green-400 hover:text-green-300"
-              >
-                {project.link}
-              </a>
-            </p>
-          )}
         </div>
 
         {/* Project Status Actions */}
@@ -837,7 +808,12 @@ const ProjectProgressTracker: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-800 rounded-lg">
-            <svg className="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-16 h-16 mx-auto text-gray-600 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -1035,49 +1011,11 @@ const ProjectProgressTracker: React.FC = () => {
               >
                 Cancel
               </button>
-              <button onClick={handleSaveItem} className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white">
-                {editItemId ? "Update" : "Save"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Project Link Modal */}
-      {showLinkModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
-            <h3 className="text-xl font-bold text-green-400 mb-4">Submit Project Link</h3>
-            <p className="text-gray-300 mb-4">
-              Please provide a link to your deployed project before requesting completion.
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Project URL <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://your-project-url.com"
-                  value={projectLink}
-                  onChange={(e) => setProjectLink(e.target.value)}
-                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
               <button
-                onClick={() => setShowLinkModal(false)}
-                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitProjectLink}
+                onClick={handleSaveItem}
                 className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white"
               >
-                Submit & Request Completion
+                {editItemId ? "Update" : "Save"}
               </button>
             </div>
           </div>

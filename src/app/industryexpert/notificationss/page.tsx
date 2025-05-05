@@ -39,7 +39,7 @@ const NotificationsPage: React.FC = () => {
   const router = useRouter();
 
   // Base URL for the backend API
-  const BACKEND_URL = "https://localhost:7053";
+  const BACKEND_URL = "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net";
 
   // --------------------------------------------------
   // 1) Fetch proposals on component mount

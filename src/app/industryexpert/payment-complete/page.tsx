@@ -33,7 +33,7 @@ export default function PaymentSuccessPage() {
       try {
         // Fetch the bought FYP details
         const response = await fetch(
-          `https://localhost:7053/api/bought-fyp/by-id/${projectId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/by-id/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

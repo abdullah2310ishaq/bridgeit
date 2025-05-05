@@ -63,6 +63,11 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
       name: "Notifications",
       href: "/industryexpert/notifications",
     },
+
+    {
+      name: "FYP MarketPlace",
+      href: "/industryexpert/fyp-marketplace",
+    },
   ];
 
   const isActiveLink = (link: { href: string; children?: any[] }) => {

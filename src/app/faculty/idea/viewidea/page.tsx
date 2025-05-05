@@ -54,7 +54,7 @@ const FacultyIdeasPage: React.FC = () => {
       try {
         // Step 1: Fetch the authorized user profile
         const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -72,7 +72,7 @@ const FacultyIdeasPage: React.FC = () => {
 
         // Step 2: Fetch faculty details using userId
         const facultyResponse = await fetch(
-          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -107,7 +107,7 @@ const FacultyIdeasPage: React.FC = () => {
 
         // Step 3: Fetch ideas using facultyId
         const ideasResponse = await fetch(
-          `https://localhost:7053/api/ideas/get-ideas-by-faculty-id/${facultyData.id}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-ideas-by-faculty-id/${facultyData.id}`,
           {
             method: "GET",
             headers: {
