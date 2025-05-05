@@ -56,7 +56,7 @@ export default function SponsorAgreementPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -69,13 +69,15 @@ export default function SponsorAgreementPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         )
 
-        if (!expertResponse.ok) throw new Error("Failed to fetch industry expert details")
+        if (!expertResponse.ok) {
+          throw new Error("Failed to fetch industry expert details")
+        }
 
         const expertData = await expertResponse.json()
         setIndustryExpertId(expertData.indExptId)
@@ -83,7 +85,7 @@ export default function SponsorAgreementPage() {
 
         // Step 3: Fetch FYP details
         const fypResponse = await fetch(
-          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -193,7 +195,29 @@ By proceeding with this sponsorship, all parties acknowledge their agreement to 
     document.body.removeChild(link)
   }
 
-  // Update the handleSubmit function to properly submit the sponsorship agreement
+  // Update the convertFileToBase64 function to ensure proper base64 conversion
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsArrayBuffer(file)
+      reader.onload = () => {
+        if (reader.result) {
+          const bytes = new Uint8Array(reader.result as ArrayBuffer)
+          let binary = ""
+          for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i])
+          }
+          const base64 = window.btoa(binary)
+          resolve(base64)
+        } else {
+          reject(new Error("Failed to convert file to base64"))
+        }
+      }
+      reader.onerror = (error) => reject(error)
+    })
+  }
+
+  // Update the handleSubmit function to properly handle the base64 conversion
   const handleSubmit = async () => {
     if (!agreementFile || !industryExpertId || !fyp) {
       toast.error("Please upload a signed agreement document")
@@ -207,8 +231,10 @@ By proceeding with this sponsorship, all parties acknowledge their agreement to 
       // Convert file to base64
       const base64 = await convertFileToBase64(agreementFile)
 
+      console.log("Uploading sponsor agreement for FYP:", fyp.id)
+
       const response = await fetch(
-        `https://localhost:7053/api/fyp-meeting/sponsor-fyp/${fyp.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/sponsor-fyp/${fyp.id}`,
         {
           method: "POST",
           headers: {
@@ -229,31 +255,16 @@ By proceeding with this sponsorship, all parties acknowledge their agreement to 
         }, 2000)
       } else {
         const errorText = await response.text()
+        console.error("Sponsor agreement error:", errorText)
         toast.error(`Failed to submit agreement: ${errorText}`)
       }
     } catch (err) {
-      toast.error("An error occurred while submitting the agreement")
+      const errorMessage = err instanceof Error ? err.message : "An error occurred while submitting the agreement"
+      toast.error(errorMessage)
       console.error(err)
     } finally {
       setSubmitting(false)
     }
-  }
-
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
-          const base64String = reader.result.split(",")[1]
-          resolve(base64String)
-        } else {
-          reject(new Error("Failed to convert file to base64"))
-        }
-      }
-      reader.onerror = (error) => reject(error)
-    })
   }
 
   if (loading) {

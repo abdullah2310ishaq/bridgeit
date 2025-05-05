@@ -56,6 +56,7 @@ export default function PurchaseAgreementPage() {
   const [submitting, setSubmitting] = useState(false)
   const [agreementText, setAgreementText] = useState<string>("")
   const [price, setPrice] = useState<number>(10000) // Default price in PKR
+  const [boughtFypId, setBoughtFypId] = useState<string | null>(null)
 
   const router = useRouter()
   const params = useParams()
@@ -72,7 +73,7 @@ export default function PurchaseAgreementPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -85,7 +86,7 @@ export default function PurchaseAgreementPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -99,7 +100,7 @@ export default function PurchaseAgreementPage() {
 
         // Step 3: Fetch FYP details
         const fypResponse = await fetch(
-          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -109,6 +110,23 @@ export default function PurchaseAgreementPage() {
 
         const fypData = await fypResponse.json()
         setFyp(fypData)
+
+        // Step 4: Check if there's already a bought FYP record
+        try {
+          const boughtFypResponse = await fetch(
+            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/by-id/${fypId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          )
+
+          if (boughtFypResponse.ok) {
+            const boughtFypData = await boughtFypResponse.json()
+            setBoughtFypId(boughtFypData.id)
+          }
+        } catch (err) {
+          console.log("No existing bought FYP record found, will create one during checkout")
+        }
 
         // Generate agreement text
         generateAgreementText(fypData, `${expertData.firstName} ${expertData.lastName}`)
@@ -205,7 +223,39 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
     document.body.removeChild(link)
   }
 
-  // Update the handleSubmit function to properly handle the purchase agreement and payment flow
+  // Create a bought FYP record if it doesn't exist
+  const createBoughtFypRecord = async (token: string): Promise<string> => {
+    if (boughtFypId) return boughtFypId
+
+    try {
+      const response = await fetch(
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            fypId: fyp?.id,
+            indExpertId: industryExpertId,
+            price: price,
+          }),
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error("Failed to create bought FYP record")
+      }
+
+      const data = await response.json()
+      return data.id
+    } catch (err) {
+      throw new Error("Failed to create bought FYP record: " + (err instanceof Error ? err.message : String(err)))
+    }
+  }
+
+  // Update the handleSubmit function to properly handle the base64 conversion
   const handleSubmit = async () => {
     if (!agreementFile || !industryExpertId || !fyp) {
       toast.error("Please upload a signed agreement document")
@@ -216,12 +266,17 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
     const token = localStorage.getItem("jwtToken")
 
     try {
+      // First, ensure we have a bought FYP record
+      const recordId = await createBoughtFypRecord(token!)
+
       // Convert file to base64
       const base64 = await convertFileToBase64(agreementFile)
 
-      // First, upload the agreement
+      console.log("Uploading agreement to ID:", recordId)
+
+      // Upload the agreement
       const agreementResponse = await fetch(
-        `https://localhost:7053/api/bought-fyp/add-agreement/${fyp.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/add-agreement/${recordId}`,
         {
           method: "PATCH",
           headers: {
@@ -233,12 +288,14 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
       )
 
       if (!agreementResponse.ok) {
-        throw new Error("Failed to upload agreement")
+        const errorText = await agreementResponse.text()
+        console.error("Agreement upload error:", errorText)
+        throw new Error(`Failed to upload agreement: ${errorText}`)
       }
 
       // Then, create checkout session for payment
       const checkoutResponse = await fetch(
-        `https://localhost:7053/api/payments/create-checkout-session/fyp/${fyp.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/fyp/${fyp.id}`,
         {
           method: "POST",
           headers: {
@@ -261,22 +318,28 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
         toast.error(`Failed to create payment: ${errorText}`)
       }
     } catch (err) {
-      toast.error("An error occurred while processing your request")
+      const errorMessage = err instanceof Error ? err.message : "An error occurred while processing your request"
+      toast.error(errorMessage)
       console.error(err)
     } finally {
       setSubmitting(false)
     }
   }
 
+  // Update the convertFileToBase64 function to ensure proper base64 conversion
   const convertFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.readAsDataURL(file)
+      reader.readAsArrayBuffer(file)
       reader.onload = () => {
-        if (typeof reader.result === "string") {
-          // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
-          const base64String = reader.result.split(",")[1]
-          resolve(base64String)
+        if (reader.result) {
+          const bytes = new Uint8Array(reader.result as ArrayBuffer)
+          let binary = ""
+          for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i])
+          }
+          const base64 = window.btoa(binary)
+          resolve(base64)
         } else {
           reject(new Error("Failed to convert file to base64"))
         }

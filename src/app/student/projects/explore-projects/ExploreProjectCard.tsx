@@ -33,7 +33,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     <motion.div
       onClick={!hasPending ? onClick : undefined}
       className={`
-        bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg rounded-2xl p-6 
+        bg-gray-100shadow-lg rounded-2xl p-6 
         transition-all duration-300 relative group overflow-hidden
         ${hasPending ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:shadow-2xl"}
       `}

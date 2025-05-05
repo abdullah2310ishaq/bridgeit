@@ -312,7 +312,7 @@ const RegisterFypPage: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-300 p-6">
+      <div className="min-h-screen bg-gray-100text-gray-300 p-6">
         <div className="max-w-3xl mx-auto bg-gray-800 shadow-lg rounded-lg p-8">
           <h1 className="text-3xl font-bold text-center text-purple-300 mb-6">Register Your FYP</h1>
 

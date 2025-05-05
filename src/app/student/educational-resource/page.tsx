@@ -150,7 +150,7 @@ const StudentEducationalResources = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 text-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -166,7 +166,7 @@ const StudentEducationalResources = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6">
+      <div className="min-h-screen bg-gray-100text-white p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -189,7 +189,7 @@ const StudentEducationalResources = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8">
+    <div className="min-h-screen bg-gray-100text-white p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

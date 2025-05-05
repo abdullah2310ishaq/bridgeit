@@ -10,7 +10,7 @@ interface CompanyProfileProps {
 
 const CompanyProfile: React.FC<CompanyProfileProps> = ({ companyName, address, contact, onEditCompany }) => {
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl shadow-2xl mb-12 mt-16 relative overflow-hidden">
+    <div className="bg-gray-100p-8 rounded-2xl shadow-2xl mb-12 mt-16 relative overflow-hidden">
     <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600"></div>
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
       <div className="flex-1">

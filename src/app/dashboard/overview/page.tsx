@@ -46,7 +46,7 @@ const OverviewPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-10">
+    <div className="min-h-screen bg-gray-100p-10">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-extrabold text-blue-400 text-center mb-12">Impact Overview</h1>
 

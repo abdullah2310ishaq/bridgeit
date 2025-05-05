@@ -76,7 +76,7 @@ const AddUniversityPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-8 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-gray-100p-8 flex flex-col items-center justify-center">
       <h1 className="text-4xl font-extrabold text-green-400 mb-6">
         Add New University
       </h1>

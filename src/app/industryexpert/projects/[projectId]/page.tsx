@@ -78,7 +78,7 @@ const ProjectDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-300 p-6">
+    <div className="min-h-screen bg-gray-100text-gray-300 p-6">
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-5xl font-extrabold text-green-400">{project.title}</h1>

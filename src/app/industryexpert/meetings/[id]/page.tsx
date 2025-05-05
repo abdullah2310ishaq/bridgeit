@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { ToastContainer, toast } from "react-toastify"
@@ -55,9 +53,6 @@ export default function MeetingDetailsPage() {
   const [feedback, setFeedback] = useState("")
   const [meetingStatus, setMeetingStatus] = useState<"successful" | "needs-improvement" | "">("")
   const [submitting, setSubmitting] = useState(false)
-  const [showAgreementModal, setShowAgreementModal] = useState(false)
-  const [agreementFile, setAgreementFile] = useState<File | null>(null)
-  const [agreementPreview, setAgreementPreview] = useState<string | null>(null)
   const [isSponsored, setIsSponsored] = useState(false)
   const [currentYear] = useState(new Date().getFullYear())
 
@@ -193,41 +188,6 @@ export default function MeetingDetailsPage() {
     } finally {
       setSubmitting(false)
     }
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setAgreementFile(file)
-
-      // Create preview for PDF files
-      if (file.type === "application/pdf") {
-        const reader = new FileReader()
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            setAgreementPreview(event.target.result as string)
-          }
-        }
-        reader.readAsDataURL(file)
-      }
-    }
-  }
-
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
-          const base64String = reader.result.split(",")[1]
-          resolve(base64String)
-        } else {
-          reject(new Error("Failed to convert file to base64"))
-        }
-      }
-      reader.onerror = (error) => reject(error)
-    })
   }
 
   const handleSponsorProject = () => {

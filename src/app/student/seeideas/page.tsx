@@ -163,7 +163,7 @@ const IdeasPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100text-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-6">Ideas from Your University</h1>
 
       {/* Student Profile Info */}

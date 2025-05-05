@@ -36,7 +36,7 @@ export default function BuyProjectPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [fyp, setFyp] = useState<FYP | null>(null)
-  const [price, setPrice] = useState<number>(20000)
+  const [price, setPrice] = useState<number>(20000) // Default price in PKR
   const [industryExpertId, setIndustryExpertId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [showAgreement, setShowAgreement] = useState(false)
