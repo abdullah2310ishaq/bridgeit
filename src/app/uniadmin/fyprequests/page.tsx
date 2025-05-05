@@ -107,7 +107,7 @@ const FypRequestsPage: React.FC = () => {
   if (loading) return <div className="text-center text-gray-400">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white py-10 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 text-white py-10 relative overflow-hidden">
       {/* Background Graphics */}
       <div className="absolute inset-0 z-0">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
@@ -143,7 +143,7 @@ const FypRequestsPage: React.FC = () => {
       <div
         key={fyp.fId}
         onClick={() => router.push(`/uniadmin/fyprequests/${fyp.fId}`)}
-        className="relative flex flex-col md:flex-row items-center bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 p-6 border border-gray-700 overflow-hidden"
+        className="relative flex flex-col md:flex-row items-center bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 p-6 border border-gray-700 overflow-hidden"
       >
         {/* Icon Section */}
         <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-500 rounded-full flex items-center justify-center shadow-md">
@@ -152,8 +152,8 @@ const FypRequestsPage: React.FC = () => {
 
         {/* Content Section */}
         <div className="flex-grow ml-0 md:ml-6 mt-4 md:mt-0 text-center md:text-left">
-          <h2 className="text-2xl font-bold text-white mb-2">{fyp.title}</h2>
-          <div className="text-sm text-gray-300 space-y-1">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">{fyp.title}</h2>
+          <div className="text-sm text-gray-700 space-y-1">
             <p>
               <strong>Batch:</strong> {fyp.batch}
             </p>
@@ -185,7 +185,7 @@ const FypRequestsPage: React.FC = () => {
     ))}
   </div>
 ) : (
-  <div className="text-center text-gray-400 mt-10">
+  <div className="text-center text-gray-500 mt-10">
     <p className="text-lg">There are no FYP requests matching the selected filter.</p>
   </div>
 )}

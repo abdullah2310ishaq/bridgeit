@@ -82,10 +82,10 @@ const FypDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <FaSpinner className="animate-spin text-4xl text-blue-500 mx-auto mb-4" />
-          <p className="text-xl text-gray-300">Loading FYP details...</p>
+          <p className="text-xl text-gray-500">Loading FYP details...</p>
         </div>
       </div>
     )
@@ -93,10 +93,10 @@ const FypDetailsPage: React.FC = () => {
 
   if (error || !fyp) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="bg-red-900/30 border border-red-700 rounded-lg p-6 max-w-md">
           <h2 className="text-2xl font-bold text-red-300 mb-2">Error</h2>
-          <p className="text-gray-300 mb-4">{error || "FYP not found"}</p>
+          <p className="text-gray-500 mb-4">{error || "FYP not found"}</p>
           <button
             onClick={() => router.push("/uni-admin/fyp-requests")}
             className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md flex items-center space-x-2"
@@ -110,7 +110,7 @@ const FypDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white py-10 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-100 text-white py-10 px-4 relative overflow-hidden">
       {/* Background Graphics */}
       <div className="absolute inset-0 z-0">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl"></div>
@@ -121,13 +121,13 @@ const FypDetailsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto relative z-10">
         <button
           onClick={() => router.push("/uni-admin/fyp-requests")}
-          className="flex items-center space-x-2 text-gray-400 hover:text-white mb-6 transition-colors"
+          className="flex items-center space-x-2 text-gray-500 hover:text-white mb-6 transition-colors"
         >
           <FaArrowLeft />
           <span>Back to Requests</span>
         </button>
 
-        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700 mb-8">
+        <div className="bg-gray-100 rounded-lg shadow-lg overflow-hidden border border-gray-700 mb-8">
           <div className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
               <div>
@@ -167,13 +167,13 @@ const FypDetailsPage: React.FC = () => {
               )}
             </div>
 
-            <div className="bg-gray-700/50 rounded-lg p-6 mb-8">
+            <div className="bg-gray-100/50 rounded-lg p-6 mb-8">
               <h2 className="text-xl font-semibold text-white mb-4">Project Description</h2>
               <p className="text-gray-300 whitespace-pre-line">{fyp.description}</p>
             </div>
 
             {fyp.faculty && (
-              <div className="bg-gray-700/50 rounded-lg p-6 mb-8">
+              <div className="bg-gray-100/50 rounded-lg p-6 mb-8">
                 <h2 className="text-xl font-semibold text-white mb-4">Faculty Supervisor</h2>
                 <div className="flex items-start space-x-4">
                   <div className="bg-gray-600 rounded-full p-3">
@@ -181,14 +181,14 @@ const FypDetailsPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-white">{fyp.faculty.name}</h3>
-                    {fyp.faculty.post && <p className="text-gray-400">{fyp.faculty.post}</p>}
+                    {fyp.faculty.post && <p className="text-gray-500">{fyp.faculty.post}</p>}
                     {fyp.faculty.department && (
-                      <p className="text-gray-400 mt-1">Department: {fyp.faculty.department}</p>
+                      <p className="text-gray-500 mt-1">Department: {fyp.faculty.department}</p>
                     )}
                     {fyp.faculty.interest && (
                       <div className="mt-2">
-                        <p className="text-gray-400 font-medium">Research Interests:</p>
-                        <p className="text-gray-300">{fyp.faculty.interest}</p>
+                        <p className="text-gray-500 font-medium">Research Interests:</p>
+                        <p className="text-gray-500">{fyp.faculty.interest}</p>
                       </div>
                     )}
                   </div>
@@ -197,30 +197,30 @@ const FypDetailsPage: React.FC = () => {
             )}
 
             {fyp.students && fyp.students.length > 0 && (
-              <div className="bg-gray-700/50 rounded-lg p-6">
+              <div className="bg-gray-100/50 rounded-lg p-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Student Team</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {fyp.students.map((student) => (
                     <div
                       key={student.id}
-                      className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition-all duration-300"
+                      className="bg-gray-100 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition-all duration-300"
                     >
                       <div className="flex items-start space-x-3">
-                        <div className="bg-gray-700 rounded-full p-2 mt-1">
+                        <div className="bg-gray-100 rounded-full p-2 mt-1">
                           <FaUser className="text-lg text-green-400" />
                         </div>
                         <div>
                           <h3 className="font-medium text-white">{student.name}</h3>
-                          {student.department && <p className="text-gray-400 text-sm">{student.department}</p>}
+                          {student.department && <p className="text-gray-500 text-sm">{student.department}</p>}
                           {student.rollNumber && (
-                            <p className="text-gray-400 text-sm">Roll Number: {student.rollNumber}</p>
+                            <p className="text-gray-500 text-sm">Roll Number: {student.rollNumber}</p>
                           )}
                           {student.skills && (
                             <div className="mt-2">
-                              <p className="text-gray-400 text-xs">Skills:</p>
+                              <p className="text-gray-500 text-xs">Skills:</p>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {student.skills.split(",").map((skill, index) => (
-                                  <span key={index} className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded text-xs">
+                                  <span key={index} className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded text-xs">
                                     {skill.trim()}
                                   </span>
                                 ))}
@@ -255,10 +255,10 @@ const FypDetailsPage: React.FC = () => {
 
 const InfoCard: React.FC<{ icon: JSX.Element; title: string; content: string }> = ({ icon, title, content }) => {
   return (
-    <div className="bg-gray-700/50 rounded-lg p-4 flex items-center space-x-3">
+    <div className="bg-gray-100/50 rounded-lg p-4 flex items-center space-x-3">
       {icon}
       <div>
-        <h3 className="font-medium text-gray-300">{title}</h3>
+        <h3 className="font-medium text-gray-500">{title}</h3>
         <p className="text-white">{content}</p>
       </div>
     </div>

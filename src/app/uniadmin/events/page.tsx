@@ -80,7 +80,7 @@ const UniversityEventsPage: React.FC = () => {
   const filteredEvents = getFilteredEvents();
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gray-100 text-gray-800 p-8">
       {/* Title Section */}
       <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-center mb-10">
         University Events
@@ -92,8 +92,8 @@ const UniversityEventsPage: React.FC = () => {
           onClick={() => setActiveTab("upcoming")}
           className={`px-6 py-2 text-lg rounded-full ${
             activeTab === "upcoming"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              ? "bg-blue-500 text-gray-800"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-100"
           }`}
         >
           Upcoming Events
@@ -103,8 +103,8 @@ const UniversityEventsPage: React.FC = () => {
           onClick={() => setActiveTab("past")}
           className={`px-6 py-2 text-lg rounded-full ${
             activeTab === "past"
-              ? "bg-red-500 text-white"
-              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              ? "bg-red-500 text-gray-800"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-100"
           }`}
         >
           Past Events
@@ -117,22 +117,22 @@ const UniversityEventsPage: React.FC = () => {
           filteredEvents.map((event) => (
             <div
               key={event.id}
-              className="bg-gray-800/80 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+              className="bg-gray-100/80 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
             >
               {/* Event Title */}
-              <h2 className="text-2xl font-semibold text-white mb-2">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                 {event.title}
               </h2>
 
               {/* Speaker Name */}
-              <p className="text-lg text-gray-400 mb-4">
+              <p className="text-lg text-gray-500 mb-4">
                 <span className="font-bold">Speaker:</span> {event.speakerName}
               </p>
 
               {/* Event Date and Venue */}
               <div className="flex flex-col gap-2 mb-4">
                 {/* Event Date */}
-                <div className="flex items-center text-gray-300">
+                <div className="flex items-center text-gray-500">
                   <FaCalendarAlt className="mr-2 text-blue-500" />
                   <p className="text-sm">
                     <span className="font-bold">Date:</span>{" "}
@@ -141,7 +141,7 @@ const UniversityEventsPage: React.FC = () => {
                 </div>
 
                 {/* Event Venue */}
-                <div className="flex items-center text-gray-300">
+                <div className="flex items-center text-gray-500">
                   <FaMapMarkerAlt className="mr-2 text-red-500" />
                   <p className="text-sm">
                     <span className="font-bold">Venue:</span> {event.venue}
@@ -151,7 +151,7 @@ const UniversityEventsPage: React.FC = () => {
             </div>
           ))
         ) : (
-          <p className="col-span-full text-center text-xl font-semibold text-gray-400">
+          <p className="col-span-full text-center text-xl font-semibold text-gray-500">
             No {activeTab} events available at the moment.
           </p>
         )}
