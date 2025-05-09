@@ -2,8 +2,9 @@
 
 import type React from "react"
 import { useState } from "react"
-import { FaSearch } from "react-icons/fa"
+import { FaSearch, FaUser, FaGraduationCap, FaEnvelope, FaBuilding } from "react-icons/fa"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 
 // Define the SearchResult interface here
 interface SearchResult {
@@ -12,6 +13,7 @@ interface SearchResult {
   lastName: string
   email: string
   description: string
+  department?: string
   imageData: string | null
 }
 
@@ -32,9 +34,22 @@ const SearchSection: React.FC<SearchSectionProps> = ({
 }) => {
   const [query, setQuery] = useState("")
   const [searchType, setSearchType] = useState("student")
+  const router = useRouter()
 
   const handleSearch = () => {
-    onSearch(query, searchType)
+    if (query.trim()) {
+      onSearch(query, searchType)
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
+
+  const handleViewProfile = (userId: string) => {
+    router.push(`/uniadmin/profile/${searchType}/${userId}`)
   }
 
   return (
@@ -52,6 +67,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Enter name"
           className="p-3 w-full md:w-1/2 border border-gray-600 bg-gray-100 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -71,29 +87,67 @@ const SearchSection: React.FC<SearchSectionProps> = ({
           Search
         </button>
       </div>
+
       {/* Search Results */}
       <div className="mt-8">
         {searchLoading && <p className="text-gray-600 text-center">Loading...</p>}
         {searchError && <p className="text-red-500 text-center">{searchError}</p>}
-        {!searchLoading && !searchError && results.length === 0 && <p className="text-gray-600 text-center"></p>}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {results.map((result) => (
-            <div key={result.userId} className="bg-gray-100 p-6 rounded-lg shadow-sm">
-              <img
-                src={result.imageData ? `data:image/png;base64,${result.imageData}` : "/placeholder.png"}
-                alt={`${result.firstName} ${result.lastName}`}
-                className="w-20 h-20 rounded-full mx-auto mb-4"
-              />
-              <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">
-                {result.firstName} {result.lastName}
-              </h3>
-              <p className="text-gray-700 text-center mb-2">{result.email}</p>
-              <p className="text-gray-700 text-center text-sm">
-                {searchType.charAt(0).toUpperCase() + searchType.slice(1)}
-              </p>
-            </div>
-          ))}
-        </div>
+        {!searchLoading && !searchError && results.length === 0 && query.trim() !== "" && (
+          <p className="text-gray-600 text-center">No results found. Try a different search term.</p>
+        )}
+
+        {results.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {results.map((result) => (
+              <div
+                key={result.userId}
+                className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
+                onClick={() => handleViewProfile(result.userId)}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="relative">
+                    <img
+                      src={result.imageData ? `data:image/jpeg;base64,${result.imageData}` : "/placeholder.png"}
+                      alt={`${result.firstName} ${result.lastName}`}
+                      className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-blue-500"
+                    />
+                    <div className="absolute bottom-3 right-0 bg-blue-500 text-white text-xs rounded-full w-8 h-8 flex items-center justify-center">
+                      {searchType === "student" ? <FaGraduationCap /> : <FaUser />}
+                    </div>
+                  </div>
+
+                  <h3 className="text-lg font-semibold text-gray-800 text-center mb-2">
+                    {result.firstName} {result.lastName}
+                  </h3>
+
+                  <div className="w-full space-y-2 mt-2">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <FaEnvelope className="mr-2 text-gray-500" />
+                      <span className="truncate">{result.email}</span>
+                    </div>
+
+                    {result.department && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <FaBuilding className="mr-2 text-gray-500" />
+                        <span>{result.department}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    className="mt-4 w-full py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleViewProfile(result.userId)
+                    }}
+                  >
+                    View Full Profile
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </motion.div>
   )

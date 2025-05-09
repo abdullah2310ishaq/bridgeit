@@ -28,7 +28,7 @@ const PostProjectForm: React.FC = () => {
       try {
         // Fetch authorized user profile
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -43,7 +43,7 @@ const PostProjectForm: React.FC = () => {
 
           // Fetch the IndExptId using the userId
           const expertResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+            `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -102,7 +102,7 @@ const PostProjectForm: React.FC = () => {
       }
 
       const response = await fetch(
-        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/expert-post-project",
+        "https://localhost:7053/api/projects/expert-post-project",
         {
           method: "POST",
           headers: {

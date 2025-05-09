@@ -47,7 +47,7 @@ const IdeaDetailsPage: React.FC = () => {
       try {
         // 1) Fetch idea details
         const ideaResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-idea-by-id/${id}`,
+          `https://localhost:7053/api/ideas/get-idea-by-id/${id}`,
           {
             method: "GET",
             headers: {
@@ -69,7 +69,7 @@ const IdeaDetailsPage: React.FC = () => {
 
         // 2) Fetch user profile (to get stdId)
         const profileRes = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -87,7 +87,7 @@ const IdeaDetailsPage: React.FC = () => {
 
         // 3) Fetch student details
         const studentResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`,
+          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -129,7 +129,7 @@ const IdeaDetailsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/student-interested-for-idea/${userProfile.stdId}/${idea.id}`,
+        `https://localhost:7053/api/interested-for-idea/student-interested-for-idea/${userProfile.stdId}/${idea.id}`,
         {
           method: "POST",
           headers: {

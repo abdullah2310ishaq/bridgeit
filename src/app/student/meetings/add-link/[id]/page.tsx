@@ -43,7 +43,7 @@ export default function AddMeetingLinkPage() {
       try {
         // Fetch meeting details
         const meetingResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/by-id/${meetingId}`,
+          `https://localhost:7053/api/fyp-meeting/by-id/${meetingId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -63,7 +63,7 @@ export default function AddMeetingLinkPage() {
 
         // Fetch detailed FYP information
         const fypResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${meetingDetails.fypId}`,
+          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${meetingDetails.fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -82,7 +82,7 @@ export default function AddMeetingLinkPage() {
         // Fetch industry expert details
         try {
           const expertResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${meetingDetails.indExpId}`,
+            `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${meetingDetails.indExpId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -122,7 +122,7 @@ export default function AddMeetingLinkPage() {
 
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/add-link/${meetingId}`,
+        `https://localhost:7053/api/fyp-meeting/add-link/${meetingId}`,
         {
           method: "PATCH",
           headers: {

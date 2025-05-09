@@ -59,7 +59,7 @@ const FacultyPage: React.FC = () => {
       try {
         // Fetch user info to get role and userId
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -74,7 +74,7 @@ const FacultyPage: React.FC = () => {
 
           // Fetch faculty data using userId
           const facultyResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+            `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -108,7 +108,7 @@ const FacultyPage: React.FC = () => {
 
             // Fetch research papers using the faculty ID
             const researchResponse = await fetch(
-              `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ResearchWork/get-researchwork-by-id/${facultyId}`,
+              `https://localhost:7053/api/ResearchWork/get-researchwork-by-id/${facultyId}`,
               {
                 method: "GET",
                 headers: {
@@ -124,7 +124,7 @@ const FacultyPage: React.FC = () => {
 
             // Fetch all events
             const eventsResponse = await fetch(
-              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events",
+              "https://localhost:7053/api/Events/get-events",
               {
                 method: "GET",
                 headers: {
@@ -189,22 +189,6 @@ const FacultyPage: React.FC = () => {
         onViewProfile={onViewProfile}
         onEditProfile={onEditProfile}
       />
-
-      {/* Centered Buttons for Create New Idea and View My Ideas */}
-      <div className="flex justify-center items-center mt-8 space-x-4">
-        <button
-          onClick={() => router.push("/faculty/idea")}
-          className="py-3 px-6 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition duration-200"
-        >
-          Create New Idea
-        </button>
-        <button
-          onClick={() => router.push("/faculty/idea/viewidea")}
-          className="py-3 px-6 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600 transition duration-200"
-        >
-          View My Ideas
-        </button>
-      </div>
 
       {/* Research Section */}
       <ResearchSection

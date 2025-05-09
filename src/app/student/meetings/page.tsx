@@ -59,7 +59,7 @@ export default function StudentMeetingsPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -72,7 +72,7 @@ export default function StudentMeetingsPage() {
 
         // Step 2: Get student details
         const studentResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`,
+          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -93,7 +93,7 @@ export default function StudentMeetingsPage() {
 
         // Step 3: Get detailed FYP information
         const detailedFypResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${studentData.fypId}`,
+          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${studentData.fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -108,7 +108,7 @@ export default function StudentMeetingsPage() {
 
         // Step 4: Fetch meetings for this FYP
         const meetingsResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/by-id/${studentData.fypId}`,
+          `https://localhost:7053/api/fyp-meeting/by-id/${studentData.fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -123,7 +123,7 @@ export default function StudentMeetingsPage() {
             (Array.isArray(meetingsData) ? meetingsData : [meetingsData]).map(async (meeting: Meeting) => {
               try {
                 const expertResponse = await fetch(
-                  `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${meeting.indExpId}`,
+                  `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${meeting.indExpId}`,
                   {
                     headers: { Authorization: `Bearer ${token}` },
                   },
@@ -152,7 +152,7 @@ export default function StudentMeetingsPage() {
 
         // Step 5: Fetch meeting requests for this FYP
         const requestsResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/requests/${studentData.fypId}`,
+          `https://localhost:7053/api/fyp-meeting/requests/${studentData.fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -166,7 +166,7 @@ export default function StudentMeetingsPage() {
             (Array.isArray(requestsData) ? requestsData : [requestsData]).map(async (request: MeetingRequest) => {
               try {
                 const expertResponse = await fetch(
-                  `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${request.indExpertId}`,
+                  `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${request.indExpertId}`,
                   {
                     headers: { Authorization: `Bearer ${token}` },
                   },

@@ -29,7 +29,7 @@ const EditUniAdminProfile: React.FC = () => {
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info', {
+        const response = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -78,7 +78,7 @@ const EditUniAdminProfile: React.FC = () => {
 
     try {
       // Update description and other details
-      await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/update-user-description/${profile.userId}`, {
+      await fetch(`https://localhost:7053/api/edit-user-profile/update-user-description/${profile.userId}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ const EditUniAdminProfile: React.FC = () => {
       // Update profile image
       if (form.profileImage) {
         const base64Image = form.profileImage.split(',')[1]; // Remove data:image/png;base64,
-        await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/set-profile-image/${profile.userId}`, {
+        await fetch(`https://localhost:7053/api/edit-user-profile/set-profile-image/${profile.userId}`, {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,

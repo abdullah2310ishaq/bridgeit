@@ -87,7 +87,7 @@ const UniAdminDashboard: React.FC = () => {
       try {
         // Step A: Validate user & role
         const profileRes = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (!profileRes.ok) throw new Error("Failed to fetch authorized user info")
@@ -101,7 +101,7 @@ const UniAdminDashboard: React.FC = () => {
 
         // Step B: Fetch this Admin's profile
         const adminResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${profileData.userId}`,
+          `https://localhost:7053/api/get-uni-admins/admins-by-id/${profileData.userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (!adminResponse.ok) throw new Error("Failed to fetch University Admin profile")
@@ -120,11 +120,11 @@ const UniAdminDashboard: React.FC = () => {
         // Step C: Fetch university-wide stats
         const [studentsRes, facultyRes] = await Promise.all([
           fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-university/${adminData.university}`,
+            `https://localhost:7053/api/get-student/student-by-university/${adminData.university}`,
             { headers: { Authorization: `Bearer ${token}` } },
           ),
           fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-university/${adminData.university}`,
+            `https://localhost:7053/api/get-faculty/faculty-by-university/${adminData.university}`,
             { headers: { Authorization: `Bearer ${token}` } },
           ),
         ])
@@ -155,7 +155,7 @@ const UniAdminDashboard: React.FC = () => {
     try {
       // GET /api/projects/get-student-projects
       const projectsRes = await fetch(
-        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects",
+        "https://localhost:7053/api/projects/get-student-projects",
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (!projectsRes.ok) {
@@ -186,39 +186,41 @@ const UniAdminDashboard: React.FC = () => {
   }
 
   const handleSearch = async (query: string, searchType: string) => {
-    if (!adminProfile) return
     setSearchLoading(true)
     setSearchError("")
-
+    setResults([])
+  
+    const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      toast.error("Authentication failed.")
+      setSearchLoading(false)
+      return
+    }
+  
     try {
-      let res: Response
-      if (searchType === "student") {
-        res = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-name/${query}?university=${adminProfile.university}`,
-        )
-      } else {
-        // faculty
-        res = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-name/${query}?university=${adminProfile.university}`,
-        )
-      }
-      if (!res.ok) {
-        throw new Error("Not Found! Try Creating One")
-      }
+      const endpoint =
+        searchType === "student"
+          ? `https://localhost:7053/api/get-student/student-by-name/${query}`
+          : `https://localhost:7053/api/get-faculty/faculty-by-name/${query}`
+  
+      const res = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+  
+      if (!res.ok) throw new Error("Search failed")
+  
       const data = await res.json()
-      if (data.length === 0) {
-        setResults([])
-        setSearchError("No results found")
-      } else {
-        setResults(data)
-      }
-    } catch (err: any) {
-      setSearchError(err.message || "An error occurred")
-      setResults([])
+      setResults(data)
+    } catch (err) {
+      console.error(err)
+      setSearchError("Failed to search. Please try again.")
     } finally {
       setSearchLoading(false)
     }
   }
+  
 
   if (loading) {
     return <LoadingSpinner />
@@ -243,12 +245,13 @@ const UniAdminDashboard: React.FC = () => {
 
           {/* Search Section */}
           <SearchSection
-            universityName={adminProfile?.university}
-            onSearch={handleSearch}
-            searchLoading={searchLoading}
-            searchError={searchError}
-            results={results}
-          />
+  universityName={adminProfile?.university}
+  onSearch={handleSearch}
+  searchLoading={searchLoading}
+  searchError={searchError}
+  results={results}
+/>
+
 
           {/* Student Projects Section */}
           <StudentProjects

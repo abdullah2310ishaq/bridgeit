@@ -95,7 +95,7 @@ export default function ApprovedRequestsPage() {
     try {
       // Step 1: Get user info
       const profileResponse = await fetch(
-        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+        "https://localhost:7053/api/auth/authorized-user-info",
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -108,7 +108,7 @@ export default function ApprovedRequestsPage() {
 
       // Step 2: Get industry expert details
       const expertResponse = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+        `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -121,7 +121,7 @@ export default function ApprovedRequestsPage() {
 
       // Step 3: Fetch FYP requests for this industry expert
       const requestsResponse = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/get-by-id/${expertData.indExptId}`,
+        `https://localhost:7053/api/ind-expert-request-fyp/get-by-id/${expertData.indExptId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -207,7 +207,7 @@ export default function ApprovedRequestsPage() {
       console.log("Sending meeting request:", meetingDto)
 
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/add/${schedulingFypId}`,
+        `https://localhost:7053/api/fyp-meeting/add/${schedulingFypId}`,
         {
           method: "POST",
           headers: {

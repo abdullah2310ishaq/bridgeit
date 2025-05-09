@@ -56,7 +56,7 @@ const FypDetailsPage: React.FC = () => {
     const fetchFypDetails = async () => {
       try {
         const response = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

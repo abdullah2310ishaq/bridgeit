@@ -1,6 +1,9 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import { FaProjectDiagram } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,6 +17,9 @@ interface Fyp {
 }
 
 const IndustryFypPage: React.FC = () => {
+  /* ──────────────────────────────
+     state, router, side‑effects
+  ────────────────────────────── */
   const [fyps, setFyps] = useState<Fyp[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,63 +28,40 @@ const IndustryFypPage: React.FC = () => {
   useEffect(() => {
     const fetchFacultyFypData = async () => {
       const token = localStorage.getItem("jwtToken");
-
       if (!token) {
         router.push("/auth/login-user");
         return;
       }
 
       try {
-        // Step 1: Fetch user info to get userId
-        const authResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        /* 1️⃣  authorized‑user info (gets userId) */
+        const authRes = await fetch(
+          "https://localhost:7053/api/auth/authorized-user-info",
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+        if (!authRes.ok) throw new Error("Failed to fetch user info.");
+        const { userId } = await authRes.json();
 
-        if (!authResponse.ok) throw new Error("Failed to fetch user info.");
-
-        const authData = await authResponse.json();
-        const userId = authData.userId;
-
-        // Step 2: Fetch faculty ID using userId
-        const facultyResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        /* 2️⃣  faculty details (gets facultyId) */
+        const facRes = await fetch(
+          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+        if (!facRes.ok) throw new Error("Failed to fetch faculty info.");
+        const { id: facultyId } = await facRes.json();
 
-        if (!facultyResponse.ok) throw new Error("Failed to fetch faculty info.");
-
-        const facultyData = await facultyResponse.json();
-        const facultyId = facultyData.id;
-
-        // Step 3: Fetch FYPs using facultyId
-        const fypResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-fyp-by-faculty-id/${facultyId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        /* 3️⃣  FYPs for that faculty */
+        const fypRes = await fetch(
+          `https://localhost:7053/api/fyp/get-fyp-by-faculty-id/${facultyId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        if (!fypResponse.ok) throw new Error("Failed to fetch FYPs.");
-
-        const fypData = await fypResponse.json();
-        setFyps(fypData);
+        if (!fypRes.ok) throw new Error("Failed to fetch FYPs.");
+        const data = await fypRes.json();
+        setFyps(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred.");
-        toast.error(error);
+        const msg = err instanceof Error ? err.message : "An unknown error occurred.";
+        setError(msg);
+        toast.error(msg);
       } finally {
         setLoading(false);
       }
@@ -87,37 +70,95 @@ const IndustryFypPage: React.FC = () => {
     fetchFacultyFypData();
   }, [router]);
 
-  if (loading) return <div className="text-center text-gray-400">Loading...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  /* ──────────────────────────────
+     helpers
+  ────────────────────────────── */
   const handleFypClick = (fypId: string) => {
-    router.push(`/faculty/finalyp/detail/${fypId}`); // Dynamic navigation
+    router.push(`/faculty/finalyp/detail/${fypId}`);
   };
+
+  /* ──────────────────────────────
+     render
+  ────────────────────────────── */
+  if (loading) return <div className="text-center text-gray-400">Loading...</div>;
+  if (error)   return <div className="text-center text-red-500">{error}</div>;
+
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center text-purple-400">
-          Industry FYPs
-        </h1>
-        {fyps.length > 0 ? (
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {fyps.map((fyp) => (
-           <div
-             key={fyp.id}
-             onClick={() => handleFypClick(fyp.id)}
-             className="cursor-pointer bg-gray-800 rounded-lg shadow-lg p-6 hover:bg-gray-700 transition duration-200"
-           >
-             <h2 className="text-xl font-semibold">{fyp.title}</h2>
-             <p>FYP ID: {fyp.fypId}</p>
-           </div>
-         ))}
-       </div>
+    <div
+      className="min-h-screen relative overflow-hidden"
+      /* same blurry‑overlay background treatment */
+      style={{
+        backgroundImage: "url('/unknown.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* dim the backdrop */}
+      <div className="absolute inset-0 bg-gray-100 opacity-90"></div>
+
+      {/* content */}
+      <div className="relative z-10 flex flex-col items-center justify-start p-6 py-16">
+        {/* logo (optional) */}
+        <div className="absolute top-4 left-8">
+          <Image src="/logo.jpg" alt="BridgeIT Logo" width={80} height={80} />
+        </div>
+
+        {/* heading */}
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-500 mb-10 text-center"
+        >
+          Industry&nbsp;FYPs
+        </motion.h1>
+
+        {/* FYP cards */}
+        {fyps.length ? (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: { staggerChildren: 0.07, delayChildren: 0.25 },
+              },
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl"
+          >
+            {fyps.map((fyp) => (
+              <motion.div
+                key={fyp.id}
+                onClick={() => handleFypClick(fyp.id)}
+                whileHover={{ y: -6, boxShadow: "0 12px 24px rgba(0,0,0,0.25)" }}
+                className="cursor-pointer bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border-2 border-blue-800/20 transition duration-200"
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+              >
+                <h2 className="text-xl font-semibold text-gray-900">{fyp.title}</h2>
+                <p className="text-gray-700 mt-1">FYP&nbsp;ID:&nbsp;{fyp.fypId}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         ) : (
-          <div className="text-center text-gray-400 mt-10">
+          <div className="text-center text-gray-300 mt-10">
             No FYPs found for this faculty.
           </div>
         )}
+
+        {/* decorative icon */}
+        <motion.div
+          initial={{ opacity: 0, rotate: -15 }}
+          animate={{ opacity: 0.15, rotate: 0 }}
+          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute bottom-16 right-16 text-blue-600"
+        >
+          <FaProjectDiagram size={120} />
+        </motion.div>
+
+        {/* toasts */}
+        <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
       </div>
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
     </div>
   );
 };

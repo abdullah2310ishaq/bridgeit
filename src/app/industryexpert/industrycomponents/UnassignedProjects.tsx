@@ -32,7 +32,7 @@ const UnassignedProjects = ({ expertId }: UnassignedProjectsProps) => {
       try {
         // Fetch unassigned projects
         const res = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-unassigned-expert-projects?expertId=${expertId}`,
+          `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
