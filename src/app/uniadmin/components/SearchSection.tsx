@@ -55,7 +55,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({
 
   return (
     <motion.div
-      className="bg-gray-100 rounded-lg shadow-lg p-6 col-span-1 md:col-span-2 lg:col-span-3 border border-gray-700"
+      className="bg-gray-100 rounded-lg shadow-lg p-6 col-span-1 md:col-span-2 lg:col-span-3"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
