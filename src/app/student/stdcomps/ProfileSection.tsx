@@ -1,109 +1,167 @@
-"use client";
-import React from "react";
-import { motion } from "framer-motion";
-import { Edit, User } from "lucide-react"
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Edit, User, Briefcase, Building, GraduationCap, MapPin, BookOpen } from "lucide-react"
 
 interface UserProfile {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  description: string;
-  rollNumber: string;
-  imageData?: string; // Marking them as optional
-  uniImage?: string;  // Marking them as optional
+  userId: string
+  firstName: string
+  lastName: string
+  description: string
+  rollNumber: string
+  imageData?: string
+  uniImage?: string
+  semester?: string
+  course?: string
+  university?: string
+  address?: string
 }
 
 interface Props {
-  userProfile: UserProfile;
-  goToEditProfile: () => void;
-  gotoProfile: () => void;
+  userProfile: UserProfile
+  goToEditProfile: () => void
+  gotoProfile: () => void
 }
 
 const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoProfile }) => {
-  const profileImageSrc = userProfile.imageData
-    ? `data:image/jpeg;base64,${userProfile.imageData}`
-    : "/unknown.jpg"; // Default image if imageData is missing
+  const [imageError, setImageError] = useState(false)
 
-  const backgroundImageUrl = userProfile.uniImage
-    ? `url('data:image/jpeg;base64,${userProfile.uniImage}')`
-    : "url('/unknown.jpg')"; // Default background if uniImage is missing
+  // Reset image error state when userProfile changes
+  useEffect(() => {
+    setImageError(false)
+  }, [userProfile.imageData])
+
+  // Function to handle image loading errors
+  const handleImageError = () => {
+    setImageError(true)
+  }
 
   return (
-    <div
-      className="relative flex flex-col md:flex-row items-center p-16 mb-10 rounded-xl shadow-lg"
-      style={{
-        backgroundImage: backgroundImageUrl,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      {/* Overlay to Dim Background for Better Readability */}
-      <div className="absolute inset-0 bg-gray-900 opacity-70"></div>
-
-      {/* Profile Image in Rectangle */}
-      <motion.div 
-        initial={{ x: -100, opacity: 0 }} 
-        animate={{ x: 0, opacity: 1 }} 
-        transition={{ duration: 1 }}
-        className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0"
-      >
-        <img
-          src={profileImageSrc} 
-          alt={`${userProfile.firstName} ${userProfile.lastName}`} 
-          className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-green-400 cursor-pointer"
-        />
-      </motion.div>
-
-      {/* Profile Info */}
+    <div className="flex flex-col lg:flex-row gap-6 mb-10">
+      {/* Profile Card */}
       <motion.div
-        initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="relative z-10 text-white flex-grow text-center md:text-left md:pl-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full lg:w-2/3 rounded-xl shadow-md overflow-hidden border border-gray-200"
       >
-        <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
-          Welcome, {userProfile.firstName} {userProfile.lastName}
-        </h2>
-        
-        <p className="text-lg mt-4 text-gray-200 font-light">
-          Roll Number: <span className="font-bold text-white">{userProfile.rollNumber}</span>
-        </p>
+        {/* Card Header with Background */}
+        <div className="relative h-32 w-full">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: userProfile.uniImage
+                ? `url('data:image/jpeg;base64,${userProfile.uniImage}')`
+                : "url('/unknown.jpg')",
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-purple-600/80"></div>
+          </div>
 
-        {/* Description */}
-        <div className="mt-6">
-          <p className="text-gray-200 mt-2 text-lg leading-relaxed">
-            {userProfile.description}
-          </p>
+          {/* Profile Image - Positioned to overlap the header */}
+          <div className="absolute -bottom-12 left-6">
+            {imageError || !userProfile.imageData ? (
+              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-md">
+                <User className="h-12 w-12 text-gray-400" />
+              </div>
+            ) : (
+              <img
+                src={`data:image/jpeg;base64,${userProfile.imageData}`}
+                alt={`${userProfile.firstName} ${userProfile.lastName}`}
+                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
+                onError={handleImageError}
+              />
+            )}
+          </div>
         </div>
 
-        {/* Divider Line */}
-        <div className="w-full h-1 bg-gradient-to-r from-green-400 to-blue-500 my-8"></div>
+        {/* Card Content */}
+        <div className="pt-14 px-6 pb-6 bg-white">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {userProfile.firstName} {userProfile.lastName}
+              </h2>
 
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-6 mt-8">
-          <button
-            onClick={goToEditProfile}
-            className="group px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            <span className="flex items-center justify-center">
-              <Edit className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform duration-300" />
-              Edit Profile
-            </span>
-          </button>
-          <button
-            onClick={gotoProfile}
-            className="group px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            <span className="flex items-center justify-center">
-              <User className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
-              View Profile
-            </span>
-          </button>
+              <div className="flex items-center mt-1 text-gray-600">
+                <GraduationCap className="w-4 h-4 mr-2" />
+                <span>Student</span>
+              </div>
+
+              <div className="flex items-center mt-1 text-gray-600">
+                <BookOpen className="w-4 h-4 mr-2" />
+                <span>Roll Number: {userProfile.rollNumber}</span>
+              </div>
+
+              {userProfile.university && (
+                <div className="flex items-center mt-1 text-gray-600">
+                  <Building className="w-4 h-4 mr-2" />
+                  <span>{userProfile.university}</span>
+                </div>
+              )}
+
+              {userProfile.address && (
+                <div className="flex items-center mt-1 text-gray-600">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  <span>{userProfile.address}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex mt-4 md:mt-0 space-x-3">
+              <button
+                onClick={goToEditProfile}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center"
+              >
+                <Edit className="w-4 h-4 mr-1" />
+                Edit Profile
+              </button>
+              <button
+                onClick={gotoProfile}
+                className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors flex items-center"
+              >
+                <User className="w-4 h-4 mr-1" />
+                View Profile
+              </button>
+            </div>
+          </div>
+
+          {/* Academic Info */}
+          {(userProfile.course || userProfile.semester) && (
+            <div className="mt-4">
+              <div className="flex items-center text-gray-700 mb-2">
+                <Briefcase className="w-4 h-4 mr-2" />
+                <span className="font-medium">Academic Information</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {userProfile.course && (
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                    Course: {userProfile.course}
+                  </span>
+                )}
+                {userProfile.semester && (
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
+                    Semester: {userProfile.semester}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          {userProfile.description && (
+            <div className="mt-4 text-gray-600 text-sm">
+              <p className="line-clamp-3">{userProfile.description}</p>
+            </div>
+          )}
         </div>
       </motion.div>
-    </div>
-  );
-};
 
-export default ProfileSection;
+      
+    </div>
+  )
+}
+
+export default ProfileSection

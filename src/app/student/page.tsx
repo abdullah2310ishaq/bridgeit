@@ -230,17 +230,17 @@ const StudentPage: React.FC = () => {
       {/* Profile Section */}
       <ProfileSection userProfile={userProfile} goToEditProfile={goToEditProfile} gotoProfile={gotoProfile} />
 
-      {/* Educational Resources Card - New Section */}
+      {/* Educational Resources Card - New Section*/}
       <EducationalResourcesCard goToEducationalResources={goToEducationalResources} />
 
-      {/* Ongoing Projects Section */}
-      <OngoingProjectsSection ongoingProjects={ongoingProjects} />
+      {/* Ongoing Projects Section 
+      <OngoingProjectsSection ongoingProjects={ongoingProjects} />*/}
 
-      {/* Completed Industry Projects Section */}
-      <CompletedIndustryProjectsSection projects={completedProjects} />
+      {/* Completed Industry Projects Section 
+      <CompletedIndustryProjectsSection projects={completedProjects} /> */}
 
-      {/* Completed Personal Projects Section */}
-      <CompletedProjectsSection projects={personalProjects} />
+      {/* Completed Personal Projects Section
+      <CompletedProjectsSection projects={personalProjects} /> */}
 
       {/* Events Section */}
       <EventsSection events={events} gradientStyles={[]} />

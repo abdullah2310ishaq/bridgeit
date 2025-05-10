@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import type React from "react"
-import { FaUser, FaProjectDiagram, FaCalendarAlt, FaSignOutAlt } from "react-icons/fa"
+import { FaUser, FaProjectDiagram, FaCalendarAlt, FaSignOutAlt, FaStore } from "react-icons/fa"
+import { FiShoppingBag } from "react-icons/fi";
 import { motion } from "framer-motion"
 
 interface SidebarProps {
@@ -33,6 +34,13 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
         >
           <FaProjectDiagram className="mr-3" />
           FYP Requests
+        </a>
+        <a
+          onClick={() => router.push("uniadmin/fyp-requests")}
+          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-200 hover:text-white cursor-pointer"
+        >
+          <FiShoppingBag className="mr-3" />
+          FYP Market Place
         </a>
         <a
           onClick={() => router.push("uniadmin/events")}

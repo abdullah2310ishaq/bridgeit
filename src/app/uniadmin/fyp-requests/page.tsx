@@ -205,7 +205,7 @@ const FypRequestsPage: React.FC = () => {
         <h1 className="text-4xl font-extrabold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
           FYP Requests
         </h1>
-        <p className="text-gray-300 mb-8">
+        <p className="text-gray-500 mb-8">
           Review and manage requests from industry experts to collaborate on Final Year Projects
         </p>
 
@@ -216,10 +216,10 @@ const FypRequestsPage: React.FC = () => {
         )}
 
         {requests.length === 0 ? (
-          <div className="bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+          <div className="bg-gray-100 rounded-lg shadow-lg p-8 text-center">
             <FaBook className="text-5xl mx-auto mb-4 text-gray-600" />
-            <h2 className="text-2xl font-bold text-gray-300 mb-2">No Pending Requests</h2>
-            <p className="text-gray-400">
+            <h2 className="text-2xl font-bold text-gray-500 mb-2">No Pending Requests</h2>
+            <p className="text-gray-500">
               There are currently no pending FYP requests from industry experts that require your approval.
             </p>
           </div>
