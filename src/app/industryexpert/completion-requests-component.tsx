@@ -3,6 +3,8 @@
 import type React from "react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+import { RefreshCw, Calendar, User, FileText, ArrowRight } from "lucide-react"
 
 interface CompletionRequest {
   id: string
@@ -41,137 +43,144 @@ const CompletionRequestsComponent: React.FC<CompletionRequestsProps> = ({ reques
     }
   }
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return {
+          bg: "bg-amber-100",
+          text: "text-amber-800",
+          border: "border-amber-200",
+        }
+      case "ACCEPTED":
+        return {
+          bg: "bg-green-100",
+          text: "text-green-800",
+          border: "border-green-200",
+        }
+      default:
+        return {
+          bg: "bg-red-100",
+          text: "text-red-800",
+          border: "border-red-200",
+        }
+    }
+  }
+
   if (localRequests.length === 0) {
     return (
-      <div className="text-center p-8 bg-gray-700 rounded-lg">
-        <p className="mb-4">No completion requests pending</p>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-xl shadow-md p-8 text-center border border-gray-200"
+      >
+        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FileText className="h-8 w-8 text-blue-500" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">No Completion Requests</h3>
+        <p className="text-gray-600 mb-6">There are no pending completion requests at this time.</p>
+
         {onRefresh && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleRefresh}
             disabled={isLoading}
-            className="py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded transition flex items-center mx-auto"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Refreshing...
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                <span>Refreshing...</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                Check for New Requests
+                <RefreshCw className="w-4 h-4 mr-2" />
+                <span>Check for New Requests</span>
               </>
             )}
-          </button>
+          </motion.button>
         )}
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       {onRefresh && (
-        <div className="mb-4 flex justify-end">
-          <button
+        <div className="flex justify-end">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleRefresh}
             disabled={isLoading}
-            className="py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded transition flex items-center"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Refreshing...
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                <span>Refreshing...</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                Refresh Requests
+                <RefreshCw className="w-4 h-4 mr-2" />
+                <span>Refresh Requests</span>
               </>
             )}
-          </button>
+          </motion.button>
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-gray-700 rounded-lg">
-          <thead>
-            <tr className="bg-gray-600 text-left">
-              <th className="py-3 px-4 font-semibold">Project</th>
-              <th className="py-3 px-4 font-semibold">Student</th>
-              <th className="py-3 px-4 font-semibold">Date</th>
-              <th className="py-3 px-4 font-semibold">Status</th>
-              <th className="py-3 px-4 font-semibold">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {localRequests.map((request) => (
-              <tr key={request.id} className="border-t border-gray-600">
-                <td className="py-3 px-4">{request.projectTitle}</td>
-                <td className="py-3 px-4">{request.studentName}</td>
-                <td className="py-3 px-4">{new Date(request.requestDate).toLocaleDateString()}</td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      request.status === "PENDING"
-                        ? "bg-yellow-900 text-yellow-300"
-                        : request.status === "ACCEPTED"
-                          ? "bg-green-900 text-green-300"
-                          : "bg-red-900 text-red-300"
-                    }`}
-                  >
-                    {request.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <button
+      <div className="grid grid-cols-1 gap-4">
+        {localRequests.map((request, index) => {
+          const statusColors = getStatusColor(request.status)
+
+          return (
+            <motion.div
+              key={request.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+            >
+              <div className="p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-800">{request.projectTitle}</h3>
+
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-center text-gray-600">
+                        <User className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{request.studentName}</span>
+                      </div>
+
+                      <div className="flex items-center text-gray-600">
+                        <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{new Date(request.requestDate).toLocaleDateString()}</span>
+                      </div>
+
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors.bg} ${statusColors.text} border ${statusColors.border}`}
+                      >
+                        {request.status}
+                      </div>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05, x: 3 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => router.push(`/industryexpert/projects/milestone/${request.projectId}`)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white py-1 px-3 rounded text-sm"
+                    className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors group"
                   >
-                    View Project
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    <span>View Project</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
       </div>
     </div>
   )

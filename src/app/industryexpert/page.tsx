@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation"
 
 // Import your custom components
 import IndustryProfile from "./industrycomponents/IndustryProfile"
-import CompanyProfile from "./industrycomponents/CompanyProfile"
+{/*import CompanyProfile from "./industrycomponents/CompanyProfile"*/}
 import ProjectCard from "./industrycomponents/ProjectsCardd"
 import CompletedProjects from "./industrycomponents/CompletedProjects"
 import CompletionRequestsComponent from "./completion-requests-component"
+import { Bell } from "lucide-react"
 
 // Interface for the expert's main profile data
 interface IndustryExpertProfile {
@@ -236,7 +237,7 @@ const IndustryExpertPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+    <div className="min-h-screen bg-white text-gray-700 p-6">
       <div className="container mx-auto space-y-8">
         {/* (A) Industry Expert Profile Section */}
         <IndustryProfile
@@ -253,112 +254,52 @@ const IndustryExpertPage: React.FC = () => {
           contact={expertProfile.contact}
         />
 
-        {/* (B) Company Profile Section */}
-        <CompanyProfile
-          companyName={expertProfile.companyName}
-          address={expertProfile.address}
-          contact={expertProfile.contact}
-          onEditCompany={() => {
-            // Placeholder for editing company details
-            alert("Editing company not implemented yet.")
-          }}
-        />
-
         {/* (C) Tabs for Projects */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActiveTab("unassigned")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "unassigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Unassigned Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("assigned")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "assigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Active Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("completed")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "completed" ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Completed Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("requests")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "requests" ? "bg-yellow-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Completion Requests
+         <div className="container mx-auto py-10">
+      <div className="flex justify-center mb-6">
+        <button
+          className={`px-6 py-2 rounded-full font-semibold ${activeTab === "requests" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+          onClick={() => setActiveTab("requests")}
+        >
+          Project Completion Requests
+        </button>
+      </div>
+
+      {activeTab === "requests" && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 border border-blue-100">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-full mr-3">
+                <Bell className="h-5 w-5 text-blue-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">Project Completion Requests</h2>
+            </div>
+
             {completionRequests.length > 0 && (
-              <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {completionRequests.length}
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                {completionRequests.length} {completionRequests.length === 1 ? "Request" : "Requests"}
               </span>
             )}
-          </button>
-        </div>
-
-        {/* (D) Project Lists */}
-        {activeTab === "unassigned" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {unassignedProjects.length > 0 ? (
-              unassignedProjects.map((proj) => (
-                <ProjectCard
-                  key={proj.id}
-                  projectId={proj.id}
-                  title={proj.title}
-                  description={proj.description}
-                  endDate={proj.endDate}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center p-8 bg-gray-800 rounded-lg">
-                No unassigned projects available
-              </div>
-            )}
           </div>
-        )}
 
-        {activeTab === "assigned" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {assignedProjects.length > 0 ? (
-              assignedProjects.map((proj) => (
-                <ProjectCard
-                  key={proj.id}
-                  projectId={proj.id}
-                  title={proj.title}
-                  description={proj.description}
-                  endDate={proj.endDate}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center p-8 bg-gray-800 rounded-lg">No active projects available</div>
-            )}
-          </div>
-        )}
-
-        {activeTab === "completed" && <CompletedProjects expertId={expertProfile.indExptId} />}
-
-        {activeTab === "requests" && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Project Completion Requests</h2>
+          {isRefreshing ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              <span className="ml-3 text-blue-600 font-medium">Refreshing requests...</span>
+            </div>
+          ) : (
             <CompletionRequestsComponent requests={completionRequests} onRefresh={refreshCompletionRequests} />
-          </div>
-        )}
+          )}
+        </div>
+      )}
+    </div>
 
-        {/* Logout button */}
+        {/* Logout button 
         <div className="mt-10">
           <button onClick={handleLogout} className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500">
             Logout
           </button>
-        </div>
+        </div>*/}
       </div>
     </div>
   )

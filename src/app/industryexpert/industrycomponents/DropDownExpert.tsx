@@ -94,6 +94,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ userProfile, onLogout
           alt="Profile"
           className="w-10 h-10 rounded-full border-2 border-blue-500"
         />
+        
         <FaChevronDown className="ml-2 text-gray-600 hover:text-blue-600 transition duration-300" />
       </button>
       {dropdownOpen && (

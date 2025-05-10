@@ -1,22 +1,23 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { Edit, User } from "lucide-react";
+import type React from "react"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
+import { Edit, User, Building, MapPin, Phone, Mail, FileText, PlusCircle } from "lucide-react"
 
 interface IndustryProfileProps {
-  companyLogo: string; // Base64 string
-  companyName: string;
-  userId: string;
-  description: string;
-  indExptId: string;
-  companyId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  address: string;
-  contact: string;
+  companyLogo: string // Base64 string
+  companyName: string
+  userId: string
+  description: string
+  indExptId: string
+  companyId: string
+  firstName: string
+  lastName: string
+  email: string
+  address: string
+  contact: string
 }
 
 const IndustryProfile: React.FC<IndustryProfileProps> = ({
@@ -30,130 +31,165 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
   address,
   contact,
 }) => {
-  const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const router = useRouter()
+  const [isModalOpen, setIsModalOpen] = useState(false) // State to control modal visibility
+  const [imageError, setImageError] = useState(false)
+
+  // Reset image error state when companyLogo changes
+  useEffect(() => {
+    setImageError(false)
+  }, [companyLogo])
+
+  // Function to handle image loading errors
+  const handleImageError = () => {
+    setImageError(true)
+  }
 
   const handleEditProfile = () => {
-    router.push(`/industryexpert/profile/editexpert`);
-  };
+    router.push(`/industryexpert/profile/editexpert`)
+  }
 
   const handleViewProjects = () => {
-    router.push(`/industryexpert/projects`);
-  };
+    router.push(`/industryexpert/projects`)
+  }
 
   const handleAddProjects = () => {
-    router.push(`/industryexpert/projects/create`);
-  };
+    router.push(`/industryexpert/projects/create`)
+  }
 
-  const profileImageSrc = companyLogo
-    ? `data:image/jpeg;base64,${companyLogo}`
-    : "/default-profile.png";
-
-  const companyBackgroundImageSrc = "/studenttop.jpg";
+  const profileImageSrc = companyLogo ? `data:image/jpeg;base64,${companyLogo}` : "/default-profile.png"
 
   return (
-    <div>
-      {/* Profile Section */}
-      <div
-        className="relative flex flex-col md:flex-row items-center p-16 mb-10 rounded-xl shadow-lg"
-        style={{
-          backgroundImage: `url('${companyBackgroundImageSrc}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Profile Card */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full lg:w-2/3 rounded-xl shadow-md overflow-hidden border border-gray-200"
       >
-        {/* Overlay to Dim Background for Better Readability */}
-        <div className="absolute inset-0 bg-gray-900 opacity-70"></div>
-
-        {/* Profile Image */}
-        <motion.div
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="relative z-10 md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0"
-        >
-          <img
-            src={profileImageSrc}
-            alt={`${firstName} ${lastName}`}
-            className="w-64 h-64 rounded-lg object-cover shadow-2xl border-4 border-green-400 cursor-pointer"
-            onClick={() => setIsModalOpen(true)} // Open modal on click
-          />
-        </motion.div>
-
-        {/* Profile Info */}
-        <motion.div
-          initial={{ x: 100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="relative z-10 text-white flex-grow text-center md:text-left md:pl-12"
-        >
-          <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-            {firstName} {lastName}
-          </h2>
-
-          {/* Company and Contact Info */}
-          <p className="text-lg mt-4 text-gray-200 font-light">
-            Company: <span className="font-bold text-white">{companyName}</span>
-          </p>
-          <p className="text-lg mt-1 text-gray-200 font-light">
-            Contact: <span className="font-bold text-white">{contact}</span>
-          </p>
-          <p className="text-lg mt-1 text-gray-200 font-light">
-            Email: <span className="font-bold text-white">{email}</span>
-          </p>
-          <p className="text-lg mt-1 text-gray-200 font-light">
-            Address: <span className="font-bold text-white">{address}</span>
-          </p>
-          <p className="text-lg mt-1 text-gray-200 font-light">
-            Description: <span className="font-bold text-white">{description}</span>
-          </p>
-
-          {/* Divider Line */}
-          <div className="w-full h-1 bg-gradient-to-r from-blue-400 to-purple-500 my-8"></div>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-6 mt-8">
-            <button
-              onClick={handleEditProfile}
-              className="group px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-full shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <span className="flex items-center justify-center">
-                <Edit className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform duration-300" />
-                Edit Profile
-              </span>
-            </button>
-
-            <button
-              onClick={handleViewProjects}
-              className="group px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-purple-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-            >
-              <span className="flex items-center justify-center">
-                <User className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform duration-300" />
-                View Projects
-              </span>
-            </button>
-
-            <button
-              onClick={handleAddProjects}
-              className="group px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-full shadow-lg hover:shadow-green-500/50 transition duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            >
-              <span className="flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 mr-2 transform group-hover:rotate-45 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Projects
-              </span>
-            </button>
+        {/* Card Header with Background */}
+        <div className="relative h-32 w-full">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url('/studenttop.jpg')`,
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-purple-600/80"></div>
           </div>
-        </motion.div>
-      </div>
+
+          {/* Profile Image - Positioned to overlap the header */}
+          <div className="absolute -bottom-12 left-6">
+            {imageError ? (
+              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-md">
+                <Building className="h-12 w-12 text-gray-400" />
+              </div>
+            ) : (
+              <img
+                src={profileImageSrc || "/placeholder.svg"}
+                alt={`${firstName} ${lastName}`}
+                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md cursor-pointer"
+                onClick={() => setIsModalOpen(true)}
+                onError={handleImageError}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Card Content */}
+        <div className="pt-14 px-6 pb-6 bg-white">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {firstName} {lastName}
+              </h2>
+
+              <div className="flex items-center mt-1 text-gray-600">
+                <Building className="w-4 h-4 mr-2" />
+                <span>{companyName}</span>
+              </div>
+
+              <div className="flex items-center mt-1 text-gray-600">
+                <Mail className="w-4 h-4 mr-2" />
+                <span>{email}</span>
+              </div>
+
+              <div className="flex items-center mt-1 text-gray-600">
+                <Phone className="w-4 h-4 mr-2" />
+                <span>{contact}</span>
+              </div>
+
+              {address && (
+                <div className="flex items-center mt-1 text-gray-600">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  <span>{address}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex mt-4 md:mt-0 space-x-3">
+              <button
+                onClick={handleEditProfile}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center"
+              >
+                <Edit className="w-4 h-4 mr-1" />
+                Edit Profile
+              </button>
+              <button
+                onClick={handleViewProjects}
+                className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors flex items-center"
+              >
+                <User className="w-4 h-4 mr-1" />
+                View Projects
+              </button>
+            </div>
+          </div>
+
+          {/* Description */}
+          {description && (
+            <div className="mt-4 text-gray-600 text-sm">
+              <p className="line-clamp-3">{description}</p>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Right Side Card */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="w-full lg:w-1/3 flex flex-col gap-4 self-start"
+      >
+        <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+          <div className="p-5">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <FileText className="w-5 h-5 mr-2 text-blue-500" />
+              Industry Projects
+            </h3>
+            <p className="text-gray-600 text-sm mb-6">
+              Create and manage your industry projects. Collaborate with students and track project progress.
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={handleAddProjects}
+                className="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center group"
+              >
+                <PlusCircle className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                Add New Project
+              </button>
+              <button
+                onClick={handleViewProjects}
+                className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center group"
+              >
+                <FileText className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+                View My Projects
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Modal for Enlarged Profile Image */}
       {isModalOpen && (
@@ -166,7 +202,7 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
               ✕
             </button>
             <img
-              src={profileImageSrc}
+              src={profileImageSrc || "/placeholder.svg"}
               alt="Enlarged Profile"
               className="max-w-full max-h-full rounded-lg shadow-2xl"
             />
@@ -174,7 +210,7 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default IndustryProfile;
+export default IndustryProfile
