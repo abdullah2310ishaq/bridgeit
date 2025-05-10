@@ -15,6 +15,7 @@ interface SearchResult {
   description: string
   department?: string
   imageData: string | null
+  universityName?: string
 }
 
 interface SearchSectionProps {
@@ -68,7 +69,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Enter name"
+          placeholder="Enter name or ID"
           className="p-3 w-full md:w-1/2 border border-gray-600 bg-gray-100 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <select
@@ -78,6 +79,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({
         >
           <option value="student">Student</option>
           <option value="faculty">Faculty</option>
+          <option value="industry">Industry Expert</option>
         </select>
         <button
           onClick={handleSearch}

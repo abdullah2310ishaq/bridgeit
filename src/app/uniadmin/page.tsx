@@ -13,6 +13,7 @@ import SearchSection from "./components/SearchSection"
 import StudentProjects from "./components/StudentProjects"
 import LoadingSpinner from "./components/LoadingSpinner"
 import ErrorDisplay from "./components/ErrorDisplay"
+import EventsComponent, { type Event } from "./components/EventsComponent"
 
 // ------------ Interfaces ------------
 interface AdminProfile {
@@ -32,6 +33,7 @@ interface SearchResult {
   email: string
   description: string
   imageData: string | null
+  department?: string
 }
 
 // For your student projects
@@ -44,14 +46,6 @@ interface StudentProject {
   endDate: string
   universityName: string
   // ...anything else returned by the API
-}
-
-interface Event {
-  id: string
-  title: string
-  speakerName: string
-  eventDate: string
-  venue: string
 }
 
 const UniAdminDashboard: React.FC = () => {
@@ -76,6 +70,9 @@ const UniAdminDashboard: React.FC = () => {
   const [loadingProjects, setLoadingProjects] = useState(false)
   const [projectsError, setProjectsError] = useState<string | null>(null)
 
+  // ------------------- Events States -------------------
+  const [events, setEvents] = useState<Event[]>([])
+
   useEffect(() => {
     const token = localStorage.getItem("jwtToken")
     if (!token) {
@@ -86,12 +83,20 @@ const UniAdminDashboard: React.FC = () => {
     const fetchAdminData = async () => {
       try {
         // Step A: Validate user & role
-        const profileRes = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
-        if (!profileRes.ok) throw new Error("Failed to fetch authorized user info")
+        const profileRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (!profileRes.ok) {
+          console.error("Profile response not OK:", await profileRes.text())
+          throw new Error("Failed to fetch authorized user info")
+        }
+
         const profileData = await profileRes.json()
+        console.log("Profile data:", profileData)
 
         if (profileData.role !== "UniversityAdmin") {
           toast.error("You are not authorized to access this page.")
@@ -102,11 +107,22 @@ const UniAdminDashboard: React.FC = () => {
         // Step B: Fetch this Admin's profile
         const adminResponse = await fetch(
           `https://localhost:7053/api/get-uni-admins/admins-by-id/${profileData.userId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
         )
-        if (!adminResponse.ok) throw new Error("Failed to fetch University Admin profile")
+
+        if (!adminResponse.ok) {
+          console.error("Admin response not OK:", await adminResponse.text())
+          throw new Error("Failed to fetch University Admin profile")
+        }
 
         const adminData = await adminResponse.json()
+        console.log("Admin data:", adminData)
+
         setAdminProfile({
           firstName: adminData.firstName,
           lastName: adminData.lastName,
@@ -119,23 +135,41 @@ const UniAdminDashboard: React.FC = () => {
 
         // Step C: Fetch university-wide stats
         const [studentsRes, facultyRes] = await Promise.all([
-          fetch(
-            `https://localhost:7053/api/get-student/student-by-university/${adminData.university}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          ),
-          fetch(
-            `https://localhost:7053/api/get-faculty/faculty-by-university/${adminData.university}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          ),
+          fetch(`https://localhost:7053/api/get-student/student-by-university/${adminData.university}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+          fetch(`https://localhost:7053/api/get-faculty/faculty-by-university/${adminData.university}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
         ])
-        if (!studentsRes.ok || !facultyRes.ok) throw new Error("Failed to fetch university data")
+
+        if (!studentsRes.ok) {
+          console.error("Students response not OK:", await studentsRes.text())
+        }
+
+        if (!facultyRes.ok) {
+          console.error("Faculty response not OK:", await facultyRes.text())
+        }
+
+        if (!studentsRes.ok || !facultyRes.ok) {
+          throw new Error("Failed to fetch university data")
+        }
 
         const [studentsData, facultiesData] = await Promise.all([studentsRes.json(), facultyRes.json()])
+        console.log("Students data:", studentsData)
+        console.log("Faculty data:", facultiesData)
+
         setStudentsCount(studentsData.length)
         setFacultiesCount(facultiesData.length)
 
-        // Step D: Also fetch the Ongoing Student Projects
-        await fetchStudentProjects(token, adminData.university)
+        // Step E: Fetch events
+        await fetchEvents(token)
       } catch (err) {
         console.error("Error in fetchAdminData:", err)
         setError("Failed to load profile or university data")
@@ -148,35 +182,23 @@ const UniAdminDashboard: React.FC = () => {
     fetchAdminData()
   }, [router])
 
-  const fetchStudentProjects = async (token: string, uniName: string) => {
-    setLoadingProjects(true)
-    setProjectsError(null)
-
+  const fetchEvents = async (token: string) => {
     try {
-      // GET /api/projects/get-student-projects
-      const projectsRes = await fetch(
-        "https://localhost:7053/api/projects/get-student-projects",
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
-      if (!projectsRes.ok) {
-        throw new Error("Failed to fetch student projects")
+      const response = await fetch("https://localhost:7053/api/Events/get-events", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setEvents(data)
+      } else {
+        console.error("Failed to fetch events")
       }
-
-      const projects = (await projectsRes.json()) as StudentProject[]
-
-      // Filter only ongoing (adjust the condition if your status string is different)
-      const ongoingProjects = projects.filter((proj) => proj.status === "Pending")
-
-      // If you need to filter by this admin's university, make sure each project
-      // has a `university` field.
-      const ongoingForThisUni = ongoingProjects.filter((p) => p.universityName === uniName)
-
-      setStudentProjects(ongoingProjects)
-    } catch (err) {
-      console.error("Error fetching projects:", err)
-      setProjectsError("An error occurred while fetching projects")
-    } finally {
-      setLoadingProjects(false)
+    } catch (error) {
+      console.error("Error fetching events:", error)
     }
   }
 
@@ -185,42 +207,120 @@ const UniAdminDashboard: React.FC = () => {
     router.push("/auth/login-user")
   }
 
+  // Updated handleSearch function based on the API documentation
   const handleSearch = async (query: string, searchType: string) => {
+    if (!adminProfile) {
+      console.error("Admin profile not loaded yet")
+      toast.error("Please wait for profile to load before searching")
+      return
+    }
+
+    console.log(`Starting search for ${searchType}: ${query} in university ${adminProfile.university}`)
     setSearchLoading(true)
     setSearchError("")
     setResults([])
-  
+
     const token = localStorage.getItem("jwtToken")
     if (!token) {
-      toast.error("Authentication failed.")
-      setSearchLoading(false)
+      router.push("/auth/login-user")
       return
     }
-  
+
     try {
-      const endpoint =
-        searchType === "student"
-          ? `https://localhost:7053/api/get-student/student-by-name/${query}`
-          : `https://localhost:7053/api/get-faculty/faculty-by-name/${query}`
-  
-      const res = await fetch(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-  
-      if (!res.ok) throw new Error("Search failed")
-  
-      const data = await res.json()
-      setResults(data)
-    } catch (err) {
-      console.error(err)
-      setSearchError("Failed to search. Please try again.")
+      let res: Response
+
+      if (searchType === "student") {
+        let url = "";
+        const isNumeric = !isNaN(Number(query));
+      
+        if (!isNumeric) {
+          // Search by name
+          url = `https://localhost:7053/api/get-student/student-by-name/${encodeURIComponent(query)}`;
+        } else {
+          // Search by ID
+          url = `https://localhost:7053/api/get-student/student-by-student-id/${encodeURIComponent(query)}`;
+        }
+      
+        console.log("Fetching from URL:", url);
+      
+        res = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        let url = "";
+        const isNumeric = !isNaN(Number(query));
+      
+        if (!isNumeric) {
+          // Search by name
+          url = `https://localhost:7053/api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`;
+        } else {
+          // Search by ID
+          url = `https://localhost:7053/api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`;
+        }
+      
+        console.log("Fetching from URL:", url);
+      
+        res = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      }
+      
+      // Log the raw response for debugging
+      const responseText = await res.text()
+      console.log("Raw response:", responseText)
+
+      if (!res.ok) {
+        throw new Error(`Search failed: ${res.status} ${responseText || "Unknown error"}`)
+      }
+
+      // Parse the response text as JSON
+      let data
+      try {
+        data = JSON.parse(responseText)
+        console.log("Parsed data:", data)
+      } catch (e) {
+        console.error("Error parsing JSON:", e)
+        throw new Error("Invalid response format from server")
+      }
+
+      // Filter results by university if needed
+      if (Array.isArray(data)) {
+        // Filter by university if needed
+        const filteredData = adminProfile.university
+          ? data.filter((item) => item.universityName === adminProfile.university)
+          : data
+
+        if (filteredData.length === 0) {
+          setSearchError("No results found")
+        } else {
+          setResults(filteredData)
+        }
+      } else if (data && typeof data === "object") {
+        // If the response is a single object, check if it belongs to the university
+        if (!adminProfile.university || data.universityName === adminProfile.university) {
+          setResults([data])
+        } else {
+          setSearchError("No results found")
+        }
+      } else {
+        console.error("Expected array or object but got:", typeof data)
+        setSearchError("Invalid response format from server")
+      }
+    } catch (err: any) {
+      console.error("Search error:", err)
+      setSearchError(err.message || "An error occurred")
     } finally {
       setSearchLoading(false)
     }
   }
-  
 
   if (loading) {
     return <LoadingSpinner />
@@ -245,20 +345,34 @@ const UniAdminDashboard: React.FC = () => {
 
           {/* Search Section */}
           <SearchSection
-  universityName={adminProfile?.university}
-  onSearch={handleSearch}
-  searchLoading={searchLoading}
-  searchError={searchError}
-  results={results}
-/>
-
-
-          {/* Student Projects Section */}
-          <StudentProjects
-            loadingProjects={loadingProjects}
-            projectsError={projectsError}
-            studentProjects={studentProjects}
+            universityName={adminProfile?.university}
+            onSearch={handleSearch}
+            searchLoading={searchLoading}
+            searchError={searchError}
+            results={results}
           />
+
+          {/* Events Section */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-4">
+            <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
+              {/* Header section */}
+              <div className="relative z-10 p-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center">
+                    University Events
+                  </h2>
+                  <p className="text-blue-100 mt-1">Stay updated with the latest campus activities</p>
+                </div>
+                <button
+                  onClick={() => router.push("/uniadmin/events")}
+                  className="mt-4 md:mt-0 px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg backdrop-blur-sm transition-all flex items-center text-sm font-medium"
+                >
+                  View All Events
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -22,42 +22,32 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
       <nav className="mt-6">
         <a
           onClick={() => router.push("uniadmin/profile")}
-          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-gray-600 hover:text-white cursor-pointer"
+          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-200 hover:text-white cursor-pointer"
         >
           <FaUser className="mr-3" />
           Profile
         </a>
         <a
           onClick={() => router.push("uniadmin/fyprequests")}
-          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-gray-600 hover:text-white cursor-pointer"
+          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-200 hover:text-white cursor-pointer"
         >
           <FaProjectDiagram className="mr-3" />
           FYP Requests
         </a>
         <a
           onClick={() => router.push("uniadmin/events")}
-          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-gray-600 hover:text-white cursor-pointer"
+          className="flex items-center py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-200 hover:text-white cursor-pointer"
         >
           <FaCalendarAlt className="mr-3" />
           Events
         </a>
         <button
           onClick={handleLogout}
-          className="flex items-center w-full py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-gray-600 hover:text-white"
+          className="flex items-center w-full py-3 px-6 text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-200 hover:text-white"
         >
           <FaSignOutAlt className="mr-3" />
           Logout
         </button>
-
-        {/* CALENDAR SECTION 
-        <motion.div
-          className="bg-gray-100 rounded-lg shadow-lg p-6 border border-gray-800 
-                     col-span-2 md:col-span-2 lg:col-span-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-        </motion.div>*/}
       </nav>
     </div>
   )
