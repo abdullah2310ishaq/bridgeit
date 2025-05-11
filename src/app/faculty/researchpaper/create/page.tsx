@@ -7,11 +7,8 @@ import Image from "next/image";
 import { FaRocket, FaUsers, FaCode, FaCalendarAlt } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 
-interface CreateResearchPaperPageProps {
-  uniImage?: string;
-}
-
-const CreateResearchPaperPage: React.FC<CreateResearchPaperPageProps> = ({ uniImage = "/unknown.jpg" }) => {
+const CreateResearchPaperPage = () => {
+  const uniImage = "/unknown.jpg"; // Set default value directly
   const [paperName, setPaperName] = useState("");
   const [category, setCategory] = useState("");
   const [publishChannel, setPublishChannel] = useState("");
@@ -19,7 +16,6 @@ const CreateResearchPaperPage: React.FC<CreateResearchPaperPageProps> = ({ uniIm
   const [link, setLink] = useState("");
   const [yearOfPublish, setYearOfPublish] = useState("");
   const router = useRouter();
-
   useEffect(() => {
     async function authorizeUserAndFetchFacultyId() {
       const token = localStorage.getItem("jwtToken");
@@ -258,4 +254,4 @@ const CreateResearchPaperPage: React.FC<CreateResearchPaperPageProps> = ({ uniIm
   );
 };
 
-export default CreateResearchPaperPage;
+export default CreateResearchPaperPage
