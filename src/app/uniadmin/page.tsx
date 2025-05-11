@@ -10,10 +10,11 @@ import Sidebar from "./components/Sidebar"
 import AdminProfileCard from "./components/AdminProfileCard"
 import UniversityStats from "./components/UniversityStats"
 import SearchSection from "./components/SearchSection"
-import StudentProjects from "./components/StudentProjects"
 import LoadingSpinner from "./components/LoadingSpinner"
 import ErrorDisplay from "./components/ErrorDisplay"
-import EventsComponent, { type Event } from "./components/EventsComponent"
+import type { Event } from "./components/EventsComponent"
+import EventCountdown from "./components/event-countdown"
+import EventNotificationManager from "./components/event-notification-manager"
 
 // ------------ Interfaces ------------
 interface AdminProfile {
@@ -230,49 +231,49 @@ const UniAdminDashboard: React.FC = () => {
       let res: Response
 
       if (searchType === "student") {
-        let url = "";
-        const isNumeric = !isNaN(Number(query));
-      
+        let url = ""
+        const isNumeric = !isNaN(Number(query))
+
         if (!isNumeric) {
           // Search by name
-          url = `https://localhost:7053/api/get-student/student-by-name/${encodeURIComponent(query)}`;
+          url = `https://localhost:7053/api/get-student/student-by-name/${encodeURIComponent(query)}`
         } else {
           // Search by ID
-          url = `https://localhost:7053/api/get-student/student-by-student-id/${encodeURIComponent(query)}`;
+          url = `https://localhost:7053/api/get-student/student-by-student-id/${encodeURIComponent(query)}`
         }
-      
-        console.log("Fetching from URL:", url);
-      
+
+        console.log("Fetching from URL:", url)
+
         res = await fetch(url, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        });
+        })
       } else {
-        let url = "";
-        const isNumeric = !isNaN(Number(query));
-      
+        let url = ""
+        const isNumeric = !isNaN(Number(query))
+
         if (!isNumeric) {
           // Search by name
-          url = `https://localhost:7053/api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`;
+          url = `https://localhost:7053/api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`
         } else {
           // Search by ID
-          url = `https://localhost:7053/api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`;
+          url = `https://localhost:7053/api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`
         }
-      
-        console.log("Fetching from URL:", url);
-      
+
+        console.log("Fetching from URL:", url)
+
         res = await fetch(url, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        });
+        })
       }
-      
+
       // Log the raw response for debugging
       const responseText = await res.text()
       console.log("Raw response:", responseText)
@@ -332,7 +333,16 @@ const UniAdminDashboard: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-100 text-gray-700">
       {/* Sidebar */}
-      <Sidebar handleLogout={handleLogout} />
+      <Sidebar
+        handleLogout={handleLogout}
+        dueEvents={events.filter((event) => {
+          const eventDate = new Date(event.eventDate)
+          const now = new Date()
+          const threeDaysFromNow = new Date(now)
+          threeDaysFromNow.setDate(now.getDate() + 3)
+          return eventDate > now && eventDate <= threeDaysFromNow
+        })}
+      />
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-8">
@@ -352,15 +362,18 @@ const UniAdminDashboard: React.FC = () => {
             results={results}
           />
 
+          {/* Event Countdown */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-1">
+            <EventCountdown events={events} />
+          </div>
+
           {/* Events Section */}
           <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-4">
             <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
               {/* Header section */}
               <div className="relative z-10 p-6 flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center">
-                    University Events
-                  </h2>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center">University Events</h2>
                   <p className="text-blue-100 mt-1">Stay updated with the latest campus activities</p>
                 </div>
                 <button
@@ -368,13 +381,16 @@ const UniAdminDashboard: React.FC = () => {
                   className="mt-4 md:mt-0 px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg backdrop-blur-sm transition-all flex items-center text-sm font-medium"
                 >
                   View All Events
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Event Notification Manager */}
+      <EventNotificationManager events={events} />
 
       {/* Toast Notifications */}
       <ToastContainer />

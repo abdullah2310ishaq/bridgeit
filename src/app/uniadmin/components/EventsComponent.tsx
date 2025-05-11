@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useState, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { FaCalendarAlt, FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa"
+import { FaCalendarAlt, FaMapMarkerAlt, FaChevronLeft, FaChevronRight, FaUser } from "react-icons/fa"
 import { motion } from "framer-motion"
 
 export interface Event {
@@ -14,8 +14,9 @@ export interface Event {
   venue: string
 }
 
-interface EventsComponentProps {
+export interface EventsComponentProps {
   initialEvents?: Event[]
+  events?: Event[] // Add this line to fix the type error
   showTitle?: boolean
   maxEvents?: number
   defaultTab?: "past" | "upcoming"
@@ -37,14 +38,15 @@ const formatDate = (date: Date) => {
 
 const EventsComponent: React.FC<EventsComponentProps> = ({
   initialEvents,
+  events, // Add this to the destructuring
   showTitle = true,
   maxEvents,
   defaultTab = "upcoming",
   isDashboard = false,
 }) => {
-  const [events, setEvents] = useState<Event[]>(initialEvents || [])
+  const [eventsData, setEventsData] = useState<Event[]>(events || initialEvents || [])
   const [activeTab, setActiveTab] = useState<"past" | "upcoming">(defaultTab)
-  const [loading, setLoading] = useState(!initialEvents)
+  const [loading, setLoading] = useState(!initialEvents && !events)
   const router = useRouter()
 
   // Calendar state
@@ -83,9 +85,15 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   useEffect(() => {
-    // If initialEvents is provided, use those instead of fetching
+    // If events or initialEvents is provided, use those instead of fetching
+    if (events) {
+      setEventsData(events)
+      setLoading(false)
+      return
+    }
+    
     if (initialEvents) {
-      setEvents(initialEvents)
+      setEventsData(initialEvents)
       setLoading(false)
       return
     }
@@ -108,7 +116,7 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
 
         if (response.ok) {
           const data = await response.json()
-          setEvents(data)
+          setEventsData(data)
         } else {
           console.error("Failed to fetch events")
         }
@@ -120,13 +128,13 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
     }
 
     fetchEvents()
-  }, [router, initialEvents])
+  }, [router, initialEvents, events])
 
   // Create a map of dates with events for quick lookup
   const eventDates = useMemo(() => {
     const dateMap: Record<string, Event[]> = {}
 
-    events.forEach((event) => {
+    eventsData.forEach((event) => {
       const dateKey = event.eventDate.split("T")[0]
       if (!dateMap[dateKey]) {
         dateMap[dateKey] = []
@@ -135,7 +143,7 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
     })
 
     return dateMap
-  }, [events])
+  }, [eventsData])
 
   // Navigate to previous month
   const goToPreviousMonth = () => {
@@ -185,12 +193,12 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
   const now = new Date()
 
   // Categorize events
-  const pastEvents = events.filter((event) => new Date(event.eventDate) < now)
-  const upcomingEvents = events.filter((event) => new Date(event.eventDate) >= now)
+  const pastEvents = eventsData.filter((event) => new Date(event.eventDate) < now)
+  const upcomingEvents = eventsData.filter((event) => new Date(event.eventDate) >= now)
 
   const getFilteredEvents = () => {
     // Filter by tab
-    let filteredList: string | any[]
+    let filteredList: Event[] = []
     switch (activeTab) {
       case "past":
         filteredList = pastEvents
@@ -293,7 +301,11 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
               filteredEvents.map((event) => (
                 <motion.div
                   key={event.id}
-                  
+                  ref={(el) => {
+                    eventRefs.current[event.id] = el;
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   className={`bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
                     selectedEventId === event.id ? "border-blue-500" : "border-gray-200"
