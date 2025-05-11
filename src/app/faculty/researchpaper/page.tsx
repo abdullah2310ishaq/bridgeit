@@ -14,13 +14,11 @@ interface ResearchPaper {
   yearOfPublish: number;
 }
 
-interface FacultyResearchWorkPageProps {
-  uniImage?: string;
-}
 
-const FacultyResearchWorkPage: React.FC<FacultyResearchWorkPageProps> = ({ uniImage = "/unknown.jpg" }) => {
+const FacultyResearchWorkPage: React.FC = () => {
   const [researchPapers, setResearchPapers] = useState<ResearchPaper[]>([]);
   const [loading, setLoading] = useState(true);
+  const uniImage ="/unknown.jpg";
   const router = useRouter();
 
   useEffect(() => {
