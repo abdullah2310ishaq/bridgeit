@@ -25,9 +25,9 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
 
   // A few random background gradients for visual variety
   const gradientStyles = [
-    "bg-gradient-to-r from-green-400 via-teal-500 to-blue-500",
-    "bg-gradient-to-r from-purple-400 via-pink-500 to-red-500",
-    "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500",
+    "bg-gradient-to-r from-green-200 via-teal-200 to-blue-200",
+    "bg-gradient-to-r from-purple-200 via-pink-200 to-red-200",
+    "bg-gradient-to-r from-yellow-200 via-orange-200 to-red-200",
   ]
 
   // Get a random gradient for each project (but keep it consistent)

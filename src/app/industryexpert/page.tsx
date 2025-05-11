@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation"
 
 // Import your custom components
 import IndustryProfile from "./industrycomponents/IndustryProfile"
-import CompanyProfile from "./industrycomponents/CompanyProfile"
+{/*import CompanyProfile from "./industrycomponents/CompanyProfile"*/}
 import ProjectCard from "./industrycomponents/ProjectsCardd"
 import CompletedProjects from "./industrycomponents/CompletedProjects"
 import CompletionRequestsComponent from "./completion-requests-component"
+import { Bell, Briefcase, CheckCircle, Clock } from "lucide-react"
+import { motion } from "framer-motion"
 
 // Interface for the expert's main profile data
 interface IndustryExpertProfile {
@@ -234,9 +236,13 @@ const IndustryExpertPage: React.FC = () => {
     localStorage.removeItem("jwtToken")
     router.push("/auth/login-user")
   }
+    // Count projects for each category
+  const assignedCount = assignedProjects.length
+  const unassignedCount = unassignedProjects.length
+  const completedCount = CompletedProjects.length
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+    <div className="min-h-screen bg-white text-gray-700 p-6">
       <div className="container mx-auto space-y-8">
         {/* (A) Industry Expert Profile Section */}
         <IndustryProfile
@@ -252,113 +258,139 @@ const IndustryExpertPage: React.FC = () => {
           address={expertProfile.address}
           contact={expertProfile.contact}
         />
-
-        {/* (B) Company Profile Section */}
-        <CompanyProfile
-          companyName={expertProfile.companyName}
-          address={expertProfile.address}
-          contact={expertProfile.contact}
-          onEditCompany={() => {
-            // Placeholder for editing company details
-            alert("Editing company not implemented yet.")
-          }}
-        />
-
-        {/* (C) Tabs for Projects */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActiveTab("unassigned")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "unassigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
+        {/* Header with stats */}
+        <div className="mb-8">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl font-bold text-gray-900 mb-2"
           >
-            Unassigned Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("assigned")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "assigned" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Active Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("completed")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "completed" ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Completed Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("requests")}
-            className={`py-2 px-4 rounded-lg ${
-              activeTab === "requests" ? "bg-yellow-600 text-white" : "bg-gray-700 text-gray-300"
-            }`}
-          >
-            Completion Requests
-            {completionRequests.length > 0 && (
-              <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {completionRequests.length}
-              </span>
-            )}
-          </button>
+            My Projects
+          </motion.h1>
         </div>
 
-        {/* (D) Project Lists */}
-        {activeTab === "unassigned" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {unassignedProjects.length > 0 ? (
-              unassignedProjects.map((proj) => (
-                <ProjectCard
-                  key={proj.id}
-                  projectId={proj.id}
-                  title={proj.title}
-                  description={proj.description}
-                  endDate={proj.endDate}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center p-8 bg-gray-800 rounded-lg">
-                No unassigned projects available
+        {/* Project Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500"
+            onClick={() => setActiveTab("assigned")}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Active Projects</p>
+                <p className="text-2xl font-bold text-gray-800">{assignedCount}</p>
               </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <Briefcase className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500"
+            onClick={() => setActiveTab("unassigned")}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Unassigned Projects</p>
+                <p className="text-2xl font-bold text-gray-800">{unassignedCount}</p>
+              </div>
+              <div className="p-3 bg-amber-100 rounded-full">
+                <Clock className="h-6 w-6 text-amber-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500"
+            onClick={() => setActiveTab("completed")}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Completed Projects</p>
+                <p className="text-2xl font-bold text-gray-800">{completedCount}</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        {/* (C) Tabs for Projects */}
+
+       <div className="mb-6">
+  <div
+    className={`group transition-all duration-300 rounded-xl p-6 cursor-pointer border
+      ${activeTab === "requests"
+        ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-blue-600 shadow-lg"
+        : "bg-white hover:bg-blue-50 text-gray-800 border-gray-200"}`}
+    onClick={() => setActiveTab("requests")}
+  >
+    <div className="flex items-center">
+      <div className="p-3 bg-blue-100 rounded-full mr-4">
+        <Bell className="h-6 w-6 text-blue-600" />
+      </div>
+      <div className="flex-1">
+        <h3 className="text-xl font-bold group-hover:underline">
+          Project Completion Requests
+        </h3>
+        <p className="text-sm text-gray-500 group-hover:text-gray-700">
+          Click to view and manage completion requests
+        </p>
+      </div>
+      {activeTab === "requests" && (
+        <span className="text-sm  text-blue-100 font-semibold px-3 py-1 ">
+          Active
+        </span>
+      )}
+    </div>
+
+      </div>
+      {activeTab === "requests" && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 border border-blue-100">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-full mr-3">
+                <Bell className="h-5 w-5 text-blue-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">Project Completion Requests</h2>
+            </div>
+
+            {completionRequests.length > 0 && (
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                {completionRequests.length} {completionRequests.length === 1 ? "Request" : "Requests"}
+              </span>
             )}
           </div>
-        )}
 
-        {activeTab === "assigned" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {assignedProjects.length > 0 ? (
-              assignedProjects.map((proj) => (
-                <ProjectCard
-                  key={proj.id}
-                  projectId={proj.id}
-                  title={proj.title}
-                  description={proj.description}
-                  endDate={proj.endDate}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center p-8 bg-gray-800 rounded-lg">No active projects available</div>
-            )}
-          </div>
-        )}
-
-        {activeTab === "completed" && <CompletedProjects expertId={expertProfile.indExptId} />}
-
-        {activeTab === "requests" && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Project Completion Requests</h2>
+          {isRefreshing ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              <span className="ml-3 text-blue-600 font-medium">Refreshing requests...</span>
+            </div>
+          ) : (
             <CompletionRequestsComponent requests={completionRequests} onRefresh={refreshCompletionRequests} />
-          </div>
-        )}
+          )}
+        </div>
+      )}
+    </div>
 
-        {/* Logout button */}
+        {/* Logout button 
         <div className="mt-10">
           <button onClick={handleLogout} className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500">
             Logout
           </button>
-        </div>
+        </div>*/}
       </div>
     </div>
   )
