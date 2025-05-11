@@ -10,7 +10,8 @@ import IndustryProfile from "./industrycomponents/IndustryProfile"
 import ProjectCard from "./industrycomponents/ProjectsCardd"
 import CompletedProjects from "./industrycomponents/CompletedProjects"
 import CompletionRequestsComponent from "./completion-requests-component"
-import { Bell } from "lucide-react"
+import { Bell, Briefcase, CheckCircle, Clock } from "lucide-react"
+import { motion } from "framer-motion"
 
 // Interface for the expert's main profile data
 interface IndustryExpertProfile {
@@ -235,6 +236,10 @@ const IndustryExpertPage: React.FC = () => {
     localStorage.removeItem("jwtToken")
     router.push("/auth/login-user")
   }
+    // Count projects for each category
+  const assignedCount = assignedProjects.length
+  const unassignedCount = unassignedProjects.length
+  const completedCount = CompletedProjects.length
 
   return (
     <div className="min-h-screen bg-white text-gray-700 p-6">
@@ -253,18 +258,104 @@ const IndustryExpertPage: React.FC = () => {
           address={expertProfile.address}
           contact={expertProfile.contact}
         />
+        {/* Header with stats */}
+        <div className="mb-8">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl font-bold text-gray-900 mb-2"
+          >
+            My Projects
+          </motion.h1>
+        </div>
 
+        {/* Project Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500"
+            onClick={() => setActiveTab("assigned")}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Active Projects</p>
+                <p className="text-2xl font-bold text-gray-800">{assignedCount}</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <Briefcase className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500"
+            onClick={() => setActiveTab("unassigned")}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Unassigned Projects</p>
+                <p className="text-2xl font-bold text-gray-800">{unassignedCount}</p>
+              </div>
+              <div className="p-3 bg-amber-100 rounded-full">
+                <Clock className="h-6 w-6 text-amber-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500"
+            onClick={() => setActiveTab("completed")}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Completed Projects</p>
+                <p className="text-2xl font-bold text-gray-800">{completedCount}</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </motion.div>
+        </div>
         {/* (C) Tabs for Projects */}
-         <div className="container mx-auto py-10">
-      <div className="flex justify-center mb-6">
-        <button
-          className={`px-6 py-2 rounded-full font-semibold ${activeTab === "requests" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-          onClick={() => setActiveTab("requests")}
-        >
-          Project Completion Requests
-        </button>
-      </div>
 
+       <div className="mb-6">
+  <div
+    className={`group transition-all duration-300 rounded-xl p-6 cursor-pointer border
+      ${activeTab === "requests"
+        ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-blue-600 shadow-lg"
+        : "bg-white hover:bg-blue-50 text-gray-800 border-gray-200"}`}
+    onClick={() => setActiveTab("requests")}
+  >
+    <div className="flex items-center">
+      <div className="p-3 bg-blue-100 rounded-full mr-4">
+        <Bell className="h-6 w-6 text-blue-600" />
+      </div>
+      <div className="flex-1">
+        <h3 className="text-xl font-bold group-hover:underline">
+          Project Completion Requests
+        </h3>
+        <p className="text-sm text-gray-500 group-hover:text-gray-700">
+          Click to view and manage completion requests
+        </p>
+      </div>
+      {activeTab === "requests" && (
+        <span className="text-sm  text-blue-100 font-semibold px-3 py-1 ">
+          Active
+        </span>
+      )}
+    </div>
+
+      </div>
       {activeTab === "requests" && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 border border-blue-100">
           <div className="flex items-center justify-between mb-6">

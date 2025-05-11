@@ -57,6 +57,10 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
     router.push(`/industryexpert/projects/create`)
   }
 
+  const handleViewProfile =() => {
+    router.push(`/industryexpert/profile`)
+  }
+
   const profileImageSrc = companyLogo ? `data:image/jpeg;base64,${companyLogo}` : "/default-profile.png"
 
   return (
@@ -137,11 +141,11 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
                 Edit Profile
               </button>
               <button
-                onClick={handleViewProjects}
+                onClick={handleViewProfile}
                 className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors flex items-center"
               >
                 <User className="w-4 h-4 mr-1" />
-                View Projects
+                View Profile
               </button>
             </div>
           </div>
