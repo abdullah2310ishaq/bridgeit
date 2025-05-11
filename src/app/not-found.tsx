@@ -37,7 +37,7 @@ export default function NotFound() {
                 animate={{ rotate: 10 }}
                 transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse", ease: "easeInOut" }}
               >
-                <img src="/placeholder.svg?key=4phnn" alt="404 Error Illustration" className="w-48 h-48" />
+                <img src="/4phnn.png" alt="404 Error Illustration" className="w-48 h-48" />
               </motion.div>
             </div>
 

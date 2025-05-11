@@ -312,7 +312,7 @@ export default function ApprovedRequestsPage() {
                       </div>
                     </div>
                     <button
-                      onClick={() => router.push(`/industry-expert/fyp-details/${request.fypId}`)}
+                      onClick={() => router.push(`/industryexpert/fyp/${request.fypId}`)}
                       className="flex items-center gap-1 text-purple-400 hover:text-purple-300"
                     >
                       View Details

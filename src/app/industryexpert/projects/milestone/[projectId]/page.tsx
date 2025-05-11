@@ -3,14 +3,36 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image"
+import { motion } from "framer-motion"
 import ChatForIndustry from "@/app/common_components/ChatforIndustry"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  FileText,
+  Flag,
+  MessageSquare,
+  RefreshCw,
+  Star,
+  User,
+  X,
+  CheckSquare,
+  Square,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Send,
+  ArrowLeft,
+} from "lucide-react"
 
 // --------- Interfaces ---------
 interface IndustryExpertProfile {
   userId: string
-  indExptId: string // We'll use this as the "expertId"
+  indExptId: string
   firstName: string
   lastName: string
   email: string
@@ -117,11 +139,61 @@ const MilestonePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   // Debug state
   const [debugInfo, setDebugInfo] = useState<string | null>(null)
+  // Active tab state
+  const [activeTab, setActiveTab] = useState<"milestones" | "tasks" | "reviews" | "chat">("milestones")
 
   // Determine if the project is completed or pending completion
   const isProjectComplete = project?.status === "Completed"
   const isPendingCompletion = project?.status === "PendingCompletion"
   const isPaymentPending = project?.status === "PaymentPending"
+
+  // Get project image based on title or description
+  const getProjectImage = () => {
+    if (!project)
+      return "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80"
+
+    const title = project.title.toLowerCase()
+    const description = project.description.toLowerCase()
+
+    if (title.includes("web") || description.includes("web")) {
+      return "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80"
+    } else if (
+      title.includes("mobile") ||
+      description.includes("mobile") ||
+      title.includes("app") ||
+      description.includes("app")
+    ) {
+      return "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80"
+    } else if (
+      title.includes("ai") ||
+      description.includes("ai") ||
+      title.includes("machine learning") ||
+      description.includes("machine learning")
+    ) {
+      return "https://images.unsplash.com/photo-1677442135136-760c813028c0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80"
+    } else if (title.includes("data") || description.includes("data")) {
+      return "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80"
+    } else {
+      return "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80"
+    }
+  }
+
+  // Get student avatar
+  const getStudentAvatar = () => {
+    return "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
+  }
+
+  // Get expert avatar
+  const getExpertAvatar = () => {
+    return "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
+  }
+
+  // Calculate project progress
+  const calculateProgress = () => {
+    if (tasks.length === 0) return 0
+    const completedTasks = tasks.filter((task) => task.taskStatus === "COMPLETED").length
+    return Math.round((completedTasks / tasks.length) * 100)
+  }
 
   // -----------------------------
   // 1) Fetch Expert, Project Details, and Milestones
@@ -137,12 +209,9 @@ const MilestonePage: React.FC = () => {
 
       try {
         // Get authorized user info
-        const authRes = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (!authRes.ok) throw new Error("Failed to get authorized user info.")
         const authData = await authRes.json()
 
@@ -162,12 +231,9 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch project details (includes student info)
-        const projectRes = await fetch(
-          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (!projectRes.ok) throw new Error("Failed to fetch project details.")
         const projectData = await projectRes.json()
         setProject(projectData)
@@ -179,12 +245,9 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch milestones
-        const milestonesRes = await fetch(
-          `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const milestonesRes = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (!milestonesRes.ok) throw new Error("Failed to fetch milestones.")
         const milestonesData = await milestonesRes.json()
 
@@ -395,12 +458,9 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (res.ok) {
         const data = await res.json()
         setTasks(data)
@@ -428,15 +488,12 @@ const MilestonePage: React.FC = () => {
 
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      )
+      })
 
       if (res.ok) {
         // Update local state to show task as completed
@@ -463,17 +520,14 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(
-        `https://localhost:7053/api/project-progress/add-tasks/${projectId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ task: newTask, description: newTaskDescription }),
+      const res = await fetch(`https://localhost:7053/api/project-progress/add-tasks/${projectId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify({ task: newTask, description: newTaskDescription }),
+      })
       if (res.ok) {
         toast.success("Task added successfully.")
         setNewTask("")
@@ -496,12 +550,9 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(
-        `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (res.ok) {
         const data = await res.json()
         setReviews(data)
@@ -524,21 +575,18 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(
-        `https://localhost:7053/api/reviews/add-review/${projectId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            ReviewerId: expertProfile.userId,
-            Review: newReviewText,
-            Rating: newReviewRating,
-          }),
+      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify({
+          ReviewerId: expertProfile.userId,
+          Review: newReviewText,
+          Rating: newReviewRating,
+        }),
+      })
       if (res.ok) {
         toast.success("Review added successfully.")
         setNewReviewText("")
@@ -690,12 +738,9 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (token && projectId) {
       try {
-        const projectRes = await fetch(
-          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (projectRes.ok) {
           const projectData = await projectRes.json()
           setProject(projectData)
@@ -735,519 +780,795 @@ const MilestonePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-t-green-500 border-gray-700 rounded-full animate-spin"></div>
-          <p className="mt-4 text-lg">Loading project data...</p>
+          <div className="w-16 h-16 border-4 border-t-blue-500 border-blue-200 rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg text-gray-600 font-medium">Loading project data...</p>
         </div>
       </div>
     )
   }
+
   if (error) {
     return (
-      <div className="p-6 bg-gray-900 text-white min-h-screen">
-        <p>{error}</p>
+      <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">
+            <X className="h-8 w-8 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Error Loading Project</h2>
+          <p className="text-gray-600 text-center mb-6">{error}</p>
+          <button
+            onClick={() => router.back()}
+            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+          >
+            <ArrowLeft className="mr-2 h-5 w-5" />
+            Go Back
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-6">
-      {/* Header Section */}
-      <div className="max-w-4xl mx-auto mb-6">
-        <h1 className="text-3xl font-bold text-green-400">Project Milestones</h1>
-        <div className="mt-4 bg-gray-800 p-4 rounded">
-          <p className="mb-1">
-            <strong className="text-green-300">Title:</strong> {project?.title}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Description:</strong> {project?.description}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Status:</strong>{" "}
+    <div className="min-h-screen bg-gray-100">
+      {/* Hero Banner */}
+      <div className="relative h-64 md:h-80 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={getProjectImage() || "/placeholder.svg"}
+            alt={project?.title || "Project Banner"}
+            fill
+            style={{ objectFit: "cover" }}
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-600/60"></div>
+        </div>
+        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-8">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-4 left-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full p-2 transition duration-200"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl md:text-4xl font-bold text-white"
+          >
+            {project?.title}
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-2 flex flex-wrap gap-2"
+          >
             <span
-              className={`px-2 py-1 text-xs rounded-full ${
+              className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${
                 project?.status === "Completed"
-                  ? "bg-green-900 text-green-300"
+                  ? "bg-green-100 text-green-800"
                   : project?.status === "PendingCompletion"
-                    ? "bg-yellow-900 text-yellow-300"
+                    ? "bg-yellow-100 text-yellow-800"
                     : project?.status === "PaymentPending"
-                      ? "bg-blue-900 text-blue-300"
-                      : "bg-gray-700 text-gray-300"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-gray-100 text-gray-800"
               }`}
             >
+              {project?.status === "Completed" && <CheckCircle className="mr-1 h-4 w-4" />}
+              {project?.status === "PendingCompletion" && <Clock className="mr-1 h-4 w-4" />}
+              {project?.status === "PaymentPending" && <DollarSign className="mr-1 h-4 w-4" />}
               {project?.status}
             </span>
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">End Date:</strong> {project?.endDate}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Student:</strong> {project?.studentName}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Industry Expert:</strong> {project?.expertName || "N/A"}
-          </p>
+            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+              <Calendar className="mr-1 h-4 w-4" />
+              Due: {new Date(project?.endDate || "").toLocaleDateString()}
+            </span>
+          </motion.div>
         </div>
+      </div>
 
-        {/* Manual refresh button for completion requests */}
-        {project?.status === "PendingCompletion" && !currentRequest && (
-          <div className="mt-4 bg-yellow-900 border border-yellow-700 p-4 rounded-lg">
-            <div className="flex items-center mb-3">
-              <svg className="h-6 w-6 mr-2 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-              <span className="text-yellow-300 font-semibold">Project is pending completion</span>
-            </div>
-            <p className="text-gray-300 mb-4">
-              This project has a pending completion request, but the details couldnot be loaded. Click the button below
-              to refresh and check for completion requests.
-            </p>
-            <button
-              onClick={handleManualRefresh}
-              className="py-2 px-4 bg-yellow-600 text-white rounded hover:bg-yellow-500 transition flex items-center"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              Refresh Completion Requests
-            </button>
-          </div>
-        )}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Project Details</h2>
+                <p className="text-gray-600 mb-6">{project?.description}</p>
 
-        {/* Project Completion Request Actions */}
-        {currentRequest && (
-          <div className="mt-4 bg-yellow-900 border border-yellow-700 p-4 rounded-lg">
-            <div className="flex items-center mb-3">
-              <svg className="h-6 w-6 mr-2 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-              <span className="text-yellow-300 font-semibold">Completion request received from student</span>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 rounded-full p-2 mr-3">
+                      <User className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Student</p>
+                      <p className="font-medium text-gray-800">{project?.studentName}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 rounded-full p-2 mr-3">
+                      <User className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Industry Expert</p>
+                      <p className="font-medium text-gray-800">{project?.expertName || "N/A"}</p>
+                    </div>
+                  </div>
+
+                  {project?.budget && (
+                    <div className="flex items-center">
+                      <div className="bg-blue-100 rounded-full p-2 mr-3">
+                        <DollarSign className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Budget</p>
+                        <p className="font-medium text-gray-800">${project.budget}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 px-6 py-4">
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">Progress</span>
+                    <span className="text-sm font-medium text-blue-600">{calculateProgress()}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="text-gray-300 mb-2">
-              <strong>Request ID:</strong> {currentRequest.id}
-            </p>
-            <p className="text-gray-300 mb-2">
-              <strong>Student:</strong> {currentRequest.studentName}
-            </p>
-            <p className="text-gray-300 mb-2">
-              <strong>Request Date:</strong> {new Date(currentRequest.requestDate).toLocaleString()}
-            </p>
-            <p className="text-gray-300 mb-4">
-              The student has requested to mark this project as complete. Please review the project milestones and tasks
-              before approving or rejecting this request.
-            </p>
-            <div className="flex space-x-4">
-              <button
-                onClick={handleApproveCompletion}
-                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
+
+            {/* Project Completion Request Actions */}
+            {currentRequest && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border-l-4 border-yellow-500"
               >
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Approve Completion
-              </button>
-              <button
-                onClick={handleRejectCompletion}
-                className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                Reject Request
-              </button>
-            </div>
-          </div>
-        )}
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-yellow-100 rounded-full p-2 mr-3">
+                      <Flag className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800">Completion Request</h3>
+                  </div>
 
-        {/* Payment Pending or Completed Status */}
-        {(isProjectComplete || isPaymentPending) && (
-          <div className="mt-4 bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg">
-            <div className="flex items-center mb-3">
-              <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {isPaymentPending ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <div className="space-y-3 mb-6">
+                    <p className="text-gray-600">
+                      <span className="font-medium text-gray-700">Student:</span> {currentRequest.studentName}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-medium text-gray-700">Request Date:</span>{" "}
+                      {new Date(currentRequest.requestDate).toLocaleString()}
+                    </p>
+                    <p className="text-gray-600">
+                      The student has requested to mark this project as complete. Please review the project milestones
+                      and tasks before approving or rejecting this request.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={handleApproveCompletion}
+                      className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                    >
+                      <CheckCircle className="mr-2 h-5 w-5" />
+                      Approve
+                    </button>
+                    <button
+                      onClick={handleRejectCompletion}
+                      className="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                    >
+                      <X className="mr-2 h-5 w-5" />
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Manual refresh button for completion requests */}
+            {project?.status === "PendingCompletion" && !currentRequest && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border-l-4 border-yellow-500"
+              >
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-yellow-100 rounded-full p-2 mr-3">
+                      <RefreshCw className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800">Pending Completion</h3>
+                  </div>
+
+                  <p className="text-gray-600 mb-4">
+                    This project has a pending completion request, but the details could not be loaded. Click the button
+                    below to refresh and check for completion requests.
+                  </p>
+
+                  <button
+                    onClick={handleManualRefresh}
+                    className="w-full py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    <RefreshCw className="mr-2 h-5 w-5" />
+                    Refresh Completion Requests
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Payment Pending or Completed Status */}
+            {(isProjectComplete || isPaymentPending) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`bg-white rounded-xl shadow-sm overflow-hidden mb-6 border-l-4 ${
+                  isPaymentPending ? "border-blue-500" : "border-green-500"
+                }`}
+              >
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className={`rounded-full p-2 mr-3 ${isPaymentPending ? "bg-blue-100" : "bg-green-100"}`}>
+                      {isPaymentPending ? (
+                        <DollarSign className="h-5 w-5 text-blue-600" />
+                      ) : (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {isPaymentPending ? "Payment Required" : "Project Completed"}
+                    </h3>
+                  </div>
+
+                  <p className="text-gray-600 mb-4">
+                    {isPaymentPending
+                      ? "Project completion approved. Payment is required to finalize the project."
+                      : "This project is complete. Editing is disabled."}
+                  </p>
+
+                  <button
+                    onClick={handlePaymentProcess}
+                    className={`w-full py-2 px-4 font-medium rounded-lg transition duration-200 flex items-center justify-center ${
+                      isPaymentPending
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : "bg-green-600 hover:bg-green-700 text-white"
+                    }`}
+                  >
+                    <DollarSign className="mr-2 h-5 w-5" />
+                    {isPaymentPending ? "Make Payment" : "View Payment Details"}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* All Completion Requests Section */}
+            {completionRequests.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4">All Completion Requests</h2>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead>
+                        <tr>
+                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Project
+                          </th>
+                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Student
+                          </th>
+                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                          </th>
+                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {completionRequests.map((request) => (
+                          <tr key={request.id} className={request.projectId === projectId ? "bg-blue-50" : ""}>
+                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {request.projectTitle}
+                            </td>
+                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">{request.studentName}</td>
+                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(request.requestDate).toLocaleDateString()}
+                            </td>
+                            <td className="px-3 py-4 whitespace-nowrap">
+                              <span
+                                className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  request.status === "PENDING"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : request.status === "ACCEPTED"
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {request.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-4 whitespace-nowrap text-sm">
+                              {request.projectId !== projectId && (
+                                <button
+                                  onClick={() => router.push(`/industryexpert/projects/milestone/${request.projectId}`)}
+                                  className="text-blue-600 hover:text-blue-900 font-medium"
+                                >
+                                  View
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Main Content Area */}
+          <div className="lg:col-span-2">
+            {/* Tabs */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+              <div className="border-b border-gray-200">
+                <nav className="flex -mb-px">
+                  <button
+                    onClick={() => setActiveTab("milestones")}
+                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      activeTab === "milestones"
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    }`}
+                  >
+                    Milestones
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("tasks")}
+                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      activeTab === "tasks"
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    }`}
+                  >
+                    Tasks
+                  </button>
+                  {isProjectComplete && (
+                    <button
+                      onClick={() => setActiveTab("reviews")}
+                      className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                        activeTab === "reviews"
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}
+                    >
+                      Reviews
+                    </button>
+                  )}
+                  {expertProfile?.userId && studentDetails?.stdUserId && (
+                    <button
+                      onClick={() => setActiveTab("chat")}
+                      className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                        activeTab === "chat"
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}
+                    >
+                      Chat
+                    </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* Tab Content */}
+              <div className="p-6">
+                {/* Milestones Tab */}
+                {activeTab === "milestones" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-800">Project Milestones</h2>
+                    </div>
+
+                    {milestones.length === 0 ? (
+                      <div className="bg-gray-50 rounded-lg p-6 text-center">
+                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">No milestones found for this project.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {milestones.map((mile, index) => (
+                          <motion.div
+                            key={mile.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={`bg-white border rounded-lg shadow-sm overflow-hidden ${
+                              mile.isCompleted ? "border-green-200" : "border-yellow-200"
+                            }`}
+                          >
+                            <div className="p-5">
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-start">
+                                  <div
+                                    className={`flex-shrink-0 rounded-full p-2 mr-3 ${
+                                      mile.isCompleted ? "bg-green-100" : "bg-yellow-100"
+                                    }`}
+                                  >
+                                    {mile.isCompleted ? (
+                                      <CheckCircle className={`h-5 w-5 text-green-600`} />
+                                    ) : (
+                                      <Clock className={`h-5 w-5 text-yellow-600`} />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-gray-800">{mile.title}</h3>
+                                    <p className="text-gray-600 mt-1">{mile.description}</p>
+                                    <div className="flex items-center mt-2">
+                                      <Calendar className="h-4 w-4 text-gray-400 mr-1" />
+                                      <p className="text-sm text-gray-500">
+                                        Target date: {new Date(mile.achievementDate).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                    mile.isCompleted ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                                  }`}
+                                >
+                                  {mile.isCompleted ? "Completed" : "In Progress"}
+                                </span>
+                              </div>
+
+                              {/* Button to load comments */}
+                              <button
+                                onClick={() => {
+                                  if (currentMilestoneId === mile.id) {
+                                    setCurrentMilestoneId(null)
+                                  } else {
+                                    setCurrentMilestoneId(mile.id)
+                                    fetchComments(mile.id)
+                                  }
+                                }}
+                                className="mt-4 text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center"
+                              >
+                                <MessageSquare className="h-4 w-4 mr-1" />
+                                {currentMilestoneId === mile.id ? "Hide Comments" : "View Comments"}
+                                {currentMilestoneId === mile.id ? (
+                                  <ChevronUp className="h-4 w-4 ml-1" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4 ml-1" />
+                                )}
+                              </button>
+
+                              {/* Comments Section */}
+                              {currentMilestoneId === mile.id && (
+                                <div className="mt-4 pt-4 border-t border-gray-200">
+                                  <h4 className="text-lg font-semibold text-gray-800 mb-3">Comments</h4>
+
+                                  {comments[mile.id]?.length > 0 ? (
+                                    <div className="space-y-4 mb-4">
+                                      {comments[mile.id].map((c) => (
+                                        <div key={c.id} className="bg-gray-50 rounded-lg p-4">
+                                          <p className="text-gray-700">{c.comment}</p>
+                                          <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+                                            <span className="font-medium">{c.commenterName}</span>
+                                            <span>{new Date(c.commentDate).toLocaleString()}</span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="text-gray-500 italic mb-4">No comments yet</p>
+                                  )}
+
+                                  {!isProjectComplete && !isPaymentPending && (
+                                    <div className="mt-4">
+                                      <textarea
+                                        value={newComment}
+                                        onChange={(e) => setNewComment(e.target.value)}
+                                        placeholder="Add a comment..."
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        rows={3}
+                                      />
+                                      <button
+                                        onClick={handleAddComment}
+                                        className="mt-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center"
+                                      >
+                                        <Send className="mr-2 h-4 w-4" />
+                                        Submit Comment
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
-              </svg>
-              <span>
-                {isPaymentPending
-                  ? "Project completion approved. Payment is required to finalize the project."
-                  : "This project is complete. Editing is disabled."}
-              </span>
-            </div>
-            <div className="mt-3">
-              <button
-                onClick={handlePaymentProcess}
-                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {isPaymentPending ? "Make Payment" : "View Payment Details"}
-              </button>
+
+                {/* Tasks Tab */}
+                {activeTab === "tasks" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-800">Project Tasks</h2>
+                    </div>
+
+                    {/* Add Task Form */}
+                    {!isProjectComplete && !isPaymentPending && (
+                      <div className="bg-gray-50 rounded-lg p-5 mb-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Add New Task</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label htmlFor="task-title" className="block text-sm font-medium text-gray-700 mb-1">
+                              Task Title
+                            </label>
+                            <input
+                              id="task-title"
+                              type="text"
+                              value={newTask}
+                              onChange={(e) => setNewTask(e.target.value)}
+                              placeholder="Enter task title"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label htmlFor="task-description" className="block text-sm font-medium text-gray-700 mb-1">
+                              Task Description
+                            </label>
+                            <textarea
+                              id="task-description"
+                              value={newTaskDescription}
+                              onChange={(e) => setNewTaskDescription(e.target.value)}
+                              placeholder="Enter task description"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              rows={3}
+                            />
+                          </div>
+
+                          <button
+                            onClick={handleAddTask}
+                            className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center"
+                          >
+                            <Plus className="mr-2 h-5 w-5" />
+                            Add Task
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* List of Tasks */}
+                    {tasks.length === 0 ? (
+                      <div className="bg-gray-50 rounded-lg p-6 text-center">
+                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">No tasks assigned to this project yet.</p>
+                      </div>
+                    ) : (
+                      <div className="bg-white rounded-lg border border-gray-200">
+                        <ul className="divide-y divide-gray-200">
+                          {tasks.map((task, index) => (
+                            <motion.li
+                              key={task.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="p-4 hover:bg-gray-50"
+                            >
+                              <div className="flex items-start">
+                                <div className="flex-shrink-0 pt-1">
+                                  <button
+                                    onClick={() => handleTaskToggle(task)}
+                                    disabled={isProjectComplete || isPaymentPending || task.taskStatus === "COMPLETED"}
+                                    className="focus:outline-none"
+                                  >
+                                    {task.taskStatus === "COMPLETED" ? (
+                                      <CheckSquare className="h-5 w-5 text-green-500" />
+                                    ) : (
+                                      <Square className="h-5 w-5 text-gray-400" />
+                                    )}
+                                  </button>
+                                </div>
+                                <div className="ml-3 flex-1">
+                                  <p
+                                    className={`font-medium ${
+                                      task.taskStatus === "COMPLETED" ? "line-through text-gray-500" : "text-gray-800"
+                                    }`}
+                                  >
+                                    {task.task}
+                                  </p>
+                                  {task.description && (
+                                    <p
+                                      className={`mt-1 text-sm ${
+                                        task.taskStatus === "COMPLETED" ? "line-through text-gray-400" : "text-gray-600"
+                                      }`}
+                                    >
+                                      {task.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="ml-2 flex-shrink-0">
+                                  <span
+                                    className={`px-2 py-1 text-xs rounded-full ${
+                                      task.taskStatus === "COMPLETED"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-yellow-100 text-yellow-800"
+                                    }`}
+                                  >
+                                    {task.taskStatus}
+                                  </span>
+                                </div>
+                              </div>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Reviews Tab */}
+                {activeTab === "reviews" && isProjectComplete && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-800">Project Reviews</h2>
+                    </div>
+
+                    {/* Existing Reviews */}
+                    {reviews.length === 0 ? (
+                      <div className="bg-gray-50 rounded-lg p-6 text-center mb-6">
+                        <Star className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">No reviews have been submitted yet.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 mb-6">
+                        {reviews.map((review, index) => (
+                          <motion.div
+                            key={review.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="bg-white border border-gray-200 rounded-lg p-5"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center">
+                                <div className="mr-3">
+                                  <Image
+                                    src={getExpertAvatar() || "/placeholder.svg"}
+                                    alt={review.reviewerName}
+                                    width={40}
+                                    height={40}
+                                    className="rounded-full"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-gray-800">{review.reviewerName}</p>
+                                  <div className="flex items-center mt-1">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`h-4 w-4 ${
+                                          i < review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                                        }`}
+                                      />
+                                    ))}
+                                    <span className="ml-2 text-sm text-gray-600">{review.rating}/5</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-sm text-gray-500">
+                                {new Date(review.datePosted).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="mt-3 text-gray-700">{review.review}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add Review Form */}
+                    <div className="bg-gray-50 rounded-lg p-5">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Add a Review</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="review-text" className="block text-sm font-medium text-gray-700 mb-1">
+                            Your Review
+                          </label>
+                          <textarea
+                            id="review-text"
+                            value={newReviewText}
+                            onChange={(e) => setNewReviewText(e.target.value)}
+                            placeholder="Write your review..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows={4}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                          <div className="flex space-x-2">
+                            {[1, 2, 3, 4, 5].map((rating) => (
+                              <button
+                                key={rating}
+                                type="button"
+                                onClick={() => setNewReviewRating(rating)}
+                                className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                                  newReviewRating >= rating
+                                    ? "bg-yellow-400 text-white"
+                                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                                }`}
+                              >
+                                {rating}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={handleAddReview}
+                          className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center"
+                        >
+                          <Star className="mr-2 h-5 w-5" />
+                          Submit Review
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Chat Tab */}
+                {activeTab === "chat" && expertProfile?.userId && studentDetails?.stdUserId && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-800 heading-underline">Chat with Student</h2>
+                    </div>
+
+                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                      <ChatForIndustry expertId={expertProfile.userId} studentId={studentDetails.stdUserId} />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Debug Information (only visible during development) */}
       {debugInfo && (
-        <div className="max-w-4xl mx-auto mb-8 bg-gray-800 p-4 rounded border border-gray-700">
-          <h3 className="text-lg font-bold text-yellow-400 mb-2">Debug Information</h3>
-          <pre className="whitespace-pre-wrap text-xs text-gray-400">{debugInfo}</pre>
-          <button
-            onClick={() => setDebugInfo(null)}
-            className="mt-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded hover:bg-gray-600"
-          >
-            Clear Debug Info
-          </button>
-        </div>
-      )}
-
-      {/* All Completion Requests Section */}
-      {completionRequests.length > 0 && (
-        <div className="max-w-4xl mx-auto mb-8">
-          <h2 className="text-2xl font-bold mb-4">All Completion Requests</h2>
-          <div className="bg-gray-800 p-4 rounded overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left">Project</th>
-                  <th className="px-4 py-2 text-left">Student</th>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {completionRequests.map((request) => (
-                  <tr key={request.id} className={request.projectId === projectId ? "bg-gray-700" : ""}>
-                    <td className="px-4 py-2">{request.projectTitle}</td>
-                    <td className="px-4 py-2">{request.studentName}</td>
-                    <td className="px-4 py-2">{new Date(request.requestDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          request.status === "PENDING"
-                            ? "bg-yellow-900 text-yellow-300"
-                            : request.status === "ACCEPTED"
-                              ? "bg-green-900 text-green-300"
-                              : "bg-red-900 text-red-300"
-                        }`}
-                      >
-                        {request.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">
-                      {request.projectId !== projectId && (
-                        <button
-                          onClick={() => router.push(`/industryexpert/projects/milestone/${request.projectId}`)}
-                          className="text-green-400 hover:text-green-300"
-                        >
-                          View Project
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Milestones Section */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <h2 className="text-2xl font-bold mb-4">Milestones</h2>
-        {milestones.length === 0 ? (
-          <p className="text-gray-400 bg-gray-800 p-4 rounded">No milestones found for this project.</p>
-        ) : (
-          <div className="space-y-4">
-            {milestones.map((mile) => (
-              <div key={mile.id} className="p-4 bg-gray-800 rounded shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-semibold">{mile.title}</h3>
-                    <p className="text-gray-300 mt-1">{mile.description}</p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      <strong>Target date:</strong> {new Date(mile.achievementDate).toLocaleDateString()}
-                    </p>
-                    <div className="mt-2">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          mile.isCompleted ? "bg-green-900 text-green-300" : "bg-yellow-900 text-yellow-300"
-                        }`}
-                      >
-                        {mile.isCompleted ? "Completed" : "In Progress"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Button to load comments */}
-                <button
-                  onClick={() => {
-                    setCurrentMilestoneId(mile.id)
-                    fetchComments(mile.id)
-                  }}
-                  className="mt-3 text-green-400 hover:text-green-300 hover:underline flex items-center"
-                >
-                  <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                    />
-                  </svg>
-                  {currentMilestoneId === mile.id ? "Hide Comments" : "View Comments"}
-                </button>
-
-                {currentMilestoneId === mile.id && (
-                  <div className="mt-4 border-t border-gray-700 pt-3">
-                    <h4 className="text-lg font-bold text-green-300 mb-2">Comments</h4>
-
-                    {comments[mile.id]?.length > 0 ? (
-                      <div className="space-y-3 mb-4">
-                        {comments[mile.id].map((c) => (
-                          <div key={c.id} className="p-3 bg-gray-700 rounded">
-                            <p className="text-gray-200">{c.comment}</p>
-                            <div className="flex justify-between items-center mt-2 text-xs text-gray-400">
-                              <span>{c.commenterName}</span>
-                              <span>{new Date(c.commentDate).toLocaleString()}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 italic mb-4">No comments yet</p>
-                    )}
-
-                    {!isProjectComplete && !isPaymentPending && (
-                      <>
-                        <textarea
-                          value={newComment}
-                          onChange={(e) => setNewComment(e.target.value)}
-                          className="w-full mt-3 p-3 rounded bg-gray-700 text-white border border-gray-600"
-                          placeholder="Add a comment..."
-                          rows={3}
-                        />
-                        <button
-                          onClick={handleAddComment}
-                          className="mt-2 py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-                        >
-                          Submit Comment
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Tasks Section */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <h2 className="text-2xl font-bold mb-4">Tasks</h2>
-
-        {/* Add Task Form */}
-        {!isProjectComplete && !isPaymentPending && (
-          <div className="mb-6 p-4 bg-gray-800 rounded shadow">
-            <h3 className="text-xl font-bold mb-3">Add New Task</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Task Title</label>
-                <input
-                  type="text"
-                  value={newTask}
-                  onChange={(e) => setNewTask(e.target.value)}
-                  placeholder="Enter task title"
-                  className="p-3 rounded w-full bg-gray-700 text-white border border-gray-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Task Description</label>
-                <textarea
-                  value={newTaskDescription}
-                  onChange={(e) => setNewTaskDescription(e.target.value)}
-                  placeholder="Enter task description"
-                  className="p-3 rounded w-full bg-gray-700 text-white border border-gray-600"
-                  rows={3}
-                />
-              </div>
-
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-lg font-bold text-yellow-600">Debug Information</h3>
               <button
-                onClick={handleAddTask}
-                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+                onClick={() => setDebugInfo(null)}
+                className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300"
               >
-                Add Task
+                Clear Debug Info
               </button>
             </div>
-          </div>
-        )}
-
-        {/* List of Tasks */}
-        {tasks.length === 0 ? (
-          <p className="text-gray-400 bg-gray-800 p-4 rounded">No tasks assigned to this project yet.</p>
-        ) : (
-          <div className="bg-gray-800 rounded p-4">
-            <ul className="divide-y divide-gray-700">
-              {tasks.map((task) => (
-                <li key={task.id} className="py-3 flex items-start">
-                  <div className="flex-shrink-0 mt-1">
-                    <input
-                      type="checkbox"
-                      checked={task.taskStatus === "COMPLETED"}
-                      onChange={() => handleTaskToggle(task)}
-                      className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={isProjectComplete || isPaymentPending || task.taskStatus === "COMPLETED"}
-                    />
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <p
-                      className={`font-medium ${
-                        task.taskStatus === "COMPLETED" ? "line-through text-gray-500" : "text-white"
-                      }`}
-                    >
-                      {task.task}
-                    </p>
-                    {task.description && (
-                      <p
-                        className={`mt-1 text-sm ${
-                          task.taskStatus === "COMPLETED" ? "line-through text-gray-600" : "text-gray-400"
-                        }`}
-                      >
-                        {task.description}
-                      </p>
-                    )}
-                  </div>
-                  <div className="ml-2 flex-shrink-0">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        task.taskStatus === "COMPLETED"
-                          ? "bg-green-900 text-green-300"
-                          : "bg-yellow-900 text-yellow-300"
-                      }`}
-                    >
-                      {task.taskStatus}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* Review Section (Visible only when project is Completed) */}
-      {isProjectComplete && (
-        <div className="max-w-4xl mx-auto mb-8">
-          <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
-
-          {/* Existing Reviews */}
-          {reviews.length === 0 ? (
-            <p className="text-gray-400 bg-gray-800 p-4 rounded mb-4">No reviews have been submitted yet.</p>
-          ) : (
-            <div className="space-y-3 mb-6">
-              {reviews.map((r) => (
-                <div key={r.id} className="p-4 bg-gray-800 rounded">
-                  <div className="flex justify-between">
-                    <p className="font-bold">
-                      {r.reviewerName} - Rating: {r.rating}/5
-                    </p>
-                    <span className="text-sm text-gray-400">{new Date(r.datePosted).toLocaleDateString()}</span>
-                  </div>
-                  <p className="mt-2">{r.review}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Add Review Form */}
-          <div className="bg-gray-800 p-4 rounded">
-            <h3 className="text-xl font-bold mb-3">Add a Review</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Your Review</label>
-                <textarea
-                  value={newReviewText}
-                  onChange={(e) => setNewReviewText(e.target.value)}
-                  placeholder="Write your review..."
-                  className="w-full p-3 bg-gray-700 rounded border border-gray-600"
-                  rows={4}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Rating (1-5)</label>
-                <div className="flex space-x-2">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button
-                      key={rating}
-                      type="button"
-                      onClick={() => setNewReviewRating(rating)}
-                      className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                        newReviewRating >= rating ? "bg-yellow-500 text-yellow-900" : "bg-gray-700 text-gray-400"
-                      }`}
-                    >
-                      {rating}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={handleAddReview}
-                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-              >
-                Submit Review
-              </button>
-            </div>
+            <pre className="whitespace-pre-wrap text-xs text-gray-600 bg-gray-50 p-3 rounded">{debugInfo}</pre>
           </div>
         </div>
       )}
 
-      {/* Chat Section */}
-      {expertProfile?.userId && studentDetails?.stdUserId && (
-        <div className="max-w-4xl mx-auto mb-8">
-          <h2 className="text-2xl font-bold mb-4">Chat with Student</h2>
-          <div className="bg-gray-800 rounded overflow-hidden">
-            <ChatForIndustry expertId={expertProfile.userId} studentId={studentDetails.stdUserId} />
-          </div>
-        </div>
-      )}
-
-      <ToastContainer />
+      <ToastContainer position="bottom-right" />
     </div>
   )
 }

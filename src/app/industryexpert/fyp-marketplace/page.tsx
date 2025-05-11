@@ -4,19 +4,8 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import {
-  Search,
-  Loader2,
-  User,
-  Users,
-  Code,
-  Calendar,
-  DollarSign,
-  Briefcase,
-  Filter,
-  Building,
-  BookOpen,
-} from "lucide-react"
+import { motion } from "framer-motion"
+import { Search, Loader2, User, Users, Code, Calendar, DollarSign, Briefcase, Filter, Building, BookOpen, CheckCircle, Clock, Star, Award, Zap, ChevronRight, X, ExternalLink, Download, Share2 } from 'lucide-react'
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
@@ -43,6 +32,8 @@ interface FYP {
   yearOfCompletion?: number
   batch?: string
   status?: string
+  imageUrl?: string
+  category?: string
 }
 
 export default function FYPMarketplacePage() {
@@ -66,6 +57,78 @@ export default function FYPMarketplacePage() {
 
   const router = useRouter()
 
+  // Project categories and their images
+  const projectCategories = {
+    web: {
+      name: "Web Development",
+      image: "/placeholder.svg?key=qkp91",
+    },
+    mobile: {
+      name: "Mobile App",
+      image: "/placeholder.svg?key=z06nq",
+    },
+    ai: {
+      name: "AI & Machine Learning",
+      image: "/placeholder.svg?key=3fc8c",
+    },
+    data: {
+      name: "Data Science",
+      image: "/placeholder.svg?key=67cz6",
+    },
+    cloud: {
+      name: "Cloud Computing",
+      image: "/placeholder.svg?key=38ybu",
+    },
+    iot: {
+      name: "IoT",
+      image: "/placeholder.svg?key=vzdbb",
+    },
+    security: {
+      name: "Cybersecurity",
+      image: "/placeholder.svg?key=rihta",
+    },
+    blockchain: {
+      name: "Blockchain",
+      image: "/placeholder.svg?key=c2tdy",
+    },
+    default: {
+      name: "Technology",
+      image: "/placeholder.svg?key=gpxtn",
+    },
+  }
+
+  // Assign category based on project title or description
+  const assignCategory = (fyp: FYP): string => {
+    const text = `${fyp.title} ${fyp.description || ""} ${fyp.technology || ""}`.toLowerCase()
+
+    if (text.includes("web") || text.includes("frontend") || text.includes("backend") || text.includes("html")) {
+      return "web"
+    } else if (
+      text.includes("ai") ||
+      text.includes("machine learning") ||
+      text.includes("neural") ||
+      text.includes("deep learning")
+    ) {
+      return "ai"
+    } else if (text.includes("mobile") || text.includes("android") || text.includes("ios") || text.includes("app")) {
+      return "mobile"
+    } else if (text.includes("data") || text.includes("analytics") || text.includes("visualization")) {
+      return "data"
+    } else if (text.includes("security") || text.includes("cyber") || text.includes("encryption")) {
+      return "security"
+    } else if (text.includes("cloud") || text.includes("aws") || text.includes("azure")) {
+      return "cloud"
+    } else if (text.includes("iot") || text.includes("internet of things") || text.includes("sensor")) {
+      return "iot"
+    } else if (text.includes("blockchain") || text.includes("crypto") || text.includes("token")) {
+      return "blockchain"
+    }
+
+    // Default to a random category if no keywords match
+    const categoryNames = ["web", "ai", "mobile", "data", "security", "cloud", "iot", "blockchain"]
+    return categoryNames[Math.floor(Math.random() * categoryNames.length)]
+  }
+
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
@@ -77,12 +140,9 @@ export default function FYPMarketplacePage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!userResponse.ok) throw new Error("Failed to authenticate user")
 
@@ -103,12 +163,9 @@ export default function FYPMarketplacePage() {
         setIndustryExpertId(expertData.indExptId)
 
         // Step 3: Fetch all faculties
-        const facultiesResponse = await fetch(
-          "https://localhost:7053/api/get-faculty/faculties",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const facultiesResponse = await fetch("https://localhost:7053/api/get-faculty/faculties", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!facultiesResponse.ok) throw new Error("Failed to fetch faculties")
 
@@ -120,25 +177,27 @@ export default function FYPMarketplacePage() {
 
         for (const faculty of facultiesData) {
           try {
-            const fypResponse = await fetch(
-              `https://localhost:7053/api/fyp/get-fyp-by-faculty-id/${faculty.id}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            )
+            const fypResponse = await fetch(`https://localhost:7053/api/fyp/get-fyp-by-faculty-id/${faculty.id}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
 
             if (fypResponse.ok) {
               const fypData = await fypResponse.json()
               // Enhance FYP data with faculty information
-              const enhancedFyps = fypData.map((fyp: FYP) => ({
-                ...fyp,
-                facultyId: faculty.id,
-                facultyName: `${faculty.firstName} ${faculty.lastName}`,
-                universityName: faculty.universityName,
-                department: faculty.department,
-                yearOfCompletion:
-                  fyp.yearOfCompletion || (fyp.batch ? Number.parseInt(fyp.batch) + 4 : new Date().getFullYear() + 4),
-              }))
+              const enhancedFyps = fypData.map((fyp: FYP) => {
+                const category = assignCategory(fyp)
+                return {
+                  ...fyp,
+                  facultyId: faculty.id,
+                  facultyName: `${faculty.firstName} ${faculty.lastName}`,
+                  universityName: faculty.universityName,
+                  department: faculty.department,
+                  yearOfCompletion:
+                    fyp.yearOfCompletion || (fyp.batch ? Number.parseInt(fyp.batch) + 4 : new Date().getFullYear() + 4),
+                  category,
+                  imageUrl: projectCategories[category as keyof typeof projectCategories]?.image || projectCategories.default.image,
+                }
+              })
               collectedFyps.push(...enhancedFyps)
             }
           } catch (err) {
@@ -149,26 +208,29 @@ export default function FYPMarketplacePage() {
         // Step 5: Also try the dedicated marketplace endpoints
         try {
           // Try to fetch "Buy" FYPs (completed projects)
-          const buyFypsResponse = await fetch(
-            "https://localhost:7053/api/fyp/for-marketplace/buy",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          )
+          const buyFypsResponse = await fetch("https://localhost:7053/api/fyp/for-marketplace/buy", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
 
           // Try to fetch "Sponsor" FYPs (ongoing projects)
-          const sponsorFypsResponse = await fetch(
-            "https://localhost:7053/api/fyp/for-marketplace/sponsor",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          )
+          const sponsorFypsResponse = await fetch("https://localhost:7053/api/fyp/for-marketplace/sponsor", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
 
           if (buyFypsResponse.ok) {
             const buyFypsData = await buyFypsResponse.json()
             // Add to collected FYPs, avoiding duplicates
             const existingIds = new Set(collectedFyps.map((fyp: FYP) => fyp.id))
-            const newBuyFyps = buyFypsData.filter((fyp: FYP) => !existingIds.has(fyp.id))
+            const newBuyFyps = buyFypsData
+              .filter((fyp: FYP) => !existingIds.has(fyp.id))
+              .map((fyp: FYP) => {
+                const category = assignCategory(fyp)
+                return {
+                  ...fyp,
+                  category,
+                  imageUrl: projectCategories[category as keyof typeof projectCategories]?.image || projectCategories.default.image,
+                }
+              })
             collectedFyps.push(...newBuyFyps)
           }
 
@@ -176,7 +238,16 @@ export default function FYPMarketplacePage() {
             const sponsorFypsData = await sponsorFypsResponse.json()
             // Add to collected FYPs, avoiding duplicates
             const existingIds = new Set(collectedFyps.map((fyp: FYP) => fyp.id))
-            const newSponsorFyps = sponsorFypsData.filter((fyp: FYP) => !existingIds.has(fyp.id))
+            const newSponsorFyps = sponsorFypsData
+              .filter((fyp: FYP) => !existingIds.has(fyp.id))
+              .map((fyp: FYP) => {
+                const category = assignCategory(fyp)
+                return {
+                  ...fyp,
+                  category,
+                  imageUrl: projectCategories[category as keyof typeof projectCategories]?.image || projectCategories.default.image,
+                }
+              })
             collectedFyps.push(...newSponsorFyps)
           }
         } catch (err) {
@@ -282,21 +353,18 @@ export default function FYPMarketplacePage() {
     }
 
     try {
-      const response = await fetch(
-        `https://localhost:7053/api/ind-expert-request-fyp/add/${selectedFyp.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(industryExpertId),
+      const response = await fetch(`https://localhost:7053/api/ind-expert-request-fyp/add/${selectedFyp.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify(industryExpertId),
+      })
 
       if (response.ok) {
         toast.success(
-          "FYP request submitted successfully! The university admin will review your request and youll be notified once its approved or rejected.",
+          "FYP request submitted successfully! The university admin will review your request and you'll be notified once it's approved or rejected.",
           { autoClose: 8000 },
         )
         setShowAgreementModal(false)
@@ -312,10 +380,16 @@ export default function FYPMarketplacePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
-          <p className="text-xl text-gray-300">Loading FYP Marketplace...</p>
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-blue-300/30 border-t-blue-500 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Briefcase className="h-6 w-6 text-blue-400" />
+            </div>
+          </div>
+          <p className="text-xl text-blue-100 font-medium">Loading FYP Marketplace...</p>
+          <p className="text-sm text-blue-300">Discovering innovative projects</p>
         </div>
       </div>
     )
@@ -323,13 +397,16 @@ export default function FYPMarketplacePage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="bg-red-900/20 p-6 rounded-lg border border-red-700 max-w-md">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
-          <p className="text-gray-300">{error}</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
+        <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20 max-w-md">
+          <div className="bg-red-500/20 p-3 rounded-full inline-flex items-center justify-center mb-4">
+            <X className="h-8 w-8 text-red-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Error</h2>
+          <p className="text-blue-100 mb-6">{error}</p>
           <button
             onClick={() => router.push("/industry-expert")}
-            className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
+            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg shadow-blue-600/30 transition"
           >
             Return to Dashboard
           </button>
@@ -339,78 +416,139 @@ export default function FYPMarketplacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-purple-400">FYP Marketplace</h1>
-          <p className="text-gray-400 mt-2">Browse, buy, or sponsor Final Year Projects</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 text-gray-800">
+      {/* Hero Header */}
+      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 py-12 px-4 md:px-8 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <svg
+            className="absolute left-0 top-0 h-full w-full text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            width="100%"
+            height="100%"
+            viewBox="0 0 800 800"
+          >
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="0" y="0" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="120" y="0" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="240" y="0" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="360" y="0" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="0" y="120" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="120" y="120" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="240" y="120" width="100" height="100" />
+            <rect fill="none" stroke="currentColor" strokeWidth="2" x="360" y="120" width="100" height="100" />
+          </svg>
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">FYP Marketplace</h1>
+            <p className="text-blue-100 text-lg max-w-2xl">
+              Discover and invest in innovative student projects from top universities
+            </p>
+
+            <div className="flex flex-wrap gap-3 mt-6">
+              <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-blue-50 flex items-center">
+                <Award className="w-4 h-4 mr-2" />
+                <span>{allFyps.length} Projects Available</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-blue-50 flex items-center">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                <span>{filteredBuyFyps.length} Completed Projects</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-blue-50 flex items-center">
+                <Clock className="w-4 h-4 mr-2" />
+                <span>{filteredSponsorFyps.length} Ongoing Projects</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </header>
 
       {/* Search and Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search projects by title, description, faculty, technology..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-8 relative z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white rounded-xl shadow-lg border border-gray-100 p-6"
+        >
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search projects by title, description, faculty, technology..."
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
 
-          {/* Faculty Filter */}
-          <div className="flex items-center gap-2">
-            <Filter className="text-gray-500" />
-            <select
-              className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              value={selectedFaculty}
-              onChange={(e) => setSelectedFaculty(e.target.value)}
-            >
-              <option value="all">All Faculties</option>
-              {faculties.map((faculty) => (
-                <option key={faculty.id} value={faculty.id}>
-                  {faculty.firstName} {faculty.lastName} - {faculty.department}
-                </option>
-              ))}
-            </select>
+            {/* Faculty Filter */}
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <select
+                  className="pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={selectedFaculty}
+                  onChange={(e) => setSelectedFaculty(e.target.value)}
+                >
+                  <option value="all">All Faculties</option>
+                  {faculties.map((faculty) => (
+                    <option key={faculty.id} value={faculty.id}>
+                      {faculty.firstName} {faculty.lastName} - {faculty.department}
+                    </option>
+                  ))}
+                </select>
+                <ChevronRight className="absolute right-3 top-1/2 transform -translate-y-1/2 rotate-90 text-gray-400" />
+              </div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Tabs */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="flex border-b border-gray-700 mb-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
+        <div className="flex border-b border-gray-200 mb-6">
           <button
-            className={`py-3 px-6 font-medium text-sm focus:outline-none ${
-              activeTab === "buy" ? "text-purple-400 border-b-2 border-purple-400" : "text-gray-400 hover:text-gray-300"
+            className={`py-4 px-6 font-medium text-sm focus:outline-none transition-all ${
+              activeTab === "buy"
+                ? "text-blue-600 border-b-2 border-blue-600 font-semibold"
+                : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setActiveTab("buy")}
           >
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="h-5 w-5" />
               <span>Buy Completed Projects</span>
-              <span className="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">
+              <span
+                className={`${
+                  activeTab === "buy" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-600"
+                } text-xs px-2 py-0.5 rounded-full`}
+              >
                 {filteredBuyFyps.length}
               </span>
             </div>
           </button>
           <button
-            className={`py-3 px-6 font-medium text-sm focus:outline-none ${
+            className={`py-4 px-6 font-medium text-sm focus:outline-none transition-all ${
               activeTab === "sponsor"
-                ? "text-purple-400 border-b-2 border-purple-400"
-                : "text-gray-400 hover:text-gray-300"
+                ? "text-blue-600 border-b-2 border-blue-600 font-semibold"
+                : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setActiveTab("sponsor")}
           >
             <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
+              <Briefcase className="h-5 w-5" />
               <span>Sponsor Ongoing Projects</span>
-              <span className="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">
+              <span
+                className={`${
+                  activeTab === "sponsor" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-600"
+                } text-xs px-2 py-0.5 rounded-full`}
+              >
                 {filteredSponsorFyps.length}
               </span>
             </div>
@@ -419,90 +557,142 @@ export default function FYPMarketplacePage() {
       </div>
 
       {/* FYP Grid */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-16">
         {activeTab === "buy" && (
           <>
             {filteredBuyFyps.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredBuyFyps.map((fyp: FYP) => (
-                  <div
+                  <motion.div
                     key={fyp.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
                     onClick={() => handleFypClick(fyp.id)}
-                    className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500 transition-all duration-200 cursor-pointer hover:shadow-lg hover:shadow-purple-900/20"
+                    className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 cursor-pointer group"
                   >
-                    <div className="p-6 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <h3 className="text-xl font-semibold text-white line-clamp-2">{fyp.title}</h3>
-                        <div className="px-2 py-1 bg-purple-900/30 text-purple-400 text-xs rounded-md">{fyp.fypId}</div>
+                    {/* Project Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={fyp.imageUrl || "/placeholder.svg?height=200&width=400&query=technology+project"}
+                        alt={fyp.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                      
+                      {/* Completed Badge */}
+                      <div className="absolute top-3 left-3">
+                        <div className="flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          <CheckCircle className="w-3 h-3" />
+                          <span>Completed</span>
+                        </div>
                       </div>
+                      
+                      {/* Category Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className="bg-blue-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
+                          {projectCategories[fyp.category as keyof typeof projectCategories]?.name || "Technology"}
+                        </span>
+                      </div>
+                      
+                      {/* FYP ID */}
+                      <div className="absolute bottom-3 right-3">
+                        <span className="bg-white/80 backdrop-blur-sm text-gray-800 text-xs px-2 py-1 rounded">
+                          ID: {fyp.fypId}
+                        </span>
+                      </div>
+                    </div>
 
-                      <p className="text-gray-400 line-clamp-3">{fyp.description}</p>
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-xl font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {fyp.title}
+                      </h3>
+
+                      <p className="text-gray-600 text-sm line-clamp-3">{fyp.description}</p>
 
                       <div className="space-y-2 pt-2">
-                        <div className="flex items-center gap-2 text-sm text-gray-400">
-                          <User className="h-4 w-4" />
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <User className="h-4 w-4 text-blue-500" />
                           <span>{fyp.facultyName || "Unknown Faculty"}</span>
                         </div>
 
                         {fyp.universityName && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Building className="h-4 w-4" />
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Building className="h-4 w-4 text-blue-500" />
                             <span>{fyp.universityName}</span>
                           </div>
                         )}
 
                         {fyp.department && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <BookOpen className="h-4 w-4" />
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <BookOpen className="h-4 w-4 text-blue-500" />
                             <span>{fyp.department}</span>
                           </div>
                         )}
 
-                        {fyp.members && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Users className="h-4 w-4" />
-                            <span>{fyp.members} Members</span>
-                          </div>
-                        )}
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {fyp.members && (
+                            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs flex items-center">
+                              <Users className="h-3 w-3 mr-1" />
+                              {fyp.members} Members
+                            </span>
+                          )}
 
-                        {fyp.technology && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Code className="h-4 w-4" />
-                            <span>{fyp.technology}</span>
-                          </div>
-                        )}
+                          {fyp.technology && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs flex items-center">
+                              <Code className="h-3 w-3 mr-1" />
+                              {fyp.technology}
+                            </span>
+                          )}
 
-                        {fyp.yearOfCompletion && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Calendar className="h-4 w-4" />
-                            <span>Completed in {fyp.yearOfCompletion}</span>
-                          </div>
-                        )}
+                          {fyp.yearOfCompletion && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs flex items-center">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              {fyp.yearOfCompletion}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <button
                         onClick={(e) => handleRequestFyp(e, fyp, "buy")}
-                        className="w-full mt-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-md transition-colors flex items-center justify-center gap-2"
+                        className="w-full mt-4 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-lg shadow-green-600/20 transition-colors flex items-center justify-center gap-2"
                       >
                         <DollarSign className="h-4 w-4" />
                         <span>Buy Project</span>
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 max-w-md">
-                  <DollarSign className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-medium text-gray-300">No completed projects found</h3>
-                  <p className="text-gray-400 mt-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col items-center justify-center py-16 text-center"
+              >
+                <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 max-w-md">
+                  <div className="bg-blue-100 p-4 rounded-full inline-flex items-center justify-center mb-4">
+                    <DollarSign className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-800 mb-2">No completed projects found</h3>
+                  <p className="text-gray-600 mb-6">
                     {searchQuery || selectedFaculty !== "all"
                       ? "Try adjusting your search or filters"
                       : "There are no completed projects available for purchase at the moment"}
                   </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery("")
+                      setSelectedFaculty("all")
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow transition"
+                  >
+                    Clear Filters
+                  </button>
                 </div>
-              </div>
+              </motion.div>
             )}
           </>
         )}
@@ -512,84 +702,136 @@ export default function FYPMarketplacePage() {
             {filteredSponsorFyps.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredSponsorFyps.map((fyp: FYP) => (
-                  <div
+                  <motion.div
                     key={fyp.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
                     onClick={() => handleFypClick(fyp.id)}
-                    className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500 transition-all duration-200 cursor-pointer hover:shadow-lg hover:shadow-purple-900/20"
+                    className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 cursor-pointer group"
                   >
-                    <div className="p-6 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <h3 className="text-xl font-semibold text-white line-clamp-2">{fyp.title}</h3>
-                        <div className="px-2 py-1 bg-purple-900/30 text-purple-400 text-xs rounded-md">{fyp.fypId}</div>
+                    {/* Project Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={fyp.imageUrl || "/placeholder.svg?height=200&width=400&query=technology+project"}
+                        alt={fyp.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                      
+                      {/* In Progress Badge */}
+                      <div className="absolute top-3 left-3">
+                        <div className="flex items-center gap-1 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          <Clock className="w-3 h-3" />
+                          <span>In Progress</span>
+                        </div>
                       </div>
+                      
+                      {/* Category Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className="bg-blue-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
+                          {projectCategories[fyp.category as keyof typeof projectCategories]?.name || "Technology"}
+                        </span>
+                      </div>
+                      
+                      {/* FYP ID */}
+                      <div className="absolute bottom-3 right-3">
+                        <span className="bg-white/80 backdrop-blur-sm text-gray-800 text-xs px-2 py-1 rounded">
+                          ID: {fyp.fypId}
+                        </span>
+                      </div>
+                    </div>
 
-                      <p className="text-gray-400 line-clamp-3">{fyp.description}</p>
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-xl font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {fyp.title}
+                      </h3>
+
+                      <p className="text-gray-600 text-sm line-clamp-3">{fyp.description}</p>
 
                       <div className="space-y-2 pt-2">
-                        <div className="flex items-center gap-2 text-sm text-gray-400">
-                          <User className="h-4 w-4" />
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <User className="h-4 w-4 text-blue-500" />
                           <span>{fyp.facultyName || "Unknown Faculty"}</span>
                         </div>
 
                         {fyp.universityName && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Building className="h-4 w-4" />
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Building className="h-4 w-4 text-blue-500" />
                             <span>{fyp.universityName}</span>
                           </div>
                         )}
 
                         {fyp.department && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <BookOpen className="h-4 w-4" />
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <BookOpen className="h-4 w-4 text-blue-500" />
                             <span>{fyp.department}</span>
                           </div>
                         )}
 
-                        {fyp.members && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Users className="h-4 w-4" />
-                            <span>{fyp.members} Members</span>
-                          </div>
-                        )}
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {fyp.members && (
+                            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs flex items-center">
+                              <Users className="h-3 w-3 mr-1" />
+                              {fyp.members} Members
+                            </span>
+                          )}
 
-                        {fyp.technology && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Code className="h-4 w-4" />
-                            <span>{fyp.technology}</span>
-                          </div>
-                        )}
+                          {fyp.technology && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs flex items-center">
+                              <Code className="h-3 w-3 mr-1" />
+                              {fyp.technology}
+                            </span>
+                          )}
 
-                        {fyp.yearOfCompletion && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <Calendar className="h-4 w-4" />
-                            <span>Expected completion in {fyp.yearOfCompletion}</span>
-                          </div>
-                        )}
+                          {fyp.yearOfCompletion && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs flex items-center">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              Expected: {fyp.yearOfCompletion}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <button
                         onClick={(e) => handleRequestFyp(e, fyp, "sponsor")}
-                        className="w-full mt-4 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded-md transition-colors flex items-center justify-center gap-2"
+                        className="w-full mt-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg shadow-blue-600/20 transition-colors flex items-center justify-center gap-2"
                       >
                         <Briefcase className="h-4 w-4" />
                         <span>Sponsor Project</span>
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 max-w-md">
-                  <Briefcase className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-medium text-gray-300">No ongoing projects found</h3>
-                  <p className="text-gray-400 mt-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col items-center justify-center py-16 text-center"
+              >
+                <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 max-w-md">
+                  <div className="bg-blue-100 p-4 rounded-full inline-flex items-center justify-center mb-4">
+                    <Briefcase className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-800 mb-2">No ongoing projects found</h3>
+                  <p className="text-gray-600 mb-6">
                     {searchQuery || selectedFaculty !== "all"
                       ? "Try adjusting your search or filters"
                       : "There are no ongoing projects available for sponsorship at the moment"}
                   </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery("")
+                      setSelectedFaculty("all")
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow transition"
+                  >
+                    Clear Filters
+                  </button>
                 </div>
-              </div>
+              </motion.div>
             )}
           </>
         )}
@@ -597,18 +839,41 @@ export default function FYPMarketplacePage() {
 
       {/* Agreement Modal */}
       {showAgreementModal && selectedFyp && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg max-w-2xl w-full border border-gray-700 shadow-xl">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-xl max-w-2xl w-full border border-gray-200 shadow-2xl"
+          >
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-white mb-4">
-                {agreementType === "buy" ? "Purchase Agreement" : "Sponsorship Agreement"}
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {agreementType === "buy" ? "Purchase Agreement" : "Sponsorship Agreement"}
+                </h2>
+                <button
+                  onClick={() => setShowAgreementModal(false)}
+                  className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <X className="h-6 w-6 text-gray-500" />
+                </button>
+              </div>
 
-              <div className="bg-gray-700/50 rounded-lg p-4 mb-6 max-h-80 overflow-y-auto">
-                <h3 className="font-semibold text-gray-200 mb-3">Project: {selectedFyp.title}</h3>
+              <div className="bg-gray-50 rounded-lg p-4 mb-6 max-h-80 overflow-y-auto border border-gray-200">
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200">
+                  <img
+                    src={selectedFyp.imageUrl || "/placeholder.svg?height=60&width=60&query=project"}
+                    alt={selectedFyp.title}
+                    className="w-12 h-12 rounded-lg object-cover"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{selectedFyp.title}</h3>
+                    <p className="text-sm text-gray-500">ID: {selectedFyp.fypId}</p>
+                  </div>
+                </div>
 
                 {agreementType === "buy" ? (
-                  <div className="text-gray-300 space-y-3 text-sm">
+                  <div className="text-gray-700 space-y-3 text-sm">
                     <p>By proceeding with this purchase request, I agree to the following terms:</p>
                     <ol className="list-decimal pl-5 space-y-2">
                       <li>
@@ -624,17 +889,17 @@ export default function FYPMarketplacePage() {
                         elements of this project without proper authorization.
                       </li>
                       <li>
-                        I agree to use this project in accordance with the universitys intellectual property policies.
+                        I agree to use this project in accordance with the university's intellectual property policies.
                       </li>
                       <li>
                         I understand that the final terms of purchase will be determined upon approval by the university
                         administration.
                       </li>
-                      <li>I acknowledge that this request may be rejected at the universitys discretion.</li>
+                      <li>I acknowledge that this request may be rejected at the university's discretion.</li>
                     </ol>
                   </div>
                 ) : (
-                  <div className="text-gray-300 space-y-3 text-sm">
+                  <div className="text-gray-700 space-y-3 text-sm">
                     <p>By proceeding with this sponsorship request, I agree to the following terms:</p>
                     <ol className="list-decimal pl-5 space-y-2">
                       <li>I acknowledge that I am requesting to sponsor this ongoing Final Year Project.</li>
@@ -651,9 +916,9 @@ export default function FYPMarketplacePage() {
                       </li>
                       <li>
                         I agree to provide reasonable support and resources to the student team as needed for the
-                        projects success.
+                        project's success.
                       </li>
-                      <li>I acknowledge that this request may be rejected at the universitys discretion.</li>
+                      <li>I acknowledge that this request may be rejected at the university's discretion.</li>
                     </ol>
                   </div>
                 )}
@@ -662,32 +927,38 @@ export default function FYPMarketplacePage() {
               <div className="flex justify-between">
                 <button
                   onClick={() => setShowAgreementModal(false)}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors"
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={submitFypRequest}
-                  className={`px-4 py-2 text-white rounded-md transition-colors ${
-                    agreementType === "buy" ? "bg-green-700 hover:bg-green-600" : "bg-blue-700 hover:bg-blue-600"
+                  className={`px-6 py-2 text-white rounded-lg transition-colors flex items-center ${
+                    agreementType === "buy"
+                      ? "bg-green-600 hover:bg-green-500 shadow-lg shadow-green-600/20"
+                      : "bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20"
                   }`}
                 >
-                  I Agree & Submit Request
+                  {agreementType === "buy" ? (
+                    <>
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      <span>I Agree & Submit Purchase Request</span>
+                    </>
+                  ) : (
+                    <>
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      <span>I Agree & Submit Sponsorship Request</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        theme="dark"
-      />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover theme="light" />
     </div>
   )
 }
+
