@@ -229,7 +229,7 @@ export default function BuyProjectPage() {
                       min={1000}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">Enter the amount you're willing to pay for this project</p>
+                  <p className="text-xs text-gray-400 mt-1">Enter the amount youore willing to pay for this project</p>
                 </div>
 
                 <div className="bg-gray-700/30 p-4 rounded-lg">
@@ -283,7 +283,7 @@ export default function BuyProjectPage() {
                   <div>
                     <p className="font-medium text-gray-200">What happens after payment?</p>
                     <p className="text-gray-400 mt-1">
-                      Once your payment is processed, you'll receive a confirmation email with details about your
+                      Once your payment is processed, youoll receive a confirmation email with details about your
                       purchase. The project files and documentation will be made available to you.
                     </p>
                   </div>
@@ -295,7 +295,7 @@ export default function BuyProjectPage() {
                     <p className="font-medium text-gray-200">Intellectual Property Rights</p>
                     <p className="text-gray-400 mt-1">
                       By purchasing this project, you acquire the intellectual property rights as specified in the
-                      purchase agreement. You'll be able to use, modify, and implement the project according to the
+                      purchase agreement. Youoll be able to use, modify, and implement the project according to the
                       terms.
                     </p>
                   </div>
@@ -402,7 +402,7 @@ export default function BuyProjectPage() {
                       of this project without proper authorization.
                     </li>
                     <li>
-                      I agree to use this project in accordance with the university's intellectual property policies.
+                      I agree to use this project in accordance with the universityos intellectual property policies.
                     </li>
                     <li>
                       I understand that the final terms of purchase will be determined upon approval by the university

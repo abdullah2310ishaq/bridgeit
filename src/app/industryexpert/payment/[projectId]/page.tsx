@@ -171,7 +171,7 @@ const PaymentPage = () => {
         {project.status.toLowerCase() !== "paymentpending" && (
           <div className="mb-4">
             <p className="text-yellow-400 mb-2">
-              This project is not ready for payment. Please ensure the project is in "Payment Pending" status by
+              This project is not ready for payment. Please ensure the project is in Payment Pending status by
               approving the completion request.
             </p>
             <button

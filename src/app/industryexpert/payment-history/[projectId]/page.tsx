@@ -211,7 +211,7 @@ const PaymentHistoryPage = () => {
             </p>
             <p>
               <strong>Project Status:</strong> Once payment is completed, the project status is automatically updated to
-              "Completed" and both you and the student will be notified.
+              Completed and both you and the student will be notified.
             </p>
             <p>
               <strong>Need Help?</strong> If you have any questions about payments or need assistance, please contact

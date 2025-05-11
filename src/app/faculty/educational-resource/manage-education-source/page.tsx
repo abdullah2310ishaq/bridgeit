@@ -338,7 +338,7 @@ const ManageEducationalResources = () => {
               />
             </svg>
             <h2 className="mt-4 text-xl font-medium text-gray-300">No resources found</h2>
-            <p className="mt-2 text-gray-400">You haven't added any educational resources yet.</p>
+            <p className="mt-2 text-gray-400">You havenot added any educational resources yet.</p>
             <button
               onClick={() => router.push("/faculty/add-educational-resource")}
               className="mt-6 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors"

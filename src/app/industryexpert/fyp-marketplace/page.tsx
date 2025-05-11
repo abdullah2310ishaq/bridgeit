@@ -296,7 +296,7 @@ export default function FYPMarketplacePage() {
 
       if (response.ok) {
         toast.success(
-          "FYP request submitted successfully! The university admin will review your request and you'll be notified once it's approved or rejected.",
+          "FYP request submitted successfully! The university admin will review your request and youll be notified once its approved or rejected.",
           { autoClose: 8000 },
         )
         setShowAgreementModal(false)
@@ -624,13 +624,13 @@ export default function FYPMarketplacePage() {
                         elements of this project without proper authorization.
                       </li>
                       <li>
-                        I agree to use this project in accordance with the university's intellectual property policies.
+                        I agree to use this project in accordance with the universitys intellectual property policies.
                       </li>
                       <li>
                         I understand that the final terms of purchase will be determined upon approval by the university
                         administration.
                       </li>
-                      <li>I acknowledge that this request may be rejected at the university's discretion.</li>
+                      <li>I acknowledge that this request may be rejected at the universitys discretion.</li>
                     </ol>
                   </div>
                 ) : (
@@ -651,9 +651,9 @@ export default function FYPMarketplacePage() {
                       </li>
                       <li>
                         I agree to provide reasonable support and resources to the student team as needed for the
-                        project's success.
+                        projects success.
                       </li>
-                      <li>I acknowledge that this request may be rejected at the university's discretion.</li>
+                      <li>I acknowledge that this request may be rejected at the universitys discretion.</li>
                     </ol>
                   </div>
                 )}

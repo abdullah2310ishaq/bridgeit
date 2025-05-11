@@ -439,7 +439,7 @@ export default function ApprovedRequestsPage() {
               <CheckCircle className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-gray-300">No approved requests yet</h3>
               <p className="text-gray-400 mt-2">
-                You don't have any approved FYP requests yet. Once your requests are approved by university admins, they
+                You donot have any approved FYP requests yet. Once your requests are approved by university admins, they
                 will appear here.
               </p>
               <button

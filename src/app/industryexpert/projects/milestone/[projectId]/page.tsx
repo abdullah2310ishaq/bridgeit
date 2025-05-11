@@ -805,7 +805,7 @@ const MilestonePage: React.FC = () => {
               <span className="text-yellow-300 font-semibold">Project is pending completion</span>
             </div>
             <p className="text-gray-300 mb-4">
-              This project has a pending completion request, but the details couldn't be loaded. Click the button below
+              This project has a pending completion request, but the details couldnot be loaded. Click the button below
               to refresh and check for completion requests.
             </p>
             <button

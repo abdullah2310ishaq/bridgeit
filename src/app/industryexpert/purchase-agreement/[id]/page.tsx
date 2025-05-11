@@ -455,7 +455,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">
-                    Enter the amount you're willing to pay (PKR)
+                    Enter the amount you re willing to pay (PKR)
                   </label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -637,7 +637,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <span>You'll receive a confirmation email after successful payment</span>
+                  <span>You ll receive a confirmation email after successful payment</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />

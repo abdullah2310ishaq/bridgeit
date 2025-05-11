@@ -37,7 +37,7 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({
               </span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-2xl">
-              Explore groundbreaking research across various fields. Dive into the innovation that's shaping the future.
+              Explore groundbreaking research across various fields. Dive into the innovation that is shaping the future.
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
               <button

@@ -264,7 +264,7 @@ export default function StudentMeetingsPage() {
               <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-gray-300">No FYP Assigned</h3>
               <p className="text-gray-400 mt-2">
-                You don't have a Final Year Project assigned yet. Once you have a FYP, you'll be able to schedule meetings with industry experts.
+                You dont have a Final Year Project assigned yet. Once you have a FYP, you ll be able to schedule meetings with industry experts.
               </p>
               <button
                 onClick={() => router.push("/student/register-fyp")}
@@ -450,7 +450,7 @@ export default function StudentMeetingsPage() {
                 <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-medium text-gray-300">No meetings scheduled</h3>
                 <p className="text-gray-400 mt-2">
-                  You don't have any meetings scheduled with industry experts yet. Once an industry expert requests a
+                  You dont have any meetings scheduled with industry experts yet. Once an industry expert requests a
                   meeting and you select a time slot, it will appear here.
                 </p>
                 <button

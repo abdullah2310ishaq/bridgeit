@@ -85,7 +85,7 @@ const PaymentSuccessPage = () => {
             {projectTitle && (
               <span>
                 {" "}
-                The payment for project <strong>"{projectTitle}"</strong> has been recorded.
+                The payment for project <strong>{projectTitle}</strong> has been recorded.
               </span>
             )}
           </p>

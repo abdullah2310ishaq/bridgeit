@@ -97,7 +97,7 @@ const ActiveProjects = ({ expertId }: ActiveProjectsProps) => {
           </svg>
         </div>
         <h3 className="text-xl font-semibold text-gray-700 mb-2">No Active Projects</h3>
-        <p className="text-gray-500">You don't have any active projects at the moment.</p>
+        <p className="text-gray-500">You donot have any active projects at the moment.</p>
       </div>
     )
   }

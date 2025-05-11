@@ -190,7 +190,7 @@ const ProjectCertificate = () => {
                 <p className="text-lg text-gray-700 mb-4">This is to certify that</p>
                 <p className="text-3xl font-bold text-green-800 mb-4">{project.studentName}</p>
                 <p className="text-lg text-gray-700 mb-8">has successfully completed the project</p>
-                <p className="text-2xl font-bold text-green-800 mb-4">"{project.title}"</p>
+                <p className="text-2xl font-bold text-green-800 mb-4">{project.title}</p>
                 <p className="text-lg text-gray-700 mb-8">under the guidance of</p>
                 <p className="text-xl font-semibold text-green-700 mb-8">{project.expertName}</p>
                 <p className="text-lg text-gray-700">
