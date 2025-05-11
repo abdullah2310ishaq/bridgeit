@@ -2,3 +2,97 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Add this to your globals.css */
+
+/* Base font settings */
+body {
+  font-family: var(--font-raleway), sans-serif;
+  color: #333;
+  line-height: 1.7;
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+}
+
+/* Stylish heading with gradient underline */
+.stylish-heading {
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+}
+
+.stylish-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60%;
+  height: 4px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  border-radius: 2px;
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Button styling */
+.stylish-button {
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  color: white;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.stylish-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+
+/* Add to globals.css */
+
+@layer utilities {
+  /* Gradient text effect */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-purple-600;
+  }
+  
+  /* Stylish underline for headings */
+  .heading-underline {
+    @apply relative pb-2;
+  }
+  
+  .heading-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-1/2 h-1 bg-gradient-to-r from-primary-600 to-transparent rounded;
+  }
+  
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* Button hover effect */
+  .btn-hover {
+    @apply transition-all duration-300 hover:shadow-md hover:-translate-y-0.5;
+  }
+}
