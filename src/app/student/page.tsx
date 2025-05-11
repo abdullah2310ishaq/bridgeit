@@ -233,11 +233,11 @@ const StudentPage: React.FC = () => {
       {/* Educational Resources Card - New Section*/}
       <EducationalResourcesCard goToEducationalResources={goToEducationalResources} />
 
-      {/* Ongoing Projects Section 
-      <OngoingProjectsSection ongoingProjects={ongoingProjects} />*/}
+      Ongoing Projects Section 
+      <OngoingProjectsSection ongoingProjects={ongoingProjects} />
 
-      {/* Completed Industry Projects Section 
-      <CompletedIndustryProjectsSection projects={completedProjects} /> */}
+      Completed Industry Projects Section 
+      <CompletedIndustryProjectsSection projects={completedProjects} />
 
       {/* Completed Personal Projects Section
       <CompletedProjectsSection projects={personalProjects} /> */}
