@@ -889,13 +889,13 @@ export default function FYPMarketplacePage() {
                         elements of this project without proper authorization.
                       </li>
                       <li>
-                        I agree to use this project in accordance with the university's intellectual property policies.
+                        I agree to use this project in accordance with the universitys intellectual property policies.
                       </li>
                       <li>
                         I understand that the final terms of purchase will be determined upon approval by the university
                         administration.
                       </li>
-                      <li>I acknowledge that this request may be rejected at the university's discretion.</li>
+                      <li>I acknowledge that this request may be rejected at the university ke discretion.</li>
                     </ol>
                   </div>
                 ) : (
