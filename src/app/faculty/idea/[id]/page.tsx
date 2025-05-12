@@ -108,7 +108,7 @@ const IdeaDetailsPage = ({ params }: { params: { id: string } }) => {
             <Lightbulb className="w-8 h-8 text-blue-500" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Idea Not Found</h2>
-          <p className="text-gray-600 mb-6">The idea you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600 mb-6">The idea you re looking for doesnot exist or has been removed.</p>
           <button
             onClick={() => router.push("/faculty/idea")}
             className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
@@ -239,7 +239,7 @@ const IdeaDetailsPage = ({ params }: { params: { id: string } }) => {
         >
           <h2 className="text-lg font-semibold text-gray-800 mb-3">How to Apply</h2>
           <p className="text-gray-700">
-            If you're interested in this project idea, you can contact the faculty member directly via email. Be sure to
+            If you are interested in this project idea, you can contact the faculty member directly via email. Be sure to
             mention the project title and your qualifications.
           </p>
           <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">

@@ -310,7 +310,8 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
 
         {/* Motivational Text */}
         <p className="text-center text-sm text-purple-300 mt-3 italic">
-          "Showcase your unique skills and stand out from the crowd!"
+          Showcase your unique skills and stand out from the crowd!
+
         </p>
 
         {/* Timeline */}
@@ -325,7 +326,7 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
               <div className="absolute -left-[25px] w-4 h-4 rounded-full bg-purple-500"></div>
               <h4 className="text-purple-300 font-medium">Application Phase</h4>
               <p className="text-sm text-gray-400 mt-1">
-                Submit your proposal explaining why you're a good fit for this project
+                Submit your proposal explaining why youare a good fit for this project
               </p>
             </div>
 
@@ -341,7 +342,7 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
               <div className="absolute -left-[25px] w-4 h-4 rounded-full bg-green-500"></div>
               <h4 className="text-green-300 font-medium">Project Kickoff</h4>
               <p className="text-sm text-gray-400 mt-1">
-                Once selected, you'll begin working with the expert on the project
+                Once selected, you will begin working with the expert on the project
               </p>
             </div>
 

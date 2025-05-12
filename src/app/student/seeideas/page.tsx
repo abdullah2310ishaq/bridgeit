@@ -272,7 +272,7 @@ const IdeasPage: React.FC = () => {
         <div className="relative container mx-auto px-4 h-full flex flex-col justify-center">
           <h1 className="text-4xl font-bold text-white mb-2">Final Year Project Ideas</h1>
           <p className="text-blue-100 text-lg max-w-2xl">
-            Discover innovative project ideas from your university's faculty members
+            Discover innovative project ideas from your university faculty members
           </p>
         </div>
       </div>

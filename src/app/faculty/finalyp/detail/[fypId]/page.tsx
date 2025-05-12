@@ -92,7 +92,7 @@ const FypDetailPage: React.FC = () => {
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <h2 className="text-2xl font-bold text-purple-400 mb-2">Project Not Found</h2>
-          <p className="text-gray-300 mb-6">The project you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-300 mb-6">The project you are looking for doesnot exist or has been removed.</p>
           <button
             onClick={() => router.back()}
             className="w-full py-2 px-4 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"

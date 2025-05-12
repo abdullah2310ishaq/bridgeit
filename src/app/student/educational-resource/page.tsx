@@ -512,7 +512,7 @@ const StudentEducationalResources = () => {
           {searchTerm && (
             <div className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
               <Search className="w-4 h-4 mr-1" />
-              <span>Search: "{searchTerm}"</span>
+              <span>Search: {searchTerm}</span>
             </div>
           )}
         </div>

@@ -321,7 +321,7 @@ const IdeaDetailsPage: React.FC = () => {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Idea Not Found</h2>
-          <p className="text-gray-600 mb-6">The project idea you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600 mb-6">The project idea youre looking for doesnt exist or has been removed.</p>
           <Link
             href="/student/seeideas"
             className="inline-block w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"

@@ -282,7 +282,7 @@ const ExploreProjects: React.FC = () => {
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 via-purple-950 to-gray-900">
         <div className="bg-gray-800 p-8 rounded-xl shadow-2xl border border-red-500/20">
           <p className="text-red-500 text-xl font-medium">{error}</p>
-          <p className="text-gray-400 mt-2">Don't give up! Technical difficulties happen to everyone.</p>
+          <p className="text-gray-400 mt-2">Dont give up! Technical difficulties happen to everyone.</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
@@ -388,7 +388,7 @@ const ExploreProjects: React.FC = () => {
                 {/* Motivational Text */}
                 <div className="mt-4 pt-4 border-t border-purple-900/30">
                   <p className="text-xs text-purple-300 italic">
-                    "Work hard on your proposals and showcase your unique skills to stand out!"
+                    Work hard on your proposals and showcase your unique skills to stand out!
                   </p>
                 </div>
               </div>
@@ -469,7 +469,7 @@ const ExploreProjects: React.FC = () => {
               {searchQuery && (
                 <div className="flex items-center">
                   <Briefcase className="h-4 w-4 text-purple-400 mr-1" />
-                  <span className="text-sm text-purple-300">Search results for "{searchQuery}"</span>
+                  <span className="text-sm text-purple-300">Search results for {searchQuery}</span>
                 </div>
               )}
             </div>
@@ -519,7 +519,7 @@ const ExploreProjects: React.FC = () => {
                   <p className="text-gray-400 text-lg font-medium">No projects available.</p>
                   <p className="text-gray-500 text-sm mt-2">Try adjusting your search criteria.</p>
                   <p className="text-purple-400 text-sm mt-4 max-w-md text-center">
-                    "The best opportunities often come when you least expect them. Keep checking back for new projects!"
+                    The best opportunities often come when you least expect them. Keep checking back for new projects!
                   </p>
                 </div>
               )}
@@ -529,7 +529,7 @@ const ExploreProjects: React.FC = () => {
             {filteredProjects.length > 0 && (
               <div className="mt-8 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg p-4 border border-blue-500/20 text-center">
                 <p className="text-blue-300 font-medium">
-                  "Your next big opportunity is waiting. Apply now and make it happen!"
+                  Your next big opportunity is waiting. Apply now and make it happen!
                 </p>
               </div>
             )}
@@ -557,7 +557,7 @@ const ExploreProjects: React.FC = () => {
       <footer className="bg-gray-900/80 backdrop-blur-sm border-t border-purple-900/30 py-4 text-center text-sm text-gray-500">
         <p>© 2023 Project Explorer | Connect with industry experts and build your future</p>
         <p className="mt-1 text-purple-400/70">
-          "The difference between ordinary and extraordinary is that little extra." — Jimmy Johnson
+          The difference between ordinary and extraordinary is that little extra. — Jimmy Johnson
         </p>
       </footer>
     </div>
