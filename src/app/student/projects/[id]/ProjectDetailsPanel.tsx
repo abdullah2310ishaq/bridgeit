@@ -55,14 +55,14 @@ const ProjectDetailsPanel: React.FC<ProjectDetailsPanelProps> = ({ project, onCl
       if (!token) return
 
       try {
-        const response = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const response = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!response.ok) return
 
         const data = await response.json()
-        const studentRes = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${data.userId}`, {
+        const studentRes = await fetch(`https://localhost:7053//api/get-student/student-by-id/${data.userId}`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })

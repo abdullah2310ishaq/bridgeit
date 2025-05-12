@@ -58,7 +58,7 @@ export default function FYPDetailsPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053//api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -71,7 +71,7 @@ export default function FYPDetailsPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -84,7 +84,7 @@ export default function FYPDetailsPage() {
 
         // Step 3: Fetch detailed FYP information
         const fypResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://localhost:7053//api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -99,7 +99,7 @@ export default function FYPDetailsPage() {
         // Note: This endpoint is hypothetical - you may need to adjust based on your actual API
         try {
           const requestResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/check-status?fypId=${fypId}&expertId=${expertData.indExptId}`,
+            `https://localhost:7053//api/ind-expert-request-fyp/check-status?fypId=${fypId}&expertId=${expertData.indExptId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -139,7 +139,7 @@ export default function FYPDetailsPage() {
 
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/add/${fypId}`,
+        `https://localhost:7053//api/ind-expert-request-fyp/add/${fypId}`,
         {
           method: "POST",
           headers: {

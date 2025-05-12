@@ -33,7 +33,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       try {
         // You might need an Authorization header if the endpoint requires it
         const response = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`
+          `https://localhost:7053//api/projects/get-project-by-id/${projectId}`
         );
 
         if (!response.ok) throw new Error("Failed to fetch project details.");

@@ -28,7 +28,7 @@ const FypDetailPage: React.FC = () => {
         const token = localStorage.getItem("jwtToken")
         if (!token) throw new Error("User not authenticated")
 
-        const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-fyp-by-id/${fypId}`, {
+        const response = await fetch(`https://localhost:7053//api/fyp/get-fyp-by-id/${fypId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

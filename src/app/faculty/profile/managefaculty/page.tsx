@@ -26,7 +26,7 @@ const FacultyProfileManagement: React.FC = () => {
     async function fetchUserProfile() {
       try {
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053//api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -71,7 +71,7 @@ const FacultyProfileManagement: React.FC = () => {
 
     try {
       const confirmResponse = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/confirm-current-password/${userId}`,
+        `https://localhost:7053//api/edit-user-profile/confirm-current-password/${userId}`,
         {
           method: "POST",
           headers: {
@@ -88,7 +88,7 @@ const FacultyProfileManagement: React.FC = () => {
       }
 
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/change-password/${userId}`,
+        `https://localhost:7053//api/edit-user-profile/change-password/${userId}`,
         {
           method: "PUT",
           headers: {
@@ -130,7 +130,7 @@ const FacultyProfileManagement: React.FC = () => {
     try {
       const base64Image = imageData.split(",")[1]; // Ensure we send only the base64 part
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/set-profile-image/${userId}`,
+        `https://localhost:7053//api/edit-user-profile/set-profile-image/${userId}`,
         {
           method: "PUT",
           headers: {

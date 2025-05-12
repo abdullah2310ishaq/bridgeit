@@ -11,7 +11,7 @@ const ManageUniversitiesPage: React.FC = () => {
     async function fetchUniversities() {
       try {
         const response = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities"
+          "https://localhost:7053//api/universities/get-all-universities"
         );
         if (response.ok) {
           const data = await response.json();

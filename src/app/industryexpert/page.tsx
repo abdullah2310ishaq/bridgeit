@@ -68,7 +68,7 @@ const IndustryExpertPage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-completion-request/${expertId}`,
+        `https://localhost:7053//api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store", // Ensure we don't get cached results
@@ -118,7 +118,7 @@ const IndustryExpertPage: React.FC = () => {
       try {
         // 1) Fetch basic user info
         const profileResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053//api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -131,7 +131,7 @@ const IndustryExpertPage: React.FC = () => {
 
         // 2) Fetch the full industry-expert profile
         const expertResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -159,7 +159,7 @@ const IndustryExpertPage: React.FC = () => {
 
         // 3) Fetch "Assigned" Projects
         const assignedRes = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://localhost:7053//api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -174,7 +174,7 @@ const IndustryExpertPage: React.FC = () => {
 
         // 4) Fetch "Unassigned" Projects
         const unassignedRes = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://localhost:7053//api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },

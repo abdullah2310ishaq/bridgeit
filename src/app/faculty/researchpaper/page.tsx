@@ -30,7 +30,7 @@ const FacultyResearchWorkPage: React.FC = () => {
       }
 
       try {
-        const userResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const userResponse = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ const FacultyResearchWorkPage: React.FC = () => {
           const userData = await userResponse.json();
           const userId = userData.userId;
 
-          const facultyResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`, {
+          const facultyResponse = await fetch(`https://localhost:7053//api/get-faculty/faculty-by-id/${userId}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -52,7 +52,7 @@ const FacultyResearchWorkPage: React.FC = () => {
             const facultyData = await facultyResponse.json();
             const facultyId = facultyData.id;
 
-            const researchResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ResearchWork/get-researchwork-by-id/${facultyId}`, {
+            const researchResponse = await fetch(`https://localhost:7053//api/ResearchWork/get-researchwork-by-id/${facultyId}`, {
               method: "GET",
               headers: {
                 Authorization: `Bearer ${token}`,

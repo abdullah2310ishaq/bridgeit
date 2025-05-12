@@ -37,7 +37,7 @@ export default function IndustryExpertMeetingsPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://localhost:7053//api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -50,7 +50,7 @@ export default function IndustryExpertMeetingsPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -63,7 +63,7 @@ export default function IndustryExpertMeetingsPage() {
 
         // Step 3: Fetch meetings for this industry expert
         const meetingsResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/by-id/${industryExpertId}`,
+          `https://localhost:7053//api/fyp-meeting/by-id/${industryExpertId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

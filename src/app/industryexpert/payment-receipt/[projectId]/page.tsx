@@ -45,7 +45,7 @@ const PaymentReceiptPage = () => {
 
       // Check current project status
       const projectRes = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
+        `https://localhost:7053//api/projects/get-project-by-id/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -62,7 +62,7 @@ const PaymentReceiptPage = () => {
       if (projectData.status !== "Completed") {
         console.log("Calling project complete endpoint")
         const completeRes = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/${projectId}/complete`,
+          `https://localhost:7053//api/projects/${projectId}/complete`,
           {
             method: "PATCH",
             headers: {
@@ -100,7 +100,7 @@ const PaymentReceiptPage = () => {
 
         // Then fetch payment details
         const res = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payment-details/payment-details/${projectId}`,
+          `https://localhost:7053//api/payment-details/payment-details/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

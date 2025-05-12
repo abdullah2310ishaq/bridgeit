@@ -15,11 +15,11 @@ const OverviewPage: React.FC = () => {
       try {
         setLoading(true);
         const [universitiesRes, studentsRes, industryExpertsRes, facultiesRes, companiesRes] = await Promise.all([
-          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities'),
-          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/students'),
-          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-experts'),
-          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculties'),
-          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/companies/get-all-companies'),
+          fetch('https://localhost:7053//api/universities/get-all-universities'),
+          fetch('https://localhost:7053//api/get-student/students'),
+          fetch('https://localhost:7053//api/get-industry-expert/industry-experts'),
+          fetch('https://localhost:7053//api/get-faculty/faculties'),
+          fetch('https://localhost:7053//api/companies/get-all-companies'),
         ]);
 
         const [universitiesData, studentsData, industryExpertsData, facultiesData, companiesData] = await Promise.all([

@@ -26,7 +26,7 @@ const UniversityEventsPage: React.FC = () => {
 
       try {
         const response = await fetch(
-          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events",
+          "https://localhost:7053//api/Events/get-events",
           {
             method: "GET",
             headers: {

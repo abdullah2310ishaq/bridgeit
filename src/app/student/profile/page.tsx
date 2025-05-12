@@ -33,7 +33,7 @@ const ProfilePage: React.FC = () => {
       }
 
       try {
-        const profileResponse = await fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info', {
+        const profileResponse = await fetch('https://localhost:7053//api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -44,7 +44,7 @@ const ProfilePage: React.FC = () => {
           const profileData = await profileResponse.json();
           const userId = profileData.userId;
 
-          const studentResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
+          const studentResponse = await fetch(`https://localhost:7053//api/get-student/student-by-id/${userId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,

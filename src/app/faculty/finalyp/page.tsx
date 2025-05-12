@@ -97,14 +97,14 @@ const IndustryFypPage: React.FC = () => {
 
       try {
         /* 1️⃣  authorized‑user info (gets userId) */
-        const authRes = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const authRes = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!authRes.ok) throw new Error("Failed to fetch user info.")
         const { userId } = await authRes.json()
 
         /* 2️⃣  faculty details (gets facultyId) */
-        const facRes = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`, {
+        const facRes = await fetch(`https://localhost:7053//api/get-faculty/faculty-by-id/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!facRes.ok) throw new Error("Failed to fetch faculty info.")
@@ -113,7 +113,7 @@ const IndustryFypPage: React.FC = () => {
         setFacultyName(`${firstName} ${lastName}`)
 
         /* 3️⃣  FYPs for that faculty */
-        const fypRes = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-fyp-by-faculty-id/${facultyId}`, {
+        const fypRes = await fetch(`https://localhost:7053//api/fyp/get-fyp-by-faculty-id/${facultyId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!fypRes.ok) throw new Error("Failed to fetch FYPs.")

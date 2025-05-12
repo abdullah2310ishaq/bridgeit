@@ -71,7 +71,7 @@ export default function MeetingDetailsPage() {
       try {
         // Step 1: Fetch meeting details
         const meetingResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/by-id/${meetingId}`,
+          `https://localhost:7053//api/fyp-meeting/by-id/${meetingId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -95,7 +95,7 @@ export default function MeetingDetailsPage() {
 
         // Step 2: Fetch FYP details
         const fypResponse = await fetch(
-          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${meetingDetails.fypId}`,
+          `https://localhost:7053//api/fyp/get-detailed-fyp-by-id/${meetingDetails.fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -111,7 +111,7 @@ export default function MeetingDetailsPage() {
         // Step 3: Check if FYP is already sponsored
         try {
           const sponsoredResponse = await fetch(
-            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/is-sponsored/${meetingDetails.fypId}`,
+            `https://localhost:7053//api/fyp-meeting/is-sponsored/${meetingDetails.fypId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -152,7 +152,7 @@ export default function MeetingDetailsPage() {
 
     try {
       const response = await fetch(
-        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/after-meeting/${meetingId}`,
+        `https://localhost:7053//api/fyp-meeting/after-meeting/${meetingId}`,
         {
           method: "PATCH",
           headers: {
