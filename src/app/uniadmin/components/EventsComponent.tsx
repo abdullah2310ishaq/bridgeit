@@ -107,7 +107,7 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
 
       setLoading(true)
       try {
-        const response = await fetch("https://localhost:7053/api/Events/get-events", {
+        const response = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

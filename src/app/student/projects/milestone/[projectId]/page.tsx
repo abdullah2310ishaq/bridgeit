@@ -123,7 +123,7 @@ const ProjectProgressTracker: React.FC = () => {
       try {
         // Get authorized user info (student's userId)
         const authRes = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -134,7 +134,7 @@ const ProjectProgressTracker: React.FC = () => {
         }
         // Fetch project details (which includes student info and expert info)
         const resProject = await fetch(
-          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -146,7 +146,7 @@ const ProjectProgressTracker: React.FC = () => {
         }
         // Fetch milestones
         const resMilestones = await fetch(
-          `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -197,7 +197,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -275,7 +275,7 @@ const ProjectProgressTracker: React.FC = () => {
       if (editItemId) {
         // Edit milestone
         const res = await fetch(
-          `https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/update-milestone?milesstoneId=${editItemId}`,
           {
             method: "PUT",
             headers: {
@@ -295,7 +295,7 @@ const ProjectProgressTracker: React.FC = () => {
       } else {
         // Add milestone
         const res = await fetch(
-          `https://localhost:7053/api/milestone/add-milestone/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/add-milestone/${projectId}`,
           {
             method: "POST",
             headers: {
@@ -330,7 +330,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -353,7 +353,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token || !projectId) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/get-tasks/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -392,7 +392,7 @@ const ProjectProgressTracker: React.FC = () => {
     try {
       // Use the marks-as-complete endpoint from the controller
       const res = await fetch(
-        `https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/marks-as-complete/${projectId}/${task.id}`,
         {
           method: "PUT",
           headers: {
@@ -427,7 +427,7 @@ const ProjectProgressTracker: React.FC = () => {
     }
     try {
       const res = await fetch(
-        `https://localhost:7053/api/reviews/add-review/${projectId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/add-review/${projectId}`,
         {
           method: "POST",
           headers: {
@@ -463,7 +463,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token || !projectId) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/get-reviews/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -501,7 +501,7 @@ const ProjectProgressTracker: React.FC = () => {
       // Using the correct API endpoint from the controller
       // The API expects a raw GUID in the request body, not a JSON object
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/put-completion-request`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/put-completion-request`,
         {
           method: "POST",
           headers: {
@@ -553,7 +553,7 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${studentUserId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-completion-request/${studentUserId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

@@ -145,7 +145,7 @@ const StudentEducationalResources = () => {
         }
 
         // Fetch user profile to get university ID
-        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const profileResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -158,7 +158,7 @@ const StudentEducationalResources = () => {
         const userId = profileData.userId
 
         // Get student details
-        const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+        const studentResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -178,7 +178,7 @@ const StudentEducationalResources = () => {
         })
 
         // Get all resources
-        const allResourcesResponse = await fetch("https://localhost:7053/api/educational-resources/get-all", {
+        const allResourcesResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-all", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -193,7 +193,7 @@ const StudentEducationalResources = () => {
         let combinedResources: EducationalResource[] = allResourcesData
         if (uniId) {
           const uniResourcesResponse = await fetch(
-            `https://localhost:7053/api/educational-resources/get-by-id/${uniId}`,
+            `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-by-id/${uniId}`,
             {
               method: "GET",
               headers: { Authorization: `Bearer ${token}` },

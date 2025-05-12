@@ -84,7 +84,7 @@ const UniAdminDashboard: React.FC = () => {
     const fetchAdminData = async () => {
       try {
         // Step A: Validate user & role
-        const profileRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const profileRes = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const UniAdminDashboard: React.FC = () => {
 
         // Step B: Fetch this Admin's profile
         const adminResponse = await fetch(
-          `https://localhost:7053/api/get-uni-admins/admins-by-id/${profileData.userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${profileData.userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -136,13 +136,13 @@ const UniAdminDashboard: React.FC = () => {
 
         // Step C: Fetch university-wide stats
         const [studentsRes, facultyRes] = await Promise.all([
-          fetch(`https://localhost:7053/api/get-student/student-by-university/${adminData.university}`, {
+          fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-university/${adminData.university}`, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }),
-          fetch(`https://localhost:7053/api/get-faculty/faculty-by-university/${adminData.university}`, {
+          fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-university/${adminData.university}`, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -185,7 +185,7 @@ const UniAdminDashboard: React.FC = () => {
 
   const fetchEvents = async (token: string) => {
     try {
-      const response = await fetch("https://localhost:7053/api/Events/get-events", {
+      const response = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -236,10 +236,10 @@ const UniAdminDashboard: React.FC = () => {
 
         if (!isNumeric) {
           // Search by name
-          url = `https://localhost:7053/api/get-student/student-by-name/${encodeURIComponent(query)}`
+          url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-name/${encodeURIComponent(query)}`
         } else {
           // Search by ID
-          url = `https://localhost:7053/api/get-student/student-by-student-id/${encodeURIComponent(query)}`
+          url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${encodeURIComponent(query)}`
         }
 
         console.log("Fetching from URL:", url)
@@ -257,10 +257,10 @@ const UniAdminDashboard: React.FC = () => {
 
         if (!isNumeric) {
           // Search by name
-          url = `https://localhost:7053/api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`
+          url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`
         } else {
           // Search by ID
-          url = `https://localhost:7053/api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`
+          url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`
         }
 
         console.log("Fetching from URL:", url)

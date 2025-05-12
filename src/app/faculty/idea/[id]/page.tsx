@@ -46,7 +46,7 @@ const IdeaDetailsPage = ({ params }: { params: { id: string } }) => {
       }
 
       try {
-        const response = await fetch(`https://localhost:7053/api/ideas/get-idea-by-id/${ideaId}`, {
+        const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-idea-by-id/${ideaId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

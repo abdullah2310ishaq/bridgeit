@@ -48,7 +48,7 @@ const ManageEducationalResources = () => {
 
         // First get the faculty ID
         const profileResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -64,7 +64,7 @@ const ManageEducationalResources = () => {
 
         // Get faculty details
         const facultyResponse = await fetch(
-          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -81,7 +81,7 @@ const ManageEducationalResources = () => {
 
         // Get resources by faculty ID
         const resourcesResponse = await fetch(
-          `https://localhost:7053/api/educational-resources/get-by-id/${facultyId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-by-id/${facultyId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -124,7 +124,7 @@ const ManageEducationalResources = () => {
       }
 
       const response = await fetch(
-        `https://localhost:7053/api/educational-resources/delete/${id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/delete/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -174,7 +174,7 @@ const ManageEducationalResources = () => {
       }
 
       const response = await fetch(
-        `https://localhost:7053/api/educational-resources/update/${editingResource.id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/update/${editingResource.id}`,
         {
           method: "PUT",
           headers: {

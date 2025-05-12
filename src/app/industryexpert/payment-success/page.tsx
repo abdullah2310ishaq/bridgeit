@@ -41,7 +41,7 @@ const PaymentSuccessPage = () => {
 
       // Call the dedicated complete project endpoint
       const res = await fetch(
-        `https://localhost:7053/api/projects/${id}/complete`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/${id}/complete`,
         {
           method: "PATCH",
           headers: {

@@ -105,7 +105,7 @@ const CompletedProjectDetails = () => {
       try {
         // Fetch project details
         const projectRes = await fetch(
-          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
 
@@ -124,7 +124,7 @@ const CompletedProjectDetails = () => {
 
         // Fetch milestones
         const milestonesRes = await fetch(
-          `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
 
@@ -145,7 +145,7 @@ const CompletedProjectDetails = () => {
 
         // Fetch tasks
         const tasksRes = await fetch(
-          `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/get-tasks/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
 
@@ -156,7 +156,7 @@ const CompletedProjectDetails = () => {
 
         // Fetch reviews
         const reviewsRes = await fetch(
-          `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/get-reviews/${projectId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
 
@@ -185,7 +185,7 @@ const CompletedProjectDetails = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
 

@@ -32,7 +32,7 @@ const PaymentHistoryPage = () => {
 
       try {
         const res = await fetch(
-          "https://localhost:7053/api/payment-details/payment-details",
+          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payment-details/payment-details",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
