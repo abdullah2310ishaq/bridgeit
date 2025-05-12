@@ -15,7 +15,7 @@ const CreateCompanyPage: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/companies/add-company", {
+      const response = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/companies/add-company", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -48,7 +48,7 @@ const ManageEducationalResources = () => {
 
         // First get the faculty ID
         const profileResponse = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -64,7 +64,7 @@ const ManageEducationalResources = () => {
 
         // Get faculty details
         const facultyResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -81,7 +81,7 @@ const ManageEducationalResources = () => {
 
         // Get resources by faculty ID
         const resourcesResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-by-id/${facultyId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-by-id/${facultyId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -124,7 +124,7 @@ const ManageEducationalResources = () => {
       }
 
       const response = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/delete/${id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/delete/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -174,7 +174,7 @@ const ManageEducationalResources = () => {
       }
 
       const response = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/update/${editingResource.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/update/${editingResource.id}`,
         {
           method: "PUT",
           headers: {

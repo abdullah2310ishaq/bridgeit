@@ -45,7 +45,7 @@ const FypRequestsPage: React.FC = () => {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ const FypRequestsPage: React.FC = () => {
 
         // Step 2: Get university admin details
         const adminResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ const FypRequestsPage: React.FC = () => {
 
         // Step 3: Fetch pending FYP requests for this university
         const requestsResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/pending-for-admin/${universityId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/pending-for-admin/${universityId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ const FypRequestsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/approve/${requestId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/approve/${requestId}`,
         {
           method: "PUT",
           headers: {
@@ -153,7 +153,7 @@ const FypRequestsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/reject/${requestId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/reject/${requestId}`,
         {
           method: "PUT",
           headers: {

@@ -86,7 +86,7 @@ const StudentPage: React.FC = () => {
       try {
         // Fetch user profile
         const profileResponse = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -97,7 +97,7 @@ const StudentPage: React.FC = () => {
           const userId = profileData.userId
 
           const studentResponse = await fetch(
-            `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`,
+            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`,
             {
               method: "GET",
               headers: { Authorization: `Bearer ${token}` },
@@ -121,7 +121,7 @@ const StudentPage: React.FC = () => {
             })
             // Fetch completed projects (personal)
             const projectsResponse = await fetch(
-              `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects-by-id/${studentData.id}`,
+              `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects-by-id/${studentData.id}`,
               {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -134,7 +134,7 @@ const StudentPage: React.FC = () => {
 
             // Fetch all projects with expert assigned (both ongoing and completed)
             const expertProjectsResponse = await fetch(
-              `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-with-expert-project-by-id/${studentData.id}`,
+              `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-with-expert-project-by-id/${studentData.id}`,
               {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -162,7 +162,7 @@ const StudentPage: React.FC = () => {
 
             // Fetch events
             const eventsResponse = await fetch(
-              "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events",
+              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events",
               {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },

@@ -32,7 +32,7 @@ const ExpertProjectsPage: React.FC = () => {
 
       try {
         // Fetch expert ID
-        const profileResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const profileResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -43,7 +43,7 @@ const ExpertProjectsPage: React.FC = () => {
 
         // Fetch expert profile
         const expertResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -55,7 +55,7 @@ const ExpertProjectsPage: React.FC = () => {
 
         // Fetch all assigned projects
         const assignedResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -83,7 +83,7 @@ const ExpertProjectsPage: React.FC = () => {
 
         // Fetch unassigned projects
         const unassignedResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-unassigned-expert-projects?expertId=${expertData.indExptId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },

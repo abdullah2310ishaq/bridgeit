@@ -41,9 +41,9 @@ const FacultyRegistration: React.FC = () => {
     const fetchData = async () => {
       try {
         const [universitiesRes, interestsRes, emailsRes] = await Promise.all([
-          fetch('http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities'),
-          fetch('http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Interests/get-interests'),
-          fetch('http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/get-all-emails'),
+          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities'),
+          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Interests/get-interests'),
+          fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/get-all-emails'),
         ]);
 
         if (universitiesRes.ok) {
@@ -205,7 +205,7 @@ const FacultyRegistration: React.FC = () => {
     try {
       sessionStorage.setItem("facultyRegistrationData", JSON.stringify(registrationData));
 
-      const generateOtpResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/generate-otp", {
+      const generateOtpResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/generate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -214,7 +214,7 @@ const FacultyRegistration: React.FC = () => {
       });
 
       if (generateOtpResponse.ok) {
-        const sendOtpResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/send-otp", {
+        const sendOtpResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

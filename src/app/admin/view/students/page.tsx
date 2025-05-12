@@ -11,7 +11,7 @@ const ManageStudentsPage: React.FC = () => {
     async function fetchStudents() {
       try {
         const response = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/students"
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/students"
         );
         if (response.ok) {
           const data = await response.json();

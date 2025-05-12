@@ -48,7 +48,7 @@ const CompletedProjects = ({ expertId }: CompletedProjectsProps) => {
       try {
         // Fetch assigned projects
         const res = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-assigned-expert-projects?expertId=${expertId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

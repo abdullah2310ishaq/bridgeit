@@ -36,7 +36,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/chathub?userId=${expertId}`, {
+      .withUrl(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/chathub?userId=${expertId}`, {
         // Pass expertId in query string
         accessTokenFactory: () => token,
       })
@@ -91,7 +91,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
       if (!token) return
 
       try {
-        const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/chats/message-history/${studentId}/${expertId}`, {
+        const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/chats/message-history/${studentId}/${expertId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 

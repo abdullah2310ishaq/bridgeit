@@ -61,14 +61,14 @@ const FacultyIdeasPage: React.FC = () => {
 
       try {
         const authRes = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!authRes.ok) throw new Error("Authorization failed.");
         const { userId, role } = await authRes.json();
 
         const facRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!facRes.ok) throw new Error("Faculty fetch failed.");
@@ -80,7 +80,7 @@ const FacultyIdeasPage: React.FC = () => {
         });
 
         const ideasRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-ideas-by-faculty-id/${fac.id}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-ideas-by-faculty-id/${fac.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!ideasRes.ok)

@@ -65,13 +65,13 @@ export default function ProfileDetailPage() {
         let url = ""
         switch (type) {
           case "student":
-            url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${id}`
+            url = `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${id}`
             break
           case "faculty":
-            url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${id}`
+            url = `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${id}`
             break
           case "industry":
-            url = `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${id}`
+            url = `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${id}`
             break
           default:
             throw new Error("Invalid profile type")
@@ -112,7 +112,7 @@ export default function ProfileDetailPage() {
 
   const fetchUniversityDetails = async (token: string, universityId: string) => {
     try {
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-university-by-id/${universityId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-university-by-id/${universityId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

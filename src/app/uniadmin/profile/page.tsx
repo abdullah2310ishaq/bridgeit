@@ -33,7 +33,7 @@ const UserProfilePage: React.FC = () => {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch('http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info', {
+        const response = await fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ const UserProfilePage: React.FC = () => {
         const userData = await response.json();
         const userId = userData.userId;
 
-        const adminResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${userId}`, {
+        const adminResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-uni-admins/admins-by-id/${userId}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
