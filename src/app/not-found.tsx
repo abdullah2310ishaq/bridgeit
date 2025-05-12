@@ -43,9 +43,9 @@ export default function NotFound() {
 
             {/* Error Message */}
             <div className="w-full md:w-1/2 md:pl-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">Oops! We can't find that page</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">Oops! We cant find that page</h2>
               <p className="text-gray-600 mb-6">
-                The page you're looking for might have been moved, deleted, or never existed in the first place.
+                The page youre looking for might have been moved, deleted, or never existed in the first place.
               </p>
 
               {/* Action Buttons */}

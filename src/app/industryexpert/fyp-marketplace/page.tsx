@@ -916,9 +916,9 @@ export default function FYPMarketplacePage() {
                       </li>
                       <li>
                         I agree to provide reasonable support and resources to the student team as needed for the
-                        project's success.
+                        projects success.
                       </li>
-                      <li>I acknowledge that this request may be rejected at the university's discretion.</li>
+                      <li>I acknowledge that this request may be rejected at the universitys discretion.</li>
                     </ol>
                   </div>
                 )}
