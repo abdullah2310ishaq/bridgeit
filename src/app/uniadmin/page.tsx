@@ -15,6 +15,7 @@ import ErrorDisplay from "./components/ErrorDisplay"
 import type { Event } from "./components/EventsComponent"
 import EventCountdown from "./components/event-countdown"
 import EventNotificationManager from "./components/event-notification-manager"
+import Loading from "../loading/page"
 
 // ------------ Interfaces ------------
 interface AdminProfile {
@@ -84,7 +85,7 @@ const UniAdminDashboard: React.FC = () => {
     const fetchAdminData = async () => {
       try {
         // Step A: Validate user & role
-        const profileRes = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
+        const profileRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -107,7 +108,7 @@ const UniAdminDashboard: React.FC = () => {
 
         // Step B: Fetch this Admin's profile
         const adminResponse = await fetch(
-          `https://localhost:7053//api/get-uni-admins/admins-by-id/${profileData.userId}`,
+          `https://localhost:7053/api/get-uni-admins/admins-by-id/${profileData.userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -136,13 +137,13 @@ const UniAdminDashboard: React.FC = () => {
 
         // Step C: Fetch university-wide stats
         const [studentsRes, facultyRes] = await Promise.all([
-          fetch(`https://localhost:7053//api/get-student/student-by-university/${adminData.university}`, {
+          fetch(`https://localhost:7053/api/get-student/student-by-university/${adminData.university}`, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }),
-          fetch(`https://localhost:7053//api/get-faculty/faculty-by-university/${adminData.university}`, {
+          fetch(`https://localhost:7053/api/get-faculty/faculty-by-university/${adminData.university}`, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -185,7 +186,7 @@ const UniAdminDashboard: React.FC = () => {
 
   const fetchEvents = async (token: string) => {
     try {
-      const response = await fetch("https://localhost:7053//api/Events/get-events", {
+      const response = await fetch("https://localhost:7053/api/Events/get-events", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -236,10 +237,10 @@ const UniAdminDashboard: React.FC = () => {
 
         if (!isNumeric) {
           // Search by name
-          url = `https://localhost:7053//api/get-student/student-by-name/${encodeURIComponent(query)}`
+          url = `https://localhost:7053/api/get-student/student-by-name/${encodeURIComponent(query)}`
         } else {
           // Search by ID
-          url = `https://localhost:7053//api/get-student/student-by-student-id/${encodeURIComponent(query)}`
+          url = `https://localhost:7053/api/get-student/student-by-student-id/${encodeURIComponent(query)}`
         }
 
         console.log("Fetching from URL:", url)
@@ -257,10 +258,10 @@ const UniAdminDashboard: React.FC = () => {
 
         if (!isNumeric) {
           // Search by name
-          url = `https://localhost:7053//api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`
+          url = `https://localhost:7053/api/get-faculty/faculty-by-name/${encodeURIComponent(query)}`
         } else {
           // Search by ID
-          url = `https://localhost:7053//api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`
+          url = `https://localhost:7053/api/get-faculty/faculty-by-faculty-id/${encodeURIComponent(query)}`
         }
 
         console.log("Fetching from URL:", url)
@@ -324,7 +325,7 @@ const UniAdminDashboard: React.FC = () => {
   }
 
   if (loading) {
-    return <LoadingSpinner />
+    return <Loading />
   }
   if (error) {
     return <ErrorDisplay error={error} />

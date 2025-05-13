@@ -15,11 +15,11 @@ const OverviewPage: React.FC = () => {
       try {
         setLoading(true);
         const [universitiesRes, studentsRes, industryExpertsRes, facultiesRes, companiesRes] = await Promise.all([
-          fetch('https://localhost:7053//api/universities/get-all-universities'),
-          fetch('https://localhost:7053//api/get-student/students'),
-          fetch('https://localhost:7053//api/get-industry-expert/industry-experts'),
-          fetch('https://localhost:7053//api/get-faculty/faculties'),
-          fetch('https://localhost:7053//api/companies/get-all-companies'),
+          fetch('https://localhost:7053/api/universities/get-all-universities'),
+          fetch('https://localhost:7053/api/get-student/students'),
+          fetch('https://localhost:7053/api/get-industry-expert/industry-experts'),
+          fetch('https://localhost:7053/api/get-faculty/faculties'),
+          fetch('https://localhost:7053/api/companies/get-all-companies'),
         ]);
 
         const [universitiesData, studentsData, industryExpertsData, facultiesData, companiesData] = await Promise.all([

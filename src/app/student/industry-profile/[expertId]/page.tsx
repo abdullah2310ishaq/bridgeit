@@ -34,7 +34,7 @@ const IndustryExpertProfile: React.FC = () => {
       try {
         console.log("Fetching profile for expertId:", expertId);
         const response = await fetch(
-          `https://localhost:7053//api/get-industry-expert/industry-expert-by-expert-id/${expertId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-expert-id/${expertId}`,
           {
             method: "GET",
             headers: {

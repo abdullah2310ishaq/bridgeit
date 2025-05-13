@@ -29,7 +29,7 @@ const IndustryExpertLayout = ({ children }: { children: ReactNode }) => {
       try {
         // Fetch User Profile
         const profileResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -44,7 +44,7 @@ const IndustryExpertLayout = ({ children }: { children: ReactNode }) => {
 
           // Fetch Industry Expert Data
           const industryExpertResponse = await fetch(
-            `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
+            `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
             {
               method: "GET",
               headers: {

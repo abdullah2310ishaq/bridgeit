@@ -32,7 +32,7 @@ const PaymentHistoryPage = () => {
 
       try {
         const res = await fetch(
-          "https://localhost:7053//api/payment-details/payment-details",
+          "https://localhost:7053/api/payment-details/payment-details",
           {
             headers: { Authorization: `Bearer ${token}` },
           },

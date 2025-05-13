@@ -33,7 +33,7 @@ const VerifyOtp: React.FC = () => {
 
     try {
       const otpResponse = await fetch(
-        "https://localhost:7053//api/otp/verify-otp",
+        "https://localhost:7053/api/otp/verify-otp",
         {
           method: "POST",
           headers: {
@@ -51,22 +51,22 @@ const VerifyOtp: React.FC = () => {
           case "faculty":
             storageKey = "facultyRegistrationData";
             registerEndpoint =
-              "https://localhost:7053//api/register-user/faculty";
+              "https://localhost:7053/api/register-user/faculty";
             break;
           case "industryExpert":
             storageKey = "industryExpertRegistrationData";
             registerEndpoint =
-              "https://localhost:7053//api/register-user/industry-expert";
+              "https://localhost:7053/api/register-user/industry-expert";
             break;
           case "universityAdmin":
             storageKey = "universityAdminRegistrationData";
             registerEndpoint =
-              "https://localhost:7053//api/register-user/university-admin";
+              "https://localhost:7053/api/register-user/university-admin";
             break;
           default:
             storageKey = "registrationData";
             registerEndpoint =
-              "https://localhost:7053//api/register-user/student";
+              "https://localhost:7053/api/register-user/student";
         }
 
         const registrationData = JSON.parse(
@@ -117,7 +117,7 @@ const VerifyOtp: React.FC = () => {
 
     try {
       const response = await fetch(
-        "https://localhost:7053//api/otp/regenerate-otp",
+        "https://localhost:7053/api/otp/regenerate-otp",
         {
           method: "PATCH",
           headers: {

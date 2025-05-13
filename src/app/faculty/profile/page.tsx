@@ -44,7 +44,7 @@ const FacultyProfilePage: React.FC = () => {
 
       try {
         const profileResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -58,7 +58,7 @@ const FacultyProfilePage: React.FC = () => {
           const userId = profileData.userId;
 
           const facultyResponse = await fetch(
-            `https://localhost:7053//api/get-faculty/faculty-by-id/${userId}`,
+            `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
             {
               method: "GET",
               headers: {

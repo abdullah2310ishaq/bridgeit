@@ -46,7 +46,7 @@ const IdeaDetailsPage = ({ params }: { params: { id: string } }) => {
       }
 
       try {
-        const response = await fetch(`https://localhost:7053//api/ideas/get-idea-by-id/${ideaId}`, {
+        const response = await fetch(`https://localhost:7053/api/ideas/get-idea-by-id/${ideaId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

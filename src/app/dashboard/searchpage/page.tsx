@@ -32,13 +32,13 @@ const SearchComponent: React.FC = () => {
       let response;
       switch (searchType) {
         case 'student':
-          response = await fetch(`https://localhost:7053//api/get-student/student-by-name/${query}`);
+          response = await fetch(`https://localhost:7053/api/get-student/student-by-name/${query}`);
           break;
         case 'faculty':
-          response = await fetch(`https://localhost:7053//api/get-faculty/faculty-by-name/${query}`);
+          response = await fetch(`https://localhost:7053/api/get-faculty/faculty-by-name/${query}`);
           break;
         case 'industry':
-          response = await fetch(`https://localhost:7053//api/get-industry-expert/industry-expert-by-name/${query}`);
+          response = await fetch(`https://localhost:7053/api/get-industry-expert/industry-expert-by-name/${query}`);
           break;
         default:
           throw new Error('Invalid search type');

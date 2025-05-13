@@ -209,7 +209,7 @@ const MilestonePage: React.FC = () => {
 
       try {
         // Get authorized user info
-        const authRes = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
+        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!authRes.ok) throw new Error("Failed to get authorized user info.")
@@ -217,7 +217,7 @@ const MilestonePage: React.FC = () => {
 
         // Fetch industry expert profile using logged-in user ID
         const expertRes = await fetch(
-          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (!expertRes.ok) throw new Error("Failed to fetch industry expert profile.")
@@ -231,7 +231,7 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch project details (includes student info)
-        const projectRes = await fetch(`https://localhost:7053//api/projects/get-project-by-id/${projectId}`, {
+        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!projectRes.ok) throw new Error("Failed to fetch project details.")
@@ -245,7 +245,7 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch milestones
-        const milestonesRes = await fetch(`https://localhost:7053//api/milestone/get-project-milestones/${projectId}`, {
+        const milestonesRes = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!milestonesRes.ok) throw new Error("Failed to fetch milestones.")
@@ -292,7 +292,7 @@ const MilestonePage: React.FC = () => {
     try {
       // First, try to fetch using the expert ID
       const res = await fetch(
-        `https://localhost:7053//api/request-for-project-completion/get-completion-request/${expertId}`,
+        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -356,7 +356,7 @@ const MilestonePage: React.FC = () => {
     try {
       // Try to fetch the specific request for this project
       const res = await fetch(
-        `https://localhost:7053//api/request-for-project-completion/get-project-request/${projectId}`,
+        `https://localhost:7053/api/request-for-project-completion/get-project-request/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -399,7 +399,7 @@ const MilestonePage: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053//api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -427,7 +427,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053//api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
+        `https://localhost:7053/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
         {
           method: "POST",
           headers: {
@@ -458,7 +458,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053//api/project-progress/get-tasks/${projectId}`, {
+      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -488,7 +488,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(`https://localhost:7053//api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
+      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -520,7 +520,7 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053//api/project-progress/add-tasks/${projectId}`, {
+      const res = await fetch(`https://localhost:7053/api/project-progress/add-tasks/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -550,7 +550,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053//api/reviews/get-reviews/${projectId}`, {
+      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -575,7 +575,7 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053//api/reviews/add-review/${projectId}`, {
+      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -619,7 +619,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053//api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
         {
           method: "PATCH",
           headers: {
@@ -672,7 +672,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053//api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
         {
           method: "PATCH",
           headers: {
@@ -738,7 +738,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (token && projectId) {
       try {
-        const projectRes = await fetch(`https://localhost:7053//api/projects/get-project-by-id/${projectId}`, {
+        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (projectRes.ok) {

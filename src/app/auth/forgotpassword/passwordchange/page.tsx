@@ -27,7 +27,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`https://localhost:7053//api/edit-user-profile/forgot-password/${email}`, {
+      const response = await fetch(`https://localhost:7053/api/edit-user-profile/forgot-password/${email}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

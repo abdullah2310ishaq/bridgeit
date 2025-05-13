@@ -140,7 +140,7 @@ export default function FYPMarketplacePage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
+        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -151,7 +151,7 @@ export default function FYPMarketplacePage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -163,7 +163,7 @@ export default function FYPMarketplacePage() {
         setIndustryExpertId(expertData.indExptId)
 
         // Step 3: Fetch all faculties
-        const facultiesResponse = await fetch("https://localhost:7053//api/get-faculty/faculties", {
+        const facultiesResponse = await fetch("https://localhost:7053/api/get-faculty/faculties", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -177,7 +177,7 @@ export default function FYPMarketplacePage() {
 
         for (const faculty of facultiesData) {
           try {
-            const fypResponse = await fetch(`https://localhost:7053//api/fyp/get-fyp-by-faculty-id/${faculty.id}`, {
+            const fypResponse = await fetch(`https://localhost:7053/api/fyp/get-fyp-by-faculty-id/${faculty.id}`, {
               headers: { Authorization: `Bearer ${token}` },
             })
 
@@ -208,12 +208,12 @@ export default function FYPMarketplacePage() {
         // Step 5: Also try the dedicated marketplace endpoints
         try {
           // Try to fetch "Buy" FYPs (completed projects)
-          const buyFypsResponse = await fetch("https://localhost:7053//api/fyp/for-marketplace/buy", {
+          const buyFypsResponse = await fetch("https://localhost:7053/api/fyp/for-marketplace/buy", {
             headers: { Authorization: `Bearer ${token}` },
           })
 
           // Try to fetch "Sponsor" FYPs (ongoing projects)
-          const sponsorFypsResponse = await fetch("https://localhost:7053//api/fyp/for-marketplace/sponsor", {
+          const sponsorFypsResponse = await fetch("https://localhost:7053/api/fyp/for-marketplace/sponsor", {
             headers: { Authorization: `Bearer ${token}` },
           })
 
@@ -353,7 +353,7 @@ export default function FYPMarketplacePage() {
     }
 
     try {
-      const response = await fetch(`https://localhost:7053//api/ind-expert-request-fyp/add/${selectedFyp.id}`, {
+      const response = await fetch(`https://localhost:7053/api/ind-expert-request-fyp/add/${selectedFyp.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

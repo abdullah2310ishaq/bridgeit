@@ -56,7 +56,7 @@ export default function SponsorAgreementPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -69,7 +69,7 @@ export default function SponsorAgreementPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -85,7 +85,7 @@ export default function SponsorAgreementPage() {
 
         // Step 3: Fetch FYP details
         const fypResponse = await fetch(
-          `https://localhost:7053//api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -234,7 +234,7 @@ By proceeding with this sponsorship, all parties acknowledge their agreement to 
       console.log("Uploading sponsor agreement for FYP:", fyp.id)
 
       const response = await fetch(
-        `https://localhost:7053//api/fyp-meeting/sponsor-fyp/${fyp.id}`,
+        `https://localhost:7053/api/fyp-meeting/sponsor-fyp/${fyp.id}`,
         {
           method: "POST",
           headers: {

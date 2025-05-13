@@ -20,7 +20,7 @@ const StudentLayoutContent = ({ children }: { children: ReactNode }) => {
 
       try {
         // Fetch User Profile
-        const profileResponse = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
+        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ const StudentLayoutContent = ({ children }: { children: ReactNode }) => {
           const userId = profileData.userId
 
           // Fetch Student Data
-          const studentResponse = await fetch(`https://localhost:7053//api/get-student/student-by-id/${userId}`, {
+          const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,

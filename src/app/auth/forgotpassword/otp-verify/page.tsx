@@ -24,7 +24,7 @@ const VerifyOtp = () => {
     }
 
     try {
-      const response = await fetch('https://localhost:7053//api/forgot-password/verify-forgotpassword-otp', {
+      const response = await fetch('https://localhost:7053/api/forgot-password/verify-forgotpassword-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

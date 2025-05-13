@@ -22,7 +22,7 @@ const CreateEventPage: React.FC = () => {
 
       try {
         // Fetch the user's information
-        const userResponse = await fetch('https://localhost:7053//api/auth/authorized-user-info', {
+        const userResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -34,7 +34,7 @@ const CreateEventPage: React.FC = () => {
           const userId = userData.userId;
 
           // Fetch the faculty details using the userId
-          const facultyResponse = await fetch(`https://localhost:7053//api/get-faculty/faculty-by-id/${userId}`, {
+          const facultyResponse = await fetch(`https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ const CreateEventPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('https://localhost:7053//api/Events/add-event', {
+      const response = await fetch('https://localhost:7053/api/Events/add-event', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

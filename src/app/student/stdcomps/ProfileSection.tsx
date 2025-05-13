@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Edit, User, Briefcase, Building, GraduationCap, MapPin, BookOpen } from "lucide-react"
+import { Edit, User, Building, GraduationCap, MapPin, BookOpen, Mail, Award, Clock } from "lucide-react"
 
 interface UserProfile {
   userId: string
@@ -17,6 +17,7 @@ interface UserProfile {
   course?: string
   university?: string
   address?: string
+  email?: string
 }
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
 
 const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoProfile }) => {
   const [imageError, setImageError] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
 
   // Reset image error state when userProfile changes
   useEffect(() => {
@@ -39,128 +41,199 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 mb-10">
-      {/* Profile Card */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full lg:w-2/3 rounded-xl shadow-md overflow-hidden border border-gray-200"
-      >
-        {/* Card Header with Background */}
-        <div className="relative h-32 w-full">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="mb-10"
+    >
+      <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        {/* Background Header */}
+        <div className="relative h-48 w-full overflow-hidden">
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-center transform hover:scale-105 transition-transform duration-5000"
             style={{
               backgroundImage: userProfile.uniImage
                 ? `url('data:image/jpeg;base64,${userProfile.uniImage}')`
-                : "url('/unknown.jpg')",
+                : "url('/bustling-university-campus.png')",
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-purple-600/80"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-800/80 to-gray-900/70"></div>
           </div>
 
-          {/* Profile Image - Positioned to overlap the header */}
-          <div className="absolute -bottom-12 left-6">
-            {imageError || !userProfile.imageData ? (
-              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-md">
-                <User className="h-12 w-12 text-gray-400" />
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/3"></div>
+
+          {/* Header Content */}
+          <div className="absolute bottom-0 left-0 w-full p-6 flex justify-between items-end">
+            <div className="flex items-center">
+              <motion.div whileHover={{ scale: 1.05 }} className="relative mr-5">
+                {imageError || !userProfile.imageData ? (
+                  <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center border-4 border-white shadow-lg">
+                    <User className="h-14 w-14 text-gray-300" />
+                  </div>
+                ) : (
+                  <img
+                    src={`data:image/jpeg;base64,${userProfile.imageData}`}
+                    alt={`${userProfile.firstName} ${userProfile.lastName}`}
+                    className="w-28 h-28 rounded-xl object-cover border-4 border-white shadow-lg"
+                    onError={handleImageError}
+                  />
+                )}
+                <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+                  <span className="sr-only">Online</span>
+                </div>
+              </motion.div>
+
+              <div className="text-white">
+                <h1 className="text-3xl font-bold">
+                  {userProfile.firstName} {userProfile.lastName}
+                </h1>
+                <div className="flex items-center mt-1 text-gray-300">
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  <span>Student</span>
+                  <span className="mx-2">•</span>
+                  <span>{userProfile.rollNumber}</span>
+                </div>
               </div>
-            ) : (
-              <img
-                src={`data:image/jpeg;base64,${userProfile.imageData}`}
-                alt={`${userProfile.firstName} ${userProfile.lastName}`}
-                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
-                onError={handleImageError}
-              />
-            )}
+            </div>
+
+            <div className="flex space-x-3">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={goToEditProfile}
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Profile
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={gotoProfile}
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-sm font-medium rounded-lg shadow-lg hover:shadow-purple-500/30 transition-all duration-300 flex items-center"
+              >
+                <User className="w-4 h-4 mr-2" />
+                View Profile
+              </motion.button>
+            </div>
           </div>
         </div>
 
-        {/* Card Content */}
-        <div className="pt-14 px-6 pb-6 bg-white">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">
-                {userProfile.firstName} {userProfile.lastName}
-              </h2>
+        {/* Main Content */}
+        <div className="p-6 pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Left Column - Personal Info */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
+                Personal Information
+              </h3>
 
-              <div className="flex items-center mt-1 text-gray-600">
-                <GraduationCap className="w-4 h-4 mr-2" />
-                <span>Student</span>
-              </div>
-
-              <div className="flex items-center mt-1 text-gray-600">
-                <BookOpen className="w-4 h-4 mr-2" />
-                <span>Roll Number: {userProfile.rollNumber}</span>
-              </div>
-
-              {userProfile.university && (
-                <div className="flex items-center mt-1 text-gray-600">
-                  <Building className="w-4 h-4 mr-2" />
-                  <span>{userProfile.university}</span>
+              <div className="flex items-start">
+                <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                  <Mail className="w-5 h-5 text-blue-600" />
                 </div>
-              )}
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="font-medium text-gray-800">{userProfile.email || "Not provided"}</p>
+                </div>
+              </div>
 
               {userProfile.address && (
-                <div className="flex items-center mt-1 text-gray-600">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <span>{userProfile.address}</span>
+                <div className="flex items-start">
+                  <div className="bg-purple-100 p-2 rounded-lg mr-3">
+                    <MapPin className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Address</p>
+                    <p className="font-medium text-gray-800">{userProfile.address}</p>
+                  </div>
+                </div>
+              )}
+
+              {userProfile.university && (
+                <div className="flex items-start">
+                  <div className="bg-green-100 p-2 rounded-lg mr-3">
+                    <Building className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">University</p>
+                    <p className="font-medium text-gray-800">{userProfile.university}</p>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="flex mt-4 md:mt-0 space-x-3">
-              <button
-                onClick={goToEditProfile}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center"
-              >
-                <Edit className="w-4 h-4 mr-1" />
-                Edit Profile
-              </button>
-              <button
-                onClick={gotoProfile}
-                className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors flex items-center"
-              >
-                <User className="w-4 h-4 mr-1" />
-                View Profile
-              </button>
+            {/* Middle Column - Academic Info */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
+                Academic Information
+              </h3>
+
+              <div className="flex items-start">
+                <div className="bg-amber-100 p-2 rounded-lg mr-3">
+                  <BookOpen className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Course</p>
+                  <p className="font-medium text-gray-800">{userProfile.course || "Not specified"}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="bg-red-100 p-2 rounded-lg mr-3">
+                  <Clock className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Semester</p>
+                  <p className="font-medium text-gray-800">{userProfile.semester || "Not specified"}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="bg-indigo-100 p-2 rounded-lg mr-3">
+                  <Award className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Status</p>
+                  <p className="font-medium text-gray-800">Active Student</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Description */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">About Me</h3>
+
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <p className="text-gray-700">
+                  {userProfile.description ||
+                    "No description provided. Click 'Edit Profile' to add information about yourself."}
+                </p>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                <div className="bg-blue-50 p-3 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-blue-600">3</p>
+                  <p className="text-xs text-gray-600">Projects</p>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-green-600">2</p>
+                  <p className="text-xs text-gray-600">Completed</p>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-purple-600">5</p>
+                  <p className="text-xs text-gray-600">Courses</p>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Academic Info */}
-          {(userProfile.course || userProfile.semester) && (
-            <div className="mt-4">
-              <div className="flex items-center text-gray-700 mb-2">
-                <Briefcase className="w-4 h-4 mr-2" />
-                <span className="font-medium">Academic Information</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {userProfile.course && (
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                    Course: {userProfile.course}
-                  </span>
-                )}
-                {userProfile.semester && (
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
-                    Semester: {userProfile.semester}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Description */}
-          {userProfile.description && (
-            <div className="mt-4 text-gray-600 text-sm">
-              <p className="line-clamp-3">{userProfile.description}</p>
-            </div>
-          )}
         </div>
-      </motion.div>
-
-      
-    </div>
+      </div>
+    </motion.div>
   )
 }
 

@@ -5,7 +5,19 @@ import { usePathname, useRouter } from "next/navigation"
 import type React from "react"
 import { Fragment, useEffect, useState } from "react"
 import { Transition, Dialog, Menu } from "@headlessui/react"
-import ProfileDropdown from "./ProfileDropdown"
+import {
+  User,
+  ChevronDown,
+  MenuIcon,
+  X,
+  LogOut,
+  Home,
+  Briefcase,
+  UserCircle,
+  Lightbulb,
+  BookOpen,
+  Bell,
+} from "lucide-react"
 
 interface UserProfile {
   userId: string
@@ -23,6 +35,7 @@ interface NavBarProps {
 interface NavLink {
   name: string
   href: string
+  icon: React.ElementType
   children?: NavLink[]
 }
 
@@ -32,44 +45,36 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
 
-  // Define navigation links
+  // Define navigation links with icons
   const navigationLinks: NavLink[] = [
-    { name: "Home", href: "/student" },
+    { name: "Home", href: "/student", icon: Home },
     {
       name: "Projects",
       href: "#",
+      icon: Briefcase,
       children: [
-        { name: "My Projects", href: "/student/projects" },
-        { name: "Explore Projects", href: "/student/projects/explore-projects" },
-        { name: "Create", href: "/student/projects/create" },
-        { name: "History", href: "/student/projects/history" },
+        { name: "My Projects", href: "/student/projects", icon: Briefcase },
+        { name: "Explore Projects", href: "/student/projects/explore-projects", icon: Briefcase },
+        { name: "Create", href: "/student/projects/create", icon: Briefcase },
+        { name: "History", href: "/student/projects/history", icon: Briefcase },
       ],
     },
     {
       name: "Profile",
       href: "#",
+      icon: UserCircle,
       children: [
-        { name: "View", href: "/student/profile" },
-        { name: "Edit", href: "/student/profile/edit" },
-        { name: "Settings", href: "/student/profile/management" },
+        { name: "View", href: "/student/profile", icon: UserCircle },
+        { name: "Edit", href: "/student/profile/edit", icon: UserCircle },
+        { name: "Settings", href: "/student/profile/management", icon: UserCircle },
       ],
     },
-    {
-      name: "Ideas",
-      href: "#",
-      children: [{ name: "View All Ideas", href: "/student/seeideas" }],
-    },
-    {
-      name: "FYP",
-      href: "#",
-      children: [
-        { name: "Register", href: "/student/fyp" },
-        { name: "View", href: "/student/fyp/fyp_record" },
-      ],
-    },
+   
+   
     {
       name: "Notifications",
       href: "/student/std_notifications",
+      icon: Bell,
     },
   ]
 
@@ -101,13 +106,14 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
   }, [pathname])
 
   return (
-    <nav className="bg-gray-200 fixed w-full top-0 z-50 shadow-md">
+    <nav className="bg-white shadow-sm fixed w-full top-0 z-50">
       {/* Main Navbar Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left: Brand/Title */}
           <div className="flex items-center">
-            <Link href="/student" className="text-blue-600 text-lg font-semibold">
+            <Link href="/student" className="text-gray-800 text-lg font-semibold flex items-center">
+              <span className="bg-gray-800 text-white p-1.5 rounded-md mr-2">SP</span>
               Student Portal
             </Link>
           </div>
@@ -121,17 +127,14 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                   <Menu as="div" className="relative">
                     <Menu.Button
                       className={`flex items-center px-3 py-2 text-sm font-medium transition duration-300 ${
-                        isActiveLink(link)
-                          ? "text-white bg-blue-600 rounded-md"
-                          : "text-gray-700 hover:bg-gray-300 hover:text-blue-600 rounded-md"
+                        isActiveLink(link) ? "text-gray-800 font-semibold" : "text-gray-600 hover:text-gray-800"
                       }`}
                       aria-haspopup="true"
                       aria-expanded="false"
                     >
+                      <link.icon className="w-4 h-4 mr-1" />
                       {link.name}
-                      <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <ChevronDown className="ml-1 h-4 w-4" />
                     </Menu.Button>
                     <Transition
                       as={Fragment}
@@ -142,19 +145,22 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                       leaveFrom="opacity-100 translate-y-0"
                       leaveTo="opacity-0 translate-y-1"
                     >
-                      <Menu.Items className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-50">
+                      <Menu.Items className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-50 border border-gray-100">
                         {link.children.map((child) => (
                           <Menu.Item key={child.name}>
-                            {({ active }) => (
+                            {() => (
                               <Link
                                 href={child.href}
                                 className={`block px-4 py-2 text-sm ${
-                                  active || isActiveLink(child)
-                                    ? "text-white bg-blue-600"
-                                    : "text-gray-700 hover:bg-gray-100"
+                                  isActiveLink(child)
+                                    ? "text-gray-800 font-semibold bg-gray-50"
+                                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
                                 }`}
                               >
-                                {child.name}
+                                <div className="flex items-center">
+                                  <child.icon className="w-4 h-4 mr-2" />
+                                  {child.name}
+                                </div>
                               </Link>
                             )}
                           </Menu.Item>
@@ -166,12 +172,11 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                   // Single Link
                   <Link
                     href={link.href}
-                    className={`px-3 py-2 text-sm font-medium transition duration-300 ${
-                      isActiveLink(link)
-                        ? "text-white bg-blue-600 rounded-md"
-                        : "text-gray-700 hover:bg-gray-300 hover:text-blue-600 rounded-md"
+                    className={`flex items-center px-3 py-2 text-sm font-medium transition duration-300 ${
+                      isActiveLink(link) ? "text-gray-800 font-semibold" : "text-gray-600 hover:text-gray-800"
                     }`}
                   >
+                    <link.icon className="w-4 h-4 mr-1" />
                     {link.name}
                   </Link>
                 )}
@@ -179,21 +184,89 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
             ))}
           </div>
 
-          {/* Right Section: Profile Dropdown (Desktop) */}
+          {/* Right Section: User Name and Avatar */}
           <div className="hidden md:flex items-center">
-            <ProfileDropdown userProfile={userProfile} onLogoutClick={handleLogoutClick} />
+            <div className="flex items-center space-x-3">
+              <span className="text-sm font-medium text-gray-700">
+                {userProfile.firstName} {userProfile.lastName}
+              </span>
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center">
+                  {userProfile.imageData ? (
+                    <img
+                      src={`data:image/jpeg;base64,${userProfile.imageData}`}
+                      alt={`${userProfile.firstName} ${userProfile.lastName}`}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User className="h-5 w-5 text-gray-500" />
+                    </div>
+                  )}
+                </Menu.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-200"
+                  enterFrom="opacity-0 translate-y-1"
+                  enterTo="opacity-100 translate-y-0"
+                  leave="transition ease-in duration-150"
+                  leaveFrom="opacity-100 translate-y-0"
+                  leaveTo="opacity-0 translate-y-1"
+                >
+                  <Menu.Items className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-50 border border-gray-100">
+                    <Menu.Item>
+                      {() => (
+                        <Link
+                          href="/student/profile"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <div className="flex items-center">
+                            <UserCircle className="w-4 h-4 mr-2" />
+                            View Profile
+                          </div>
+                        </Link>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {() => (
+                        <Link
+                          href="/student/profile/edit"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <div className="flex items-center">
+                            <UserCircle className="w-4 h-4 mr-2" />
+                            Edit Profile
+                          </div>
+                        </Link>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {() => (
+                        <button
+                          onClick={handleLogoutClick}
+                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <div className="flex items-center">
+                            <LogOut className="w-4 h-4 mr-2" />
+                            Logout
+                          </div>
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none"
+              className="text-gray-700 hover:text-gray-900 focus:outline-none"
               aria-label="Open Menu"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <MenuIcon className="h-6 w-6" />
             </button>
           </div>
         </div>
@@ -230,35 +303,49 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                 {/* Close Button */}
                 <div className="absolute top-0 right-0 -mr-12 pt-2">
                   <button
-                    className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600"
+                    className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none"
                     onClick={() => setMobileMenuOpen(false)}
                     aria-label="Close Menu"
                   >
-                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <X className="h-6 w-6 text-white" />
                   </button>
                 </div>
 
                 {/* Mobile Menu Content */}
                 <div className="pt-5 pb-4 overflow-y-auto">
                   {/* Brand */}
-                  <div className="flex items-center px-4 border-b border-gray-200 pb-4">
-                    <Link href="/student" className="text-blue-600 text-lg font-semibold">
+                  <div className="flex items-center px-4 border-b border-gray-100 pb-4">
+                    <Link href="/student" className="text-gray-800 text-lg font-semibold flex items-center">
+                      <span className="bg-gray-800 text-white p-1.5 rounded-md mr-2">SP</span>
                       Student Portal
                     </Link>
                   </div>
 
                   {/* User Info */}
-                  <div className="px-4 py-3 border-b border-gray-200">
-                    <p className="text-sm font-medium text-gray-800">
-                      {userProfile.firstName} {userProfile.lastName}
-                    </p>
-                    <p className="text-xs text-gray-500">{userProfile.role}</p>
+                  <div className="px-4 py-4 border-b border-gray-100">
+                    <div className="flex items-center">
+                      {userProfile.imageData ? (
+                        <img
+                          src={`data:image/jpeg;base64,${userProfile.imageData}`}
+                          alt={`${userProfile.firstName} ${userProfile.lastName}`}
+                          className="h-10 w-10 rounded-full object-cover mr-3"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                          <User className="h-6 w-6 text-gray-500" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {userProfile.firstName} {userProfile.lastName}
+                        </p>
+                        <p className="text-xs text-gray-500">{userProfile.role}</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Navigation Links */}
-                  <nav className="mt-5 px-2 space-y-1">
+                  <nav className="mt-4 px-2 space-y-1">
                     {navigationLinks.map((link) => (
                       <div key={link.name}>
                         {link.children ? (
@@ -269,10 +356,13 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                           <Link
                             href={link.href}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
-                              isActiveLink(link) ? "text-white bg-blue-600" : "text-gray-700 hover:bg-gray-100"
+                            className={`flex items-center px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
+                              isActiveLink(link)
+                                ? "text-gray-800 bg-gray-50"
+                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
                             }`}
                           >
+                            <link.icon className="w-5 h-5 mr-3 text-gray-500" />
                             {link.name}
                           </Link>
                         )}
@@ -281,33 +371,16 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                   </nav>
                 </div>
 
-                {/* Profile and Logout */}
-                <div className="px-4 py-4 border-t border-gray-200">
-                  <button
-                    onClick={() => {
-                      router.push("/student/profile")
-                      setMobileMenuOpen(false)
-                    }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 transition duration-300"
-                  >
-                    View Profile
-                  </button>
-                  <button
-                    onClick={() => {
-                      router.push("/student/profile/edit")
-                      setMobileMenuOpen(false)
-                    }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 transition duration-300"
-                  >
-                    Edit Profile
-                  </button>
+                {/* Logout Button */}
+                <div className="px-4 py-4 border-t border-gray-100 mt-auto">
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false)
                       handleLogoutClick()
                     }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-300 mt-2"
+                    className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-md transition duration-300"
                   >
+                    <LogOut className="w-5 h-5 mr-3 text-gray-500" />
                     Logout
                   </button>
                 </div>
@@ -361,13 +434,13 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
                   <div className="mt-6 flex justify-end space-x-4">
                     <button
                       onClick={handleCancelLogout}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleConfirmLogout}
-                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition"
+                      className="px-4 py-2 text-sm font-medium text-white bg-gray-800 hover:bg-gray-900 rounded-md transition"
                     >
                       Logout
                     </button>
@@ -397,32 +470,31 @@ const MobileSubMenu: React.FC<{ link: NavLink }> = ({ link }) => {
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
           link.children?.some((child) => isActiveLink(child))
-            ? "text-white bg-blue-600"
-            : "text-gray-700 hover:bg-gray-100"
+            ? "text-gray-800 bg-gray-50"
+            : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
         }`}
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <span>{link.name}</span>
-        <svg
-          className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <div className="flex items-center">
+          <link.icon className="w-5 h-5 mr-3 text-gray-500" />
+          <span>{link.name}</span>
+        </div>
+        <ChevronDown
+          className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""}`}
+        />
       </button>
       {isOpen && (
-        <div className="pl-4 mt-1 space-y-1 border-l-2 border-gray-200 ml-3">
+        <div className="pl-10 mt-1 space-y-1 border-l border-gray-100 ml-3">
           {link.children?.map((child) => (
             <Link
               key={child.name}
               href={child.href}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition duration-300 ${
-                isActiveLink(child) ? "text-white bg-blue-600" : "text-gray-700 hover:bg-gray-100"
+              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition duration-300 ${
+                isActiveLink(child) ? "text-gray-800 bg-gray-50" : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
               }`}
             >
+              <child.icon className="w-4 h-4 mr-2 text-gray-500" />
               {child.name}
             </Link>
           ))}
@@ -433,4 +505,3 @@ const MobileSubMenu: React.FC<{ link: NavLink }> = ({ link }) => {
 }
 
 export default NavBar
-

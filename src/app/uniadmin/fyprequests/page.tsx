@@ -45,7 +45,7 @@ const FypRequestsPage: React.FC = () => {
 
     const fetchAdminAndFyps = async () => {
       try {
-        const profileResponse = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
+        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ const FypRequestsPage: React.FC = () => {
         const profileData = await profileResponse.json()
         const userId = profileData.userId
 
-        const adminResponse = await fetch(`https://localhost:7053//api/get-uni-admins/admins-by-id/${userId}`, {
+        const adminResponse = await fetch(`https://localhost:7053/api/get-uni-admins/admins-by-id/${userId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ const FypRequestsPage: React.FC = () => {
         setAdminProfile({ universityId: adminData.uniId })
 
         const fypResponse = await fetch(
-          `https://localhost:7053//api/uni-admin-for-fyp/get-fyps-for-uniAdmin-for-approval?uniId=${adminData.uniId}`,
+          `https://localhost:7053/api/uni-admin-for-fyp/get-fyps-for-uniAdmin-for-approval?uniId=${adminData.uniId}`,
           {
             method: "GET",
             headers: {

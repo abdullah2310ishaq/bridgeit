@@ -33,7 +33,7 @@ const PaymentPage = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053//api/projects/get-project-by-id/${projectId}`,
+        `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -70,7 +70,7 @@ const PaymentPage = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053//api/payments/create-checkout-session/${projectId}`,
+        `https://localhost:7053/api/payments/create-checkout-session/${projectId}`,
         {
           method: "POST",
           headers: {

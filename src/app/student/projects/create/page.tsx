@@ -29,7 +29,7 @@ const CreateProjectPage: React.FC = () => {
 
       try {
         const userResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -43,7 +43,7 @@ const CreateProjectPage: React.FC = () => {
           const userId = userData.userId;
 
           const studentResponse = await fetch(
-            `https://localhost:7053//api/get-student/student-by-id/${userId}`,
+            `https://localhost:7053/api/get-student/student-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -86,7 +86,7 @@ const CreateProjectPage: React.FC = () => {
     try {
       const token = localStorage.getItem("jwtToken");
       const response = await fetch(
-        "https://localhost:7053//api/projects/student-add-projects",
+        "https://localhost:7053/api/projects/student-add-projects",
         {
           method: "POST",
           headers: {

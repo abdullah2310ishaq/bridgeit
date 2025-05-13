@@ -41,9 +41,9 @@ const FacultyRegistration: React.FC = () => {
     const fetchData = async () => {
       try {
         const [universitiesRes, interestsRes, emailsRes] = await Promise.all([
-          fetch('https://localhost:7053//api/universities/get-all-universities'),
-          fetch('https://localhost:7053//api/Interests/get-interests'),
-          fetch('https://localhost:7053//api/register-user/get-all-emails'),
+          fetch('https://localhost:7053/api/universities/get-all-universities'),
+          fetch('https://localhost:7053/api/Interests/get-interests'),
+          fetch('https://localhost:7053/api/register-user/get-all-emails'),
         ]);
 
         if (universitiesRes.ok) {
@@ -205,7 +205,7 @@ const FacultyRegistration: React.FC = () => {
     try {
       sessionStorage.setItem("facultyRegistrationData", JSON.stringify(registrationData));
 
-      const generateOtpResponse = await fetch("https://localhost:7053//api/otp/generate-otp", {
+      const generateOtpResponse = await fetch("https://localhost:7053/api/otp/generate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -214,7 +214,7 @@ const FacultyRegistration: React.FC = () => {
       });
 
       if (generateOtpResponse.ok) {
-        const sendOtpResponse = await fetch("https://localhost:7053//api/otp/send-otp", {
+        const sendOtpResponse = await fetch("https://localhost:7053/api/otp/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

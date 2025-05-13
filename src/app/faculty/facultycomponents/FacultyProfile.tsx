@@ -42,7 +42,7 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
 
       try {
         // Fetch user profile data
-        const profileResponse = await fetch("https://localhost:7053//api/auth/authorized-user-info", {
+        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -54,7 +54,7 @@ const FacultyProfile: React.FC<FacultyProfileProps> = ({ onEditProfile, onViewPr
           const userId = profileData.userId
 
           // Fetch faculty details by userId
-          const facultyResponse = await fetch(`https://localhost:7053//api/get-faculty/faculty-by-id/${userId}`, {
+          const facultyResponse = await fetch(`https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,

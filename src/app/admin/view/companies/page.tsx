@@ -21,7 +21,7 @@ const ViewCompaniesPage: React.FC = () => {
     const fetchCompanies = async () => {
       try {
         const response = await fetch(
-          "https://localhost:7053//api/companies/get-all-companies",
+          "https://localhost:7053/api/companies/get-all-companies",
           {
             method: "GET",
           }

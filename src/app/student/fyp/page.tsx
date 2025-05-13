@@ -142,7 +142,7 @@ const RegisterFypPage: React.FC = () => {
       try {
         // 1) Auth info
         const authResp = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (authResp.status === 401 || authResp.status === 403) {
@@ -154,7 +154,7 @@ const RegisterFypPage: React.FC = () => {
 
         // 2) Student profile
         const studentResp = await fetch(
-          `https://localhost:7053//api/get-student/student-by-id/${userId}`,
+          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (studentResp.status === 401 || studentResp.status === 403) {
@@ -170,7 +170,7 @@ const RegisterFypPage: React.FC = () => {
 
         // 3) Faculties list
         const facResp = await fetch(
-          "https://localhost:7053//api/get-faculty/faculties",
+          "https://localhost:7053/api/get-faculty/faculties",
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (facResp.status === 401 || facResp.status === 403) {
@@ -255,7 +255,7 @@ const RegisterFypPage: React.FC = () => {
       }
 
       const res = await fetch(
-        `https://localhost:7053//api/fyp/register-fyp?studentId=${studentId}`,
+        `https://localhost:7053/api/fyp/register-fyp?studentId=${studentId}`,
         {
           method: "POST",
           headers: {

@@ -12,7 +12,7 @@ const AllEmailsPage: React.FC = () => {
     // Fetch all emails from the API
     const fetchEmails = async () => {
       try {
-        const response = await fetch("https://localhost:7053//api/register-user/get-all-emails");
+        const response = await fetch("https://localhost:7053/api/register-user/get-all-emails");
 
         if (response.ok) {
           const data = await response.json();

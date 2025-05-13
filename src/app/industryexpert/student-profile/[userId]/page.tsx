@@ -46,7 +46,7 @@ const StudentProfilePage: React.FC = () => {
 
         // 1) Fetch student details
         const studentResponse = await fetch(
-          `https://localhost:7053//api/get-student/student-by-student-id/${userId}`,
+          `https://localhost:7053/api/get-student/student-by-student-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -58,7 +58,7 @@ const StudentProfilePage: React.FC = () => {
 
         // 2) Fetch student's personal projects
         const projectsResponse = await fetch(
-          `https://localhost:7053//api/projects/get-student-projects-by-id/${studentData.id}`,
+          `https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },

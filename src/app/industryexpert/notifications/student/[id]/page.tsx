@@ -33,7 +33,7 @@ const StudentDetailPage: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://localhost:7053//api/get-student/student-by-student-id/${id}`,
+          `https://localhost:7053/api/get-student/student-by-student-id/${id}`,
           {
             method: "GET",
             headers: {

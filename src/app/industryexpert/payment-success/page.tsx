@@ -41,7 +41,7 @@ const PaymentSuccessPage = () => {
 
       // Call the dedicated complete project endpoint
       const res = await fetch(
-        `https://localhost:7053//api/projects/${id}/complete`,
+        `https://localhost:7053/api/projects/${id}/complete`,
         {
           method: "PATCH",
           headers: {

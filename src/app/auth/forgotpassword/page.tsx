@@ -23,7 +23,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "https://localhost:7053//api/forgot-password/generate-otp",
+        "https://localhost:7053/api/forgot-password/generate-otp",
         {
           method: "POST",
           headers: {

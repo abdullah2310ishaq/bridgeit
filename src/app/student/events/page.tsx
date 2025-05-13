@@ -28,7 +28,7 @@ const UniversityEventsPage: React.FC = () => {
 
       try {
         const response = await fetch(
-          "https://localhost:7053//api/Events/get-events",
+          "https://localhost:7053/api/Events/get-events",
           {
             method: "GET",
             headers: {

@@ -73,7 +73,7 @@ export default function PurchaseAgreementPage() {
       try {
         // Step 1: Get user info
         const userResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -86,7 +86,7 @@ export default function PurchaseAgreementPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -100,7 +100,7 @@ export default function PurchaseAgreementPage() {
 
         // Step 3: Fetch FYP details
         const fypResponse = await fetch(
-          `https://localhost:7053//api/fyp/get-detailed-fyp-by-id/${fypId}`,
+          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -114,7 +114,7 @@ export default function PurchaseAgreementPage() {
         // Step 4: Check if there's already a bought FYP record
         try {
           const boughtFypResponse = await fetch(
-            `https://localhost:7053//api/bought-fyp/by-id/${fypId}`,
+            `https://localhost:7053/api/bought-fyp/by-id/${fypId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -229,7 +229,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
     try {
       const response = await fetch(
-        `https://localhost:7053//api/bought-fyp/create`,
+        `https://localhost:7053/api/bought-fyp/create`,
         {
           method: "POST",
           headers: {
@@ -276,7 +276,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
       // Upload the agreement
       const agreementResponse = await fetch(
-        `https://localhost:7053//api/bought-fyp/add-agreement/${recordId}`,
+        `https://localhost:7053/api/bought-fyp/add-agreement/${recordId}`,
         {
           method: "PATCH",
           headers: {
@@ -295,7 +295,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
       // Then, create checkout session for payment
       const checkoutResponse = await fetch(
-        `https://localhost:7053//api/payments/create-checkout-session/fyp/${fyp.id}`,
+        `https://localhost:7053/api/payments/create-checkout-session/fyp/${fyp.id}`,
         {
           method: "POST",
           headers: {

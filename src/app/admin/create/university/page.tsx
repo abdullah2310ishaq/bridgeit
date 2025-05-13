@@ -52,7 +52,7 @@ const AddUniversityPage: React.FC = () => {
       }
 
       // Make POST request using fetch
-      const response = await fetch("https://localhost:7053//api/universities/add-university", {
+      const response = await fetch("https://localhost:7053/api/universities/add-university", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

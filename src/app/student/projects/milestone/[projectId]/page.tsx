@@ -4,10 +4,28 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
+import { motion } from "framer-motion"
 import ChatForStudent from "@/app/common_components/ChatforStudent"
 import MilestoneTimeline from "@/app/student/stdcomps/MilestoneTimeline"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  FileText,
+  Star,
+  User,
+  X,
+  CheckSquare,
+  Square,
+  Plus,
+  ArrowLeft,
+  Award,
+  MessageSquare,
+} from "lucide-react"
 
 // --------- Interfaces ---------
 interface ProgressUpdate {
@@ -101,6 +119,9 @@ const ProjectProgressTracker: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Active tab state
+  const [activeTab, setActiveTab] = useState<"milestones" | "tasks" | "reviews" | "chat">("milestones")
+
   // Determine if project is completed, pending completion, or payment pending
   const isProjectComplete = project?.status === "Completed"
   const isPendingCompletion = project?.status === "PendingCompletion"
@@ -108,6 +129,43 @@ const ProjectProgressTracker: React.FC = () => {
 
   // Any of these statuses means the project is in final stages and editing should be disabled
   const isEditingDisabled = isProjectComplete || isPendingCompletion || isPaymentPending
+
+  // Calculate project progress
+  const calculateProgress = () => {
+    if (tasks.length === 0) return 0
+    const completedTasks = tasks.filter((task) => task.taskStatus === "COMPLETED").length
+    return Math.round((completedTasks / tasks.length) * 100)
+  }
+
+  // Get project image based on title or description
+  const getProjectImage = () => {
+    if (!project) return "/project-management-teamwork.png"
+
+    const title = project.title.toLowerCase()
+    const description = project.description.toLowerCase()
+
+    if (title.includes("web") || description.includes("web")) {
+      return "/web-development-concept.png"
+    } else if (
+      title.includes("mobile") ||
+      description.includes("mobile") ||
+      title.includes("app") ||
+      description.includes("app")
+    ) {
+      return "/mobile-app-development.png"
+    } else if (
+      title.includes("ai") ||
+      description.includes("ai") ||
+      title.includes("machine learning") ||
+      description.includes("machine learning")
+    ) {
+      return "/artificial-intelligence-network.png"
+    } else if (title.includes("data") || description.includes("data")) {
+      return "/data-science-concept.png"
+    } else {
+      return "/technology-project.png"
+    }
+  }
 
   // -----------------------------
   // 1) Fetch Project Details, Milestones, and Authorized User Info
@@ -122,35 +180,26 @@ const ProjectProgressTracker: React.FC = () => {
       if (!projectId) return
       try {
         // Get authorized user info (student's userId)
-        const authRes = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (authRes.ok) {
           const authData = await authRes.json()
           setStudentUserId(authData.userId)
         }
         // Fetch project details (which includes student info and expert info)
-        const resProject = await fetch(
-          `https://localhost:7053//api/projects/get-project-by-id/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const resProject = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (resProject.ok) {
           const projectData = await resProject.json()
           setProject(projectData)
           setExpertUserId(projectData.iExptUserId)
         }
         // Fetch milestones
-        const resMilestones = await fetch(
-          `https://localhost:7053//api/milestone/get-project-milestones/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const resMilestones = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (resMilestones.ok) {
           const data = await resMilestones.json()
           const today = new Date().toISOString().split("T")[0]
@@ -196,12 +245,9 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
     try {
-      const res = await fetch(
-        `https://localhost:7053//api/milestone/get-project-milestones/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const res = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (res.ok) {
         const data = await res.json()
         const today = new Date().toISOString().split("T")[0]
@@ -274,17 +320,14 @@ const ProjectProgressTracker: React.FC = () => {
     try {
       if (editItemId) {
         // Edit milestone
-        const res = await fetch(
-          `https://localhost:7053//api/milestone/update-milestone?milesstoneId=${editItemId}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(itemFormData),
+        const res = await fetch(`https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        )
+          body: JSON.stringify(itemFormData),
+        })
         if (!res.ok) {
           console.error("Failed to update milestone. Status:", res.status)
           toast.error("Failed to update milestone")
@@ -294,17 +337,14 @@ const ProjectProgressTracker: React.FC = () => {
         }
       } else {
         // Add milestone
-        const res = await fetch(
-          `https://localhost:7053//api/milestone/add-milestone/${projectId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(itemFormData),
+        const res = await fetch(`https://localhost:7053/api/milestone/add-milestone/${projectId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        )
+          body: JSON.stringify(itemFormData),
+        })
         if (!res.ok) {
           console.error("Failed to add milestone. Status:", res.status)
           toast.error("Failed to add milestone")
@@ -330,7 +370,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053//api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -352,12 +392,9 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(
-        `https://localhost:7053//api/project-progress/get-tasks/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (res.ok) {
         const data = await res.json()
         setTasks(data)
@@ -391,15 +428,12 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(
-        `https://localhost:7053//api/project-progress/marks-as-complete/${projectId}/${task.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      )
+      })
 
       if (res.ok) {
         // Update local state to show task as completed
@@ -426,21 +460,18 @@ const ProjectProgressTracker: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(
-        `https://localhost:7053//api/reviews/add-review/${projectId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            ReviewerId: studentUserId,
-            Review: newReviewText,
-            Rating: newReviewRating,
-          }),
+      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify({
+          ReviewerId: studentUserId,
+          Review: newReviewText,
+          Rating: newReviewRating,
+        }),
+      })
       if (res.ok) {
         toast.success("Review added successfully.")
         setNewReviewText("")
@@ -462,12 +493,9 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(
-        `https://localhost:7053//api/reviews/get-reviews/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (res.ok) {
         const data = await res.json()
         setReviews(data)
@@ -500,17 +528,14 @@ const ProjectProgressTracker: React.FC = () => {
     try {
       // Using the correct API endpoint from the controller
       // The API expects a raw GUID in the request body, not a JSON object
-      const res = await fetch(
-        `https://localhost:7053//api/request-for-project-completion/put-completion-request`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(projectId), // Send the projectId as a raw string
+      const res = await fetch(`https://localhost:7053/api/request-for-project-completion/put-completion-request`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      )
+        body: JSON.stringify(projectId), // Send the projectId as a raw string
+      })
 
       if (res.ok) {
         toast.success("Completion request sent. Awaiting industry expert approval.")
@@ -553,7 +578,7 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053//api/request-for-project-completion/get-completion-request/${studentUserId}`,
+        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${studentUserId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -591,382 +616,634 @@ const ProjectProgressTracker: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-t-green-500 border-gray-700 rounded-full animate-spin"></div>
-          <p className="mt-4 text-lg">Loading project data...</p>
+          <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-700 rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg text-gray-300">Loading project data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-900 p-6 flex items-center justify-center">
+        <div className="bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full border border-gray-700">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-900/30 rounded-full">
+            <X className="h-8 w-8 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-center text-gray-200 mb-4">Error Loading Project</h2>
+          <p className="text-gray-400 text-center mb-6">{error}</p>
+          <button
+            onClick={() => router.back()}
+            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+          >
+            <ArrowLeft className="mr-2 h-5 w-5" />
+            Go Back
+          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-4">
-      {/* Header Section */}
-      <div className="max-w-4xl mx-auto mb-6">
-        <h1 className="text-3xl font-bold text-green-400">Project Progress</h1>
-        <div className="mt-4 bg-gray-800 p-4 rounded">
-          <p className="mb-1">
-            <strong className="text-green-300">Title:</strong> {project?.title}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Description:</strong> {project?.description}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Status:</strong>{" "}
+    <div className="min-h-screen bg-gray-900 text-gray-300">
+      {/* Hero Banner */}
+      <div className="relative h-64 md:h-80 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={getProjectImage() || "/placeholder.svg"}
+            alt={project?.title || "Project Banner"}
+            fill
+            style={{ objectFit: "cover" }}
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-600/60"></div>
+        </div>
+        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-8">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-4 left-4 bg-gray-800/50 hover:bg-gray-800/70 backdrop-blur-sm text-white rounded-full p-2 transition duration-200"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl md:text-4xl font-bold text-white"
+          >
+            {project?.title}
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-2 flex flex-wrap gap-2"
+          >
             <span
-              className={`px-2 py-1 text-xs rounded-full ${
+              className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${
                 project?.status === "Completed"
-                  ? "bg-green-900 text-green-300"
+                  ? "bg-green-900/70 text-green-300"
                   : project?.status === "PendingCompletion"
-                  ? "bg-yellow-900 text-yellow-300"
-                  : project?.status === "PaymentPending"
-                  ? "bg-blue-900 text-blue-300"
-                  : "bg-blue-900 text-blue-300"
+                    ? "bg-yellow-900/70 text-yellow-300"
+                    : project?.status === "PaymentPending"
+                      ? "bg-blue-900/70 text-blue-300"
+                      : "bg-gray-800/70 text-gray-300"
               }`}
             >
+              {project?.status === "Completed" && <CheckCircle className="mr-1 h-4 w-4" />}
+              {project?.status === "PendingCompletion" && <Clock className="mr-1 h-4 w-4" />}
+              {project?.status === "PaymentPending" && <DollarSign className="mr-1 h-4 w-4" />}
               {project?.status}
             </span>
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">End Date:</strong> {project?.endDate}
-          </p>
-          <p className="mb-1">
-            <strong className="text-green-300">Industry Expert:</strong>{" "}
-            {project?.indExpertId ? (
-              <Link
-                href={`/student/industry-profile/${project.indExpertId}`}
-                className="underline text-green-400 hover:text-green-300"
-              >
-                {project.expertName}
-              </Link>
-            ) : (
-              "N/A"
-            )}
-          </p>
+            <span className="bg-gray-800/70 text-gray-300 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+              <Calendar className="mr-1 h-4 w-4" />
+              Due: {new Date(project?.endDate || "").toLocaleDateString()}
+            </span>
+          </motion.div>
         </div>
-
-        {/* Project Status Actions */}
-        {!isEditingDisabled && (
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleRequestCompletion}
-              className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Request Project Completion
-            </button>
-          </div>
-        )}
-
-        {isPendingCompletion && (
-          <div className="mt-4 bg-yellow-900 border border-yellow-700 text-yellow-300 p-4 rounded-lg flex items-center">
-            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <div>
-              <p className="font-semibold">Completion request pending</p>
-              <p className="text-sm">
-                Awaiting industry expert approval. Editing is disabled until the request is processed.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {isPaymentPending && (
-          <div className="mt-4 bg-blue-900 border border-blue-700 text-blue-300 p-4 rounded-lg flex items-center">
-            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <div>
-              <p className="font-semibold">Payment pending</p>
-              <p className="text-sm">
-                Your completion request has been approved. The industry expert will now process the payment.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {isProjectComplete && (
-          <div className="mt-4 flex flex-col space-y-4">
-            <div className="bg-green-900 border border-green-700 text-green-300 p-4 rounded-lg flex items-center">
-              <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span>This project is complete. Editing is disabled.</span>
-            </div>
-
-            <Link
-              href={`/student/project-certificate/${projectId}`}
-              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition self-end flex items-center"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              View Completion Certificate
-            </Link>
-          </div>
-        )}
       </div>
 
-      {/* Milestones Section */}
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-green-300">Milestones</h2>
-          {!isEditingDisabled && (
-            <button
-              onClick={() => handleOpenModal()}
-              className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white flex items-center"
-            >
-              <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Milestone
-            </button>
-          )}
-        </div>
-        {progressItems.length > 0 ? (
-          <div>
-            <div className="mt-4 mb-8">
-              <h2 className="text-xl font-bold text-green-300 mb-2">Overall Timeline</h2>
-              <MilestoneTimeline milestones={progressItems} />
-            </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-700">
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-gray-200 mb-4">Project Details</h2>
+                <p className="text-gray-400 mb-6">{project?.description}</p>
 
-            {/* Individual Milestones with Comments */}
-            <div className="space-y-6">
-              {progressItems.map((milestone) => (
-                <div key={milestone.id} className="bg-gray-800 p-4 rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-bold text-green-400">{milestone.title}</h3>
-                      <p className="text-gray-300">{milestone.description}</p>
-                      <p className="text-sm text-gray-400 mt-1">
-                        Target date: {new Date(milestone.achievementDate).toLocaleDateString()}
-                      </p>
-                      <div className="mt-2">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            milestone.isCompleted ? "bg-green-900 text-green-300" : "bg-yellow-900 text-yellow-300"
-                          }`}
-                        >
-                          {milestone.isCompleted ? "Completed" : "In Progress"}
-                        </span>
-                      </div>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <div className="bg-blue-900/30 rounded-full p-2 mr-3">
+                      <User className="h-5 w-5 text-blue-400" />
                     </div>
-
-                    {!isEditingDisabled && (
-                      <button
-                        onClick={() => handleOpenModal(milestone)}
-                        className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded mt-2"
-                      >
-                        Edit
-                      </button>
-                    )}
+                    <div>
+                      <p className="text-sm text-gray-500">Student</p>
+                      <p className="font-medium text-gray-300">{project?.studentName}</p>
+                    </div>
                   </div>
 
-                  {/* Comments Section */}
-                  <div className="mt-4 border-t border-gray-700 pt-3">
-                    <h4 className="text-sm font-semibold text-green-300 mb-2">Expert Comments</h4>
-                    {comments[milestone.id] && comments[milestone.id].length > 0 ? (
-                      <div className="space-y-3">
-                        {comments[milestone.id].map((comment) => (
-                          <div key={comment.id} className="bg-gray-700 p-3 rounded">
-                            <p className="text-sm">{comment.comment}</p>
-                            <div className="flex justify-between items-center mt-1">
-                              <span className="text-xs text-gray-400">{comment.commenterName}</span>
-                              <span className="text-xs text-gray-500">
-                                {new Date(comment.commentDate).toLocaleString()}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500">No comments yet</p>
-                    )}
+                  <div className="flex items-center">
+                    <div className="bg-blue-900/30 rounded-full p-2 mr-3">
+                      <User className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Industry Expert</p>
+                      <p className="font-medium text-gray-300">{project?.expertName || "N/A"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="bg-blue-900/30 rounded-full p-2 mr-3">
+                      <Calendar className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Due Date</p>
+                      <p className="font-medium text-gray-300">
+                        {new Date(project?.endDate || "").toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-10 bg-gray-800 rounded-lg">
-            <svg
-              className="w-16 h-16 mx-auto text-gray-600 mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            <p className="text-gray-400 mb-6">No milestones found for this project.</p>
-            {!isEditingDisabled && (
-              <button
-                onClick={() => handleOpenModal()}
-                className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium flex items-center mx-auto"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Your First Milestone
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+              </div>
 
-      {/* Tasks Section */}
-      <div className="max-w-4xl mx-auto mt-8">
-        <h2 className="text-xl font-semibold text-green-300">Tasks</h2>
-        {tasks.length === 0 ? (
-          <p className="text-gray-400 mt-4 bg-gray-800 p-4 rounded">No tasks assigned.</p>
-        ) : (
-          <div className="mt-4 bg-gray-800 rounded-lg p-4">
-            <ul className="divide-y divide-gray-700">
-              {tasks.map((task) => (
-                <li key={task.id} className="py-3 flex items-start">
-                  <div className="flex-shrink-0 mt-1">
-                    <input
-                      type="checkbox"
-                      checked={task.taskStatus === "COMPLETED"}
-                      onChange={() => handleTaskToggle(task)}
-                      className="h-5 w-5 rounded border-gray-600 text-green-500 focus:ring-green-500"
-                      disabled={isEditingDisabled}
-                    />
+              <div className="bg-gray-900/50 px-6 py-4">
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-400">Progress</span>
+                    <span className="text-sm font-medium text-blue-400">{calculateProgress()}%</span>
                   </div>
-                  <div className="ml-3 flex-1">
-                    <p
-                      className={`font-medium ${
-                        task.taskStatus === "COMPLETED" ? "line-through text-gray-500" : "text-white"
-                      }`}
-                    >
-                      {task.task}
-                    </p>
-                    {task.description && (
-                      <p
-                        className={`mt-1 text-sm ${
-                          task.taskStatus === "COMPLETED" ? "line-through text-gray-600" : "text-gray-400"
-                        }`}
-                      >
-                        {task.description}
-                      </p>
-                    )}
+                  <div className="w-full bg-gray-700 rounded-full h-2.5">
+                    <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
                   </div>
-                  <div className="ml-2 flex-shrink-0">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        task.taskStatus === "COMPLETED"
-                          ? "bg-green-900 text-green-300"
-                          : "bg-yellow-900 text-yellow-300"
-                      }`}
-                    >
-                      {task.taskStatus}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* Review Section (visible when project is completed) */}
-      {(isProjectComplete || isPaymentPending) && (
-        <div className="max-w-4xl mx-auto mt-8">
-          <h2 className="text-2xl font-bold text-green-300 mb-4">Reviews</h2>
-          {reviews.length === 0 ? (
-            <p className="text-gray-400 bg-gray-800 p-4 rounded">No reviews have been submitted yet.</p>
-          ) : (
-            <ul className="space-y-4">
-              {reviews.map((r) => (
-                <li key={r.id} className="p-4 bg-gray-700 rounded shadow">
-                  <p className="font-bold">
-                    {r.reviewerName} - Rating: {r.rating}
-                  </p>
-                  <p className="mt-2">{r.review}</p>
-                  <small className="text-gray-400">Posted on: {new Date(r.datePosted).toLocaleDateString()}</small>
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="mt-4 bg-gray-800 p-4 rounded">
-            <h3 className="text-xl font-bold mb-2">Add a Review</h3>
-            <textarea
-              value={newReviewText}
-              onChange={(e) => setNewReviewText(e.target.value)}
-              placeholder="Write your review..."
-              className="w-full p-3 bg-gray-700 rounded mb-3 border border-gray-600"
-              rows={4}
-            />
-            <div className="mb-3">
-              <label className="block text-sm font-medium mb-1">Rating</label>
-              <div className="flex space-x-2">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <button
-                    key={rating}
-                    type="button"
-                    onClick={() => setNewReviewRating(rating)}
-                    className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                      newReviewRating >= rating ? "bg-yellow-500 text-yellow-900" : "bg-gray-700 text-gray-400"
-                    }`}
-                  >
-                    {rating}
-                  </button>
-                ))}
+                </div>
               </div>
             </div>
-            <button
-              onClick={handleAddReview}
-              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
-            >
-              Submit Review
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* Chat Section */}
-      {studentUserId && project?.iExptUserId ? (
-        <div className="max-w-4xl mx-auto mt-8">
-          <h2 className="text-xl font-semibold text-green-300 mb-4">Chat with Expert</h2>
-          <div className="bg-gray-800 rounded-lg overflow-hidden">
-            <ChatForStudent studentId={studentUserId} expertId={project.iExptUserId} />
+            {/* Project Status Actions */}
+            {!isEditingDisabled && (
+              <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-700">
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-200 mb-4">Project Actions</h3>
+                  <button
+                    onClick={handleRequestCompletion}
+                    className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Request Project Completion
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {isPendingCompletion && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border-l-4 border-yellow-500 border-t border-r border-b border-gray-700"
+              >
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-yellow-900/50 rounded-full p-2 mr-3">
+                      <Clock className="h-5 w-5 text-yellow-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-200">Completion Request Pending</h3>
+                  </div>
+                  <p className="text-gray-400">
+                    Your completion request has been sent to the industry expert. Editing is disabled until the request
+                    is processed.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {isPaymentPending && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border-l-4 border-blue-500 border-t border-r border-b border-gray-700"
+              >
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-blue-900/50 rounded-full p-2 mr-3">
+                      <DollarSign className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-200">Payment Pending</h3>
+                  </div>
+                  <p className="text-gray-400 mb-4">
+                    Your completion request has been approved. The industry expert will now process the payment.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {isProjectComplete && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border-l-4 border-green-500 border-t border-r border-b border-gray-700"
+              >
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-green-900/50 rounded-full p-2 mr-3">
+                      <CheckCircle className="h-5 w-5 text-green-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-200">Project Completed</h3>
+                  </div>
+                  <p className="text-gray-400 mb-4">This project is complete. Editing is disabled.</p>
+                  <Link
+                    href={`/student/project-certificate/${projectId}`}
+                    className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    <Award className="mr-2 h-5 w-5" />
+                    View Completion Certificate
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Main Content Area */}
+          <div className="lg:col-span-2">
+            {/* Tabs */}
+            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-700">
+              <div className="border-b border-gray-700">
+                <nav className="flex -mb-px">
+                  <button
+                    onClick={() => setActiveTab("milestones")}
+                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      activeTab === "milestones"
+                        ? "border-blue-500 text-blue-400"
+                        : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                    }`}
+                  >
+                    Milestones
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("tasks")}
+                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      activeTab === "tasks"
+                        ? "border-blue-500 text-blue-400"
+                        : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                    }`}
+                  >
+                    Tasks
+                  </button>
+                  {(isProjectComplete || isPaymentPending) && (
+                    <button
+                      onClick={() => setActiveTab("reviews")}
+                      className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                        activeTab === "reviews"
+                          ? "border-blue-500 text-blue-400"
+                          : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                      }`}
+                    >
+                      Reviews
+                    </button>
+                  )}
+                  {studentUserId && expertUserId && (
+                    <button
+                      onClick={() => setActiveTab("chat")}
+                      className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                        activeTab === "chat"
+                          ? "border-blue-500 text-blue-400"
+                          : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                      }`}
+                    >
+                      Chat
+                    </button>
+                  )}
+                </nav>
+              </div>
+
+              {/* Tab Content */}
+              <div className="p-6">
+                {/* Milestones Tab */}
+                {activeTab === "milestones" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-200">Project Milestones</h2>
+                      {!isEditingDisabled && (
+                        <button
+                          onClick={() => handleOpenModal()}
+                          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white flex items-center"
+                        >
+                          <Plus className="w-5 h-5 mr-1" />
+                          Add Milestone
+                        </button>
+                      )}
+                    </div>
+
+                    {progressItems.length > 0 ? (
+                      <div>
+                        <div className="mt-4 mb-8">
+                          <h3 className="text-lg font-bold text-gray-200 mb-4">Overall Timeline</h3>
+                          <MilestoneTimeline milestones={progressItems} />
+                        </div>
+
+                        {/* Individual Milestones with Comments */}
+                        <div className="space-y-6">
+                          {progressItems.map((milestone, index) => (
+                            <motion.div
+                              key={milestone.id}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden"
+                            >
+                              <div className="p-5">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-start">
+                                    <div
+                                      className={`flex-shrink-0 rounded-full p-2 mr-3 ${
+                                        milestone.isCompleted ? "bg-green-900/30" : "bg-yellow-900/30"
+                                      }`}
+                                    >
+                                      {milestone.isCompleted ? (
+                                        <CheckCircle className={`h-5 w-5 text-green-400`} />
+                                      ) : (
+                                        <Clock className={`h-5 w-5 text-yellow-400`} />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-200">{milestone.title}</h3>
+                                      <p className="text-gray-400 mt-1">{milestone.description}</p>
+                                      <div className="flex items-center mt-2">
+                                        <Calendar className="h-4 w-4 text-gray-500 mr-1" />
+                                        <p className="text-sm text-gray-500">
+                                          Target date: {new Date(milestone.achievementDate).toLocaleDateString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <span
+                                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                        milestone.isCompleted
+                                          ? "bg-green-900/50 text-green-300"
+                                          : "bg-yellow-900/50 text-yellow-300"
+                                      }`}
+                                    >
+                                      {milestone.isCompleted ? "Completed" : "In Progress"}
+                                    </span>
+                                    {!isEditingDisabled && (
+                                      <button
+                                        onClick={() => handleOpenModal(milestone)}
+                                        className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+                                      >
+                                        Edit
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Comments Section */}
+                                <div className="mt-4 pt-4 border-t border-gray-700">
+                                  <h4 className="text-sm font-semibold text-blue-400 mb-2">Expert Comments</h4>
+                                  {comments[milestone.id] && comments[milestone.id].length > 0 ? (
+                                    <div className="space-y-3">
+                                      {comments[milestone.id].map((comment) => (
+                                        <div key={comment.id} className="bg-gray-700 p-3 rounded">
+                                          <p className="text-sm text-gray-300">{comment.comment}</p>
+                                          <div className="flex justify-between items-center mt-1">
+                                            <span className="text-xs text-gray-400">{comment.commenterName}</span>
+                                            <span className="text-xs text-gray-500">
+                                              {new Date(comment.commentDate).toLocaleString()}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="text-sm text-gray-500 italic">No comments yet</p>
+                                  )}
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-10 bg-gray-800 rounded-lg border border-gray-700">
+                        <FileText className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+                        <p className="text-gray-400 mb-6">No milestones found for this project.</p>
+                        {!isEditingDisabled && (
+                          <button
+                            onClick={() => handleOpenModal()}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center mx-auto"
+                          >
+                            <Plus className="w-5 h-5 mr-2" />
+                            Add Your First Milestone
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Tasks Tab */}
+                {activeTab === "tasks" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-200">Project Tasks</h2>
+                    </div>
+
+                    {tasks.length === 0 ? (
+                      <div className="bg-gray-800 rounded-lg p-6 text-center border border-gray-700">
+                        <FileText className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                        <p className="text-gray-400">No tasks assigned to this project yet.</p>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-800 rounded-lg border border-gray-700">
+                        <ul className="divide-y divide-gray-700">
+                          {tasks.map((task, index) => (
+                            <motion.li
+                              key={task.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="p-4 hover:bg-gray-700/50"
+                            >
+                              <div className="flex items-start">
+                                <div className="flex-shrink-0 pt-1">
+                                  <button
+                                    onClick={() => handleTaskToggle(task)}
+                                    disabled={isEditingDisabled || task.taskStatus === "COMPLETED"}
+                                    className="focus:outline-none"
+                                  >
+                                    {task.taskStatus === "COMPLETED" ? (
+                                      <CheckSquare className="h-5 w-5 text-green-400" />
+                                    ) : (
+                                      <Square className="h-5 w-5 text-gray-500" />
+                                    )}
+                                  </button>
+                                </div>
+                                <div className="ml-3 flex-1">
+                                  <p
+                                    className={`font-medium ${
+                                      task.taskStatus === "COMPLETED" ? "line-through text-gray-500" : "text-gray-300"
+                                    }`}
+                                  >
+                                    {task.task}
+                                  </p>
+                                  {task.description && (
+                                    <p
+                                      className={`mt-1 text-sm ${
+                                        task.taskStatus === "COMPLETED" ? "line-through text-gray-600" : "text-gray-400"
+                                      }`}
+                                    >
+                                      {task.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="ml-2 flex-shrink-0">
+                                  <span
+                                    className={`px-2 py-1 text-xs rounded-full ${
+                                      task.taskStatus === "COMPLETED"
+                                        ? "bg-green-900/50 text-green-300"
+                                        : "bg-yellow-900/50 text-yellow-300"
+                                    }`}
+                                  >
+                                    {task.taskStatus}
+                                  </span>
+                                </div>
+                              </div>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Reviews Tab */}
+                {activeTab === "reviews" && (isProjectComplete || isPaymentPending) && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-200">Project Reviews</h2>
+                    </div>
+
+                    {/* Existing Reviews */}
+                    {reviews.length === 0 ? (
+                      <div className="bg-gray-800 rounded-lg p-6 text-center mb-6 border border-gray-700">
+                        <Star className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                        <p className="text-gray-400">No reviews have been submitted yet.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 mb-6">
+                        {reviews.map((review, index) => (
+                          <motion.div
+                            key={review.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="bg-gray-800 border border-gray-700 rounded-lg p-5"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-semibold text-gray-200">{review.reviewerName}</p>
+                                <div className="flex items-center mt-1">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`h-4 w-4 ${
+                                        i < review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-600"
+                                      }`}
+                                    />
+                                  ))}
+                                  <span className="ml-2 text-sm text-gray-400">{review.rating}/5</span>
+                                </div>
+                              </div>
+                              <span className="text-sm text-gray-500">
+                                {new Date(review.datePosted).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="mt-3 text-gray-300">{review.review}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add Review Form */}
+                    <div className="bg-gray-800 rounded-lg p-5 border border-gray-700">
+                      <h3 className="text-lg font-semibold text-gray-200 mb-4">Add a Review</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="review-text" className="block text-sm font-medium text-gray-300 mb-1">
+                            Your Review
+                          </label>
+                          <textarea
+                            id="review-text"
+                            value={newReviewText}
+                            onChange={(e) => setNewReviewText(e.target.value)}
+                            placeholder="Write your review..."
+                            className="w-full px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows={4}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Rating</label>
+                          <div className="flex space-x-2">
+                            {[1, 2, 3, 4, 5].map((rating) => (
+                              <button
+                                key={rating}
+                                type="button"
+                                onClick={() => setNewReviewRating(rating)}
+                                className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                                  newReviewRating >= rating
+                                    ? "bg-yellow-500 text-yellow-900"
+                                    : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+                                }`}
+                              >
+                                {rating}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={handleAddReview}
+                          className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center"
+                        >
+                          <Star className="mr-2 h-5 w-5" />
+                          Submit Review
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Chat Tab */}
+                {activeTab === "chat" && studentUserId && expertUserId && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-200">Chat with Expert</h2>
+                    </div>
+
+                    <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                      <div className="p-4 bg-gray-700 flex items-center">
+                        <div className="bg-blue-900/30 rounded-full p-2 mr-3">
+                          <MessageSquare className="h-5 w-5 text-blue-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-200">
+                          {project?.expertName ? `Chat with ${project.expertName}` : "Expert Chat"}
+                        </h3>
+                      </div>
+                      <div className="p-4">
+                        <p className="text-gray-400 mb-4">
+                          Use the chat button in the bottom right corner to communicate with your industry expert.
+                        </p>
+                        <ChatForStudent
+                          studentId={studentUserId}
+                          expertId={expertUserId}
+                          expertName={project?.expertName}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      ) : (
-        <p className="text-gray-400 mt-8 text-center">Chat is unavailable at the moment.</p>
-      )}
+      </div>
 
       {/* Milestone Modal */}
       {!isEditingDisabled && showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 w-full max-w-md rounded shadow-lg">
-            <h3 className="text-xl font-bold text-green-400 mb-4">{editItemId ? "Edit Milestone" : "Add Milestone"}</h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-gray-800 p-6 w-full max-w-md rounded-lg shadow-xl border border-gray-700"
+          >
+            <h3 className="text-xl font-bold text-blue-400 mb-4">{editItemId ? "Edit Milestone" : "Add Milestone"}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -974,29 +1251,29 @@ const ProjectProgressTracker: React.FC = () => {
                   placeholder="e.g., Complete Research Phase"
                   value={itemFormData.title}
                   onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
-                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
+                  className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
                 <textarea
                   placeholder="Describe what needs to be accomplished"
                   value={itemFormData.description}
                   onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
-                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
+                  className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={3}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Target Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   value={itemFormData.achievementDate}
                   onChange={(e) => setItemFormData({ ...itemFormData, achievementDate: e.target.value })}
-                  className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none"
+                  className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -1007,22 +1284,22 @@ const ProjectProgressTracker: React.FC = () => {
                   setShowModal(false)
                   setItemFormData({ title: "", description: "", achievementDate: "" })
                 }}
-                className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded text-white"
+                className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveItem}
-                className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded text-white"
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white"
               >
                 {editItemId ? "Update" : "Save"}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
-      <ToastContainer />
+      <ToastContainer theme="dark" />
     </div>
   )
 }

@@ -15,7 +15,7 @@ const CreateCompanyPage: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://localhost:7053//api/companies/add-company", {
+      const response = await fetch("https://localhost:7053/api/companies/add-company", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

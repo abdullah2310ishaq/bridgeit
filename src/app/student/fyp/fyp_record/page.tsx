@@ -28,7 +28,7 @@ const StudentProposalStatusPage: React.FC = () => {
       try {
         // Step 1: Fetch authorized user info
         const authResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -44,7 +44,7 @@ const StudentProposalStatusPage: React.FC = () => {
 
         // Step 2: Fetch student profile using userId
         const studentResponse = await fetch(
-          `https://localhost:7053//api/get-student/student-by-id/${userId}`,
+          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
           {
             method: "GET",
             headers: {

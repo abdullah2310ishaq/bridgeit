@@ -33,7 +33,7 @@ const NotificationsPage: React.FC = () => {
 
       try {
         const profileResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
+          "https://localhost:7053/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -48,7 +48,7 @@ const NotificationsPage: React.FC = () => {
         const userId = profileData.userId;
 
         const expertResponse = await fetch(
-          `https://localhost:7053//api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -63,7 +63,7 @@ const NotificationsPage: React.FC = () => {
         const expertId = expertData.indExptId;
 
         const proposalsResponse = await fetch(
-          `https://localhost:7053//api/project-proposals/get-proposal-for-expert/${expertId}`,
+          `https://localhost:7053/api/project-proposals/get-proposal-for-expert/${expertId}`,
           {
             method: "GET",
             headers: {
@@ -107,7 +107,7 @@ const NotificationsPage: React.FC = () => {
     try {
       const token = localStorage.getItem("jwtToken");
       const response = await fetch(
-        `https://localhost:7053//api/project-proposals/accept-proposal/${proposalId}`,
+        `https://localhost:7053/api/project-proposals/accept-proposal/${proposalId}`,
         {
           method: "PUT",
           headers: {
@@ -135,7 +135,7 @@ const NotificationsPage: React.FC = () => {
     try {
       const token = localStorage.getItem("jwtToken");
       const response = await fetch(
-        `https://localhost:7053//api/project-proposals/reject-proposal/${proposalId}`,
+        `https://localhost:7053/api/project-proposals/reject-proposal/${proposalId}`,
         {
           method: "PUT",
           headers: {

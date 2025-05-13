@@ -32,7 +32,7 @@ const UnassignedProjects = ({ expertId }: UnassignedProjectsProps) => {
       try {
         // Fetch unassigned projects
         const res = await fetch(
-          `https://localhost:7053//api/projects/get-unassigned-expert-projects?expertId=${expertId}`,
+          `https://localhost:7053/api/projects/get-unassigned-expert-projects?expertId=${expertId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

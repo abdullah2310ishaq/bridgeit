@@ -36,7 +36,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`https://localhost:7053//chathub?userId=${expertId}`, {
+      .withUrl(`https://localhost:7053/chathub?userId=${expertId}`, {
         // Pass expertId in query string
         accessTokenFactory: () => token,
       })
@@ -91,7 +91,7 @@ const ChatForIndustry: React.FC<ChatForIndustryProps> = ({ expertId, studentId }
       if (!token) return
 
       try {
-        const response = await fetch(`https://localhost:7053//api/chats/message-history/${studentId}/${expertId}`, {
+        const response = await fetch(`https://localhost:7053/api/chats/message-history/${studentId}/${expertId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 

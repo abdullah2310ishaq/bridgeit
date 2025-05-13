@@ -11,7 +11,7 @@ const ManageStudentsPage: React.FC = () => {
     async function fetchStudents() {
       try {
         const response = await fetch(
-          "https://localhost:7053//api/get-student/students"
+          "https://localhost:7053/api/get-student/students"
         );
         if (response.ok) {
           const data = await response.json();

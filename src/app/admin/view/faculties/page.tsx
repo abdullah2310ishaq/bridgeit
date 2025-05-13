@@ -11,7 +11,7 @@ const ManageFacultiesPage: React.FC = () => {
     async function fetchFaculties() {
       try {
         const response = await fetch(
-          "https://localhost:7053//api/get-faculty/faculties"
+          "https://localhost:7053/api/get-faculty/faculties"
         );
         if (response.ok) {
           const data = await response.json();

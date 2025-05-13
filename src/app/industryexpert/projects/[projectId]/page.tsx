@@ -31,7 +31,7 @@ const ProjectDetailsPage: React.FC = () => {
         }
 
         const response = await fetch(
-          `https://localhost:7053//api/projects/get-project-by-id/${projectId}`,
+          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

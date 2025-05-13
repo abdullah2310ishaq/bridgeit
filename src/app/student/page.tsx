@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation"
 import ProfileSection from "./stdcomps/ProfileSection"
 import Loading from "../loading/page"
 import OngoingProjectsSection from "./stdcomps/OngoingProjects"
-import CompletedProjectsSection from "./stdcomps/CompletedProjects"
 import EventsSection from "./stdcomps/Events"
 import ChatWidget from "../chat/ChatWidget"
 import CompletedIndustryProjectsSection from "./stdcomps/CompletedExpert"
 import EducationalResourcesCard from "./stdcomps/EducationalResourcesCard"
+import QuickAccessSection from "./stdcomps/QuickAccessSection"
+import { motion } from "framer-motion"
 
 interface UserProfile {
   userId: string
@@ -85,24 +86,18 @@ const StudentPage: React.FC = () => {
       }
       try {
         // Fetch user profile
-        const profileResponse = await fetch(
-          "https://localhost:7053//api/auth/authorized-user-info",
-          {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (profileResponse.ok) {
           const profileData = await profileResponse.json()
           const userId = profileData.userId
 
-          const studentResponse = await fetch(
-            `https://localhost:7053//api/get-student/student-by-id/${userId}`,
-            {
-              method: "GET",
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          )
+          const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          })
 
           if (studentResponse.ok) {
             const studentData = await studentResponse.json()
@@ -121,7 +116,7 @@ const StudentPage: React.FC = () => {
             })
             // Fetch completed projects (personal)
             const projectsResponse = await fetch(
-              `https://localhost:7053//api/projects/get-student-projects-by-id/${studentData.id}`,
+              `https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`,
               {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -134,7 +129,7 @@ const StudentPage: React.FC = () => {
 
             // Fetch all projects with expert assigned (both ongoing and completed)
             const expertProjectsResponse = await fetch(
-              `https://localhost:7053//api/projects/get-student-with-expert-project-by-id/${studentData.id}`,
+              `https://localhost:7053/api/projects/get-student-with-expert-project-by-id/${studentData.id}`,
               {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -161,13 +156,10 @@ const StudentPage: React.FC = () => {
             }
 
             // Fetch events
-            const eventsResponse = await fetch(
-              "https://localhost:7053//api/Events/get-events",
-              {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            )
+            const eventsResponse = await fetch("https://localhost:7053/api/Events/get-events", {
+              method: "GET",
+              headers: { Authorization: `Bearer ${token}` },
+            })
             if (eventsResponse.ok) {
               const eventsData = await eventsResponse.json()
               setEvents(eventsData)
@@ -226,24 +218,40 @@ const StudentPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-200 text-gray-800 p-6">
-      {/* Profile Section */}
-      <ProfileSection userProfile={userProfile} goToEditProfile={goToEditProfile} gotoProfile={gotoProfile} />
+    <div className="min-h-screen bg-gray-100 text-gray-800">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Page Header with Welcome Message */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl font-bold text-gray-800">Welcome back, {userProfile.firstName}!</h1>
+          <p className="text-gray-600">Here's what's happening with your academic journey today.</p>
+        </motion.div>
 
-      {/* Educational Resources Card - New Section*/}
-      <EducationalResourcesCard goToEducationalResources={goToEducationalResources} />
+        {/* Main Content */}
+        <div className="space-y-8">
+          {/* Profile Section */}
+          <ProfileSection userProfile={userProfile} goToEditProfile={goToEditProfile} gotoProfile={gotoProfile} />
 
-      Ongoing Projects Section 
-      <OngoingProjectsSection ongoingProjects={ongoingProjects} />
+          {/* Quick Access Section - Redesigned */}
+          <QuickAccessSection />
 
-      Completed Industry Projects Section 
-      <CompletedIndustryProjectsSection projects={completedProjects} />
+          {/* Educational Resources Card */}
+          <EducationalResourcesCard goToEducationalResources={goToEducationalResources} />
 
-      {/* Completed Personal Projects Section
-      <CompletedProjectsSection projects={personalProjects} /> */}
+          {/* Ongoing Projects Section */}
+          <OngoingProjectsSection ongoingProjects={ongoingProjects} />
 
-      {/* Events Section */}
-      <EventsSection events={events} gradientStyles={[]} />
+          {/* Completed Industry Projects Section */}
+          <CompletedIndustryProjectsSection projects={completedProjects} />
+
+          {/* Events Section */}
+          <EventsSection events={events} gradientStyles={[]} />
+        </div>
+      </div>
 
       {/* Chat Widget */}
       <ChatWidget />

@@ -11,7 +11,7 @@ const ManageIndustryExpertsPage: React.FC = () => {
     async function fetchIndustryExperts() {
       try {
         const response = await fetch(
-          "https://localhost:7053//api/get-industry-expert/industry-experts"
+          "https://localhost:7053/api/get-industry-expert/industry-experts"
         );
         if (response.ok) {
           const data = await response.json();
