@@ -1,10 +1,29 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import type React from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { Search, Lightbulb, Code, User, BookOpen, Filter, ChevronDown, Star, Bookmark, TrendingUp, Zap, Cpu, Database, Globe, Smartphone, Cloud, Shield, Server } from 'lucide-react'
+import {
+  Search,
+  Lightbulb,
+  Code,
+  User,
+  BookOpen,
+  Filter,
+  ChevronDown,
+  Bookmark,
+  TrendingUp,
+  Zap,
+  Cpu,
+  Database,
+  Globe,
+  Smartphone,
+  Cloud,
+  Shield,
+  Server,
+} from "lucide-react"
 
 interface UserProfile {
   userId: string
@@ -38,6 +57,51 @@ const techCategories = [
   { name: "Backend", icon: <Server className="w-4 h-4" /> },
 ]
 
+// Technology image mapping
+const getTechImage = (technology: string): string => {
+  const techLower = technology.toLowerCase()
+
+  if (techLower.includes("ai") || techLower.includes("machine") || techLower.includes("ml")) {
+    return "https://images.unsplash.com/photo-1677442135136-760c813a6a13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80"
+  } else if (techLower.includes("web") || techLower.includes("react") || techLower.includes("angular")) {
+    return "https://images.unsplash.com/photo-1581092160607-ee22731b9b0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+  } else if (techLower.includes("mobile") || techLower.includes("android") || techLower.includes("ios")) {
+    return "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
+  } else if (techLower.includes("cloud") || techLower.includes("aws") || techLower.includes("azure")) {
+    return "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+  } else if (techLower.includes("security") || techLower.includes("cyber")) {
+    return "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+  } else if (techLower.includes("data") || techLower.includes("database")) {
+    return "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2034&q=80"
+  } else if (techLower.includes("iot") || techLower.includes("embedded")) {
+    return "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+  } else {
+    return "https://images.unsplash.com/photo-1573495612937-f02b92648e5b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
+  }
+}
+
+function getTechIcon(technology: string) {
+  const techLower = technology.toLowerCase()
+
+  if (techLower.includes("ai") || techLower.includes("machine") || techLower.includes("ml")) {
+    return <Cpu className="w-3 h-3" />
+  } else if (techLower.includes("web") || techLower.includes("react") || techLower.includes("angular")) {
+    return <Globe className="w-3 h-3" />
+  } else if (techLower.includes("mobile") || techLower.includes("android") || techLower.includes("ios")) {
+    return <Smartphone className="w-3 h-3" />
+  } else if (techLower.includes("cloud") || techLower.includes("aws") || techLower.includes("azure")) {
+    return <Cloud className="w-3 h-3" />
+  } else if (techLower.includes("security") || techLower.includes("cyber")) {
+    return <Shield className="w-3 h-3" />
+  } else if (techLower.includes("data") || techLower.includes("database")) {
+    return <Database className="w-3 h-3" />
+  } else if (techLower.includes("backend") || techLower.includes("server")) {
+    return <Server className="w-3 h-3" />
+  } else {
+    return <Code className="w-3 h-3" />
+  }
+}
+
 const IdeasPage: React.FC = () => {
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
@@ -47,144 +111,179 @@ const IdeasPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [sortBy, setSortBy] = useState("newest")
   const [bookmarkedIdeas, setBookmarkedIdeas] = useState<string[]>([])
+  const [takenIds, setTakenIds] = useState<string[]>([])
 
   const router = useRouter()
 
-  // Example: Local array of taken idea IDs
-  // In a real app, you'd store/fetch this from localStorage or a global state.
-  const [takenIds] = useState<string[]>(["idea123", "someOtherId"])
-
   useEffect(() => {
     // Load bookmarked ideas from localStorage
-    const savedBookmarks = localStorage.getItem("bookmarkedIdeas")
-    if (savedBookmarks) {
-      setBookmarkedIdeas(JSON.parse(savedBookmarks))
-    }
-
-    const fetchIdeas = async () => {
-      const token = localStorage.getItem("jwtToken")
-      if (!token) {
-        toast.error("Please log in to access this page.", {
-          position: "top-center",
-          autoClose: 3000,
-        })
-        router.push("/auth/login-user")
-        return
-      }
-
+    const loadBookmarks = () => {
       try {
-        // 1) authorized-user-info => userId
-        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (!profileResponse.ok) {
-          throw new Error("Authorization failed. Please log in again.")
+        const savedBookmarks = localStorage.getItem("bookmarkedIdeas")
+        if (savedBookmarks) {
+          setBookmarkedIdeas(JSON.parse(savedBookmarks))
         }
-
-        const profileData = await profileResponse.json()
-        const userId = profileData.userId
-
-        // 2) get-student => uniId
-        const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (!studentResponse.ok) {
-          throw new Error("Failed to fetch student details.")
-        }
-
-        const studentData = await studentResponse.json()
-        const uniId = studentData.universityId
-
-        // Save user profile
-        setUserProfile({
-          userId: studentData.userId,
-          firstName: studentData.firstName,
-          lastName: studentData.lastName,
-          email: studentData.email,
-          universityName: studentData.universityName,
-          uniId: uniId,
-          stdId: studentData.id,
-        })
-
-        // 3) fetch ideas => get-ideas-by-uni
-        const ideasResponse = await fetch(`https://localhost:7053/api/ideas/get-ideas-by-uni/${uniId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (!ideasResponse.ok) {
-          throw new Error("Failed to fetch ideas.")
-        }
-
-        const ideasData = await ideasResponse.json()
-
-        // Filter out ideas with IDs in takenIds
-        const filtered = ideasData.filter((idea: Idea) => !takenIds.includes(idea.id))
-
-        setIdeas(filtered)
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message)
-        } else {
-          setError("An unexpected error occurred.")
-        }
-      } finally {
-        setLoading(false)
+      } catch (error) {
+        console.error("Error loading bookmarks:", error)
       }
     }
 
+    // Load taken ideas from localStorage or API
+    const loadTakenIdeas = () => {
+      try {
+        const savedTakenIds = localStorage.getItem("takenIdeas")
+        if (savedTakenIds) {
+          setTakenIds(JSON.parse(savedTakenIds))
+        } else {
+          // Fallback to default if needed
+          setTakenIds(["idea123", "someOtherId"])
+        }
+      } catch (error) {
+        console.error("Error loading taken ideas:", error)
+        setTakenIds(["idea123", "someOtherId"])
+      }
+    }
+
+    loadBookmarks()
+    loadTakenIdeas()
     fetchIdeas()
-  }, [router, takenIds])
+  }, [])
+
+  const fetchIdeas = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      toast.error("Please log in to access this page.", {
+        position: "top-center",
+        autoClose: 3000,
+      })
+      router.push("/auth/login-user")
+      return
+    }
+
+    try {
+      // 1) Get user info
+      const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!profileResponse.ok) {
+        throw new Error("Authorization failed. Please log in again.")
+      }
+
+      const profileData = await profileResponse.json()
+      const userId = profileData.userId
+
+      // 2) Get student details
+      const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!studentResponse.ok) {
+        throw new Error("Failed to fetch student details.")
+      }
+
+      const studentData = await studentResponse.json()
+      const uniId = studentData.universityId
+
+      // Save user profile
+      setUserProfile({
+        userId: studentData.userId,
+        firstName: studentData.firstName,
+        lastName: studentData.lastName,
+        email: studentData.email,
+        universityName: studentData.universityName,
+        uniId: uniId,
+        stdId: studentData.id,
+      })
+
+      // 3) Get ideas by university
+      const ideasResponse = await fetch(`https://localhost:7053/api/ideas/get-ideas-by-uni/${uniId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!ideasResponse.ok) {
+        throw new Error("Failed to fetch ideas.")
+      }
+
+      const ideasData = await ideasResponse.json()
+
+      // Filter out taken ideas
+      const filtered = ideasData.filter((idea: Idea) => !takenIds.includes(idea.id))
+      setIdeas(filtered)
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unexpected error occurred.")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Toggle bookmark for an idea
   const toggleBookmark = (id: string, e: React.MouseEvent) => {
     e.stopPropagation() // Prevent triggering the card click
-    
-    const newBookmarkedIdeas = bookmarkedIdeas.includes(id)
-      ? bookmarkedIdeas.filter(ideaId => ideaId !== id)
-      : [...bookmarkedIdeas, id]
-    
-    setBookmarkedIdeas(newBookmarkedIdeas)
-    localStorage.setItem("bookmarkedIdeas", JSON.stringify(newBookmarkedIdeas))
-    
-    toast.success(
-      bookmarkedIdeas.includes(id) ? "Removed from bookmarks" : "Added to bookmarks", 
-      { autoClose: 2000 }
-    )
-  }
 
-  // Get image for idea based on technology
-  const getIdeaImage = (technology: string) => {
-    const techLower = technology.toLowerCase()
-    
-    if (techLower.includes("ai") || techLower.includes("machine") || techLower.includes("ml")) {
-      return "https://images.unsplash.com/photo-1677442135136-760c813a6a13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80"
-    } else if (techLower.includes("web") || techLower.includes("react") || techLower.includes("angular")) {
-      return "https://images.unsplash.com/photo-1581092160607-ee22731b9b0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-    } else if (techLower.includes("mobile") || techLower.includes("android") || techLower.includes("ios")) {
-      return "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    } else if (techLower.includes("cloud") || techLower.includes("aws") || techLower.includes("azure")) {
-      return "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-    } else if (techLower.includes("security") || techLower.includes("cyber")) {
-      return "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-    } else if (techLower.includes("data") || techLower.includes("database")) {
-      return "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2034&q=80"
-    } else if (techLower.includes("iot") || techLower.includes("embedded")) {
-      return "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-    } else {
-      return "https://images.unsplash.com/photo-1573495612937-f02b92648e5b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
+    const newBookmarkedIdeas = bookmarkedIdeas.includes(id)
+      ? bookmarkedIdeas.filter((ideaId) => ideaId !== id)
+      : [...bookmarkedIdeas, id]
+
+    setBookmarkedIdeas(newBookmarkedIdeas)
+
+    try {
+      localStorage.setItem("bookmarkedIdeas", JSON.stringify(newBookmarkedIdeas))
+      toast.success(bookmarkedIdeas.includes(id) ? "Removed from bookmarks" : "Added to bookmarks", { autoClose: 2000 })
+    } catch (error) {
+      console.error("Error saving bookmarks:", error)
+      toast.error("Failed to save bookmark")
     }
   }
+
+  // Filter ideas by searchTerm and category
+  const getFilteredIdeas = () => {
+    const filtered = ideas.filter((idea) => {
+      const matchesSearch =
+        idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        idea.technology.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        idea.description.toLowerCase().includes(searchTerm.toLowerCase())
+
+      const matchesCategory =
+        selectedCategory === "All" || idea.technology.toLowerCase().includes(selectedCategory.toLowerCase())
+
+      return matchesSearch && matchesCategory
+    })
+
+    // Sort ideas
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "newest") {
+        return b.id.localeCompare(a.id)
+      } else if (sortBy === "alphabetical") {
+        return a.title.localeCompare(b.title)
+      } else if (sortBy === "bookmarked") {
+        const aBookmarked = bookmarkedIdeas.includes(a.id) ? 1 : 0
+        const bBookmarked = bookmarkedIdeas.includes(b.id) ? 1 : 0
+        return bBookmarked - aBookmarked
+      }
+      return 0
+    })
+  }
+
+  const handleIdeaClick = (id: string) => {
+    router.push(`/student/seeideas/${id}`)
+  }
+
+  // Memoize filtered and sorted ideas
+  const sortedIdeas = getFilteredIdeas()
 
   if (loading) {
     return (
@@ -223,39 +322,6 @@ const IdeasPage: React.FC = () => {
         </div>
       </div>
     )
-  }
-
-  // Filter ideas by searchTerm and category
-  const filteredIdeas = ideas.filter((idea) => {
-    const matchesSearch =
-      idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.technology.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.description.toLowerCase().includes(searchTerm.toLowerCase())
-
-    const matchesCategory =
-      selectedCategory === "All" ||
-      idea.technology.toLowerCase().includes(selectedCategory.toLowerCase())
-
-    return matchesSearch && matchesCategory
-  })
-
-  // Sort ideas
-  const sortedIdeas = [...filteredIdeas].sort((a, b) => {
-    if (sortBy === "newest") {
-      // For demo purposes, sort by ID (in a real app, you'd use a date field)
-      return b.id.localeCompare(a.id)
-    } else if (sortBy === "alphabetical") {
-      return a.title.localeCompare(b.title)
-    } else if (sortBy === "bookmarked") {
-      const aBookmarked = bookmarkedIdeas.includes(a.id) ? 1 : 0
-      const bBookmarked = bookmarkedIdeas.includes(b.id) ? 1 : 0
-      return bBookmarked - aBookmarked
-    }
-    return 0
-  })
-
-  const handleIdeaClick = (id: string) => {
-    router.push(`/student/seeideas/${id}`)
   }
 
   return (
@@ -324,9 +390,7 @@ const IdeasPage: React.FC = () => {
                 <Code className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-800">
-                  {new Set(ideas.map((idea) => idea.technology)).size}
-                </p>
+                <p className="text-2xl font-bold text-gray-800">{new Set(ideas.map((idea) => idea.technology)).size}</p>
                 <p className="text-sm text-gray-600">Technologies</p>
               </div>
             </div>
@@ -421,55 +485,60 @@ const IdeasPage: React.FC = () => {
 
         {/* Ideas Grid */}
         {sortedIdeas.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedIdeas.map((idea) => (
               <div
                 key={idea.id}
-                className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer relative group"
+                className="group bg-white rounded-xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 cursor-pointer relative flex flex-col h-full transform hover:-translate-y-1"
                 onClick={() => handleIdeaClick(idea.id)}
               >
-                {/* Idea Image */}
-                <div className="h-48 overflow-hidden">
-                  <img
-                    src={getIdeaImage(idea.technology) || "/placeholder.svg"}
-                    alt={idea.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
-                  
-                  {/* Technology Badge */}
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      {idea.technology}
-                    </span>
-                  </div>
-                  
-                  {/* Bookmark Button */}
+                {/* Idea Image with Overlay */}
+                <div className="relative h-52 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent"></div>
+
+                  {/* Bookmark Button - Redesigned */}
                   <button
                     onClick={(e) => toggleBookmark(idea.id, e)}
-                    className="absolute top-3 right-3 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
+                    className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all duration-300 z-10 transform group-hover:scale-105"
+                    aria-label={bookmarkedIdeas.includes(idea.id) ? "Remove bookmark" : "Add bookmark"}
                   >
                     <Bookmark
                       className={`w-4 h-4 ${
-                        bookmarkedIdeas.includes(idea.id) ? "text-yellow-500 fill-yellow-500" : "text-gray-500"
+                        bookmarkedIdeas.includes(idea.id)
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-gray-500 group-hover:text-gray-700"
                       }`}
                     />
                   </button>
-                  
-                  {/* Title */}
+
+                  {/* Technology Badge - Redesigned */}
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="bg-blue-600/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-sm flex items-center">
+                      {getTechIcon(idea.technology)}
+                      <span className="ml-1">{idea.technology}</span>
+                    </span>
+                  </div>
+
+                  {/* Title - Redesigned */}
                   <div className="absolute bottom-0 inset-x-0 p-4">
-                    <h3 className="text-lg font-bold text-white">{idea.title}</h3>
+                    <h3 className="text-xl font-bold text-white leading-tight group-hover:text-blue-50 transition-colors duration-300">
+                      {idea.title}
+                    </h3>
                   </div>
                 </div>
-                
-                {/* Idea Content */}
-                <div className="p-4">
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4">{idea.description}</p>
-                  
-                  {/* Faculty Info */}
-                  <div className="flex items-center justify-between mt-2">
+
+                {/* Idea Content - Redesigned */}
+                <div className="p-5 flex-grow flex flex-col">
+                  {/* Description */}
+                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">{idea.description}</p>
+
+                  {/* Divider */}
+                  <div className="border-t border-gray-100 my-3"></div>
+
+                  {/* Faculty Info - Redesigned */}
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="bg-blue-100 p-1.5 rounded-full mr-2">
+                      <div className="bg-blue-50 p-2 rounded-full mr-2.5">
                         <User className="w-4 h-4 text-blue-600" />
                       </div>
                       <div>
@@ -477,10 +546,13 @@ const IdeasPage: React.FC = () => {
                         <p className="text-xs text-gray-500">{idea.email}</p>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center">
-                      <Zap className="w-4 h-4 text-yellow-500 mr-1" />
-                      <span className="text-xs text-gray-600">View Details</span>
+
+                    {/* View Details Button - Redesigned */}
+                    <div className="flex items-center text-blue-600 group-hover:text-blue-700 transition-colors">
+                      <span className="text-xs font-medium mr-1.5">Details</span>
+                      <div className="bg-blue-50 p-1.5 rounded-full group-hover:bg-blue-100 transition-colors">
+                        <Zap className="w-3.5 h-3.5 transform group-hover:scale-110 transition-transform" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -488,18 +560,25 @@ const IdeasPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-12 text-center">
-            <img
-              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-              alt="No ideas found"
-              className="w-32 h-32 mx-auto mb-4 rounded-full object-cover opacity-50"
-            />
-            <h3 className="text-xl font-medium text-gray-700 mb-2">No ideas found</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Lightbulb className="w-10 h-10 text-gray-300" />
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-3">No ideas found</h3>
+            <p className="text-gray-500 max-w-md mx-auto mb-6">
               {searchTerm
                 ? `No ideas match your search "${searchTerm}". Try different keywords or filters.`
                 : "No project ideas are available for your university at the moment."}
             </p>
+            <button
+              onClick={() => {
+                setSearchTerm("")
+                setSelectedCategory("All")
+              }}
+              className={`px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors ${!searchTerm && selectedCategory === "All" ? "hidden" : ""}`}
+            >
+              Clear filters
+            </button>
           </div>
         )}
 
@@ -509,7 +588,7 @@ const IdeasPage: React.FC = () => {
             <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />
             Trending Technologies
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
               <div className="flex items-center mb-2">
@@ -522,7 +601,7 @@ const IdeasPage: React.FC = () => {
                 Explore cutting-edge AI technologies including deep learning, NLP, and computer vision.
               </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
               <div className="flex items-center mb-2">
                 <div className="bg-blue-100 p-2 rounded-full mr-2">
@@ -534,7 +613,7 @@ const IdeasPage: React.FC = () => {
                 Build modern web applications using React, Angular, Vue, and other cutting-edge frameworks.
               </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
               <div className="flex items-center mb-2">
                 <div className="bg-green-100 p-2 rounded-full mr-2">
@@ -546,7 +625,7 @@ const IdeasPage: React.FC = () => {
                 Create native and cross-platform mobile apps for iOS and Android platforms.
               </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
               <div className="flex items-center mb-2">
                 <div className="bg-yellow-100 p-2 rounded-full mr-2">
@@ -560,38 +639,6 @@ const IdeasPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Faculty Spotlight */}
-        <div className="mt-8 bg-white rounded-lg shadow-md border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <Star className="w-5 h-5 mr-2 text-blue-500" />
-            Faculty Spotlight
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Array.from(new Set(ideas.map(idea => idea.facultyName))).slice(0, 3).map((facultyName, index) => {
-              const facultyIdea = ideas.find(idea => idea.facultyName === facultyName)
-              if (!facultyIdea) return null
-              
-              return (
-                <div key={index} className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="w-20 h-20 rounded-full overflow-hidden mb-3 border-2 border-blue-200">
-                    <img
-                      src={`https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${index + 1}.jpg`}
-                      alt={facultyName}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-bold text-gray-800 text-center">{facultyName}</h3>
-                  <p className="text-sm text-gray-500 text-center mb-2">{facultyIdea.email}</p>
-                  <p className="text-xs text-blue-600 text-center">
-                    {ideas.filter(idea => idea.facultyName === facultyName).length} project ideas
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
       </div>
 
       <ToastContainer />
@@ -600,4 +647,3 @@ const IdeasPage: React.FC = () => {
 }
 
 export default IdeasPage
-

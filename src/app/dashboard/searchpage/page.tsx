@@ -64,9 +64,9 @@ const SearchComponent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col items-center">
+    <div className="min-h-screen p-6 bg-gradient-to-b from-white to-white flex flex-col items-center">
       <motion.h1
-        className="text-5xl font-extrabold mb-10 text-center text-white"
+        className="text-5xl font-extrabold mb-10 text-center text-blue-600"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -80,14 +80,14 @@ const SearchComponent: React.FC = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Enter name"
-          className="p-4 w-full bg-gray-700 text-white placeholder-gray-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-4 w-full bg-gray-100 text-gray-500 placeholder-gray-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         <div className="flex justify-between w-full">
           <select
             value={searchType}
             onChange={(e) => setSearchType(e.target.value)}
-            className="p-3 bg-gray-700 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-3 bg-gray-100 text-gray-500 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="student">Student</option>
             <option value="faculty">Faculty</option>

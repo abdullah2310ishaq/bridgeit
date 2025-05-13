@@ -166,7 +166,7 @@ const ChatWidget: React.FC = () => {
       {/* Floating Action Button */}
       <button
         aria-label="Open chat"
-        className="fixed bottom-5 right-5 flex items-center justify-center w-14 h-14 rounded-full 
+        className="fixed bottom-5 left-5 flex items-center justify-center w-14 h-14 rounded-full 
                    bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 text-white 
                    shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 
                    focus:outline-none focus:ring-4 focus:ring-purple-300"

@@ -12,7 +12,7 @@ const Unauthorized: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-black text-gray-200 relative">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-white to-white relative">
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* Large background image */}
         <Image
@@ -57,7 +57,7 @@ const Unauthorized: React.FC = () => {
             Access Denied
           </motion.h1>
           <motion.p
-            className="text-xl mb-8 text-gray-300"
+            className="text-xl mb-8 text-gray-500"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}

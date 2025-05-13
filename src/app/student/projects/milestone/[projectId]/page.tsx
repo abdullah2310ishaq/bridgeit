@@ -616,10 +616,10 @@ const ProjectProgressTracker: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-700 rounded-full animate-spin"></div>
-          <p className="mt-4 text-lg text-gray-300">Loading project data...</p>
+          <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg text-gray-700">Loading project data...</p>
         </div>
       </div>
     )
@@ -627,13 +627,13 @@ const ProjectProgressTracker: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 p-6 flex items-center justify-center">
-        <div className="bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full border border-gray-700">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-900/30 rounded-full">
+      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full border border-gray-200">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full">
             <X className="h-8 w-8 text-red-500" />
           </div>
-          <h2 className="text-2xl font-bold text-center text-gray-200 mb-4">Error Loading Project</h2>
-          <p className="text-gray-400 text-center mb-6">{error}</p>
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Error Loading Project</h2>
+          <p className="text-gray-600 text-center mb-6">{error}</p>
           <button
             onClick={() => router.back()}
             className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
@@ -647,7 +647,7 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300">
+    <div className="min-h-screen bg-gray-50 text-gray-700">
       {/* Hero Banner */}
       <div className="relative h-64 md:h-80 overflow-hidden">
         <div className="absolute inset-0">
@@ -663,7 +663,7 @@ const ProjectProgressTracker: React.FC = () => {
         <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-8">
           <button
             onClick={() => router.back()}
-            className="absolute top-4 left-4 bg-gray-800/50 hover:bg-gray-800/70 backdrop-blur-sm text-white rounded-full p-2 transition duration-200"
+            className="absolute top-4 left-4 bg-white/50 hover:bg-white/70 backdrop-blur-sm text-gray-800 rounded-full p-2 transition duration-200"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -684,12 +684,12 @@ const ProjectProgressTracker: React.FC = () => {
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${
                 project?.status === "Completed"
-                  ? "bg-green-900/70 text-green-300"
+                  ? "bg-green-100 text-green-800"
                   : project?.status === "PendingCompletion"
-                    ? "bg-yellow-900/70 text-yellow-300"
+                    ? "bg-yellow-100 text-yellow-800"
                     : project?.status === "PaymentPending"
-                      ? "bg-blue-900/70 text-blue-300"
-                      : "bg-gray-800/70 text-gray-300"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-gray-100 text-gray-800"
               }`}
             >
               {project?.status === "Completed" && <CheckCircle className="mr-1 h-4 w-4" />}
@@ -697,7 +697,7 @@ const ProjectProgressTracker: React.FC = () => {
               {project?.status === "PaymentPending" && <DollarSign className="mr-1 h-4 w-4" />}
               {project?.status}
             </span>
-            <span className="bg-gray-800/70 text-gray-300 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+            <span className="bg-white/70 text-gray-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
               <Calendar className="mr-1 h-4 w-4" />
               Due: {new Date(project?.endDate || "").toLocaleDateString()}
             </span>
@@ -710,39 +710,39 @@ const ProjectProgressTracker: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-700">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border border-gray-200">
               <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-200 mb-4">Project Details</h2>
-                <p className="text-gray-400 mb-6">{project?.description}</p>
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Project Details</h2>
+                <p className="text-gray-600 mb-6">{project?.description}</p>
 
                 <div className="space-y-4">
                   <div className="flex items-center">
-                    <div className="bg-blue-900/30 rounded-full p-2 mr-3">
-                      <User className="h-5 w-5 text-blue-400" />
+                    <div className="bg-blue-100 rounded-full p-2 mr-3">
+                      <User className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Student</p>
-                      <p className="font-medium text-gray-300">{project?.studentName}</p>
+                      <p className="font-medium text-gray-800">{project?.studentName}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center">
-                    <div className="bg-blue-900/30 rounded-full p-2 mr-3">
-                      <User className="h-5 w-5 text-blue-400" />
+                    <div className="bg-blue-100 rounded-full p-2 mr-3">
+                      <User className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Industry Expert</p>
-                      <p className="font-medium text-gray-300">{project?.expertName || "N/A"}</p>
+                      <p className="font-medium text-gray-800">{project?.expertName || "N/A"}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center">
-                    <div className="bg-blue-900/30 rounded-full p-2 mr-3">
-                      <Calendar className="h-5 w-5 text-blue-400" />
+                    <div className="bg-blue-100 rounded-full p-2 mr-3">
+                      <Calendar className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Due Date</p>
-                      <p className="font-medium text-gray-300">
+                      <p className="font-medium text-gray-800">
                         {new Date(project?.endDate || "").toLocaleDateString()}
                       </p>
                     </div>
@@ -750,13 +750,13 @@ const ProjectProgressTracker: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-gray-900/50 px-6 py-4">
+              <div className="bg-gray-50 px-6 py-4">
                 <div className="flex flex-col">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-400">Progress</span>
-                    <span className="text-sm font-medium text-blue-400">{calculateProgress()}%</span>
+                    <span className="text-sm font-medium text-gray-600">Progress</span>
+                    <span className="text-sm font-medium text-blue-600">{calculateProgress()}%</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2.5">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
                   </div>
                 </div>
@@ -765,9 +765,9 @@ const ProjectProgressTracker: React.FC = () => {
 
             {/* Project Status Actions */}
             {!isEditingDisabled && (
-              <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-700">
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border border-gray-200">
                 <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-200 mb-4">Project Actions</h3>
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Project Actions</h3>
                   <button
                     onClick={handleRequestCompletion}
                     className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
@@ -783,16 +783,16 @@ const ProjectProgressTracker: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border-l-4 border-yellow-500 border-t border-r border-b border-gray-700"
+                className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border-l-4 border-yellow-500 border-t border-r border-b border-gray-200"
               >
                 <div className="p-6">
                   <div className="flex items-center mb-4">
-                    <div className="bg-yellow-900/50 rounded-full p-2 mr-3">
-                      <Clock className="h-5 w-5 text-yellow-400" />
+                    <div className="bg-yellow-100 rounded-full p-2 mr-3">
+                      <Clock className="h-5 w-5 text-yellow-600" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-200">Completion Request Pending</h3>
+                    <h3 className="text-lg font-bold text-gray-800">Completion Request Pending</h3>
                   </div>
-                  <p className="text-gray-400">
+                  <p className="text-gray-600">
                     Your completion request has been sent to the industry expert. Editing is disabled until the request
                     is processed.
                   </p>
@@ -804,16 +804,16 @@ const ProjectProgressTracker: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border-l-4 border-blue-500 border-t border-r border-b border-gray-700"
+                className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border-l-4 border-blue-500 border-t border-r border-b border-gray-200"
               >
                 <div className="p-6">
                   <div className="flex items-center mb-4">
-                    <div className="bg-blue-900/50 rounded-full p-2 mr-3">
-                      <DollarSign className="h-5 w-5 text-blue-400" />
+                    <div className="bg-blue-100 rounded-full p-2 mr-3">
+                      <DollarSign className="h-5 w-5 text-blue-600" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-200">Payment Pending</h3>
+                    <h3 className="text-lg font-bold text-gray-800">Payment Pending</h3>
                   </div>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-gray-600 mb-4">
                     Your completion request has been approved. The industry expert will now process the payment.
                   </p>
                 </div>
@@ -824,16 +824,16 @@ const ProjectProgressTracker: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border-l-4 border-green-500 border-t border-r border-b border-gray-700"
+                className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border-l-4 border-green-500 border-t border-r border-b border-gray-200"
               >
                 <div className="p-6">
                   <div className="flex items-center mb-4">
-                    <div className="bg-green-900/50 rounded-full p-2 mr-3">
-                      <CheckCircle className="h-5 w-5 text-green-400" />
+                    <div className="bg-green-100 rounded-full p-2 mr-3">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-200">Project Completed</h3>
+                    <h3 className="text-lg font-bold text-gray-800">Project Completed</h3>
                   </div>
-                  <p className="text-gray-400 mb-4">This project is complete. Editing is disabled.</p>
+                  <p className="text-gray-600 mb-4">This project is complete. Editing is disabled.</p>
                   <Link
                     href={`/student/project-certificate/${projectId}`}
                     className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
@@ -849,15 +849,15 @@ const ProjectProgressTracker: React.FC = () => {
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             {/* Tabs */}
-            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-700">
-              <div className="border-b border-gray-700">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border border-gray-200">
+              <div className="border-b border-gray-200">
                 <nav className="flex -mb-px">
                   <button
                     onClick={() => setActiveTab("milestones")}
                     className={`py-4 px-6 font-medium text-sm border-b-2 ${
                       activeTab === "milestones"
-                        ? "border-blue-500 text-blue-400"
-                        : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     Milestones
@@ -866,8 +866,8 @@ const ProjectProgressTracker: React.FC = () => {
                     onClick={() => setActiveTab("tasks")}
                     className={`py-4 px-6 font-medium text-sm border-b-2 ${
                       activeTab === "tasks"
-                        ? "border-blue-500 text-blue-400"
-                        : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     Tasks
@@ -877,8 +877,8 @@ const ProjectProgressTracker: React.FC = () => {
                       onClick={() => setActiveTab("reviews")}
                       className={`py-4 px-6 font-medium text-sm border-b-2 ${
                         activeTab === "reviews"
-                          ? "border-blue-500 text-blue-400"
-                          : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                       }`}
                     >
                       Reviews
@@ -889,8 +889,8 @@ const ProjectProgressTracker: React.FC = () => {
                       onClick={() => setActiveTab("chat")}
                       className={`py-4 px-6 font-medium text-sm border-b-2 ${
                         activeTab === "chat"
-                          ? "border-blue-500 text-blue-400"
-                          : "border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                       }`}
                     >
                       Chat
@@ -905,7 +905,7 @@ const ProjectProgressTracker: React.FC = () => {
                 {activeTab === "milestones" && (
                   <div>
                     <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-bold text-gray-200">Project Milestones</h2>
+                      <h2 className="text-xl font-bold text-gray-800">Project Milestones</h2>
                       {!isEditingDisabled && (
                         <button
                           onClick={() => handleOpenModal()}
@@ -920,7 +920,7 @@ const ProjectProgressTracker: React.FC = () => {
                     {progressItems.length > 0 ? (
                       <div>
                         <div className="mt-4 mb-8">
-                          <h3 className="text-lg font-bold text-gray-200 mb-4">Overall Timeline</h3>
+                          <h3 className="text-lg font-bold text-gray-800 mb-4">Overall Timeline</h3>
                           <MilestoneTimeline milestones={progressItems} />
                         </div>
 
@@ -932,25 +932,25 @@ const ProjectProgressTracker: React.FC = () => {
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: index * 0.1 }}
-                              className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden"
+                              className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
                             >
                               <div className="p-5">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-start">
                                     <div
                                       className={`flex-shrink-0 rounded-full p-2 mr-3 ${
-                                        milestone.isCompleted ? "bg-green-900/30" : "bg-yellow-900/30"
+                                        milestone.isCompleted ? "bg-green-100" : "bg-yellow-100"
                                       }`}
                                     >
                                       {milestone.isCompleted ? (
-                                        <CheckCircle className={`h-5 w-5 text-green-400`} />
+                                        <CheckCircle className={`h-5 w-5 text-green-600`} />
                                       ) : (
-                                        <Clock className={`h-5 w-5 text-yellow-400`} />
+                                        <Clock className={`h-5 w-5 text-yellow-600`} />
                                       )}
                                     </div>
                                     <div>
-                                      <h3 className="text-lg font-semibold text-gray-200">{milestone.title}</h3>
-                                      <p className="text-gray-400 mt-1">{milestone.description}</p>
+                                      <h3 className="text-lg font-semibold text-gray-800">{milestone.title}</h3>
+                                      <p className="text-gray-600 mt-1">{milestone.description}</p>
                                       <div className="flex items-center mt-2">
                                         <Calendar className="h-4 w-4 text-gray-500 mr-1" />
                                         <p className="text-sm text-gray-500">
@@ -963,8 +963,8 @@ const ProjectProgressTracker: React.FC = () => {
                                     <span
                                       className={`px-3 py-1 rounded-full text-xs font-medium ${
                                         milestone.isCompleted
-                                          ? "bg-green-900/50 text-green-300"
-                                          : "bg-yellow-900/50 text-yellow-300"
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-yellow-100 text-yellow-800"
                                       }`}
                                     >
                                       {milestone.isCompleted ? "Completed" : "In Progress"}
@@ -972,7 +972,7 @@ const ProjectProgressTracker: React.FC = () => {
                                     {!isEditingDisabled && (
                                       <button
                                         onClick={() => handleOpenModal(milestone)}
-                                        className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+                                        className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded"
                                       >
                                         Edit
                                       </button>
@@ -981,15 +981,15 @@ const ProjectProgressTracker: React.FC = () => {
                                 </div>
 
                                 {/* Comments Section */}
-                                <div className="mt-4 pt-4 border-t border-gray-700">
-                                  <h4 className="text-sm font-semibold text-blue-400 mb-2">Expert Comments</h4>
+                                <div className="mt-4 pt-4 border-t border-gray-200">
+                                  <h4 className="text-sm font-semibold text-blue-600 mb-2">Expert Comments</h4>
                                   {comments[milestone.id] && comments[milestone.id].length > 0 ? (
                                     <div className="space-y-3">
                                       {comments[milestone.id].map((comment) => (
-                                        <div key={comment.id} className="bg-gray-700 p-3 rounded">
-                                          <p className="text-sm text-gray-300">{comment.comment}</p>
+                                        <div key={comment.id} className="bg-gray-50 p-3 rounded">
+                                          <p className="text-sm text-gray-700">{comment.comment}</p>
                                           <div className="flex justify-between items-center mt-1">
-                                            <span className="text-xs text-gray-400">{comment.commenterName}</span>
+                                            <span className="text-xs text-gray-600">{comment.commenterName}</span>
                                             <span className="text-xs text-gray-500">
                                               {new Date(comment.commentDate).toLocaleString()}
                                             </span>
@@ -1007,9 +1007,9 @@ const ProjectProgressTracker: React.FC = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-center py-10 bg-gray-800 rounded-lg border border-gray-700">
-                        <FileText className="w-16 h-16 mx-auto text-gray-600 mb-4" />
-                        <p className="text-gray-400 mb-6">No milestones found for this project.</p>
+                      <div className="text-center py-10 bg-white rounded-lg border border-gray-200">
+                        <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-600 mb-6">No milestones found for this project.</p>
                         {!isEditingDisabled && (
                           <button
                             onClick={() => handleOpenModal()}
@@ -1028,24 +1028,24 @@ const ProjectProgressTracker: React.FC = () => {
                 {activeTab === "tasks" && (
                   <div>
                     <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-bold text-gray-200">Project Tasks</h2>
+                      <h2 className="text-xl font-bold text-gray-800">Project Tasks</h2>
                     </div>
 
                     {tasks.length === 0 ? (
-                      <div className="bg-gray-800 rounded-lg p-6 text-center border border-gray-700">
-                        <FileText className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                        <p className="text-gray-400">No tasks assigned to this project yet.</p>
+                      <div className="bg-white rounded-lg p-6 text-center border border-gray-200">
+                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">No tasks assigned to this project yet.</p>
                       </div>
                     ) : (
-                      <div className="bg-gray-800 rounded-lg border border-gray-700">
-                        <ul className="divide-y divide-gray-700">
+                      <div className="bg-white rounded-lg border border-gray-200">
+                        <ul className="divide-y divide-gray-200">
                           {tasks.map((task, index) => (
                             <motion.li
                               key={task.id}
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: index * 0.05 }}
-                              className="p-4 hover:bg-gray-700/50"
+                              className="p-4 hover:bg-gray-50"
                             >
                               <div className="flex items-start">
                                 <div className="flex-shrink-0 pt-1">
@@ -1055,7 +1055,7 @@ const ProjectProgressTracker: React.FC = () => {
                                     className="focus:outline-none"
                                   >
                                     {task.taskStatus === "COMPLETED" ? (
-                                      <CheckSquare className="h-5 w-5 text-green-400" />
+                                      <CheckSquare className="h-5 w-5 text-green-600" />
                                     ) : (
                                       <Square className="h-5 w-5 text-gray-500" />
                                     )}
@@ -1064,7 +1064,7 @@ const ProjectProgressTracker: React.FC = () => {
                                 <div className="ml-3 flex-1">
                                   <p
                                     className={`font-medium ${
-                                      task.taskStatus === "COMPLETED" ? "line-through text-gray-500" : "text-gray-300"
+                                      task.taskStatus === "COMPLETED" ? "line-through text-gray-500" : "text-gray-700"
                                     }`}
                                   >
                                     {task.task}
@@ -1072,7 +1072,7 @@ const ProjectProgressTracker: React.FC = () => {
                                   {task.description && (
                                     <p
                                       className={`mt-1 text-sm ${
-                                        task.taskStatus === "COMPLETED" ? "line-through text-gray-600" : "text-gray-400"
+                                        task.taskStatus === "COMPLETED" ? "line-through text-gray-400" : "text-gray-600"
                                       }`}
                                     >
                                       {task.description}
@@ -1083,8 +1083,8 @@ const ProjectProgressTracker: React.FC = () => {
                                   <span
                                     className={`px-2 py-1 text-xs rounded-full ${
                                       task.taskStatus === "COMPLETED"
-                                        ? "bg-green-900/50 text-green-300"
-                                        : "bg-yellow-900/50 text-yellow-300"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-yellow-100 text-yellow-800"
                                     }`}
                                   >
                                     {task.taskStatus}
@@ -1103,14 +1103,14 @@ const ProjectProgressTracker: React.FC = () => {
                 {activeTab === "reviews" && (isProjectComplete || isPaymentPending) && (
                   <div>
                     <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-bold text-gray-200">Project Reviews</h2>
+                      <h2 className="text-xl font-bold text-gray-800">Project Reviews</h2>
                     </div>
 
                     {/* Existing Reviews */}
                     {reviews.length === 0 ? (
-                      <div className="bg-gray-800 rounded-lg p-6 text-center mb-6 border border-gray-700">
-                        <Star className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                        <p className="text-gray-400">No reviews have been submitted yet.</p>
+                      <div className="bg-white rounded-lg p-6 text-center mb-6 border border-gray-200">
+                        <Star className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">No reviews have been submitted yet.</p>
                       </div>
                     ) : (
                       <div className="space-y-4 mb-6">
@@ -1120,39 +1120,39 @@ const ProjectProgressTracker: React.FC = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-gray-800 border border-gray-700 rounded-lg p-5"
+                            className="bg-white border border-gray-200 rounded-lg p-5"
                           >
                             <div className="flex justify-between items-start">
                               <div>
-                                <p className="font-semibold text-gray-200">{review.reviewerName}</p>
+                                <p className="font-semibold text-gray-800">{review.reviewerName}</p>
                                 <div className="flex items-center mt-1">
                                   {[...Array(5)].map((_, i) => (
                                     <Star
                                       key={i}
                                       className={`h-4 w-4 ${
-                                        i < review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-600"
+                                        i < review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
                                       }`}
                                     />
                                   ))}
-                                  <span className="ml-2 text-sm text-gray-400">{review.rating}/5</span>
+                                  <span className="ml-2 text-sm text-gray-600">{review.rating}/5</span>
                                 </div>
                               </div>
                               <span className="text-sm text-gray-500">
                                 {new Date(review.datePosted).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className="mt-3 text-gray-300">{review.review}</p>
+                            <p className="mt-3 text-gray-700">{review.review}</p>
                           </motion.div>
                         ))}
                       </div>
                     )}
 
                     {/* Add Review Form */}
-                    <div className="bg-gray-800 rounded-lg p-5 border border-gray-700">
-                      <h3 className="text-lg font-semibold text-gray-200 mb-4">Add a Review</h3>
+                    <div className="bg-white rounded-lg p-5 border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Add a Review</h3>
                       <div className="space-y-4">
                         <div>
-                          <label htmlFor="review-text" className="block text-sm font-medium text-gray-300 mb-1">
+                          <label htmlFor="review-text" className="block text-sm font-medium text-gray-700 mb-1">
                             Your Review
                           </label>
                           <textarea
@@ -1160,13 +1160,13 @@ const ProjectProgressTracker: React.FC = () => {
                             value={newReviewText}
                             onChange={(e) => setNewReviewText(e.target.value)}
                             placeholder="Write your review..."
-                            className="w-full px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 bg-white rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             rows={4}
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">Rating</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
                           <div className="flex space-x-2">
                             {[1, 2, 3, 4, 5].map((rating) => (
                               <button
@@ -1176,7 +1176,7 @@ const ProjectProgressTracker: React.FC = () => {
                                 className={`h-10 w-10 rounded-full flex items-center justify-center ${
                                   newReviewRating >= rating
                                     ? "bg-yellow-500 text-yellow-900"
-                                    : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                 }`}
                               >
                                 {rating}
@@ -1201,20 +1201,20 @@ const ProjectProgressTracker: React.FC = () => {
                 {activeTab === "chat" && studentUserId && expertUserId && (
                   <div>
                     <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-bold text-gray-200">Chat with Expert</h2>
+                      <h2 className="text-xl font-bold text-gray-800">Chat with Expert</h2>
                     </div>
 
-                    <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-                      <div className="p-4 bg-gray-700 flex items-center">
-                        <div className="bg-blue-900/30 rounded-full p-2 mr-3">
-                          <MessageSquare className="h-5 w-5 text-blue-400" />
+                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                      <div className="p-4 bg-gray-50 flex items-center">
+                        <div className="bg-blue-100 rounded-full p-2 mr-3">
+                          <MessageSquare className="h-5 w-5 text-blue-600" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800">
                           {project?.expertName ? `Chat with ${project.expertName}` : "Expert Chat"}
                         </h3>
                       </div>
                       <div className="p-4">
-                        <p className="text-gray-400 mb-4">
+                        <p className="text-gray-600 mb-4">
                           Use the chat button in the bottom right corner to communicate with your industry expert.
                         </p>
                         <ChatForStudent
@@ -1234,16 +1234,16 @@ const ProjectProgressTracker: React.FC = () => {
 
       {/* Milestone Modal */}
       {!isEditingDisabled && showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-gray-800 p-6 w-full max-w-md rounded-lg shadow-xl border border-gray-700"
+            className="bg-white p-6 w-full max-w-md rounded-lg shadow-xl border border-gray-200"
           >
-            <h3 className="text-xl font-bold text-blue-400 mb-4">{editItemId ? "Edit Milestone" : "Add Milestone"}</h3>
+            <h3 className="text-xl font-bold text-blue-600 mb-4">{editItemId ? "Edit Milestone" : "Add Milestone"}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -1251,29 +1251,29 @@ const ProjectProgressTracker: React.FC = () => {
                   placeholder="e.g., Complete Research Phase"
                   value={itemFormData.title}
                   onChange={(e) => setItemFormData({ ...itemFormData, title: e.target.value })}
-                  className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 bg-white rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
                   placeholder="Describe what needs to be accomplished"
                   value={itemFormData.description}
                   onChange={(e) => setItemFormData({ ...itemFormData, description: e.target.value })}
-                  className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 bg-white rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={3}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Target Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   value={itemFormData.achievementDate}
                   onChange={(e) => setItemFormData({ ...itemFormData, achievementDate: e.target.value })}
-                  className="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 bg-white rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -1284,7 +1284,7 @@ const ProjectProgressTracker: React.FC = () => {
                   setShowModal(false)
                   setItemFormData({ title: "", description: "", achievementDate: "" })
                 }}
-                className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-gray-300"
+                className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-gray-700"
               >
                 Cancel
               </button>
@@ -1299,7 +1299,7 @@ const ProjectProgressTracker: React.FC = () => {
         </div>
       )}
 
-      <ToastContainer theme="dark" />
+      <ToastContainer />
     </div>
   )
 }

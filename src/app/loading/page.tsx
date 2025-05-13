@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const Loading: React.FC = () => {
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-black text-gray-200 overflow-hidden">
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-white text-gray-400 overflow-hidden">
       
       {/* Organic Gradient 1 */}
       <motion.div

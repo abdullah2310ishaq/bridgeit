@@ -267,11 +267,11 @@ const ExploreProjects: React.FC = () => {
   // Render
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 via-purple-950 to-gray-900">
+      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-white to-white">
         <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-t-4 border-b-4 border-purple-500 rounded-full animate-spin mb-4"></div>
-          <p className="text-purple-300 text-xl font-medium">Loading amazing projects...</p>
-          <p className="text-purple-400/70 text-sm mt-2">Get ready to showcase your skills!</p>
+          <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin mb-4"></div>
+          <p className="text-blue-600 text-xl font-medium">Loading amazing projects...</p>
+          <p className="text-blue-500 text-sm mt-2">Get ready to showcase your skills!</p>
         </div>
       </div>
     )
@@ -279,13 +279,13 @@ const ExploreProjects: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-900 via-purple-950 to-gray-900">
-        <div className="bg-gray-800 p-8 rounded-xl shadow-2xl border border-red-500/20">
-          <p className="text-red-500 text-xl font-medium">{error}</p>
-          <p className="text-gray-400 mt-2">Dont give up! Technical difficulties happen to everyone.</p>
+      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-white to-white">
+        <div className="bg-white p-8 rounded-xl shadow-md border border-red-200">
+          <p className="text-red-600 text-xl font-medium">{error}</p>
+          <p className="text-gray-600 mt-2">Don't give up! Technical difficulties happen to everyone.</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
+            className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
           >
             Try Again
           </button>
@@ -295,7 +295,7 @@ const ExploreProjects: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-900 via-purple-950 to-gray-900 text-gray-300">
+    <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-50 via-blue-50 to-gray-50 text-gray-800">
       {/* Hero Banner */}
       <div className="relative w-full h-64 overflow-hidden">
         <img
@@ -303,48 +303,48 @@ const ExploreProjects: React.FC = () => {
           alt="AI Projects Banner"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/50 to-gray-900 opacity-90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/50 to-white opacity-90"></div>
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
           <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">Explore Projects</h1>
-          <p className="text-xl text-purple-300 max-w-2xl drop-shadow-md">
+          <p className="text-xl text-blue-100 max-w-2xl drop-shadow-md">
             Discover cutting-edge AI and CS projects that match your skills and launch your career
           </p>
 
           {/* Motivational Quote */}
-          <div className="mt-6 bg-purple-900/30 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-500/30 flex items-center">
-            <Lightbulb className="text-yellow-400 w-5 h-5 mr-2" />
-            <p className="text-yellow-300 font-medium">{currentQuote}</p>
+          <div className="mt-6 bg-white/30 backdrop-blur-sm px-6 py-3 rounded-full border border-white/50 flex items-center">
+            <Lightbulb className="text-blue-800 w-5 h-5 mr-2" />
+            <p className="text-blue-900 font-medium">{currentQuote}</p>
           </div>
         </div>
       </div>
 
       {/* Stats Bar */}
-      <div className="bg-gray-800/50 backdrop-blur-sm border-y border-purple-900/30">
+      <div className="bg-white/70 backdrop-blur-sm border-y border-blue-100">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap justify-center gap-8 text-center">
             <div className="flex items-center">
-              <TrendingUp className="text-green-400 w-5 h-5 mr-2" />
+              <TrendingUp className="text-green-600 w-5 h-5 mr-2" />
               <div>
-                <p className="text-green-400 font-bold text-lg">{expertProjects.length}</p>
-                <p className="text-xs text-gray-400">Available Projects</p>
+                <p className="text-green-600 font-bold text-lg">{expertProjects.length}</p>
+                <p className="text-xs text-gray-500">Available Projects</p>
               </div>
             </div>
             <div className="flex items-center">
-              <Zap className="text-yellow-400 w-5 h-5 mr-2" />
+              <Zap className="text-amber-600 w-5 h-5 mr-2" />
               <div>
-                <p className="text-yellow-400 font-bold text-lg">
+                <p className="text-amber-600 font-bold text-lg">
                   {expertProjects.filter((p) => p.matchScore && p.matchScore > 0).length}
                 </p>
-                <p className="text-xs text-gray-400">Skill Matches</p>
+                <p className="text-xs text-gray-500">Skill Matches</p>
               </div>
             </div>
             <div className="flex items-center">
-              <Sparkles className="text-purple-400 w-5 h-5 mr-2" />
+              <Sparkles className="text-blue-600 w-5 h-5 mr-2" />
               <div>
-                <p className="text-purple-400 font-bold text-lg">
+                <p className="text-blue-600 font-bold text-lg">
                   {studentProposals.filter((p) => p.status === "Accepted").length}
                 </p>
-                <p className="text-xs text-gray-400">Accepted Proposals</p>
+                <p className="text-xs text-gray-500">Accepted Proposals</p>
               </div>
             </div>
           </div>
@@ -353,7 +353,7 @@ const ExploreProjects: React.FC = () => {
 
       <div className="flex flex-1">
         {/* Sidebar with Profile */}
-        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-gray-900/50 backdrop-blur-sm p-6 border-r border-purple-900/30">
+        <aside className="hidden lg:block lg:w-1/5 xl:w-1/6 bg-white/70 backdrop-blur-sm p-6 border-r border-blue-100">
           {userProfile && (
             <div className="space-y-6">
               <ProfileCard
@@ -364,55 +364,33 @@ const ExploreProjects: React.FC = () => {
                 skills={userProfile.skills}
               />
 
-              <div className="mt-8 p-4 rounded-xl bg-gradient-to-br from-purple-900/40 to-gray-900/40 border border-purple-700/30">
-                <h3 className="text-purple-300 font-medium mb-2">Your Progress</h3>
+              <div className="mt-8 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200">
+                <h3 className="text-blue-700 font-medium mb-2">Your Progress</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Proposals Sent:</span>
-                    <span className="text-white font-medium">{studentProposals.length}</span>
+                    <span className="text-gray-600">Proposals Sent:</span>
+                    <span className="text-gray-900 font-medium">{studentProposals.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Pending:</span>
-                    <span className="text-yellow-300 font-medium">
+                    <span className="text-gray-600">Pending:</span>
+                    <span className="text-amber-600 font-medium">
                       {studentProposals.filter((p) => p.status === "Pending").length}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Accepted:</span>
-                    <span className="text-green-400 font-medium">
+                    <span className="text-gray-600">Accepted:</span>
+                    <span className="text-green-600 font-medium">
                       {studentProposals.filter((p) => p.status === "Accepted").length}
                     </span>
                   </div>
                 </div>
 
                 {/* Motivational Text */}
-                <div className="mt-4 pt-4 border-t border-purple-900/30">
-                  <p className="text-xs text-purple-300 italic">
+                <div className="mt-4 pt-4 border-t border-blue-100">
+                  <p className="text-xs text-blue-700 italic">
                     Work hard on your proposals and showcase your unique skills to stand out!
                   </p>
                 </div>
-              </div>
-
-              {/* Featured Expert */}
-              <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-blue-900/40 to-gray-900/40 border border-blue-700/30">
-                <h3 className="text-blue-300 font-medium mb-2 flex items-center">
-                  <span className="mr-2">⭐</span>
-                  Featured Expert
-                </h3>
-                <div className="flex items-center space-x-3 mb-2">
-                  <img
-                    src="https://images.pexels.com/photos/5668859/pexels-photo-5668859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="Featured Expert"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="text-white text-sm font-medium">Dr. Sarah Chen</p>
-                    <p className="text-xs text-gray-400">AI Research Lead</p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-300">
-                  Looking for students with strong ML skills for cutting-edge research projects.
-                </p>
               </div>
             </div>
           )}
@@ -425,31 +403,31 @@ const ExploreProjects: React.FC = () => {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
               <div className="relative w-full lg:w-2/3">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <SearchIcon className="h-5 w-5 text-purple-400" />
+                  <SearchIcon className="h-5 w-5 text-blue-600" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search projects..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-full bg-gray-800/70 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ease-in-out hover:bg-gray-800/90 border border-purple-900/30"
+                  className="w-full pl-10 pr-4 py-3 rounded-full bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out hover:bg-gray-50 border border-blue-200"
                 />
               </div>
 
               <div className="relative w-full lg:w-1/3">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Filter className="h-5 w-5 text-purple-400" />
+                  <Filter className="h-5 w-5 text-blue-600" />
                 </div>
                 <select
                   value={selectedFilter}
                   onChange={(e) => setSelectedFilter(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 rounded-full bg-gray-800/70 text-gray-200 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 ease-in-out hover:bg-gray-800/90 border border-purple-900/30"
+                  className="w-full pl-10 pr-10 py-3 rounded-full bg-white text-gray-800 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out hover:bg-gray-50 border border-blue-200"
                 >
                   <option value="Most Recent">Most Recent</option>
                   <option value="Best Matches">Best Matches</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <ChevronDown className="h-5 w-5 text-purple-400" />
+                  <ChevronDown className="h-5 w-5 text-blue-600" />
                 </div>
               </div>
             </div>
@@ -458,26 +436,26 @@ const ExploreProjects: React.FC = () => {
             <div className="mt-4 flex items-center">
               <div className="flex items-center mr-4">
                 {selectedFilter === "Most Recent" ? (
-                  <Clock className="h-4 w-4 text-purple-400 mr-1" />
+                  <Clock className="h-4 w-4 text-blue-600 mr-1" />
                 ) : (
-                  <Sparkles className="h-4 w-4 text-purple-400 mr-1" />
+                  <Sparkles className="h-4 w-4 text-blue-600 mr-1" />
                 )}
-                <span className="text-sm text-purple-300">
+                <span className="text-sm text-blue-700">
                   {selectedFilter === "Most Recent" ? "Showing newest first" : "Showing best matches"}
                 </span>
               </div>
               {searchQuery && (
                 <div className="flex items-center">
-                  <Briefcase className="h-4 w-4 text-purple-400 mr-1" />
-                  <span className="text-sm text-purple-300">Search results for {searchQuery}</span>
+                  <Briefcase className="h-4 w-4 text-blue-600 mr-1" />
+                  <span className="text-sm text-blue-700">Search results for {searchQuery}</span>
                 </div>
               )}
             </div>
 
             {/* Motivational Text */}
-            <div className="mt-6 mb-4 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg p-4 border border-purple-500/20">
-              <h3 className="text-lg font-medium text-purple-300 mb-1">Ready to showcase your talent?</h3>
-              <p className="text-sm text-gray-300">
+            <div className="mt-6 mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+              <h3 className="text-lg font-medium text-blue-700 mb-1">Ready to showcase your talent?</h3>
+              <p className="text-sm text-gray-700">
                 These projects are your opportunity to work with industry experts and build your portfolio. Submit
                 compelling proposals that highlight your unique skills and passion!
               </p>
@@ -510,15 +488,15 @@ const ExploreProjects: React.FC = () => {
                   )
                 })
               ) : (
-                <div className="col-span-full flex flex-col items-center justify-center p-12 bg-gray-800/30 rounded-xl border border-purple-900/20">
+                <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-blue-100">
                   <img
                     src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                     alt="No projects"
                     className="w-40 h-40 object-cover rounded-full mb-4 opacity-80"
                   />
-                  <p className="text-gray-400 text-lg font-medium">No projects available.</p>
+                  <p className="text-gray-600 text-lg font-medium">No projects available.</p>
                   <p className="text-gray-500 text-sm mt-2">Try adjusting your search criteria.</p>
-                  <p className="text-purple-400 text-sm mt-4 max-w-md text-center">
+                  <p className="text-blue-600 text-sm mt-4 max-w-md text-center">
                     The best opportunities often come when you least expect them. Keep checking back for new projects!
                   </p>
                 </div>
@@ -527,8 +505,8 @@ const ExploreProjects: React.FC = () => {
 
             {/* Bottom Inspiration */}
             {filteredProjects.length > 0 && (
-              <div className="mt-8 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg p-4 border border-blue-500/20 text-center">
-                <p className="text-blue-300 font-medium">
+              <div className="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-200 text-center">
+                <p className="text-indigo-700 font-medium">
                   Your next big opportunity is waiting. Apply now and make it happen!
                 </p>
               </div>
@@ -537,7 +515,7 @@ const ExploreProjects: React.FC = () => {
 
           {/* Project Details Panel */}
           {selectedProjectDetails && (
-            <div className="w-full lg:w-1/2 p-6 bg-gray-900/50 backdrop-blur-sm overflow-auto border-l border-purple-900/30">
+            <div className="w-full lg:w-1/2 p-6 bg-white/70 backdrop-blur-sm overflow-auto border-l border-blue-100">
               <ProjectDetailsPanel
                 project={selectedProjectDetails}
                 onClose={() => {
@@ -554,9 +532,9 @@ const ExploreProjects: React.FC = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {/* Footer */}
-      <footer className="bg-gray-900/80 backdrop-blur-sm border-t border-purple-900/30 py-4 text-center text-sm text-gray-500">
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-blue-100 py-4 text-center text-sm text-gray-600">
         <p>© 2023 Project Explorer | Connect with industry experts and build your future</p>
-        <p className="mt-1 text-purple-400/70">
+        <p className="mt-1 text-blue-600">
           The difference between ordinary and extraordinary is that little extra. — Jimmy Johnson
         </p>
       </footer>

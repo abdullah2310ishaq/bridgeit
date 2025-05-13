@@ -101,11 +101,11 @@ const ProposalModal: React.FC<ProposalModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gray-800 text-gray-200 p-8 shadow-2xl w-full max-w-lg relative">
+    <div className="fixed inset-0 bg-white bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white text-gray-500 p-8 shadow-2xl w-full max-w-lg relative">
         {/* Close button */}
         <button
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-200 transition-colors"
           onClick={onClose}
         >
           <FaTimes size={24} />
@@ -121,7 +121,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({
           type="file"
           accept=".doc,.docx,.pdf"
           onChange={handleFileChange}
-          className="w-full p-4 rounded-md bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition duration-300"
+          className="w-full p-4 rounded-md bg-white-200 text-gray-400  focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition duration-300"
         />
 
         {/* Actions */}
@@ -129,7 +129,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({
           <button
             className={`
               px-6 py-3 rounded-full font-medium text-white shadow-lg transform transition-all duration-300 
-              ${isSubmitting ? "bg-gray-500 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}
+              ${isSubmitting ? "bg-gray-100 cursor-not-allowed" : "bg-green-600 hover:bg-green-500"}
             `}
             onClick={handleSubmitProposal}
             disabled={isSubmitting}

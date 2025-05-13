@@ -85,7 +85,7 @@ const ProjectDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100text-gray-300 p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-100 text-gray-300 p-6 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-1/2 left-1/4 bg-purple-500 w-24 h-24 rounded-full blur-3xl opacity-10 animate-pulse"></div>
 

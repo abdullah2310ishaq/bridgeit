@@ -399,14 +399,6 @@ const IdeaDetailsPage: React.FC = () => {
               {isBookmarked ? "Bookmarked" : "Bookmark"}
             </button>
           </div>
-          <div className="flex gap-2">
-            <button className="p-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition">
-              <Share2 className="w-5 h-5" />
-            </button>
-            <button className="p-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition">
-              <Download className="w-5 h-5" />
-            </button>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -462,7 +454,7 @@ const IdeaDetailsPage: React.FC = () => {
                     <ul className="space-y-2 text-gray-700">
                       <li className="flex items-start">
                         <span className="text-blue-500 mr-2">•</span>
-                        <span>Expected duration: 3-4 months</span>
+                        <span>Expected duration: 4-5 months</span>
                       </li>
                       <li className="flex items-start">
                         <span className="text-blue-500 mr-2">•</span>
@@ -631,11 +623,6 @@ const IdeaDetailsPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
-                <button className="w-full mt-6 py-2 px-4 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition flex items-center justify-center">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Contact Faculty
-                </button>
               </div>
             </div>
 

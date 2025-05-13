@@ -87,7 +87,7 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
               </motion.div>
 
               <div className="text-white">
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-3xl font-bold text-white">
                   {userProfile.firstName} {userProfile.lastName}
                 </h1>
                 <div className="flex items-center mt-1 text-gray-300">
@@ -166,43 +166,6 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
               )}
             </div>
 
-            {/* Middle Column - Academic Info */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
-                Academic Information
-              </h3>
-
-              <div className="flex items-start">
-                <div className="bg-amber-100 p-2 rounded-lg mr-3">
-                  <BookOpen className="w-5 h-5 text-amber-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Course</p>
-                  <p className="font-medium text-gray-800">{userProfile.course || "Not specified"}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-red-100 p-2 rounded-lg mr-3">
-                  <Clock className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Semester</p>
-                  <p className="font-medium text-gray-800">{userProfile.semester || "Not specified"}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-indigo-100 p-2 rounded-lg mr-3">
-                  <Award className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Status</p>
-                  <p className="font-medium text-gray-800">Active Student</p>
-                </div>
-              </div>
-            </div>
-
             {/* Right Column - Description */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">About Me</h3>
@@ -212,22 +175,6 @@ const ProfileSection: React.FC<Props> = ({ userProfile, goToEditProfile, gotoPro
                   {userProfile.description ||
                     "No description provided. Click 'Edit Profile' to add information about yourself."}
                 </p>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                <div className="bg-blue-50 p-3 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-blue-600">3</p>
-                  <p className="text-xs text-gray-600">Projects</p>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-green-600">2</p>
-                  <p className="text-xs text-gray-600">Completed</p>
-                </div>
-                <div className="bg-purple-50 p-3 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-purple-600">5</p>
-                  <p className="text-xs text-gray-600">Courses</p>
-                </div>
               </div>
             </div>
           </div>

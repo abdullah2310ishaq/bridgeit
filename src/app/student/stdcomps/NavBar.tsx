@@ -113,7 +113,7 @@ const NavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
           {/* Left: Brand/Title */}
           <div className="flex items-center">
             <Link href="/student" className="text-gray-800 text-lg font-semibold flex items-center">
-              <span className="bg-gray-800 text-white p-1.5 rounded-md mr-2">SP</span>
+              <span className="bg-gray-800 text-white p-1.5 rounded-md mr-2"></span>
               Student Portal
             </Link>
           </div>

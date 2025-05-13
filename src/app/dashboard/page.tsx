@@ -12,7 +12,7 @@ const DashboardHomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 text-gray-100 p-10">
+    <div className="min-h-screen bg-gradient-to-br from-white-100 to-white-100 text-gray-600 p-10">
       {/* Header */}
       <motion.h1
         className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-600 to-yellow-500 text-center mb-12"

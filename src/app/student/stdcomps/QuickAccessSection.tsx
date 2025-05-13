@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import {
   Calendar,
@@ -22,6 +22,7 @@ import {
   Settings,
   HelpCircle,
   Bookmark,
+  ChevronRight,
 } from "lucide-react"
 
 interface QuickLink {
@@ -31,7 +32,7 @@ interface QuickLink {
   icon: string
   href: string
   color: string
-  notificationCount: number
+  notificationCount?: number
 }
 
 interface QuickAccessProps {
@@ -41,9 +42,8 @@ interface QuickAccessProps {
 
 const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = [] }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [totalNotifications, setTotalNotifications] = useState(0)
 
-  // Map icon strings to actual Lucide icon components
+  // Icon mapping
   const iconMap: Record<string, React.ElementType> = {
     Calendar,
     FileText,
@@ -65,8 +65,8 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
     Bookmark,
   }
 
-  // Default quick links if API doesn't provide any
-  const defaultQuickLinks = [
+  // Default quick links
+  const defaultQuickLinks: QuickLink[] = [
     {
       id: "1",
       title: "Student Events",
@@ -74,7 +74,6 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       icon: "Calendar",
       href: "/student/events",
       color: "blue",
-      notificationCount: 3,
     },
     {
       id: "2",
@@ -82,8 +81,7 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       description: "Submit your final year project proposal",
       icon: "FileText",
       href: "/students/fyp",
-      color: "gray",
-      notificationCount: 0,
+      color: "indigo",
     },
     {
       id: "3",
@@ -91,8 +89,7 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       description: "Schedule and manage project meetings",
       icon: "Video",
       href: "/student/meetings",
-      color: "blue",
-      notificationCount: 1,
+      color: "purple",
     },
     {
       id: "4",
@@ -100,8 +97,7 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       description: "View your transaction records",
       icon: "CreditCard",
       href: "/students/payment-history",
-      color: "gray",
-      notificationCount: 0,
+      color: "teal",
     },
     {
       id: "5",
@@ -109,19 +105,14 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       description: "Explore project ideas from faculty",
       icon: "Lightbulb",
       href: "/student/seeideas",
-      color: "blue",
-      notificationCount: 5,
+      color: "amber",
     },
   ]
-
-
 
   // Use API links if available, otherwise use defaults
   const quickLinks = apiLinks.length > 0 ? apiLinks : defaultQuickLinks
 
-  // Calculate total notifications
- 
-  // Animation variants for staggered animations
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -137,41 +128,60 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
     show: { opacity: 1, y: 0 },
   }
 
-  // Helper function to get color classes based on color name
-  const getColorClasses = (color: string, isHovered: boolean) => {
-    const colorMap: Record<string, { bg: string; hoverBg: string; iconBg: string }> = {
+  // Color mapping function
+  const getColorClasses = (color: string): { gradient: string; ring: string; icon: string; text: string } => {
+    const colorMap: Record<string, { gradient: string; ring: string; icon: string; text: string }> = {
       blue: {
-        bg: "from-blue-600 to-blue-700",
-        hoverBg: "from-blue-700 to-blue-800",
-        iconBg: "bg-blue-500/20",
+        gradient: "from-blue-500 to-blue-600",
+        ring: "ring-blue-500/20",
+        icon: "bg-blue-500/10 text-blue-500",
+        text: "text-blue-600",
       },
-      gray: {
-        bg: "from-gray-600 to-gray-700",
-        hoverBg: "from-gray-700 to-gray-800",
-        iconBg: "bg-gray-500/20",
-      },
-      green: {
-        bg: "from-green-600 to-green-700",
-        hoverBg: "from-green-700 to-green-800",
-        iconBg: "bg-green-500/20",
+      indigo: {
+        gradient: "from-indigo-500 to-indigo-600",
+        ring: "ring-indigo-500/20",
+        icon: "bg-indigo-500/10 text-indigo-500",
+        text: "text-indigo-600",
       },
       purple: {
-        bg: "from-purple-600 to-purple-700",
-        hoverBg: "from-purple-700 to-purple-800",
-        iconBg: "bg-purple-500/20",
+        gradient: "from-purple-500 to-purple-600",
+        ring: "ring-purple-500/20",
+        icon: "bg-purple-500/10 text-purple-500",
+        text: "text-purple-600",
+      },
+      teal: {
+        gradient: "from-teal-500 to-teal-600",
+        ring: "ring-teal-500/20",
+        icon: "bg-teal-500/10 text-teal-500",
+        text: "text-teal-600",
+      },
+      amber: {
+        gradient: "from-amber-500 to-amber-600",
+        ring: "ring-amber-500/20",
+        icon: "bg-amber-500/10 text-amber-500",
+        text: "text-amber-600",
+      },
+      gray: {
+        gradient: "from-gray-500 to-gray-600",
+        ring: "ring-gray-500/20",
+        icon: "bg-gray-500/10 text-gray-500",
+        text: "text-gray-600",
+      },
+      green: {
+        gradient: "from-green-500 to-green-600",
+        ring: "ring-green-500/20",
+        icon: "bg-green-500/10 text-green-500",
+        text: "text-green-600",
       },
       red: {
-        bg: "from-red-600 to-red-700",
-        hoverBg: "from-red-700 to-red-800",
-        iconBg: "bg-red-500/20",
+        gradient: "from-red-500 to-red-600",
+        ring: "ring-red-500/20",
+        icon: "bg-red-500/10 text-red-500",
+        text: "text-red-600",
       },
     }
 
-    const colorClasses = colorMap[color] || colorMap.blue
-    return {
-      bg: isHovered ? colorClasses.hoverBg : colorClasses.bg,
-      iconBg: colorClasses.iconBg,
-    }
+    return colorMap[color] || colorMap.blue
   }
 
   return (
@@ -181,29 +191,23 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       transition={{ duration: 0.5 }}
       className={`mb-6 ${className}`}
     >
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-        <div className="bg-gradient-to-r from-gray-700 to-gray-800 p-4">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="bg-white/10 rounded-lg p-2 mr-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 mr-3">
                 <Zap className="w-5 h-5 text-white" />
-              </span>
+              </div>
               <div>
                 <h2 className="text-lg font-bold text-white">Quick Access</h2>
                 <p className="text-gray-300 text-xs">Navigate to important resources</p>
               </div>
             </div>
-
-            {totalNotifications > 0 && (
-              <div className="bg-gray-700/50 backdrop-blur-sm px-3 py-1 rounded-full flex items-center">
-                <span className="text-xs text-white font-medium">{totalNotifications} updates</span>
-                <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Primary Quick Links */}
+        {/* Quick Links Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -212,73 +216,48 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
         >
           {quickLinks.map((link, index) => {
             const IconComponent = iconMap[link.icon] || Zap
-            const colorClasses = getColorClasses(link.color, hoveredIndex === index)
+            const colorClasses = getColorClasses(link.color)
 
             return (
               <motion.a
                 key={link.id}
                 href={link.href}
-                className="relative group"
+                className="group relative"
                 variants={itemVariants}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
-                <div className="h-full rounded-lg overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md">
-                  {/* Background gradient */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${colorClasses.bg} transition-all duration-300 z-0`}
-                  ></div>
+                <div className="h-full bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md ring-1 ring-gray-100 hover:ring-2 hover:ring-offset-1 hover:ring-offset-white hover:ring-gray-200">
+                  {/* Top accent bar */}
+                  <div className={`h-1 w-full bg-gradient-to-r ${colorClasses.gradient}`}></div>
 
                   {/* Content */}
-                  <div className="relative z-10 p-4 flex flex-col items-center text-center h-full">
-                    <div className={`p-2 rounded-full ${colorClasses.iconBg} mb-2`}>
-                      <IconComponent className="w-5 h-5 text-white" />
+                  <div className="p-4 flex flex-col items-center text-center h-full">
+                    <div className={`p-2 rounded-full ${colorClasses.icon} mb-3`}>
+                      <IconComponent className="w-5 h-5" />
                     </div>
-                    <h3 className="font-medium text-white text-sm">{link.title}</h3>
-                    <p className="text-white/70 text-xs mt-1 hidden md:block line-clamp-1">{link.description}</p>
+                    <h3 className="font-medium text-gray-800 text-sm">{link.title}</h3>
+                    <p className="text-gray-500 text-xs mt-1 hidden md:block line-clamp-1">{link.description}</p>
 
                     {/* Notification badge */}
-                    {link.notificationCount > 0 && (
+                    {link.notificationCount && link.notificationCount > 0 && (
                       <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                         {link.notificationCount}
                       </div>
                     )}
 
-                    {/* Animated arrow on hover */}
-                    <motion.div
-                      className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      animate={{ x: hoveredIndex === index ? 0 : -5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </motion.div>
+                    {/* Hover indicator */}
+                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ChevronRight className={`w-4 h-4 ${colorClasses.text}`} />
+                    </div>
                   </div>
                 </div>
               </motion.a>
             )
           })}
         </motion.div>
-
-        {/* Secondary Quick Links - Smaller and more compact */}
-        <div className="px-4 pb-4">
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-            </div>
-
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-3 sm:grid-cols-5 gap-2"
-            >
-          
-            </motion.div>
-          </div>
-        </div>
       </div>
     </motion.div>
   )
