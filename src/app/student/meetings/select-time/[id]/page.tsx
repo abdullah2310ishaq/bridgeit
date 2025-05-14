@@ -37,12 +37,9 @@ export default function SelectMeetingTimePage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!userResponse.ok) throw new Error("Failed to authenticate user")
 
@@ -50,12 +47,9 @@ export default function SelectMeetingTimePage() {
         const userId = userData.userId
 
         // Step 2: Get student details
-        const studentResponse = await fetch(
-          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!studentResponse.ok) throw new Error("Failed to fetch student details")
 
@@ -63,12 +57,9 @@ export default function SelectMeetingTimePage() {
         setStudentId(studentData.id)
 
         // Step 3: Fetch meeting request details
-        const meetingResponse = await fetch(
-          `https://localhost:7053/api/fyp-meeting/request/${requestId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const meetingResponse = await fetch(`https://localhost:7053/api/fyp-meeting/request/${requestId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!meetingResponse.ok) {
           throw new Error("Failed to fetch meeting request details")
@@ -77,12 +68,9 @@ export default function SelectMeetingTimePage() {
         const meetingData = await meetingResponse.json()
 
         // Fetch detailed FYP information
-        const fypResponse = await fetch(
-          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${meetingData.fypId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const fypResponse = await fetch(`https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${meetingData.fypId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (fypResponse.ok) {
           const fypData = await fypResponse.json()
@@ -148,20 +136,17 @@ export default function SelectMeetingTimePage() {
         timeSlot: selectedTimeSlot,
       })
 
-      const response = await fetch(
-        `https://localhost:7053/api/fyp-meeting/add/${meetingRequest.fypId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            indExpertId: meetingRequest.indExpertId,
-            timeSlot: selectedTimeSlot,
-          }),
+      const response = await fetch(`https://localhost:7053/api/fyp-meeting/add/${meetingRequest.fypId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify({
+          indExpertId: meetingRequest.indExpertId,
+          timeSlot: selectedTimeSlot,
+        }),
+      })
 
       if (response.ok) {
         toast.success("Meeting time selected successfully!")
@@ -182,10 +167,10 @@ export default function SelectMeetingTimePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
-          <p className="text-xl text-gray-300">Loading meeting request...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+          <p className="text-xl text-gray-700">Loading meeting request...</p>
         </div>
       </div>
     )
@@ -193,13 +178,13 @@ export default function SelectMeetingTimePage() {
 
   if (error || !meetingRequest) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="bg-red-900/20 p-6 rounded-lg border border-red-700 max-w-md">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
-          <p className="text-gray-300">{error || "Failed to load meeting request"}</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-6 rounded-lg border border-red-200 shadow-md max-w-md">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-700">{error || "Failed to load meeting request"}</p>
           <button
             onClick={() => router.push("/student/meetings")}
-            className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
+            className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white transition-colors"
           >
             Return to Meetings
           </button>
@@ -209,44 +194,44 @@ export default function SelectMeetingTimePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
+      <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <button
             onClick={() => router.push("/student/meetings")}
-            className="flex items-center gap-2 text-gray-400 hover:text-white mb-4"
+            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 mb-4 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Meetings
           </button>
-          <h1 className="text-3xl font-bold text-purple-400">Select Meeting Time</h1>
-          <p className="text-gray-400 mt-2">{meetingRequest.fypTitle}</p>
+          <h1 className="text-3xl font-bold text-indigo-600">Select Meeting Time</h1>
+          <p className="text-gray-600 mt-2">{meetingRequest.fypTitle}</p>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
           <div className="p-6 space-y-6">
             {/* Meeting Request Info */}
-            <div className="bg-gray-700/30 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold text-white mb-4">Meeting Request</h2>
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Meeting Request</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-purple-400" />
+                  <Calendar className="h-5 w-5 text-indigo-500" />
                   <div>
-                    <p className="text-sm text-gray-400">Project</p>
-                    <p className="text-gray-200">{meetingRequest.fypTitle}</p>
+                    <p className="text-sm text-gray-600">Project</p>
+                    <p className="text-gray-800 font-medium">{meetingRequest.fypTitle}</p>
                   </div>
                 </div>
 
                 {meetingRequest.indExpertName && (
                   <div className="flex items-center gap-3">
-                    <User className="h-5 w-5 text-blue-400" />
+                    <User className="h-5 w-5 text-indigo-500" />
                     <div>
-                      <p className="text-sm text-gray-400">Industry Expert</p>
-                      <p className="text-gray-200">{meetingRequest.indExpertName}</p>
+                      <p className="text-sm text-gray-600">Industry Expert</p>
+                      <p className="text-gray-800 font-medium">{meetingRequest.indExpertName}</p>
                     </div>
                   </div>
                 )}
@@ -255,8 +240,8 @@ export default function SelectMeetingTimePage() {
 
             {/* Time Slot Selection */}
             <div>
-              <h3 className="text-lg font-medium text-white mb-4">Select a Time Slot</h3>
-              <p className="text-gray-400 mb-4">
+              <h3 className="text-lg font-medium text-gray-800 mb-4">Select a Time Slot</h3>
+              <p className="text-gray-600 mb-4">
                 The industry expert has provided the following time slots. Please select one that works for you.
               </p>
 
@@ -266,17 +251,17 @@ export default function SelectMeetingTimePage() {
                     key={index}
                     className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                       selectedTimeSlot === timeSlot
-                        ? "bg-purple-900/30 border-purple-500"
-                        : "bg-gray-700/30 border-gray-700 hover:border-gray-500"
+                        ? "bg-indigo-50 border-indigo-300"
+                        : "bg-white border-gray-200 hover:border-indigo-200"
                     }`}
                     onClick={() => setSelectedTimeSlot(timeSlot)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-blue-400" />
-                        <span className="text-gray-200">{formatTimeSlot(timeSlot)}</span>
+                        <Clock className="h-5 w-5 text-indigo-500" />
+                        <span className="text-gray-800">{formatTimeSlot(timeSlot)}</span>
                       </div>
-                      {selectedTimeSlot === timeSlot && <CheckCircle className="h-5 w-5 text-green-400" />}
+                      {selectedTimeSlot === timeSlot && <CheckCircle className="h-5 w-5 text-green-600" />}
                     </div>
                   </div>
                 ))}
@@ -288,7 +273,7 @@ export default function SelectMeetingTimePage() {
               <button
                 onClick={handleSelectTimeSlot}
                 disabled={submitting || !selectedTimeSlot}
-                className="px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md transition-colors flex items-center gap-2 disabled:bg-purple-900 disabled:opacity-50"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors flex items-center gap-2 disabled:bg-indigo-300 disabled:cursor-not-allowed shadow-sm"
               >
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 Confirm Selected Time
@@ -304,7 +289,7 @@ export default function SelectMeetingTimePage() {
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </div>
   )

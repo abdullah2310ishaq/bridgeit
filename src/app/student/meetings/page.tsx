@@ -4,7 +4,19 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { Calendar, Video, Loader2, CheckCircle, XCircle, LinkIcon, ExternalLink, FileText, ArrowLeft, Bell, Plus } from 'lucide-react'
+import {
+  Calendar,
+  Video,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  LinkIcon,
+  ExternalLink,
+  FileText,
+  ArrowLeft,
+  Bell,
+  Plus,
+} from "lucide-react"
 
 interface Meeting {
   id: string
@@ -58,12 +70,9 @@ export default function StudentMeetingsPage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!userResponse.ok) throw new Error("Failed to authenticate user")
 
@@ -71,24 +80,21 @@ export default function StudentMeetingsPage() {
         const userId = userData.userId
 
         // Step 2: Get student details
-        const studentResponse = await fetch(
-          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!studentResponse.ok) throw new Error("Failed to fetch student details")
 
         const studentData: Student = await studentResponse.json()
         setStudentId(studentData.id)
-        
+
         // Check if student has a FYP assigned
         if (!studentData.fypId) {
           setLoading(false)
           return // No FYP assigned, so no meetings to fetch
         }
-        
+
         setFypId(studentData.fypId)
 
         // Step 3: Get detailed FYP information
@@ -107,12 +113,9 @@ export default function StudentMeetingsPage() {
         console.log("Detailed FYP data:", detailedFypData)
 
         // Step 4: Fetch meetings for this FYP
-        const meetingsResponse = await fetch(
-          `https://localhost:7053/api/fyp-meeting/by-id/${studentData.fypId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const meetingsResponse = await fetch(`https://localhost:7053/api/fyp-meeting/by-id/${studentData.fypId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (meetingsResponse.ok) {
           const meetingsData = await meetingsResponse.json()
@@ -151,12 +154,9 @@ export default function StudentMeetingsPage() {
         }
 
         // Step 5: Fetch meeting requests for this FYP
-        const requestsResponse = await fetch(
-          `https://localhost:7053/api/fyp-meeting/requests/${studentData.fypId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const requestsResponse = await fetch(`https://localhost:7053/api/fyp-meeting/requests/${studentData.fypId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (requestsResponse.ok) {
           const requestsData = await requestsResponse.json()
@@ -215,10 +215,10 @@ export default function StudentMeetingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
-          <p className="text-xl text-gray-300">Loading your meetings...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+          <p className="text-xl text-gray-700">Loading your meetings...</p>
         </div>
       </div>
     )
@@ -226,13 +226,13 @@ export default function StudentMeetingsPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="bg-red-900/20 p-6 rounded-lg border border-red-700 max-w-md">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
-          <p className="text-gray-300">{error}</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-6 rounded-lg border border-red-200 shadow-md max-w-md">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-700">{error}</p>
           <button
             onClick={() => router.push("/student")}
-            className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
+            className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white transition-colors"
           >
             Return to Dashboard
           </button>
@@ -243,32 +243,33 @@ export default function StudentMeetingsPage() {
 
   if (!fypId) {
     return (
-      <div className="min-h-screen bg-gray-900 text-gray-100">
-        <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900">
+        <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
           <div className="max-w-7xl mx-auto">
             <button
               onClick={() => router.push("/student")}
-              className="flex items-center gap-2 text-gray-400 hover:text-white mb-4"
+              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 mb-4 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Dashboard
             </button>
-            <h1 className="text-3xl font-bold text-purple-400">Your Meetings</h1>
-            <p className="text-gray-400 mt-2">Manage meetings with industry experts</p>
+            <h1 className="text-3xl font-bold text-indigo-600">Your Meetings</h1>
+            <p className="text-gray-600 mt-2">Manage meetings with industry experts</p>
           </div>
         </header>
 
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 max-w-md">
-              <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-300">No FYP Assigned</h3>
-              <p className="text-gray-400 mt-2">
-                You dont have a Final Year Project assigned yet. Once you have a FYP, you ll be able to schedule meetings with industry experts.
+            <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-md max-w-md">
+              <Calendar className="h-12 w-12 text-indigo-400 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-gray-800">No FYP Assigned</h3>
+              <p className="text-gray-600 mt-2">
+                You don't have a Final Year Project assigned yet. Once you have a FYP, you'll be able to schedule
+                meetings with industry experts.
               </p>
               <button
                 onClick={() => router.push("/student/register-fyp")}
-                className="mt-6 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md transition-colors"
+                className="mt-6 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors shadow-sm"
               >
                 Register a FYP
               </button>
@@ -280,19 +281,19 @@ export default function StudentMeetingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
+      <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <button
             onClick={() => router.push("/student")}
-            className="flex items-center gap-2 text-gray-400 hover:text-white mb-4"
+            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 mb-4 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </button>
-          <h1 className="text-3xl font-bold text-purple-400">Your Meetings</h1>
-          <p className="text-gray-400 mt-2">Manage meetings with industry experts</p>
+          <h1 className="text-3xl font-bold text-indigo-600">Your Meetings</h1>
+          <p className="text-gray-600 mt-2">Manage meetings with industry experts</p>
         </div>
       </header>
 
@@ -301,31 +302,29 @@ export default function StudentMeetingsPage() {
         {meetingRequests.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <Bell className="h-5 w-5 text-yellow-400" />
-              <h2 className="text-xl font-semibold text-white">Pending Meeting Requests</h2>
+              <Bell className="h-5 w-5 text-amber-500" />
+              <h2 className="text-xl font-semibold text-gray-800">Pending Meeting Requests</h2>
             </div>
 
             <div className="space-y-4">
               {meetingRequests.map((request) => (
-                <div key={request.id} className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-4">
+                <div key={request.id} className="bg-amber-50 border border-amber-200 rounded-lg p-4 shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
-                      <h3 className="text-lg font-medium text-white">{request.fypTitle}</h3>
-                      {request.indExpertName && (
-                        <p className="text-yellow-300 text-sm">From: {request.indExpertName}</p>
-                      )}
+                      <h3 className="text-lg font-medium text-gray-800">{request.fypTitle}</h3>
+                      {request.indExpertName && <p className="text-amber-700 text-sm">From: {request.indExpertName}</p>}
                     </div>
 
                     <button
                       onClick={() => router.push(`/student/meetings/select-time/${request.id}`)}
-                      className="px-4 py-2 bg-yellow-700 hover:bg-yellow-600 text-white rounded-md transition-colors flex items-center gap-2"
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-md transition-colors flex items-center gap-2 shadow-sm"
                     >
                       <Calendar className="h-4 w-4" />
                       Select Time Slot
                     </button>
                   </div>
 
-                  <p className="text-gray-300 text-sm mb-2">
+                  <p className="text-gray-700 text-sm mb-2">
                     The industry expert has suggested {request.timeSlots.length} possible time slots for a meeting.
                     Please select one that works for you.
                   </p>
@@ -337,29 +336,29 @@ export default function StudentMeetingsPage() {
 
         {/* Scheduled Meetings Section */}
         <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Scheduled Meetings</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Scheduled Meetings</h2>
 
           {meetings.length > 0 ? (
             <div className="space-y-6">
               {meetings.map((meeting) => (
-                <div key={meeting.id} className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                <div key={meeting.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                   <div className="p-6 space-y-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
-                        <h3 className="text-xl font-semibold text-white">{meeting.fypTitle}</h3>
+                        <h3 className="text-xl font-semibold text-gray-800">{meeting.fypTitle}</h3>
                         <div className="flex items-center gap-2 mt-1">
                           {meeting.isMeetDone ? (
-                            <div className="px-2 py-1 bg-green-900/30 text-green-400 text-xs rounded-md flex items-center gap-1">
+                            <div className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md flex items-center gap-1">
                               <CheckCircle className="h-3 w-3" />
                               Completed
                             </div>
                           ) : meeting.meetLink ? (
-                            <div className="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs rounded-md flex items-center gap-1">
+                            <div className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md flex items-center gap-1">
                               <Video className="h-3 w-3" />
                               Ready
                             </div>
                           ) : (
-                            <div className="px-2 py-1 bg-yellow-900/30 text-yellow-400 text-xs rounded-md flex items-center gap-1">
+                            <div className="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-md flex items-center gap-1">
                               <LinkIcon className="h-3 w-3" />
                               Needs Link
                             </div>
@@ -368,59 +367,59 @@ export default function StudentMeetingsPage() {
                       </div>
 
                       {meeting.indExpertName && (
-                        <div className="bg-gray-700/30 px-3 py-2 rounded-md text-sm">
-                          <span className="text-gray-400">Industry Expert:</span>{" "}
-                          <span className="text-gray-200">{meeting.indExpertName}</span>
+                        <div className="bg-gray-100 px-3 py-2 rounded-md text-sm">
+                          <span className="text-gray-600">Industry Expert:</span>{" "}
+                          <span className="text-gray-800 font-medium">{meeting.indExpertName}</span>
                         </div>
                       )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-gray-700/30 p-3 rounded-lg flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-purple-400" />
+                      <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-3 border border-gray-100">
+                        <Calendar className="h-5 w-5 text-indigo-500" />
                         <div>
-                          <p className="text-xs text-gray-400">Scheduled Time</p>
-                          <p className="text-gray-200">{formatTimeSlot(meeting.chosenSlot)}</p>
+                          <p className="text-xs text-gray-600">Scheduled Time</p>
+                          <p className="text-gray-800">{formatTimeSlot(meeting.chosenSlot)}</p>
                         </div>
                       </div>
 
-                      <div className="bg-gray-700/30 p-3 rounded-lg flex items-center gap-3">
-                        <Video className="h-5 w-5 text-blue-400" />
+                      <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-3 border border-gray-100">
+                        <Video className="h-5 w-5 text-indigo-500" />
                         <div>
-                          <p className="text-xs text-gray-400">Meeting Link</p>
+                          <p className="text-xs text-gray-600">Meeting Link</p>
                           {meeting.meetLink ? (
                             <a
                               href={meeting.meetLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-300 underline flex items-center gap-1"
+                              className="text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
                             >
                               Join Meeting <ExternalLink className="h-3 w-3" />
                             </a>
                           ) : (
-                            <p className="text-yellow-300">Not added yet</p>
+                            <p className="text-amber-600">Not added yet</p>
                           )}
                         </div>
                       </div>
                     </div>
 
                     {meeting.isMeetDone && meeting.feedback && (
-                      <div className="bg-gray-700/30 p-4 rounded-lg">
-                        <h4 className="font-medium text-gray-300 mb-2 flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-purple-400" />
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-indigo-500" />
                           Feedback from Industry Expert
                         </h4>
-                        <p className="text-gray-300">{meeting.feedback}</p>
+                        <p className="text-gray-700">{meeting.feedback}</p>
 
                         {meeting.status && (
                           <div className="mt-3 flex items-center gap-2">
-                            <p className="text-sm text-gray-400">Meeting Status:</p>
+                            <p className="text-sm text-gray-600">Meeting Status:</p>
                             {meeting.status === "Successful" ? (
-                              <span className="text-green-400 flex items-center gap-1">
+                              <span className="text-green-600 flex items-center gap-1">
                                 <CheckCircle className="h-4 w-4" /> Successful
                               </span>
                             ) : (
-                              <span className="text-yellow-400 flex items-center gap-1">
+                              <span className="text-amber-600 flex items-center gap-1">
                                 <XCircle className="h-4 w-4" /> Needs Improvement
                               </span>
                             )}
@@ -433,7 +432,7 @@ export default function StudentMeetingsPage() {
                       <div>
                         <button
                           onClick={() => router.push(`/student/meetings/add-link/${meeting.id}`)}
-                          className="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded-md transition-colors flex items-center gap-2"
+                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors flex items-center gap-2 shadow-sm"
                         >
                           <Plus className="h-4 w-4" />
                           Add Meeting Link
@@ -446,16 +445,16 @@ export default function StudentMeetingsPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 max-w-md">
-                <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-300">No meetings scheduled</h3>
-                <p className="text-gray-400 mt-2">
-                  You dont have any meetings scheduled with industry experts yet. Once an industry expert requests a
+              <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-md max-w-md">
+                <Calendar className="h-12 w-12 text-indigo-400 mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-gray-800">No meetings scheduled</h3>
+                <p className="text-gray-600 mt-2">
+                  You don't have any meetings scheduled with industry experts yet. Once an industry expert requests a
                   meeting and you select a time slot, it will appear here.
                 </p>
                 <button
                   onClick={() => router.push("/student")}
-                  className="mt-6 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md transition-colors"
+                  className="mt-6 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors shadow-sm"
                 >
                   Return to Dashboard
                 </button>
@@ -471,9 +470,8 @@ export default function StudentMeetingsPage() {
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </div>
   )
 }
-

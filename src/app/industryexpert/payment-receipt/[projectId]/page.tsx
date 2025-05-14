@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { Printer, Download, ArrowLeft } from 'lucide-react'
+import { Printer, Download, ArrowLeft, FileText, CheckCircle } from "lucide-react"
 
 interface PaymentDetail {
   id: string
@@ -44,12 +44,9 @@ const PaymentReceiptPage = () => {
       console.log("Ensuring project is marked as completed:", projectId)
 
       // Check current project status
-      const projectRes = await fetch(
-        `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
 
       if (!projectRes.ok) {
         throw new Error("Failed to fetch project details")
@@ -61,15 +58,12 @@ const PaymentReceiptPage = () => {
       // If project is not already completed, update it using the dedicated endpoint
       if (projectData.status !== "Completed") {
         console.log("Calling project complete endpoint")
-        const completeRes = await fetch(
-          `https://localhost:7053/api/projects/${projectId}/complete`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const completeRes = await fetch(`https://localhost:7053/api/projects/${projectId}/complete`, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        )
+        })
 
         if (!completeRes.ok) {
           const errorText = await completeRes.text()
@@ -99,12 +93,9 @@ const PaymentReceiptPage = () => {
         await completeProject(token)
 
         // Then fetch payment details
-        const res = await fetch(
-          `https://localhost:7053/api/payment-details/payment-details/${projectId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const res = await fetch(`https://localhost:7053/api/payment-details/payment-details/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!res.ok) {
           throw new Error("Failed to fetch payment details")
@@ -139,9 +130,9 @@ const PaymentReceiptPage = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center text-gray-800">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-t-green-500 border-gray-700 rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
           <p className="mt-4 text-lg">Loading payment details...</p>
         </div>
       </div>
@@ -150,14 +141,19 @@ const PaymentReceiptPage = () => {
 
   if (error || !paymentDetail) {
     return (
-      <div className="bg-gray-900 text-white min-h-screen p-6">
+      <div className="bg-gray-50 text-gray-800 min-h-screen p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold text-red-400 mb-6">Error</h1>
-          <p>{error || "Payment details not found."}</p>
-          <div className="mt-4">
+          <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
+            <div className="flex items-center mb-6">
+              <div className="bg-red-100 p-3 rounded-full mr-3">
+                <FileText className="h-6 w-6 text-red-500" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-800">Error</h1>
+            </div>
+            <p className="text-gray-600 mb-6">{error || "Payment details not found."}</p>
             <button
               onClick={() => router.back()}
-              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition flex items-center"
+              className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Go Back
@@ -169,30 +165,34 @@ const PaymentReceiptPage = () => {
   }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-6 print:p-0 print:bg-white">
+    <div className="bg-gray-50 text-gray-800 min-h-screen p-6 print:p-0 print:bg-white">
       <div className="max-w-4xl mx-auto">
         {/* Header - Hidden when printing */}
-        <div className="flex justify-between items-center mb-8 print:hidden">
-          <h1 className="text-3xl font-bold text-green-400">Payment Receipt</h1>
-          <div className="space-x-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 print:hidden gap-4">
+          <h1 className="text-3xl font-bold text-blue-600 flex items-center">
+            <CheckCircle className="w-8 h-8 mr-2 text-blue-600" />
+            Payment Receipt
+          </h1>
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={handlePrint}
-              className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500 transition flex items-center"
+              className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center"
             >
               <Printer className="w-5 h-5 mr-2" />
               Print Receipt
             </button>
             <button
               onClick={handleDownload}
-              className="py-2 px-4 bg-purple-600 text-white rounded hover:bg-purple-500 transition flex items-center"
+              className="py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center"
             >
               <Download className="w-5 h-5 mr-2" />
               Download PDF
             </button>
             <button
               onClick={() => router.push(`/industryexpert/projects/milestone/${projectId}`)}
-              className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-500 transition"
+              className="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition flex items-center"
             >
+              <ArrowLeft className="w-5 h-5 mr-2" />
               Return to Project
             </button>
           </div>
@@ -201,11 +201,11 @@ const PaymentReceiptPage = () => {
         {/* Receipt Content - This will be printed */}
         <div
           ref={receiptRef}
-          className="bg-white text-gray-800 p-8 rounded-lg shadow-lg border border-gray-300 print:shadow-none print:border-none print:p-0"
+          className="bg-white text-gray-800 p-8 rounded-lg shadow-sm border border-gray-200 print:shadow-none print:border-none print:p-0"
         >
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-green-600">BridgeIT</h2>
+              <h2 className="text-2xl font-bold text-blue-600">BridgeIT</h2>
               <p className="text-gray-600">Connecting Students with Industry Experts</p>
             </div>
             <div className="text-right">
@@ -214,8 +214,8 @@ const PaymentReceiptPage = () => {
             </div>
           </div>
 
-          <div className="border-t border-b border-gray-300 py-6 mb-6">
-            <div className="grid grid-cols-2 gap-6">
+          <div className="border-t border-b border-gray-200 py-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="text-sm font-semibold text-gray-600 mb-1">Paid To</h4>
                 <p className="font-medium">{paymentDetail.studentName}</p>
@@ -233,8 +233,8 @@ const PaymentReceiptPage = () => {
 
           <div className="mb-8">
             <h4 className="text-lg font-semibold mb-4">Payment Details</h4>
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Project Name</p>
                   <p className="font-medium">{paymentDetail.projectName}</p>
@@ -268,7 +268,7 @@ const PaymentReceiptPage = () => {
           {paymentDetail.receipt && (
             <div className="mb-8">
               <h4 className="text-lg font-semibold mb-2">Transaction Receipt</h4>
-              <div className="bg-gray-100 p-4 rounded-lg">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <p className="text-sm break-all font-mono">{paymentDetail.receipt}</p>
               </div>
             </div>
@@ -283,14 +283,14 @@ const PaymentReceiptPage = () => {
         </div>
 
         {/* Footer - Hidden when printing */}
-        <div className="mt-8 text-center text-gray-400 print:hidden">
+        <div className="mt-8 text-center text-gray-500 print:hidden">
           <p>
             A copy of this receipt has been sent to both the student and industry expert via email. You can print this
             receipt for your records.
           </p>
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={5000} theme="light" />
 
       {/* Print-specific styles */}
       <style jsx global>{`

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { CheckCircle, Home, FileText, ArrowLeft } from "lucide-react"
 
 const PaymentSuccessPage = () => {
   const router = useRouter()
@@ -40,15 +41,12 @@ const PaymentSuccessPage = () => {
       console.log("Calling project complete endpoint for project:", id)
 
       // Call the dedicated complete project endpoint
-      const res = await fetch(
-        `https://localhost:7053/api/projects/${id}/complete`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`https://localhost:7053/api/projects/${id}/complete`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      )
+      })
 
       if (res.ok) {
         console.log("Project successfully marked as completed")
@@ -65,43 +63,52 @@ const PaymentSuccessPage = () => {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen flex items-center justify-center p-6 text-white">
-      <div className="max-w-2xl w-full bg-gray-800 rounded-lg shadow-lg p-8">
+    <div className="bg-gray-50 min-h-screen flex items-center justify-center p-6 text-gray-800">
+      <div className="max-w-2xl w-full bg-white rounded-lg shadow-sm p-8 border border-gray-200">
         <div className="flex flex-col items-center text-center">
           {loading ? (
-            <div className="w-12 h-12 border-4 border-t-green-500 border-gray-700 rounded-full animate-spin mb-4"></div>
+            <div className="w-12 h-12 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin mb-4"></div>
           ) : (
-            <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mb-6">
-              <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle className="w-10 h-10 text-blue-600" />
             </div>
           )}
 
-          <h1 className="text-3xl font-bold text-green-400 mb-4">Payment Successful!</h1>
+          <h1 className="text-3xl font-bold text-blue-600 mb-4">Payment Successful!</h1>
 
-          <p className="text-gray-300 mb-6">
+          <p className="text-gray-600 mb-6">
             Your payment has been processed successfully. Thank you for completing the transaction.
             {projectTitle && (
               <span>
                 {" "}
-                The payment for project <strong>{projectTitle}</strong> has been recorded.
+                The payment for project <strong className="text-gray-800">{projectTitle}</strong> has been recorded.
               </span>
             )}
           </p>
 
-          <div className="bg-gray-700 p-4 rounded-lg w-full mb-8">
-            <h3 className="font-semibold text-green-300 mb-2">Payment Details:</h3>
-            <ul className="space-y-2 text-left text-gray-300">
-              <li>
-                • Status: <span className="text-green-400">Completed</span>
+          <div className="bg-gray-50 p-6 rounded-lg w-full mb-8 border border-gray-200">
+            <h3 className="font-semibold text-blue-700 mb-3">Payment Details:</h3>
+            <ul className="space-y-3 text-left text-gray-700">
+              <li className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                Status: <span className="text-green-600 font-medium ml-1">Completed</span>
               </li>
-              <li>• Date: {new Date().toLocaleDateString()}</li>
-              <li>• Time: {new Date().toLocaleTimeString()}</li>
-              <li>• Payment Method: Credit/Debit Card</li>
-              <li>
-                • Project Status:{" "}
-                <span className={statusUpdated ? "text-green-400" : "text-yellow-400"}>
+              <li className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                Date: <span className="ml-1">{new Date().toLocaleDateString()}</span>
+              </li>
+              <li className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                Time: <span className="ml-1">{new Date().toLocaleTimeString()}</span>
+              </li>
+              <li className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                Payment Method: <span className="ml-1">Credit/Debit Card</span>
+              </li>
+              <li className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                Project Status:{" "}
+                <span className={`font-medium ml-1 ${statusUpdated ? "text-green-600" : "text-amber-600"}`}>
                   {statusUpdated ? "Updated to Completed" : "Updating..."}
                 </span>
               </li>
@@ -111,8 +118,9 @@ const PaymentSuccessPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 w-full">
             <Link
               href="/industryexpert"
-              className="flex-1 py-3 px-6 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-center transition"
+              className="flex-1 py-3 px-6 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-center transition flex items-center justify-center"
             >
+              <Home className="w-4 h-4 mr-2" />
               Go to Dashboard
             </Link>
 
@@ -120,14 +128,16 @@ const PaymentSuccessPage = () => {
               <>
                 <Link
                   href={`/industryexpert/projects/milestone/${projectId}`}
-                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-center transition"
+                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center transition flex items-center justify-center"
                 >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
                   Return to Project
                 </Link>
                 <Link
                   href={`/industryexpert/payment-receipt/${projectId}`}
-                  className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-500 text-white rounded-lg text-center transition"
+                  className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-700 text-white rounded-lg text-center transition flex items-center justify-center"
                 >
+                  <FileText className="w-4 h-4 mr-2" />
                   View Receipt
                 </Link>
               </>

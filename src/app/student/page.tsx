@@ -243,9 +243,6 @@ const StudentPage: React.FC = () => {
       {/* Completed Industry Projects Section */}
       <CompletedIndustryProjectsSection projects={completedProjects} /> 
 
-      {/* Completed Personal Projects Section*/}
-      <CompletedProjectsSection projects={personalProjects} /> 
-
       {/* Events Section */}
       <EventsSection events={events} gradientStyles={[]} />
 

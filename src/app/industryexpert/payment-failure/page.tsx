@@ -10,9 +10,9 @@ const PaymentFailurePage = () => {
   const projectId = searchParams.get("project_id");
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-6 flex flex-col items-center justify-center">
+    <div className="bg-white text-white min-h-screen p-6 flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold text-red-500 mb-4">Payment Failed</h1>
-      <p className="mb-4">Unfortunately, your payment could not be processed.</p>
+      <p className="mb-4 text-gray-400">Unfortunately, your payment could not be processed.</p>
       <button
         onClick={() =>
           router.push(projectId ? `/industryexpert/payment/${projectId}` : "/industryexpert/projects")

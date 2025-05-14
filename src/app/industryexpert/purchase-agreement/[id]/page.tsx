@@ -21,6 +21,8 @@ import {
   DollarSign,
   CreditCard,
   Lock,
+  Info,
+  CheckCircle,
 } from "lucide-react"
 
 interface FYP {
@@ -72,12 +74,9 @@ export default function PurchaseAgreementPage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!userResponse.ok) throw new Error("Failed to authenticate user")
 
@@ -99,12 +98,9 @@ export default function PurchaseAgreementPage() {
         setIndustryExpertName(`${expertData.firstName} ${expertData.lastName}`)
 
         // Step 3: Fetch FYP details
-        const fypResponse = await fetch(
-          `https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        )
+        const fypResponse = await fetch(`https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!fypResponse.ok) throw new Error("Failed to fetch FYP details")
 
@@ -113,12 +109,9 @@ export default function PurchaseAgreementPage() {
 
         // Step 4: Check if there's already a bought FYP record
         try {
-          const boughtFypResponse = await fetch(
-            `https://localhost:7053/api/bought-fyp/by-id/${fypId}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          )
+          const boughtFypResponse = await fetch(`https://localhost:7053/api/bought-fyp/by-id/${fypId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
 
           if (boughtFypResponse.ok) {
             const boughtFypData = await boughtFypResponse.json()
@@ -228,21 +221,18 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
     if (boughtFypId) return boughtFypId
 
     try {
-      const response = await fetch(
-        `https://localhost:7053/api/bought-fyp/create`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            fypId: fyp?.id,
-            indExpertId: industryExpertId,
-            price: price,
-          }),
+      const response = await fetch(`https://localhost:7053/api/bought-fyp/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify({
+          fypId: fyp?.id,
+          indExpertId: industryExpertId,
+          price: price,
+        }),
+      })
 
       if (!response.ok) {
         throw new Error("Failed to create bought FYP record")
@@ -275,17 +265,14 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
       console.log("Uploading agreement to ID:", recordId)
 
       // Upload the agreement
-      const agreementResponse = await fetch(
-        `https://localhost:7053/api/bought-fyp/add-agreement/${recordId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(base64),
+      const agreementResponse = await fetch(`https://localhost:7053/api/bought-fyp/add-agreement/${recordId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify(base64),
+      })
 
       if (!agreementResponse.ok) {
         const errorText = await agreementResponse.text()
@@ -350,10 +337,10 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
-          <p className="text-xl text-gray-300">Loading project details...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+          <p className="text-xl text-gray-700">Loading project details...</p>
         </div>
       </div>
     )
@@ -361,13 +348,13 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
   if (error || !fyp) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="bg-red-900/20 p-6 rounded-lg border border-red-700 max-w-md">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
-          <p className="text-gray-300">{error || "Failed to load project details"}</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-red-50 p-6 rounded-lg border border-red-200 max-w-md">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-700">{error || "Failed to load project details"}</p>
           <button
             onClick={() => router.push("/industry-expert/approved-requests")}
-            className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
           >
             Return to Approved Requests
           </button>
@@ -377,20 +364,20 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
+      <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <button
             onClick={() => router.push("/industry-expert/approved-requests")}
-            className="flex items-center gap-2 text-gray-400 hover:text-white mb-4"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Approved Requests
           </button>
 
-          <h1 className="text-3xl font-bold text-green-400">Purchase Agreement</h1>
-          <p className="text-gray-400 mt-2">Review and complete the purchase agreement for {fyp.title}</p>
+          <h1 className="text-3xl font-bold text-gray-800">Purchase Agreement</h1>
+          <p className="text-gray-600 mt-2">Review and complete the purchase agreement for {fyp.title}</p>
         </div>
       </header>
 
@@ -399,48 +386,48 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Project Details */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h2 className="text-xl font-semibold mb-4">Project Details</h2>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Project Details</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-medium text-white">{fyp.title}</h3>
+                  <h3 className="text-lg font-medium text-gray-800">{fyp.title}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <div className="px-2 py-1 bg-purple-900/30 text-purple-400 text-xs rounded-md">{fyp.fypId}</div>
+                    <div className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md">{fyp.fypId}</div>
                     {fyp.status && (
-                      <div className="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs rounded-md">
+                      <div className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-md">
                         Status: {fyp.status}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <p className="text-gray-300">{fyp.description}</p>
+                <p className="text-gray-600">{fyp.description}</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {fyp.faculty?.name && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <User className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <User className="h-4 w-4 text-blue-500" />
                       <span>Faculty: {fyp.faculty.name}</span>
                     </div>
                   )}
 
                   {fyp.members && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Users className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Users className="h-4 w-4 text-blue-500" />
                       <span>{fyp.members} Members</span>
                     </div>
                   )}
 
                   {fyp.technology && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <BookOpen className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <BookOpen className="h-4 w-4 text-blue-500" />
                       <span>Technology: {fyp.technology}</span>
                     </div>
                   )}
 
                   {fyp.yearOfCompletion && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Calendar className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Calendar className="h-4 w-4 text-blue-500" />
                       <span>Completed in: {fyp.yearOfCompletion}</span>
                     </div>
                   )}
@@ -449,19 +436,19 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
             </div>
 
             {/* Price Section */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h2 className="text-xl font-semibold mb-4">Purchase Price</h2>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Purchase Price</h2>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">
-                    Enter the amount you re willing to pay (PKR)
+                  <label className="block text-sm text-gray-600 mb-1">
+                    Enter the amount you're willing to pay (PKR)
                   </label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                     <input
                       type="number"
-                      className="w-full pl-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full pl-10 p-2 bg-white border border-gray-300 rounded-md text-gray-800"
                       value={price}
                       onChange={(e) => setPrice(Number(e.target.value))}
                       min={1000}
@@ -469,49 +456,49 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
                   </div>
                 </div>
 
-                <div className="bg-gray-700/30 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-300">Project Price:</span>
-                    <span className="text-white font-medium">{price.toLocaleString()} PKR</span>
+                    <span className="text-gray-600">Project Price:</span>
+                    <span className="text-gray-800 font-medium">{price.toLocaleString()} PKR</span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-300">Platform Fee (5%):</span>
-                    <span className="text-white font-medium">{(price * 0.05).toLocaleString()} PKR</span>
+                    <span className="text-gray-600">Platform Fee (5%):</span>
+                    <span className="text-gray-800 font-medium">{(price * 0.05).toLocaleString()} PKR</span>
                   </div>
-                  <div className="border-t border-gray-600 my-2 pt-2 flex justify-between items-center">
-                    <span className="text-gray-300 font-medium">Total:</span>
-                    <span className="text-green-400 font-bold">{(price * 1.05).toLocaleString()} PKR</span>
+                  <div className="border-t border-gray-200 my-2 pt-2 flex justify-between items-center">
+                    <span className="text-gray-700 font-medium">Total:</span>
+                    <span className="text-green-600 font-bold">{(price * 1.05).toLocaleString()} PKR</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Agreement Text */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Purchase Agreement</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Purchase Agreement</h2>
                 <button
                   onClick={handleGenerateAgreement}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-md text-sm"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm"
                 >
                   <Download className="h-4 w-4" />
                   Download Agreement
                 </button>
               </div>
 
-              <div className="bg-gray-700/50 p-4 rounded-lg max-h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap text-gray-700">
                 {agreementText}
               </div>
             </div>
 
             {/* Upload Agreement */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h2 className="text-xl font-semibold mb-4">Upload Signed Agreement</h2>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Upload Signed Agreement</h2>
 
               <div className="space-y-4">
-                <p className="text-gray-400">Please download the agreement, sign it, and upload the signed document.</p>
+                <p className="text-gray-600">Please download the agreement, sign it, and upload the signed document.</p>
 
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <input
                     type="file"
                     id="agreement-upload"
@@ -525,17 +512,17 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
                       htmlFor="agreement-upload"
                       className="flex flex-col items-center justify-center cursor-pointer"
                     >
-                      <Upload className="h-12 w-12 text-gray-500 mb-2" />
-                      <p className="text-gray-400">Click to upload or drag and drop</p>
+                      <Upload className="h-12 w-12 text-blue-400 mb-2" />
+                      <p className="text-gray-600">Click to upload or drag and drop</p>
                       <p className="text-gray-500 text-sm">PDF (max. 10MB)</p>
                     </label>
                   ) : (
-                    <div className="flex items-center justify-between bg-gray-700/50 p-3 rounded-lg">
+                    <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <FileText className="h-8 w-8 text-green-400" />
+                        <FileText className="h-8 w-8 text-blue-600" />
                         <div className="text-left">
-                          <p className="text-white font-medium">{agreementFile.name}</p>
-                          <p className="text-gray-400 text-sm">{(agreementFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                          <p className="text-gray-800 font-medium">{agreementFile.name}</p>
+                          <p className="text-gray-600 text-sm">{(agreementFile.size / 1024 / 1024).toFixed(2)} MB</p>
                         </div>
                       </div>
                       <button
@@ -543,7 +530,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
                           setAgreementFile(null)
                           setPreviewUrl(null)
                         }}
-                        className="text-gray-400 hover:text-white"
+                        className="text-gray-500 hover:text-gray-700"
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -553,10 +540,10 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
                 {previewUrl && (
                   <div className="mt-4">
-                    <h3 className="text-lg font-medium mb-2">Document Preview</h3>
+                    <h3 className="text-lg font-medium mb-2 text-gray-800">Document Preview</h3>
                     <iframe
                       src={previewUrl}
-                      className="w-full h-96 border border-gray-700 rounded-lg"
+                      className="w-full h-96 border border-gray-200 rounded-lg"
                       title="Agreement Preview"
                     />
                   </div>
@@ -568,48 +555,48 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Action Card */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 sticky top-6">
-              <h2 className="text-xl font-semibold mb-4">Complete Purchase</h2>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm sticky top-6">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Complete Purchase</h2>
 
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm">
                   <div
                     className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                      price > 0 ? "bg-green-500 text-white" : "bg-gray-600"
+                      price > 0 ? "bg-green-500 text-white" : "bg-gray-200"
                     }`}
                   >
                     {price > 0 && <Check className="h-3 w-3" />}
                   </div>
-                  <span className={price > 0 ? "text-white" : "text-gray-400"}>Price set</span>
+                  <span className={price > 0 ? "text-gray-800" : "text-gray-500"}>Price set</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
                   <div
                     className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                      agreementText ? "bg-green-500 text-white" : "bg-gray-600"
+                      agreementText ? "bg-green-500 text-white" : "bg-gray-200"
                     }`}
                   >
                     {agreementText && <Check className="h-3 w-3" />}
                   </div>
-                  <span className={agreementText ? "text-white" : "text-gray-400"}>Agreement generated</span>
+                  <span className={agreementText ? "text-gray-800" : "text-gray-500"}>Agreement generated</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
                   <div
                     className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                      agreementFile ? "bg-green-500 text-white" : "bg-gray-600"
+                      agreementFile ? "bg-green-500 text-white" : "bg-gray-200"
                     }`}
                   >
                     {agreementFile && <Check className="h-3 w-3" />}
                   </div>
-                  <span className={agreementFile ? "text-white" : "text-gray-400"}>Signed agreement uploaded</span>
+                  <span className={agreementFile ? "text-gray-800" : "text-gray-500"}>Signed agreement uploaded</span>
                 </div>
               </div>
 
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !agreementFile || price <= 0}
-                className="w-full mt-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-md flex items-center justify-center gap-2 disabled:bg-green-800 disabled:opacity-50"
+                className="w-full mt-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center justify-center gap-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -621,29 +608,43 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
                 )}
               </button>
 
-              <div className="flex items-center justify-center gap-1 mt-3 text-xs text-gray-400">
+              <div className="flex items-center justify-center gap-1 mt-3 text-xs text-gray-500">
                 <Lock className="h-3 w-3" />
                 <span>Secure payment processed by Stripe</span>
               </div>
             </div>
 
             {/* Payment Information */}
-            <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
-              <h3 className="font-medium text-gray-200 mb-2">Payment Information</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+              <h3 className="font-medium text-gray-800 mb-2">Payment Information</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                   <span>Your payment is secure and encrypted</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <span>You ll receive a confirmation email after successful payment</span>
+                  <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <span>You'll receive a confirmation email after successful payment</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                   <span>Project files will be available for download after purchase</span>
                 </li>
               </ul>
+            </div>
+
+            {/* Additional Information */}
+            <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+              <div className="flex items-start gap-2">
+                <Info className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-medium text-gray-800 mb-1">Important Note</h3>
+                  <p className="text-sm text-gray-600">
+                    By proceeding with this purchase, you agree to the terms outlined in the purchase agreement. Make
+                    sure to review all details before continuing.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -655,7 +656,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </div>
   )

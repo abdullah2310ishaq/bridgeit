@@ -45,14 +45,14 @@ const AgreementModal: React.FC<AgreementModalProps> = ({ isOpen, onCancel, onCon
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-lg max-w-2xl w-full border border-gray-700 shadow-xl">
+      <div className="bg-white rounded-lg max-w-2xl w-full border border-gray-200 shadow-xl">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">FYP Registration Agreement</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">FYP Registration Agreement</h2>
 
-          <div className="bg-gray-700/50 rounded-lg p-4 mb-6 max-h-80 overflow-y-auto">
-            <h3 className="font-semibold text-gray-200 mb-3">Terms and Conditions</h3>
+          <div className="bg-gray-50 rounded-lg p-4 mb-6 max-h-80 overflow-y-auto border border-gray-100">
+            <h3 className="font-semibold text-gray-800 mb-3">Terms and Conditions</h3>
 
-            <div className="text-gray-300 space-y-3 text-sm">
+            <div className="text-gray-700 space-y-3 text-sm">
               <p>By registering this Final Year Project, I agree to the following terms:</p>
               <ol className="list-decimal pl-5 space-y-2">
                 <li>
@@ -76,13 +76,13 @@ const AgreementModal: React.FC<AgreementModalProps> = ({ isOpen, onCancel, onCon
           <div className="flex justify-between">
             <button
               onClick={onCancel}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors"
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md transition-colors"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors"
             >
               I Agree & Submit
             </button>
@@ -141,10 +141,9 @@ const RegisterFypPage: React.FC = () => {
 
       try {
         // 1) Auth info
-        const authResp = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const authResp = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (authResp.status === 401 || authResp.status === 403) {
           router.push("/unauthorized")
           return
@@ -153,10 +152,9 @@ const RegisterFypPage: React.FC = () => {
         const { userId } = await authResp.json()
 
         // 2) Student profile
-        const studentResp = await fetch(
-          `https://localhost:7053/api/get-student/student-by-id/${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const studentResp = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (studentResp.status === 401 || studentResp.status === 403) {
           router.push("/unauthorized")
           return
@@ -169,10 +167,9 @@ const RegisterFypPage: React.FC = () => {
         localStorage.setItem("studentId", studentData.id)
 
         // 3) Faculties list
-        const facResp = await fetch(
-          "https://localhost:7053/api/get-faculty/faculties",
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const facResp = await fetch("https://localhost:7053/api/get-faculty/faculties", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         if (facResp.status === 401 || facResp.status === 403) {
           router.push("/unauthorized")
           return
@@ -254,17 +251,14 @@ const RegisterFypPage: React.FC = () => {
         payload.YearOfCompletion = formData.yearOfCompletion
       }
 
-      const res = await fetch(
-        `https://localhost:7053/api/fyp/register-fyp?studentId=${studentId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
+      const res = await fetch(`https://localhost:7053/api/fyp/register-fyp?studentId=${studentId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      )
+        body: JSON.stringify(payload),
+      })
 
       if (res.status === 401 || res.status === 403) {
         router.push("/unauthorized")
@@ -307,28 +301,26 @@ const RegisterFypPage: React.FC = () => {
   }
 
   if (initializing) {
-    return <div className="text-center text-gray-400 p-8">Loading data…</div>
+    return <div className="text-center text-gray-600 p-8">Loading data…</div>
   }
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100text-gray-300 p-6">
-        <div className="max-w-3xl mx-auto bg-gray-800 shadow-lg rounded-lg p-8">
-          <h1 className="text-3xl font-bold text-center text-purple-300 mb-6">Register Your FYP</h1>
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
+        <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-8 border border-gray-200">
+          <h1 className="text-3xl font-bold text-center text-indigo-600 mb-6">Register Your FYP</h1>
 
           {error && (
-            <div className="bg-red-900/30 border border-red-700 text-red-300 p-3 rounded-md text-center mb-4">
-              {error}
-            </div>
+            <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-md text-center mb-4">{error}</div>
           )}
           {success && (
-            <div className="bg-green-900/30 border border-green-700 text-green-300 p-3 rounded-md text-center mb-4">
+            <div className="bg-green-50 border border-green-200 text-green-600 p-3 rounded-md text-center mb-4">
               {success}
             </div>
           )}
 
           {student && (
-            <p className="text-center mb-6">
+            <p className="text-center mb-6 text-gray-700">
               Welcome, {student.firstName} {student.lastName} from {student.universityName}!
             </p>
           )}
@@ -336,14 +328,14 @@ const RegisterFypPage: React.FC = () => {
           <form onSubmit={handleFormSubmit} className="space-y-6">
             {/* FYP ID */}
             <div>
-              <label htmlFor="fyp_id" className="block text-sm font-medium mb-1">
+              <label htmlFor="fyp_id" className="block text-sm font-medium text-gray-700 mb-1">
                 FYP ID
               </label>
               <input
                 id="fyp_id"
                 name="fyp_id"
                 placeholder="e.g. FYP-12345"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.fyp_id}
                 onChange={handleInputChange}
                 required
@@ -352,14 +344,14 @@ const RegisterFypPage: React.FC = () => {
 
             {/* Project Title */}
             <div>
-              <label htmlFor="title" className="block text-sm font-medium mb-1">
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                 Project Title
               </label>
               <input
                 id="title"
                 name="title"
                 placeholder="e.g. AI in Healthcare"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.title}
                 onChange={handleInputChange}
                 required
@@ -368,7 +360,7 @@ const RegisterFypPage: React.FC = () => {
 
             {/* Members */}
             <div>
-              <label htmlFor="members" className="block text-sm font-medium mb-1">
+              <label htmlFor="members" className="block text-sm font-medium text-gray-700 mb-1">
                 Number of Members
               </label>
               <input
@@ -377,7 +369,7 @@ const RegisterFypPage: React.FC = () => {
                 type="number"
                 min="1"
                 placeholder="e.g. 3"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.members || ""}
                 onChange={handleInputChange}
                 required
@@ -386,33 +378,33 @@ const RegisterFypPage: React.FC = () => {
 
             {/* Batch */}
             <div>
-              <label htmlFor="batch" className="block text-sm font-medium mb-1">
+              <label htmlFor="batch" className="block text-sm font-medium text-gray-700 mb-1">
                 Batch
               </label>
               <input
                 id="batch"
                 name="batch"
                 placeholder="e.g. 2024"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.batch}
                 onChange={handleInputChange}
                 required
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Enter the starting year of your batch (e.g., 2024 for 2024-2028 batch)
               </p>
             </div>
 
             {/* Technology */}
             <div>
-              <label htmlFor="technology" className="block text-sm font-medium mb-1">
+              <label htmlFor="technology" className="block text-sm font-medium text-gray-700 mb-1">
                 Technology
               </label>
               <input
                 id="technology"
                 name="technology"
                 placeholder="e.g. Python, TensorFlow"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.technology}
                 onChange={handleInputChange}
                 required
@@ -421,14 +413,14 @@ const RegisterFypPage: React.FC = () => {
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium mb-1">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                 Description
               </label>
               <textarea
                 id="description"
                 name="description"
                 placeholder="Brief project description…"
-                className="w-full p-2 h-24 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 h-24 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.description}
                 onChange={handleInputChange}
                 required
@@ -437,7 +429,7 @@ const RegisterFypPage: React.FC = () => {
 
             {/* Year of Completion */}
             <div>
-              <label htmlFor="yearOfCompletion" className="block text-sm font-medium mb-1">
+              <label htmlFor="yearOfCompletion" className="block text-sm font-medium text-gray-700 mb-1">
                 Year of Completion
               </label>
               <input
@@ -446,24 +438,24 @@ const RegisterFypPage: React.FC = () => {
                 type="number"
                 min={new Date().getFullYear()}
                 placeholder="e.g. 2028"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.yearOfCompletion || ""}
                 onChange={handleInputChange}
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Auto-calculated as batch + 4 years. You can adjust if needed.
               </p>
             </div>
 
             {/* Assign Faculty */}
             <div>
-              <label htmlFor="facultyId" className="block text-sm font-medium mb-1">
+              <label htmlFor="facultyId" className="block text-sm font-medium text-gray-700 mb-1">
                 Assign Faculty
               </label>
               <select
                 id="facultyId"
                 name="facultyId"
-                className="w-full p-2 rounded-md bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.facultyId}
                 onChange={handleInputChange}
                 required
@@ -481,8 +473,10 @@ const RegisterFypPage: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className={`w-full py-2 px-4 rounded-md font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                submitting ? "bg-gray-600 cursor-not-allowed" : "bg-purple-600 hover:bg-purple-700 text-white"
+              className={`w-full py-2 px-4 rounded-md font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                submitting
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700 text-white"
               }`}
             >
               {submitting ? "Submitting…" : "Submit Proposal"}

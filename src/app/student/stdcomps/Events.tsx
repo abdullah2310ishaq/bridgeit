@@ -85,7 +85,7 @@ const EventsSection: React.FC<Props> = ({ events, gradientStyles }) => {
             </p>
           </div>
 
-          <div className="mt-4 md:mt-0 flex items-center space-x-3">
+          {/*<div className="mt-4 md:mt-0 flex items-center space-x-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -105,10 +105,10 @@ const EventsSection: React.FC<Props> = ({ events, gradientStyles }) => {
               <Bell className="w-4 h-4 mr-2" />
               <span>Notifications</span>
             </motion.button>
-          </div>
+          </div>*/}
         </div>
 
-        {/* Search and Filter Bar */}
+        {/* Search and Filter Bar 
         <div className="bg-white rounded-xl shadow-md p-4 mb-8 flex flex-col sm:flex-row items-center gap-4">
           <div className="relative flex-grow">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -155,7 +155,7 @@ const EventsSection: React.FC<Props> = ({ events, gradientStyles }) => {
               Today
             </button>
           </div>
-        </div>
+        </div>*/}
 
         {/* Event Cards */}
         <motion.div
