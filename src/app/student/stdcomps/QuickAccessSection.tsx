@@ -80,7 +80,7 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       title: "Register FYP",
       description: "Submit your final year project proposal",
       icon: "FileText",
-      href: "/students/fyp",
+      href: "/student/fyp",
       color: "indigo",
     },
     {

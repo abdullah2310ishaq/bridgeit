@@ -6,17 +6,78 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { FaLightbulb, FaRocket, FaCode, FaUsers } from "react-icons/fa";
+import { FaLightbulb } from "react-icons/fa";
 
 const CreateIdea: React.FC = () => {
-  /* ── state ─────────────────────────────────────── */
-  const [title, setTitle]             = useState("");
-  const [technology, setTechnology]   = useState("");
+  /* ── State ─────────────────────────────────────── */
+  const [title, setTitle] = useState("");
+  const [technology, setTechnology] = useState("");
   const [description, setDescription] = useState("");
-  const [facultyId, setFacultyId]     = useState<string | null>(null);
-  const router                        = useRouter();
+  const [facultyId, setFacultyId] = useState<string | null>(null);
+  const router = useRouter();
 
-  /* ── fetch faculty id on mount ─────────────────── */
+  /* ── Technology options ─────────────────────────── */
+  const technologyOptions = [
+    "Web Development",
+    "Mobile Development",
+    "Artificial Intelligence",
+    "Machine Learning",
+    "Data Science",
+    "Cloud Computing",
+    "Cybersecurity",
+    "Blockchain",
+    "Internet of Things",
+    "Game Development",
+    "Augmented Reality",
+    "Virtual Reality",
+    "DevOps",
+    "Big Data",
+    "Robotics",
+    "Natural Language Processing",
+    "Computer Vision",
+    "Quantum Computing",
+    "Embedded Systems",
+    "Other"
+  ];
+
+  /* ── Word count and profanity filter ────────────── */
+  const maxWords = 200;
+  const vulgarWords = [
+    "damn",
+    "hell",
+    "ass",
+    "bitch",
+    "shit",
+    "fuck",
+    "crap",
+    "piss",
+    "bastard",
+    
+  ];
+
+  const countWords = (text: string) => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  const hasVulgarWords = (text: string) => {
+    const words = text.toLowerCase().split(/\s+/);
+    return words.some(word => vulgarWords.includes(word));
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    if (hasVulgarWords(text)) {
+      toast.warn("Please avoid using inappropriate language.", { autoClose: 3000 });
+      return;
+    }
+    if (countWords(text) <= maxWords) {
+      setDescription(text);
+    } else {
+      toast.warn(`Description cannot exceed ${maxWords} words.`, { autoClose: 3000 });
+    }
+  };
+
+  /* ── Fetch faculty ID on mount ─────────────────── */
   useEffect(() => {
     const fetchFacultyId = async () => {
       const token = localStorage.getItem("jwtToken");
@@ -27,7 +88,6 @@ const CreateIdea: React.FC = () => {
       }
 
       try {
-        /* 1️⃣ authorized user info ⇒ userId */
         const authRes = await fetch(
           "https://localhost:7053/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -35,7 +95,6 @@ const CreateIdea: React.FC = () => {
         if (!authRes.ok) throw new Error("Authorization failed.");
         const { userId } = await authRes.json();
 
-        /* 2️⃣ faculty details ⇒ facultyId */
         const facRes = await fetch(
           `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -55,9 +114,13 @@ const CreateIdea: React.FC = () => {
     fetchFacultyId();
   }, [router]);
 
-  /* ── submit ────────────────────────────────────── */
+  /* ── Submit ────────────────────────────────────── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (hasVulgarWords(description)) {
+      toast.error("Description contains inappropriate language.", { autoClose: 3000 });
+      return;
+    }
     const token = localStorage.getItem("jwtToken");
     if (!token || !facultyId) {
       toast.error("Authorization failed. Please try again.", { autoClose: 3000 });
@@ -93,131 +156,97 @@ const CreateIdea: React.FC = () => {
     }
   };
 
-  /* ── loading state ─────────────────────────────── */
-  if (!facultyId)
+  /* ── Loading state ─────────────────────────────── */
+  if (!facultyId) {
     return <div className="text-center text-gray-400">Loading...</div>;
+  }
 
-  /* ── render ─────────────────────────────────────── */
+  /* ── Render ─────────────────────────────────────── */
   return (
-    <div
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        backgroundImage: "url('/unknown.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      {/* overlay */}
-      <div className="absolute inset-0 bg-gray-100 opacity-90" />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full max-w-3xl p-8 bg-white/80 backdrop-blur-md rounded-3xl border-2 border-blue-800/20"
+      >
+        {/* Logo */}
+        <div className="absolute top-4 left-8">
+          <Image src="/logo.jpg" alt="BridgeIT Logo" width={80} height={80} />
+        </div>
 
-      {/* content */}
-      <div className="relative z-10 flex flex-col items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-3xl p-8 bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-blue-800/20"
-        >
-          {/* logo */}
-          <div className="absolute top-4 left-8">
-            <Image src="/logo.jpg" alt="BridgeIT Logo" width={80} height={80} />
-          </div>
+        {/* Heading */}
+        <h1 className="flex items-center justify-center gap-3 text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-500 mb-8">
+          <FaLightbulb className="text-blue-600" />
+          Create New Idea
+        </h1>
 
-          {/* heading */}
-          <h1 className="flex items-center justify-center gap-3 text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-500 mb-8">
-            <FaLightbulb className="text-blue-600" />
-            Create&nbsp;New&nbsp;Idea
-          </h1>
-
-          {/* form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* title */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full p-3 bg-gray-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </div>
-
-              {/* technology */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Technology
-                </label>
-                <input
-                  type="text"
-                  value={technology}
-                  onChange={(e) => setTechnology(e.target.value)}
-                  className="w-full p-3 bg-gray-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* description */}
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Title */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description
+                Title
               </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={5}
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="w-full p-3 bg-gray-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
                 required
               />
             </div>
 
-            {/* submit */}
-            <div className="flex justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 10px 20px rgba(30,64,175,0.4)" }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                className="w-full py-4 px-6 bg-gradient-to-r from-blue-800 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-900 hover:to-blue-700 focus:ring-2 focus:ring-blue-600"
+            {/* Technology */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Technology
+              </label>
+              <select
+                value={technology}
+                onChange={(e) => setTechnology(e.target.value)}
+                className="w-full p-3 bg-gray-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
+                required
               >
-                Submit&nbsp;Idea
-              </motion.button>
+                <option value="" disabled>Select a technology</option>
+                {technologyOptions.map((tech) => (
+                  <option key={tech} value={tech}>
+                    {tech}
+                  </option>
+                ))}
+              </select>
             </div>
-          </form>
-        </motion.div>
+          </div>
 
-        {/* decorative icons */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 0.15, x: 0 }}
-          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute top-24 right-10 text-blue-600"
-        >
-          <FaRocket size={90} />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 0.15, x: 0 }}
-          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute bottom-24 left-10 text-blue-600"
-        >
-          <FaCode size={90} />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 0.15, y: 0 }}
-          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute top-1/2 left-6 text-blue-600"
-        >
-          <FaUsers size={70} />
-        </motion.div>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description ({countWords(description)}/{maxWords} words)
+            </label>
+            <textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              rows={5}
+              className="w-full p-3 bg-gray-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
+              required
+            />
+          </div>
 
+          {/* Submit */}
+          <div className="flex justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+              className="w-full py-4 px-6 bg-gradient-to-r from-blue-800 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-900 hover:to-blue-700 focus:ring-2 focus:ring-blue-600"
+            >
+              Submit Idea
+            </motion.button>
+          </div>
+        </form>
         <ToastContainer />
-      </div>
+      </motion.div>
     </div>
   );
 };
