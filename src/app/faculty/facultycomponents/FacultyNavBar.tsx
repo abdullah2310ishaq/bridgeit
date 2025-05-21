@@ -55,7 +55,6 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
       href: "/faculty/idea",
       children: [
         { name: "Create Idea", href: "/faculty/idea" },
-        { name: "History", href: "/faculty/idea/history" },
         { name: "Notifications", href: "/faculty/idea/ideanotifications" },
         { name: "My Ideas", href: "/faculty/idea/viewidea" },
       ],

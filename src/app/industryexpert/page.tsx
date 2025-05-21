@@ -346,6 +346,41 @@ const IndustryExpertPage: React.FC = () => {
               <p className="text-sm text-gray-500">Manage your project requests</p>
             </div>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            onClick={() => router.push("/industryexpert/approved-requests")}
+            className="group flex items-center gap-4 p-6 bg-white rounded-xl shadow border border-gray-200 hover:shadow-lg hover:border-blue-500 cursor-pointer transition"
+          >
+            <div className="p-4 bg-blue-100 rounded-full">
+              <Bell className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Approved Requests</h3>
+              <p className="text-sm text-gray-500">See Approved Project Requests</p>
+            </div>
+          </motion.div>
+
+    <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            onClick={() => router.push("/industryexpert/meetings")}
+            className="group flex items-center gap-4 p-6 bg-white rounded-xl shadow border border-gray-200 hover:shadow-lg hover:border-blue-500 cursor-pointer transition"
+          >
+            <div className="p-4 bg-blue-100 rounded-full">
+              <Bell className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Meetings</h3>
+              <p className="text-sm text-gray-500">Set Meeting with Student</p>
+            </div>
+          </motion.div>
+
+
+
         </div>
 
         {/* Requests Tab */}
