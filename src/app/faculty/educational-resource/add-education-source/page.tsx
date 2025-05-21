@@ -112,14 +112,14 @@ const AddEducationalResource = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gray-100 text-gray-900 p-6">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-green-400">Add Educational Resource</h1>
+        <h1 className="text-3xl font-bold mb-8 text-blue-600">Add Educational Resource</h1>
 
-        <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                 Title
               </label>
               <input
@@ -129,13 +129,13 @@ const AddEducationalResource = () => {
                 value={formData.title}
                 onChange={handleChange}
                 required
-                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full p-3 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Enter resource title"
               />
             </div>
 
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
                 Content
               </label>
               <textarea
@@ -145,13 +145,13 @@ const AddEducationalResource = () => {
                 onChange={handleChange}
                 required
                 rows={6}
-                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full p-3 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Enter resource content or description"
               />
             </div>
 
             <div>
-              <label htmlFor="sourceLink" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="sourceLink" className="block text-sm font-medium text-gray-700 mb-1">
                 Source Link (Optional)
               </label>
               <input
@@ -160,7 +160,7 @@ const AddEducationalResource = () => {
                 name="sourceLink"
                 value={formData.sourceLink}
                 onChange={handleChange}
-                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full p-3 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="https://example.com/resource"
               />
             </div>
@@ -169,14 +169,14 @@ const AddEducationalResource = () => {
               <button
                 type="button"
                 onClick={() => router.push("/faculty/manage-educational-resources")}
-                className="px-6 py-3 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
+                className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className={`px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-colors flex items-center ${
+                className={`px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-500 transition-colors flex items-center ${
                   loading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >
@@ -212,7 +212,7 @@ const AddEducationalResource = () => {
           </form>
         </div>
       </div>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="bottom-right" theme="light" />
     </div>
   )
 }

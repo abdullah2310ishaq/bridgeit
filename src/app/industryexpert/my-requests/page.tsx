@@ -59,7 +59,6 @@ export default function MyRequestsPage() {
 
         const expertData = await expertResponse.json()
         setIndustryExpertId(expertData.indExptId)
-        console.log("Industry Expert ID:", expertData.indExptId)
 
         // Step 3: Fetch FYP requests for this industry expert
         const requestsResponse = await fetch(
@@ -71,17 +70,12 @@ export default function MyRequestsPage() {
 
         if (requestsResponse.ok) {
           const requestData = await requestsResponse.json()
-          console.log("Request data:", requestData)
-
-          // If the response is an array, use it directly, otherwise wrap it in an array
           const requestsArray = Array.isArray(requestData) ? requestData : [requestData]
           setRequests(requestsArray)
         } else {
           if (requestsResponse.status === 404) {
-            console.log("No requests found for this industry expert")
             setRequests([])
           } else {
-            console.error("Failed to fetch requests:", await requestsResponse.text())
             throw new Error("Failed to fetch requests")
           }
         }
@@ -97,7 +91,6 @@ export default function MyRequestsPage() {
     fetchRequests()
   }, [router])
 
-  // Filter requests based on status
   const filteredRequests = requests.filter((request) => {
     if (statusFilter === "all") return true
     if (statusFilter === "pending") return request.status === null
@@ -109,21 +102,21 @@ export default function MyRequestsPage() {
   const getStatusBadge = (status: number | null) => {
     if (status === null) {
       return (
-        <div className="px-2 py-1 bg-yellow-900/30 text-yellow-400 text-xs rounded-md flex items-center gap-1">
+        <div className="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded-md flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>Pending</span>
         </div>
       )
     } else if (status === 1) {
       return (
-        <div className="px-2 py-1 bg-green-900/30 text-green-400 text-xs rounded-md flex items-center gap-1">
+        <div className="px-2 py-1 bg-green-100 text-green-600 text-xs rounded-md flex items-center gap-1">
           <CheckCircle className="h-3 w-3" />
           <span>Approved</span>
         </div>
       )
     } else {
       return (
-        <div className="px-2 py-1 bg-red-900/30 text-red-400 text-xs rounded-md flex items-center gap-1">
+        <div className="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-md flex items-center gap-1">
           <XCircle className="h-3 w-3" />
           <span>Rejected</span>
         </div>
@@ -133,10 +126,10 @@ export default function MyRequestsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
-          <p className="text-xl text-gray-300">Loading your requests...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-purple-600" />
+          <p className="text-xl text-gray-600">Loading your requests...</p>
         </div>
       </div>
     )
@@ -144,13 +137,13 @@ export default function MyRequestsPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="bg-red-900/20 p-6 rounded-lg border border-red-700 max-w-md">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
-          <p className="text-gray-300">{error}</p>
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="bg-red-100 p-6 rounded-lg border border-red-300 max-w-md">
+          <h2 className="text-xl font-bold text-red-700 mb-2">Error</h2>
+          <p className="text-gray-700">{error}</p>
           <button
             onClick={() => router.push("/industry-expert")}
-            className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
+            className="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700"
           >
             Return to Dashboard
           </button>
@@ -160,22 +153,24 @@ export default function MyRequestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-white text-gray-800">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
+      <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-purple-400">My FYP Requests</h1>
-          <p className="text-gray-400 mt-2">Track the status of your Final Year Project requests</p>
+          <h1 className="text-3xl font-bold text-gray-900">My FYP Requests</h1>
+          <p className="text-gray-600 mt-2">
+            Track the status of your Final Year Project requests
+          </p>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         {/* Filter */}
         <div className="mb-6 flex items-center gap-2">
-          <Filter className="text-gray-400" />
-          <span className="text-gray-300">Filter by status:</span>
+          <Filter className="text-gray-600" />
+          <span className="text-gray-700">Filter by status:</span>
           <select
-            className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-300"
+            className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
           >
@@ -191,22 +186,26 @@ export default function MyRequestsPage() {
             {filteredRequests.map((request) => (
               <div
                 key={request.id}
-                className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-purple-500 transition-all duration-200"
+                className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-purple-500 transition-all duration-200"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-white">{request.fypTitle}</h3>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {request.fypTitle}
+                      </h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <div className="px-2 py-1 bg-purple-900/30 text-purple-400 text-xs rounded-md">
+                        <div className="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded-md">
                           {request.fyp_fypId}
                         </div>
                         {getStatusBadge(request.status)}
                       </div>
                     </div>
                     <button
-                      onClick={() => router.push(`/industry-expert/fyp-details/${request.fypId}`)}
-                      className="flex items-center gap-1 text-purple-400 hover:text-purple-300"
+                      onClick={() =>
+                        router.push(`/industry-expert/fyp-details/${request.fypId}`)
+                      }
+                      className="flex items-center gap-1 text-purple-600 hover:text-purple-500"
                     >
                       View Details
                       <ArrowRight className="h-4 w-4" />
@@ -214,26 +213,33 @@ export default function MyRequestsPage() {
                   </div>
 
                   {request.fypDescription && (
-                    <p className="text-gray-400 mt-4 line-clamp-2">{request.fypDescription}</p>
+                    <p className="text-gray-600 mt-4 line-clamp-2">
+                      {request.fypDescription}
+                    </p>
                   )}
 
-                  {/* Status-specific actions */}
-                  <div className="mt-6 border-t border-gray-700 pt-4">
+                  <div className="mt-6 border-t border-gray-200 pt-4">
                     {request.status === 1 && (
                       <button
-                        onClick={() => router.push("/industry-expert/approved-requests")}
-                        className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-md"
+                        onClick={() =>
+                          router.push("/industry-expert/approved-requests")
+                        }
+                        className="px-4 py-2 bg-green-500 hover:bg-green-400 text-white rounded-md"
                       >
                         Go to Approved Requests
                       </button>
                     )}
                     {request.status === 0 && (
-                      <div className="text-gray-400">
-                        This request has been rejected. You can browse other projects in the marketplace.
+                      <div className="text-gray-600">
+                        This request has been rejected. You can browse other
+                        projects in the marketplace.
                       </div>
                     )}
                     {request.status === null && (
-                      <div className="text-yellow-400">Your request is pending approval from the university admin.</div>
+                      <div className="text-yellow-600">
+                        Your request is pending approval from the university
+                        admin.
+                      </div>
                     )}
                   </div>
                 </div>
@@ -242,17 +248,21 @@ export default function MyRequestsPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="bg-gray-800 p-8 rounded-lg border border-gray-700 max-w-md">
-              <Clock className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-300">No requests found</h3>
-              <p className="text-gray-400 mt-2">
+            <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md">
+              <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-gray-700">
+                No requests found
+              </h3>
+              <p className="text-gray-600 mt-2">
                 {statusFilter !== "all"
                   ? `You don't have any ${statusFilter} requests.`
                   : "You haven't made any FYP requests yet."}
               </p>
               <button
-                onClick={() => router.push("/industry-expert/fyp-marketplace")}
-                className="mt-6 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md transition-colors"
+                onClick={() =>
+                  router.push("/industryexpert/fyp-marketplace")
+                }
+                className="mt-6 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-md transition-colors"
               >
                 Browse FYP Marketplace
               </button>
@@ -267,7 +277,7 @@ export default function MyRequestsPage() {
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </div>
   )

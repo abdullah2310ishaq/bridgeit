@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 
 // Import your custom components
 import IndustryProfile from "./industrycomponents/IndustryProfile"
-{/*import CompanyProfile from "./industrycomponents/CompanyProfile"*/}
 import ProjectCard from "./industrycomponents/ProjectsCardd"
 import CompletedProjects from "./industrycomponents/CompletedProjects"
 import CompletionRequestsComponent from "./completion-requests-component"
@@ -71,7 +70,7 @@ const IndustryExpertPage: React.FC = () => {
         `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          cache: "no-store", // Ensure we don't get cached results
+          cache: "no-store",
         },
       )
 
@@ -167,7 +166,6 @@ const IndustryExpertPage: React.FC = () => {
         )
         if (assignedRes.ok) {
           const assignedData = await assignedRes.json()
-          // Filter out completed projects from assigned projects
           const activeProjects = assignedData.filter((project: Project) => project.status !== "Completed")
           setAssignedProjects(activeProjects)
         }
@@ -195,24 +193,19 @@ const IndustryExpertPage: React.FC = () => {
     fetchProfileAndProjects()
   }, [router, fetchCompletionRequests])
 
-  // Set up an interval to refresh completion requests periodically
+  // Periodic refresh for requests
   useEffect(() => {
     if (!expertProfile) return
-
-    // Initial fetch
     fetchCompletionRequests(expertProfile.indExptId)
-
-    // Set up interval for periodic refresh (every 30 seconds)
-    const intervalId = setInterval(() => {
+    const iv = setInterval(() => {
       if (activeTab === "requests") {
         fetchCompletionRequests(expertProfile.indExptId)
       }
-    }, 30000) // 30 seconds
-
-    return () => clearInterval(intervalId)
+    }, 30000)
+    return () => clearInterval(iv)
   }, [expertProfile, activeTab, fetchCompletionRequests])
 
-  // Refresh completion requests when switching to the requests tab
+  // Refresh on tab switch
   useEffect(() => {
     if (activeTab === "requests" && expertProfile) {
       fetchCompletionRequests(expertProfile.indExptId)
@@ -222,21 +215,18 @@ const IndustryExpertPage: React.FC = () => {
   if (loading) {
     return <div className="text-center p-8">Loading...</div>
   }
-
   if (error) {
     return <div className="text-center text-red-500 p-8">{error}</div>
   }
-
   if (!expertProfile) {
     return <div className="text-center p-8">No profile found</div>
   }
 
-  // For logging out
   const handleLogout = () => {
     localStorage.removeItem("jwtToken")
     router.push("/auth/login-user")
   }
-    // Count projects for each category
+
   const assignedCount = assignedProjects.length
   const unassignedCount = unassignedProjects.length
   const completedCount = CompletedProjects.length
@@ -258,25 +248,23 @@ const IndustryExpertPage: React.FC = () => {
           address={expertProfile.address}
           contact={expertProfile.contact}
         />
-        {/* Header with stats */}
-        <div className="mb-8">
-          <motion.h1
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl font-bold text-gray-900 mb-2"
-          >
-            My Projects
-          </motion.h1>
-        </div>
 
-        {/* Project Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        {/* Header */}
+        <motion.h1
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl font-bold text-gray-900"
+        >
+          My Dashboard
+        </motion.h1>
+                {/* Stats */}
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500"
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500 cursor-pointer"
             onClick={() => setActiveTab("assigned")}
           >
             <div className="flex justify-between items-center">
@@ -289,12 +277,11 @@ const IndustryExpertPage: React.FC = () => {
               </div>
             </div>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500"
+            transition={{ duration: 0.3, delay: 0.4 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500 cursor-pointer"
             onClick={() => setActiveTab("unassigned")}
           >
             <div className="flex justify-between items-center">
@@ -307,12 +294,11 @@ const IndustryExpertPage: React.FC = () => {
               </div>
             </div>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500"
+            transition={{ duration: 0.3, delay: 0.5 }}
+            className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500 cursor-pointer"
             onClick={() => setActiveTab("completed")}
           >
             <div className="flex justify-between items-center">
@@ -326,71 +312,105 @@ const IndustryExpertPage: React.FC = () => {
             </div>
           </motion.div>
         </div>
-        {/* (C) Tabs for Projects */}
 
-       <div className="mb-6">
-  <div
-    className={`group transition-all duration-300 rounded-xl p-6 cursor-pointer border
-      ${activeTab === "requests"
-        ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-blue-600 shadow-lg"
-        : "bg-white hover:bg-blue-50 text-gray-800 border-gray-200"}`}
-    onClick={() => setActiveTab("requests")}
-  >
-    <div className="flex items-center">
-      <div className="p-3 bg-blue-100 rounded-full mr-4">
-        <Bell className="h-6 w-6 text-blue-600" />
-      </div>
-      <div className="flex-1">
-        <h3 className="text-xl font-bold group-hover:underline">
-          Project Completion Requests
-        </h3>
-        <p className="text-sm text-gray-500 group-hover:text-gray-700">
-          Click to view and manage completion requests
-        </p>
-      </div>
-      {activeTab === "requests" && (
-        <span className="text-sm  text-blue-100 font-semibold px-3 py-1 ">
-          Active
-        </span>
-      )}
-    </div>
+        {/* Action Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            onClick={() => router.push("/industryexpert/fyp-marketplace")}
+            className="group flex items-center gap-4 p-6 bg-white rounded-xl shadow border border-gray-200 hover:shadow-lg hover:border-indigo-500 cursor-pointer transition"
+          >
+            <div className="p-4 bg-indigo-100 rounded-full">
+              <Briefcase className="h-6 w-6 text-indigo-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Browse FYP Marketplace</h3>
+              <p className="text-sm text-gray-500">Discover new projects to mentor</p>
+            </div>
+          </motion.div>
 
-      </div>
-      {activeTab === "requests" && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 border border-blue-100">
-          <div className="flex items-center justify-between mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            onClick={() => router.push("/industryexpert/my-requests")}
+            className="group flex items-center gap-4 p-6 bg-white rounded-xl shadow border border-gray-200 hover:shadow-lg hover:border-blue-500 cursor-pointer transition"
+          >
+            <div className="p-4 bg-blue-100 rounded-full">
+              <Bell className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">View My Requests</h3>
+              <p className="text-sm text-gray-500">Manage your project requests</p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Requests Tab */}
+        <div className="mb-6">
+          <div
+            className={`group transition-all duration-300 rounded-xl p-6 cursor-pointer border ${
+              activeTab === "requests"
+                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-blue-600 shadow-lg"
+                : "bg-white hover:bg-blue-50 text-gray-800 border-gray-200"
+            }`}
+            onClick={() => setActiveTab("requests")}
+          >
             <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-full mr-3">
-                <Bell className="h-5 w-5 text-blue-600" />
+              <div className="p-3 bg-blue-100 rounded-full mr-4">
+                <Bell className="h-6 w-6 text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Project Completion Requests</h2>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold group-hover:underline">
+                  Project Completion Requests
+                </h3>
+                <p className="text-sm text-gray-500 group-hover:text-gray-700">
+                  Click to view and manage completion requests
+                </p>
+              </div>
+              {activeTab === "requests" && (
+                <span className="text-sm text-blue-100 font-semibold px-3 py-1">
+                  Active
+                </span>
+              )}
             </div>
-
-            {completionRequests.length > 0 && (
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                {completionRequests.length} {completionRequests.length === 1 ? "Request" : "Requests"}
-              </span>
-            )}
           </div>
-
-          {isRefreshing ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              <span className="ml-3 text-blue-600 font-medium">Refreshing requests...</span>
+          {activeTab === "requests" && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 border border-blue-100">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-blue-100 rounded-full mr-3">
+                    <Bell className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Project Completion Requests
+                  </h2>
+                </div>
+                {completionRequests.length > 0 && (
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    {completionRequests.length}{" "}
+                    {completionRequests.length === 1 ? "Request" : "Requests"}
+                  </span>
+                )}
+              </div>
+              {isRefreshing ? (
+                <div className="flex justify-center items-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                  <span className="ml-3 text-blue-600 font-medium">
+                    Refreshing requests...
+                  </span>
+                </div>
+              ) : (
+                <CompletionRequestsComponent
+                  requests={completionRequests}
+                  onRefresh={refreshCompletionRequests}
+                />
+              )}
             </div>
-          ) : (
-            <CompletionRequestsComponent requests={completionRequests} onRefresh={refreshCompletionRequests} />
           )}
         </div>
-      )}
-    </div>
-
-        {/* Logout button 
-        <div className="mt-10">
-          <button onClick={handleLogout} className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-500">
-            Logout
-          </button>
-        </div>*/}
       </div>
     </div>
   )

@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import ProfileSection from "./facultycomponents/FacultyProfile";
 import ResearchSection from "./facultycomponents/FacultyResearch";
 import UpcomingEventsSection from "./facultycomponents/FacultyEvents";
+import EducationalResourcesSection from "./facultycomponents/EducationalResourcesSection";
+import { motion } from "framer-motion";
+import { Briefcase } from "lucide-react";
 
 interface FacultyProfileData {
   id: string;
@@ -182,13 +185,16 @@ const FacultyPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-600 p-6">
+    <div className="min-h-screen bg-gray-50 text-gray-700 p-6 space-y-12">
       {/* Profile Section */}
       <ProfileSection
         facultyProfile={facultyProfile}
         onViewProfile={onViewProfile}
         onEditProfile={onEditProfile}
       />
+
+      {/* Educational Resources Section */}
+     <EducationalResourcesSection />
 
       {/* Research Section */}
       <ResearchSection
