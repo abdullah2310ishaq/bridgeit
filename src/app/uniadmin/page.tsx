@@ -14,10 +14,10 @@ import LoadingSpinner from "./components/LoadingSpinner"
 import ErrorDisplay from "./components/ErrorDisplay"
 import type { Event } from "./components/EventsComponent"
 import EventCountdown from "./components/event-countdown"
-import AllProjectsList from "./components/StudentProjectsList"
+import AllProjectsList from "./components/AllProjectsList"
 import EventNotificationManager from "./components/event-notification-manager"
 import Loading from "../loading/page"
-import StudentProjectsList from "./components/StudentProjectsList"
+import StudentProjectsList from "./components/AllProjectsList"
 
 // ------------ Interfaces ------------
 interface AdminProfile {
@@ -356,13 +356,6 @@ const UniAdminDashboard: React.FC = () => {
           {/* University Stats */}
           <UniversityStats studentsCount={studentsCount} facultiesCount={facultiesCount} />
           
- {/* Ongoing Projects Section */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-3">
-          <h2 className="text-2xl font-semibold mb-4">
-            Ongoing Projects
-          </h2>
-          <StudentProjectsList/>
-        </div>
 
           {/* Search Section */}
           <SearchSection
@@ -372,6 +365,12 @@ const UniAdminDashboard: React.FC = () => {
             searchError={searchError}
             results={results}
           />
+
+           {/* Ongoing Projects Section */}
+         <div className="col-span-1 md:col-span-2 lg:col-span-3">
+   <h2 className="text-2xl font-semibold mb-4">Ongoing Projects</h2>
+   <AllProjectsList />
+ </div>
 
           {/* Event Countdown */}
           <div className="col-span-1 md:col-span-1 lg:col-span-1">

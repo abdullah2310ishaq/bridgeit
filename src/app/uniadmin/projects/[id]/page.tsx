@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -7,17 +9,19 @@ interface ProjectDetail {
   title: string;
   description: string;
   status: string;
+  // …add any other fields your API returns
 }
 
-export default function StudentProjectDetail() {
+export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+
   const [project, setProject] = useState<ProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
+    (async () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
         router.push("/auth/login-user");
@@ -32,21 +36,20 @@ export default function StudentProjectDetail() {
         const data = await res.json();
         setProject(Array.isArray(data) ? data[0] : data);
       } catch (e: any) {
-        console.error("Fetch project detail failed:", e);
+        console.error("Fetch failed:", e);
         setError(e.message || "Unknown error");
       } finally {
         setLoading(false);
       }
-    }
-    load();
+    })();
   }, [id, router]);
 
   if (loading) return <div className="p-8 text-center">Loading…</div>;
-  if (error) return <div className="p-8 text-red-500 text-center">{error}</div>;
+  if (error)   return <div className="p-8 text-center text-red-500">{error}</div>;
   if (!project) return <div className="p-8 text-center">No project found.</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
       <button
         onClick={() => router.back()}
         className="mb-4 text-sm text-indigo-600 hover:underline"
@@ -64,6 +67,7 @@ export default function StudentProjectDetail() {
       >
         {project.status}
       </span>
+      {/* Render any other fields here */}
     </div>
   );
 }
