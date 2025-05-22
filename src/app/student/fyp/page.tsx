@@ -111,7 +111,7 @@ const RegisterFypPage: React.FC = () => {
     yearOfCompletion: undefined,
   })
 
-  // UI states
+  
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)

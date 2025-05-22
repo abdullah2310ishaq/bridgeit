@@ -454,7 +454,7 @@ const IdeaDetailsPage: React.FC = () => {
                     <ul className="space-y-2 text-gray-700">
                       <li className="flex items-start">
                         <span className="text-blue-500 mr-2">•</span>
-                        <span>Expected duration: 4-5 months</span>
+                        <span>Expected duration: 10-12 months</span>
                       </li>
                       <li className="flex items-start">
                         <span className="text-blue-500 mr-2">•</span>
@@ -508,71 +508,7 @@ const IdeaDetailsPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Project Timeline */}
-            <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                  <Clock className="w-5 h-5 mr-2 text-blue-500" />
-                  Suggested Timeline
-                </h2>
-              </div>
-              <div className="p-6">
-                <div className="relative pl-8 border-l-2 border-blue-200 space-y-10">
-                  <div className="relative">
-                    <div className="absolute -left-[25px] w-6 h-6 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center">
-                      <span className="text-xs font-bold text-blue-500">1</span>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-800">Research Phase</h3>
-                    <p className="text-gray-600 mt-1">
-                      Literature review, understanding the problem domain, and planning the approach.
-                    </p>
-                    <p className="text-sm text-blue-600 mt-1">2-3 weeks</p>
-                  </div>
-
-                  <div className="relative">
-                    <div className="absolute -left-[25px] w-6 h-6 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center">
-                      <span className="text-xs font-bold text-blue-500">2</span>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-800">Design Phase</h3>
-                    <p className="text-gray-600 mt-1">
-                      System architecture, database design, UI/UX mockups, and component planning.
-                    </p>
-                    <p className="text-sm text-blue-600 mt-1">3-4 weeks</p>
-                  </div>
-
-                  <div className="relative">
-                    <div className="absolute -left-[25px] w-6 h-6 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center">
-                      <span className="text-xs font-bold text-blue-500">3</span>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-800">Implementation Phase</h3>
-                    <p className="text-gray-600 mt-1">Coding, development, and iterative testing of the solution.</p>
-                    <p className="text-sm text-blue-600 mt-1">6-8 weeks</p>
-                  </div>
-
-                  <div className="relative">
-                    <div className="absolute -left-[25px] w-6 h-6 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center">
-                      <span className="text-xs font-bold text-blue-500">4</span>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-800">Testing & Documentation</h3>
-                    <p className="text-gray-600 mt-1">
-                      Comprehensive testing, bug fixing, and preparing final documentation.
-                    </p>
-                    <p className="text-sm text-blue-600 mt-1">2-3 weeks</p>
-                  </div>
-
-                  <div className="relative">
-                    <div className="absolute -left-[25px] w-6 h-6 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center">
-                      <span className="text-xs font-bold text-blue-500">5</span>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-800">Final Presentation</h3>
-                    <p className="text-gray-600 mt-1">
-                      Preparing and delivering the final presentation and demonstration.
-                    </p>
-                    <p className="text-sm text-blue-600 mt-1">1 week</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+    
           </div>
 
           {/* Sidebar */}
@@ -587,11 +523,7 @@ const IdeaDetailsPage: React.FC = () => {
               </div>
               <div className="p-6">
                 <div className="flex items-center mb-6">
-                  <img
-                    src={`https://randomuser.me/api/portraits/${idea.facultyName.length % 2 === 0 ? "men" : "women"}/${idea.facultyName.length % 10}.jpg`}
-                    alt={idea.facultyName}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
-                  />
+                
                   <div className="ml-4">
                     <h3 className="font-medium text-gray-800">{idea.facultyName}</h3>
                     <p className="text-sm text-gray-600">{idea.uniName}</p>
@@ -648,66 +580,6 @@ const IdeaDetailsPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Project Stats */}
-            <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                  <Star className="w-5 h-5 mr-2 text-blue-500" />
-                  Project Stats
-                </h2>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
-                    <p className="text-2xl font-bold text-blue-600">Medium</p>
-                    <p className="text-sm text-gray-600">Difficulty</p>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
-                    <p className="text-2xl font-bold text-blue-600">3-4</p>
-                    <p className="text-sm text-gray-600">Months</p>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
-                    <p className="text-2xl font-bold text-blue-600">2-3</p>
-                    <p className="text-sm text-gray-600">Team Size</p>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
-                    <p className="text-2xl font-bold text-blue-600">High</p>
-                    <p className="text-sm text-gray-600">Impact</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Related Ideas */}
-            {relatedIdeas.length > 0 && (
-              <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-                <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                    <Lightbulb className="w-5 h-5 mr-2 text-blue-500" />
-                    Related Ideas
-                  </h2>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
-                    {relatedIdeas.map((relatedIdea) => (
-                      <Link
-                        key={relatedIdea.id}
-                        href={`/student/seeideas/${relatedIdea.id}`}
-                        className="block p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition"
-                      >
-                        <h3 className="font-medium text-gray-800 mb-1">{relatedIdea.title}</h3>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                            {relatedIdea.technology}
-                          </span>
-                          <span className="text-xs text-gray-500">{relatedIdea.facultyName}</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

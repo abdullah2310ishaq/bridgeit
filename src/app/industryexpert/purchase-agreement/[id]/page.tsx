@@ -6,24 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import {
-  ArrowLeft,
-  Loader2,
-  Download,
-  Upload,
-  FileText,
-  Check,
-  X,
-  Calendar,
-  User,
-  Users,
-  BookOpen,
-  DollarSign,
-  CreditCard,
-  Lock,
-  Info,
-  CheckCircle,
-} from "lucide-react"
+import { ArrowLeft, Loader2, Download, Upload, FileText, Check, X, Calendar, User, Users, BookOpen, DollarSign, CreditCard, Lock, Info, CheckCircle } from 'lucide-react'
 
 interface FYP {
   id: string
@@ -58,7 +41,6 @@ export default function PurchaseAgreementPage() {
   const [submitting, setSubmitting] = useState(false)
   const [agreementText, setAgreementText] = useState<string>("")
   const [price, setPrice] = useState<number>(10000) // Default price in PKR
-  const [boughtFypId, setBoughtFypId] = useState<string | null>(null)
 
   const router = useRouter()
   const params = useParams()
@@ -106,20 +88,6 @@ export default function PurchaseAgreementPage() {
 
         const fypData = await fypResponse.json()
         setFyp(fypData)
-
-        // Step 4: Check if there's already a bought FYP record
-        try {
-          const boughtFypResponse = await fetch(`https://localhost:7053/api/bought-fyp/by-id/${fypId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-
-          if (boughtFypResponse.ok) {
-            const boughtFypData = await boughtFypResponse.json()
-            setBoughtFypId(boughtFypData.id)
-          }
-        } catch (err) {
-          console.log("No existing bought FYP record found, will create one during checkout")
-        }
 
         // Generate agreement text
         generateAgreementText(fypData, `${expertData.firstName} ${expertData.lastName}`)
@@ -216,36 +184,27 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
     document.body.removeChild(link)
   }
 
-  // Create a bought FYP record if it doesn't exist
-  const createBoughtFypRecord = async (token: string): Promise<string> => {
-    if (boughtFypId) return boughtFypId
-
-    try {
-      const response = await fetch(`https://localhost:7053/api/bought-fyp/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          fypId: fyp?.id,
-          indExpertId: industryExpertId,
-          price: price,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to create bought FYP record")
+  // Updated convertFileToBase64 function
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file) // Use readAsDataURL instead of readAsArrayBuffer
+      reader.onload = () => {
+        if (reader.result) {
+          // The result will be a data URL like "data:application/pdf;base64,XXXX"
+          // We need to extract just the base64 part
+          const base64String = reader.result.toString()
+          const base64Content = base64String.split(',')[1] // Remove the data:application/pdf;base64, part
+          resolve(base64Content)
+        } else {
+          reject(new Error("Failed to convert file to base64"))
+        }
       }
-
-      const data = await response.json()
-      return data.id
-    } catch (err) {
-      throw new Error("Failed to create bought FYP record: " + (err instanceof Error ? err.message : String(err)))
-    }
+      reader.onerror = (error) => reject(error)
+    })
   }
 
-  // Update the handleSubmit function to properly handle the base64 conversion
+  // Updated handleSubmit function
   const handleSubmit = async () => {
     if (!agreementFile || !industryExpertId || !fyp) {
       toast.error("Please upload a signed agreement document")
@@ -254,33 +213,20 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
 
     setSubmitting(true)
     const token = localStorage.getItem("jwtToken")
+    if (!token) {
+      toast.error("Authentication token not found. Please log in again.")
+      router.push("/auth/login-user")
+      return
+    }
 
     try {
-      // First, ensure we have a bought FYP record
-      const recordId = await createBoughtFypRecord(token!)
-
       // Convert file to base64
       const base64 = await convertFileToBase64(agreementFile)
-
-      console.log("Uploading agreement to ID:", recordId)
-
-      // Upload the agreement
-      const agreementResponse = await fetch(`https://localhost:7053/api/bought-fyp/add-agreement/${recordId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(base64),
-      })
-
-      if (!agreementResponse.ok) {
-        const errorText = await agreementResponse.text()
-        console.error("Agreement upload error:", errorText)
-        throw new Error(`Failed to upload agreement: ${errorText}`)
-      }
-
-      // Then, create checkout session for payment
+      
+      // Store the agreement in localStorage for later use after payment
+      localStorage.setItem(`agreement_${fyp.id}`, base64)
+      
+      // Create checkout session for payment
       const checkoutResponse = await fetch(
         `https://localhost:7053/api/payments/create-checkout-session/fyp/${fyp.id}`,
         {
@@ -293,7 +239,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
             indExpertId: industryExpertId,
             price: price,
           }),
-        },
+        }
       )
 
       if (checkoutResponse.ok) {
@@ -302,37 +248,16 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
         window.location.href = checkoutUrl
       } else {
         const errorText = await checkoutResponse.text()
+        console.error("Checkout error:", errorText)
         toast.error(`Failed to create payment: ${errorText}`)
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred while processing your request"
       toast.error(errorMessage)
-      console.error(err)
+      console.error("Submit error:", err)
     } finally {
       setSubmitting(false)
     }
-  }
-
-  // Update the convertFileToBase64 function to ensure proper base64 conversion
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsArrayBuffer(file)
-      reader.onload = () => {
-        if (reader.result) {
-          const bytes = new Uint8Array(reader.result as ArrayBuffer)
-          let binary = ""
-          for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i])
-          }
-          const base64 = window.btoa(binary)
-          resolve(base64)
-        } else {
-          reject(new Error("Failed to convert file to base64"))
-        }
-      }
-      reader.onerror = (error) => reject(error)
-    })
   }
 
   if (loading) {

@@ -165,7 +165,7 @@ const PaymentPage = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 font-medium">Budget</p>
-                  <p className="text-gray-800">${project.budget.toFixed(2)}</p>
+                  <p className="text-gray-800">${project.budget}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 font-medium">Status</p>

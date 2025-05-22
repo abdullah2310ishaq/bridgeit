@@ -102,6 +102,10 @@ const NotificationsPage: React.FC = () => {
     setShowModal(true)
   }
 
+  const handleViewStudentProfile = (studentUserId: string) => {
+    router.push(`/industryexpert/notifications/student/${studentUserId}`)
+  }
+
   const handleAcceptProposal = async (proposalId: string) => {
     try {
       const token = localStorage.getItem("jwtToken")
@@ -220,7 +224,15 @@ const NotificationsPage: React.FC = () => {
                 <div className="bg-gray-100 p-2 rounded-full mr-2">
                   <User className="h-4 w-4 text-gray-600" />
                 </div>
-                <p className="text-gray-700">From: {proposal.studentName}</p>
+                <p className="text-gray-700">
+                  From:{" "}
+                  <button
+                    onClick={() => handleViewStudentProfile(proposal.studentUserId)}
+                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer"
+                  >
+                    {proposal.studentName}
+                  </button>
+                </p>
               </div>
 
               <div className="flex items-center mb-3">

@@ -32,14 +32,7 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
 
   const navigationLinks = [
     { name: "Home", href: "/faculty" },
-    {
-      name: "Profile",
-      href: "#",
-      children: [
-        { name: "View", href: "/faculty/profile" },
-        { name: "Edit", href: "/faculty/profile/editfaculty" },
-      ],
-    },
+   
     {
       name: "Update",
       href: "#",
@@ -48,21 +41,28 @@ const FacultyNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) => {
         { name: "Password", href: "/faculty/profile/managefaculty" },
       ],
     },
-    {
-      name: "ResearchPage",
-      href: "#",
-      children: [
-        { name: "See All", href: "/faculty/researchpaper" },
-        { name: "Create", href: "/faculty/researchpaper/create" },
-      ],
-    },
+  
     {
       name: "FYPs",
       href: "/faculty/finalyp",
       children: [
-        { name: "See", href: "/faculty/finalyp" },
+        { name: "See All", href: "/faculty/finalyp" },
       ],
     },
+
+    {
+      name: "Ideas",
+      href: "/faculty/idea",
+      children: [
+        { name: "Create Idea", href: "/faculty/idea" },
+        { name: "Notifications", href: "/faculty/idea/ideanotifications" },
+        { name: "My Ideas", href: "/faculty/idea/viewidea" },
+      ],
+    },
+
+
+
+
   ];
 
   const isActiveLink = (link: { href: string; children?: any[] }) => {
