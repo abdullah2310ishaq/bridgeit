@@ -63,102 +63,118 @@ const IndustryProfile: React.FC<IndustryProfileProps> = ({
 
   const profileImageSrc = companyLogo ? `data:image/jpeg;base64,${companyLogo}` : "/default-profile.png"
 
-  return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      {/* Profile Card */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full lg:w-2/3 rounded-xl shadow-md overflow-hidden border border-gray-200"
-      >
-        {/* Card Header with Background */}
-        <div className="relative h-32 w-full">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url('/studenttop.jpg')`,
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-purple-600/80"></div>
-          </div>
+return (
+  <div className="flex flex-col lg:flex-row gap-6">
+    {/* Redesigned Profile Card */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="relative flex-1 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
+    >
+      {/* Decorative blurred circle */}
+      <div className="absolute top-4 right-4 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl opacity-30"></div>
 
-          {/* Profile Image - Positioned to overlap the header */}
-          <div className="absolute -bottom-12 left-6">
-            {imageError ? (
-              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-md">
-                <Building className="h-12 w-12 text-gray-400" />
+      {/* Header with gradient + watermark */}
+      <div className="relative h-36 bg-gradient-to-r from-indigo-500 to-purple-500">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-9"
+          style={{ backgroundImage: "url('/studenttop.jpg')" }}
+        />
+      </div>
+
+      {/* Avatar overlapping header */}
+      <div className="relative px-6 -mt-16">
+        {imageError ? (
+          <div className="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-md">
+            <Building className="w-12 h-12 text-gray-400" />
+          </div>
+        ) : (
+          <img
+            src={profileImageSrc || "/placeholder.svg"}
+            alt={`${firstName} ${lastName}`}
+            className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+            onError={handleImageError}
+          />
+        )}
+      </div>
+
+      {/* Name & Action Buttons */}
+      <div className="px-6 pt-6 pb-6">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Welcome, <span className="text-indigo-600">{firstName}</span>!
+        </h2>
+        <div className="mt-4 flex space-x-4">
+          <button
+            onClick={handleEditProfile}
+            className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white font-medium rounded-full hover:bg-indigo-700 transition"
+          >
+            <Edit className="w-5 h-5" />
+            Edit Profile
+          </button>
+          <button
+            onClick={handleViewProfile}
+            className="flex items-center gap-2 px-5 py-2 bg-gray-200 text-gray-700 font-medium rounded-full hover:bg-gray-300 transition"
+          >
+            <User className="w-5 h-5" />
+            View Profile
+          </button>
+        </div>
+      </div>
+
+      {/* Original Card Content (commented out) */}
+      {/*
+      <div className="pt-14 px-6 pb-6 bg-white">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">
+              {firstName} {lastName}
+            </h2>
+            <div className="flex items-center mt-1 text-gray-600">
+              <Building className="w-4 h-4 mr-2" />
+              <span>{companyName}</span>
+            </div>
+            <div className="flex items-center mt-1 text-gray-600">
+              <Mail className="w-4 h-4 mr-2" />
+              <span>{email}</span>
+            </div>
+            <div className="flex items-center mt-1 text-gray-600">
+              <Phone className="w-4 h-4 mr-2" />
+              <span>{contact}</span>
+            </div>
+            {address && (
+              <div className="flex items-center mt-1 text-gray-600">
+                <MapPin className="w-4 h-4 mr-2" />
+                <span>{address}</span>
               </div>
-            ) : (
-              <img
-                src={profileImageSrc || "/placeholder.svg"}
-                alt={`${firstName} ${lastName}`}
-                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md cursor-pointer"
-                onClick={() => setIsModalOpen(true)}
-                onError={handleImageError}
-              />
             )}
           </div>
-        </div>
-
-        {/* Card Content */}
-        <div className="pt-14 px-6 pb-6 bg-white">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">
-                {firstName} {lastName}
-              </h2>
-
-              <div className="flex items-center mt-1 text-gray-600">
-                <Building className="w-4 h-4 mr-2" />
-                <span>{companyName}</span>
-              </div>
-
-              <div className="flex items-center mt-1 text-gray-600">
-                <Mail className="w-4 h-4 mr-2" />
-                <span>{email}</span>
-              </div>
-
-              <div className="flex items-center mt-1 text-gray-600">
-                <Phone className="w-4 h-4 mr-2" />
-                <span>{contact}</span>
-              </div>
-
-              {address && (
-                <div className="flex items-center mt-1 text-gray-600">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <span>{address}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex mt-4 md:mt-0 space-x-3">
-              <button
-                onClick={handleEditProfile}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center"
-              >
-                <Edit className="w-4 h-4 mr-1" />
-                Edit Profile
-              </button>
-              <button
-                onClick={handleViewProfile}
-                className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors flex items-center"
-              >
-                <User className="w-4 h-4 mr-1" />
-                View Profile
-              </button>
-            </div>
+          <div className="flex mt-4 md:mt-0 space-x-3">
+            <button
+              onClick={handleEditProfile}
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center"
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              Edit Profile
+            </button>
+            <button
+              onClick={handleViewProfile}
+              className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors flex items-center"
+            >
+              <User className="w-4 h-4 mr-1" />
+              View Profile
+            </button>
           </div>
-
-          {/* Description */}
-          {description && (
-            <div className="mt-4 text-gray-600 text-sm">
-              <p className="line-clamp-3">{description}</p>
-            </div>
-          )}
         </div>
-      </motion.div>
-
+        {description && (
+          <div className="mt-4 text-gray-600 text-sm">
+            <p className="line-clamp-3">{description}</p>
+          </div>
+        )}
+      </div>
+      */}
+    </motion.div>
       {/* Right Side Card */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}

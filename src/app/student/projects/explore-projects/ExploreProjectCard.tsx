@@ -69,15 +69,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent opacity-60"></div>
 
-        {/* Hot Project Badge */}
+        {/* Hot Project Badge 
         {isHotProject && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center shadow-md">
             <FaFire className="mr-1" />
             HOT PROJECT
           </div>
-        )}
+        )}*/}
 
-        {/* Recommended Badge */}
+        {/* Recommended Badge 
         {isRecommended && !isHotProject && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center shadow-md">
             <FaStar className="mr-1" />

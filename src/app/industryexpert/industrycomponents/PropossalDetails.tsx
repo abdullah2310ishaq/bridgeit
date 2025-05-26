@@ -93,7 +93,7 @@ const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="relative bg-gray-800 p-6 rounded-lg shadow-lg text-gray-300 w-full max-w-lg">
+      <div className="relative bg-gray-50 p-6 rounded-lg shadow-lg text-gray-500 w-full max-w-lg">
         <button
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
           onClick={onClose}

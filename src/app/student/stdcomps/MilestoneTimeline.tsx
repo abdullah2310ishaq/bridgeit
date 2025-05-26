@@ -60,15 +60,15 @@ const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({ milestones }) => 
             </div>
 
             {/* Content */}
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-lg flex-grow">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-lg flex-grow">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-300">{mile.title}</h3>
-                  {mile.description && <p className="text-sm text-gray-400 mt-1">{mile.description}</p>}
+                  <h3 className="text-lg font-semibold text-gray-600">{mile.title}</h3>
+                  {mile.description && <p className="text-sm text-gray-500 mt-1">{mile.description}</p>}
                 </div>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium flex items-center ${
-                    mile.isCompleted ? "bg-green-900/50 text-green-300" : "bg-yellow-900/50 text-yellow-300"
+                    mile.isCompleted ? "bg-green-900/50 text-green-400" : "bg-yellow-900/50 text-yellow-300"
                   }`}
                 >
                   {mile.isCompleted ? (

@@ -84,7 +84,10 @@ const IndustryExpertNavBar: React.FC<NavBarProps> = ({ userProfile, onLogout }) 
         <div className="flex justify-between h-16">
           {/* Logo or Brand Name */}
           <div className="flex items-center">
-            <Link href="/faculty" className="text-blue-600 text-2xl font-bold hover:text-blue-700"></Link>
+            <Link href="/student" className="text-gray-800 text-lg font-semibold flex items-center">
+              <span className="bg-gray-800 text-white p-1.5 rounded-md mr-2"></span>
+              Industry Portal
+            </Link>
           </div>
 
           {/* Navigation Links */}

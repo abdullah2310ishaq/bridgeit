@@ -16,7 +16,6 @@ export default function AllProjectsList() {
   const [expertProjects, setExpertProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // <-- new: which section is expanded?
   const [expanded, setExpanded] = useState<"student" | "expert" | null>(null);
 
   useEffect(() => {
@@ -54,9 +53,9 @@ export default function AllProjectsList() {
   }, [router]);
 
   if (loading) return <div className="py-8 text-center">Loading projects…</div>;
-  if (error) return <div className="py-8 text-center text-red-500">{error}</div>;
+  if (error)   return <div className="py-8 text-center text-red-500">{error}</div>;
 
-  // helper to render one project card
+  // Render one project card
   const ProjectCard = ({ p }: { p: Project }) => (
     <motion.li
       layout
@@ -64,7 +63,7 @@ export default function AllProjectsList() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       key={p.id}
-      className="border-l-4 border-indigo-500 bg-white p-4 rounded-lg shadow hover:shadow-md transition-flex flex flex-col justify-between"
+      className="border-l-4 border-indigo-500 bg-white p-4 rounded-lg shadow hover:shadow-md flex flex-col justify-between"
     >
       <div>
         <h4 className="text-lg font-semibold">{p.title}</h4>
@@ -83,17 +82,16 @@ export default function AllProjectsList() {
     <div className="space-y-6">
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {["student", "expert"].map((type) => {
+        {(["student", "expert"] as const).map((type) => {
           const count = type === "student" ? studentProjects.length : expertProjects.length;
           const title = type === "student" ? "Student Projects" : "Expert Projects";
           const color = type === "student" ? "bg-indigo-100" : "bg-green-100";
-          const iconColor = type === "student" ? "text-indigo-600" : "text-green-600";
           return (
             <motion.div
               key={type}
               whileHover={{ scale: 1.02 }}
               className={`relative p-6 rounded-xl shadow-lg cursor-pointer ${color}`}
-              onClick={() => setExpanded(expanded === type ? null : (type as "student" | "expert"))}
+              onClick={() => setExpanded(expanded === type ? null : type)}
             >
               <h3 className="text-xl font-bold mb-2">{title}</h3>
               <p className="text-3xl font-extrabold">{count}</p>
