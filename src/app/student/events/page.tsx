@@ -14,7 +14,7 @@ export interface Event {
   venue: string
 }
 
-export interface EventsComponentProps {
+export interface EventsProps {
   initialEvents?: Event[]
   events?: Event[] // Add this line to fix the type error
   showTitle?: boolean
@@ -36,7 +36,7 @@ const formatDate = (date: Date) => {
   return date.toISOString().split("T")[0]
 }
 
-const EventsComponent: React.FC<EventsComponentProps> = ({
+const EventsComponent: React.FC<EventsProps> = ({
   initialEvents,
   events, // Add this to the destructuring
   showTitle = true,
@@ -456,4 +456,4 @@ const EventsComponent: React.FC<EventsComponentProps> = ({
   )
 }
 
-export default EventsComponent
+export default Event
