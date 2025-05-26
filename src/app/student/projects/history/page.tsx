@@ -220,7 +220,7 @@ const ProposalHistoryPage: React.FC = () => {
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">No proposals yet</h2>
             <p className="text-gray-600 mb-6">
-              You haven't submitted any project proposals yet. Start exploring projects and submit your first proposal!
+              You havenot submitted any project proposals yet. Start exploring projects and submit your first proposal!
             </p>
             <button
               onClick={() => router.push("/student/explore-projects")}

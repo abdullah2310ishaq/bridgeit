@@ -202,7 +202,7 @@ const OngoingProjectsSection: React.FC<Props> = ({ ongoingProjects }) => {
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">No ongoing projects</h3>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              You don't have any active projects at the moment. Start a new project to collaborate with industry
+              You donot have any active projects at the moment. Start a new project to collaborate with industry
               experts.
             </p>
             <motion.button

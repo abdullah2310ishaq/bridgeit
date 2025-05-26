@@ -299,7 +299,7 @@ const ProfileManagement: React.FC = () => {
                   <Shield className="w-5 h-5 text-teal-600 mt-0.5 mr-3 flex-shrink-0" />
                   <p className="text-sm text-teal-800">
                     Strong passwords use a combination of letters, numbers, and special characters. For best security,
-                    use a unique password that you don't use elsewhere.
+                    use a unique password that you donot use elsewhere.
                   </p>
                 </div>
 

@@ -195,7 +195,7 @@ const NotificationsPage: React.FC = () => {
         </div>
         <h1 className="text-2xl font-semibold text-gray-800">No Notifications</h1>
         <p className="text-gray-600 mt-2 max-w-md text-center">
-          You don't have any new proposals at the moment. Check back later!
+          You donot have any new proposals at the moment. Check back later!
         </p>
       </div>
     )

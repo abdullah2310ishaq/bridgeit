@@ -263,7 +263,7 @@ export default function PurchasedProjectsPage() {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-800">My Purchased Projects</h1>
           <p className="text-gray-600 mt-2">
-            Manage and access all the Final Year Projects you've purchased
+            Manage and access all the Final Year Projects you have purchased
           </p>
         </div>
       </header>
@@ -376,7 +376,7 @@ export default function PurchasedProjectsPage() {
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-gray-800 mb-2">No Purchased Projects</h2>
             <p className="text-gray-600 mb-6">
-              You haven't purchased any Final Year Projects yet.
+              You havenot purchased any Final Year Projects yet.
             </p>
             <button
               onClick={() => router.push("/industry-expert/marketplace")}

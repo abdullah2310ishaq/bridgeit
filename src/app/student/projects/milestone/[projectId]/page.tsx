@@ -1173,7 +1173,7 @@ const ProjectProgressTracker: React.FC = () => {
                         <div>
                           <h3 className="font-medium text-blue-800">Deployment Link</h3>
                           <p className="text-blue-700 text-sm mt-1">
-                            Add your project's deployment link here. Your industry expert will be able to see and review
+                            Add your projects deployment link here. Your industry expert will be able to see and review
                             your live project immediately.
                           </p>
                         </div>

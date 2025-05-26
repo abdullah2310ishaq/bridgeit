@@ -282,7 +282,7 @@ const ExploreProjects: React.FC = () => {
       <div className="flex justify-center items-center h-screen bg-gradient-to-r from-white to-white">
         <div className="bg-white p-8 rounded-xl shadow-md border border-red-200">
           <p className="text-red-600 text-xl font-medium">{error}</p>
-          <p className="text-gray-600 mt-2">Don't give up! Technical difficulties happen to everyone.</p>
+          <p className="text-gray-600 mt-2">Donot give up! Technical difficulties happen to everyone.</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors"

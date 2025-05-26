@@ -185,7 +185,7 @@ const CompletedIndustryProjectsSection: React.FC<Props> = ({ projects }) => {
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">No completed projects yet</h3>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              You haven't completed any industry projects yet. Complete your ongoing projects to see them here.
+              You havenot completed any industry projects yet. Complete your ongoing projects to see them here.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}

@@ -37,7 +37,7 @@ const RejectedRequestCard: React.FC<RejectedRequestCardProps> = ({ onSendNewRequ
         </div>
 
         <p className="text-gray-600 mb-4">
-          You can now submit a new completion request once you've addressed the feedback and made the required
+          You can now submit a new completion request once you have addressed the feedback and made the required
           improvements.
         </p>
 

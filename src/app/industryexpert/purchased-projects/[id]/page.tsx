@@ -740,7 +740,7 @@ export default function PurchasedProjectDetailPage() {
                             Contact Faculty Supervisor
                           </h4>
                           <p className="text-sm text-gray-600 mb-4">
-                            Contact the faculty supervisor for questions about the project's academic aspects.
+                            Contact the faculty supervisor for questions about the project academic aspects.
                           </p>
                           <button
                             onClick={() => router.push("/industry-expert/contact-faculty/" + (detailedFyp.faculty?.id || ""))}
