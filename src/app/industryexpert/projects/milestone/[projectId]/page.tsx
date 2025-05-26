@@ -27,6 +27,8 @@ import {
   Plus,
   Send,
   ArrowLeft,
+  Package,
+  ExternalLink,
 } from "lucide-react"
 
 // --------- Interfaces ---------
@@ -68,6 +70,16 @@ interface TaskItem {
   taskStatus: string
 }
 
+// New interface for Project Modules
+interface ProjectModule {
+  id: string
+  name: string
+  description: string
+  status: boolean
+  projectId: string
+  projectName: string
+}
+
 interface Review {
   id: string
   review: string
@@ -98,6 +110,7 @@ interface CompletionRequest {
   studentName: string
   requestDate: string
   status: string
+  deploymentLink?: string
 }
 
 const MilestonePage: React.FC = () => {
@@ -119,6 +132,10 @@ const MilestonePage: React.FC = () => {
   // New Task inputs (visible only to industry experts)
   const [newTask, setNewTask] = useState("")
   const [newTaskDescription, setNewTaskDescription] = useState("")
+  // New state for Project Modules
+  const [modules, setModules] = useState<ProjectModule[]>([])
+  const [newModuleName, setNewModuleName] = useState("")
+  const [newModuleDescription, setNewModuleDescription] = useState("")
   // Review state (if needed when project is completed)
   const [reviews, setReviews] = useState<Review[]>([])
   const [newReviewText, setNewReviewText] = useState("")
@@ -126,6 +143,7 @@ const MilestonePage: React.FC = () => {
   // Completion requests
   const [completionRequests, setCompletionRequests] = useState<CompletionRequest[]>([])
   const [currentRequest, setCurrentRequest] = useState<CompletionRequest | null>(null)
+  const [projectLink, setProjectLink] = useState("")
   // Modal state for adding/editing milestones
   const [showModal, setShowModal] = useState(false)
   const [editItemId, setEditItemId] = useState<string | null>(null)
@@ -137,10 +155,8 @@ const MilestonePage: React.FC = () => {
   // Loading and error state
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  // Debug state
-  const [debugInfo, setDebugInfo] = useState<string | null>(null)
-  // Active tab state
-  const [activeTab, setActiveTab] = useState<"milestones" | "tasks" | "reviews" | "chat">("milestones")
+  // Active tab state - added modules tab
+  const [activeTab, setActiveTab] = useState<"milestones" | "tasks" | "modules" | "reviews" | "chat">("milestones")
 
   // Determine if the project is completed or pending completion
   const isProjectComplete = project?.status === "Completed"
@@ -188,11 +204,18 @@ const MilestonePage: React.FC = () => {
     return "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
   }
 
-  // Calculate project progress
+  // Calculate project progress including modules
   const calculateProgress = () => {
-    if (tasks.length === 0) return 0
+    const totalTasks = tasks.length
+    const totalModules = modules.length
     const completedTasks = tasks.filter((task) => task.taskStatus === "COMPLETED").length
-    return Math.round((completedTasks / tasks.length) * 100)
+    const completedModules = modules.filter((module) => module.status === true).length
+
+    const totalItems = totalTasks + totalModules
+    if (totalItems === 0) return 0
+
+    const completedItems = completedTasks + completedModules
+    return Math.round((completedItems / totalItems) * 100)
   }
 
   // -----------------------------
@@ -230,7 +253,7 @@ const MilestonePage: React.FC = () => {
           email: expertData.email,
         })
 
-        // Fetch project details (includes student info)
+        // Fetch project details (includes student info) - FIRST
         const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -260,16 +283,26 @@ const MilestonePage: React.FC = () => {
 
         setMilestones(processedMilestones)
 
-        // Fetch completion requests for this expert
-        await fetchCompletionRequests(expertData.indExptId)
+        // Fetch completion request by project ID - AFTER project data is loaded
+        await fetchCompletionRequestByProject()
 
         // If project is completed, fetch reviews
         if (projectData.status === "Completed") {
           await fetchReviews()
         }
 
-        // Fetch tasks
+        // Fetch tasks and modules
         await fetchTasks()
+        await fetchModules()
+
+        // If there's a completion request, fetch the project link
+        if (
+          projectData.status === "PendingCompletion" ||
+          projectData.status === "PaymentPending" ||
+          projectData.status === "Completed"
+        ) {
+          await fetchProjectLink()
+        }
       } catch (err) {
         console.error(err)
         setError("Failed to load project data")
@@ -281,82 +314,21 @@ const MilestonePage: React.FC = () => {
   }, [projectId, router])
 
   // -----------------------------
-  // 2) Fetch Completion Requests
+  // 2) Fetch Completion Requests (Project-specific only)
   // -----------------------------
-  const fetchCompletionRequests = async (expertId: string) => {
-    const token = localStorage.getItem("jwtToken")
-    if (!token) return
 
-    setDebugInfo(`Fetching completion requests for expert ID: ${expertId}`)
 
-    try {
-      // First, try to fetch using the expert ID
-      const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
-
-      if (res.ok) {
-        const data = await res.json()
-        setDebugInfo((prev) => `${prev}\nReceived ${data.length} requests from API`)
-
-        // Check if we got an empty array or error message
-        if (Array.isArray(data) && data.length === 0) {
-          setDebugInfo((prev) => `${prev}\nNo completion requests found for this expert`)
-          setCompletionRequests([])
-        } else if (typeof data === "string") {
-          setDebugInfo((prev) => `${prev}\nAPI returned string: ${data}`)
-          setCompletionRequests([])
-        } else {
-          setCompletionRequests(data)
-
-          // Find if there's a request for the current project
-          const currentProjectRequest = data.find((req: CompletionRequest) => req.projectId === projectId)
-          if (currentProjectRequest) {
-            setCurrentRequest(currentProjectRequest)
-            setDebugInfo((prev) => `${prev}\nFound request for current project: ${currentProjectRequest.id}`)
-          } else {
-            setDebugInfo((prev) => `${prev}\nNo request found for current project ID: ${projectId}`)
-
-            // If no request found for this project, check project status
-            if (project?.status === "PendingCompletion") {
-              // If project status is PendingCompletion but no request found, try to fetch directly by project ID
-              await fetchCompletionRequestByProject()
-            }
-          }
-        }
-      } else {
-        const errorText = await res.text()
-        setDebugInfo((prev) => `${prev}\nError fetching requests: ${res.status} - ${errorText}`)
-        console.error("Failed to fetch completion requests:", res.status, errorText)
-
-        // If expert ID fetch fails, try fetching by project ID as fallback
-        await fetchCompletionRequestByProject()
-      }
-    } catch (err) {
-      setDebugInfo((prev) => `${prev}\nException fetching requests: ${err}`)
-      console.error("Error fetching completion requests:", err)
-
-      // If expert ID fetch throws exception, try fetching by project ID as fallback
-      await fetchCompletionRequestByProject()
-    }
-  }
-
-  // Fallback method to fetch completion request by project ID
+  // New method to fetch completion request by project ID
   const fetchCompletionRequestByProject = async () => {
     if (!projectId) return
 
     const token = localStorage.getItem("jwtToken")
     if (!token) return
 
-    setDebugInfo((prev) => `${prev}\nTrying fallback: Fetching completion request by project ID: ${projectId}`)
-
     try {
       // Try to fetch the specific request for this project
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-project-request/${projectId}`,
+        `https://localhost:7053/api/request-for-project-completion/completion-request-for-project/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -364,35 +336,88 @@ const MilestonePage: React.FC = () => {
 
       if (res.ok) {
         const data = await res.json()
-        setDebugInfo((prev) => `${prev}\nReceived project-specific request data`)
 
         if (data && data.id) {
-          setCurrentRequest(data)
-          setDebugInfo((prev) => `${prev}\nSet current request from project-specific endpoint: ${data.id}`)
+          // Ensure we have the correct student name from project data
+          const requestWithCorrectStudent = {
+            ...data,
+            studentName: project?.studentName || data.studentName,
+            projectTitle: project?.title || data.projectTitle,
+          }
+
+          setCurrentRequest(requestWithCorrectStudent)
+
+          // Set deployment link if available
+          if (data.deploymentLink) {
+            setProjectLink(data.deploymentLink)
+          }
 
           // Add this request to the completionRequests array if it's not already there
           setCompletionRequests((prev) => {
             if (prev.some((req) => req.id === data.id)) {
-              return prev
+              return prev.map((req) => (req.id === data.id ? requestWithCorrectStudent : req))
             }
-            return [...prev, data]
+            return [requestWithCorrectStudent]
           })
-        } else {
-          setDebugInfo((prev) => `${prev}\nNo project-specific request found or invalid data format`)
         }
       } else {
-        const errorText = await res.text()
-        setDebugInfo((prev) => `${prev}\nError fetching project-specific request: ${res.status} - ${errorText}`)
-        console.error("Failed to fetch project-specific completion request:", res.status, errorText)
+        console.error("Failed to fetch project-specific completion request:", res.status)
       }
     } catch (err) {
-      setDebugInfo((prev) => `${prev}\nException fetching project-specific request: ${err}`)
       console.error("Error fetching project-specific completion request:", err)
     }
   }
 
   // -----------------------------
-  // 3) Fetch Comments for a Milestone
+  // 3) Fetch Project Link
+  // -----------------------------
+  const fetchProjectLink = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+    try {
+      const res = await fetch(`https://localhost:7053/api/projects/get-link/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const link = await res.text()
+        setProjectLink(link.replace(/"/g, "")) // Remove quotes if any
+      } else {
+        // If get-link fails, try to get it from completion request
+        await fetchDeploymentLinkFromRequest()
+      }
+    } catch (err) {
+      console.error("Error fetching project link:", err)
+      // Fallback to getting link from completion request
+      await fetchDeploymentLinkFromRequest()
+    }
+  }
+
+  // New function to get deployment link from completion request
+  const fetchDeploymentLinkFromRequest = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+
+    try {
+      const res = await fetch(
+        `https://localhost:7053/api/request-for-project-completion/completion-request-for-project/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data && data.deploymentLink) {
+          setProjectLink(data.deploymentLink)
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching deployment link from request:", err)
+    }
+  }
+
+  // -----------------------------
+  // 4) Fetch Comments for a Milestone
   // -----------------------------
   const fetchComments = async (milestoneId: string) => {
     const token = localStorage.getItem("jwtToken")
@@ -415,7 +440,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 4) Add a new comment
+  // 5) Add a new comment
   // -----------------------------
   const handleAddComment = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -452,7 +477,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 5) Fetch Tasks
+  // 6) Fetch Tasks
   // -----------------------------
   const fetchTasks = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -473,7 +498,30 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 6) Handle Task Toggle (Update Task Status)
+  // 7) Fetch Modules
+  // -----------------------------
+  const fetchModules = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+    try {
+      const res = await fetch(`https://localhost:7053/api/project-module/get-all/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setModules(data)
+      } else {
+        console.error("Failed to fetch modules:", res.status)
+        setModules([]) // Set empty array if no modules found
+      }
+    } catch (err) {
+      console.error("Error fetching modules:", err)
+      setModules([]) // Set empty array on error
+    }
+  }
+
+  // -----------------------------
+  // 8) Handle Task Toggle (Update Task Status)
   // -----------------------------
   const handleTaskToggle = async (task: TaskItem) => {
     const token = localStorage.getItem("jwtToken")
@@ -510,7 +558,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 7) Handle Add Task (Industry Expert adds a new task)
+  // 9) Handle Add Task (Industry Expert adds a new task)
   // -----------------------------
   const handleAddTask = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -544,7 +592,41 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 8) Fetch Reviews (if project is completed)
+  // 10) Handle Add Module (Industry Expert adds a new module)
+  // -----------------------------
+  const handleAddModule = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+    if (!newModuleName.trim() || !newModuleDescription.trim()) {
+      toast.error("Please provide both module name and description.")
+      return
+    }
+    try {
+      const res = await fetch(`https://localhost:7053/api/project-module/add/${projectId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: newModuleName, description: newModuleDescription }),
+      })
+      if (res.ok) {
+        toast.success("Module added successfully.")
+        setNewModuleName("")
+        setNewModuleDescription("")
+        await fetchModules()
+      } else {
+        console.error("Failed to add module:", res.status)
+        toast.error("Failed to add module.")
+      }
+    } catch (err) {
+      console.error("Error adding module:", err)
+      toast.error("Error adding module.")
+    }
+  }
+
+  // -----------------------------
+  // 11) Fetch Reviews (if project is completed)
   // -----------------------------
   const fetchReviews = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -565,7 +647,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 9) Handle Add Review (Industry Expert adds a review)
+  // 12) Handle Add Review (Industry Expert adds a review)
   // -----------------------------
   const handleAddReview = async () => {
     const token = localStorage.getItem("jwtToken")
@@ -604,7 +686,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 10) Handle Approve Project Completion (Expert approves student's request)
+  // 13) Handle Approve Project Completion (Expert approves student's request)
   // -----------------------------
   const handleApproveCompletion = async () => {
     if (!currentRequest) {
@@ -637,9 +719,6 @@ const MilestonePage: React.FC = () => {
         // Remove the current request
         setCurrentRequest(null)
         // Refresh completion requests
-        if (expertProfile) {
-          await fetchCompletionRequests(expertProfile.indExptId)
-        }
 
         // Show payment button
         toast.info("Please click the 'Make Payment' button to complete the transaction.", {
@@ -657,7 +736,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 11) Handle Reject Project Completion (Expert rejects student's request)
+  // 14) Handle Reject Project Completion (Expert rejects student's request)
   // -----------------------------
   const handleRejectCompletion = async () => {
     if (!currentRequest) {
@@ -690,9 +769,6 @@ const MilestonePage: React.FC = () => {
         // Remove the current request
         setCurrentRequest(null)
         // Refresh completion requests
-        if (expertProfile) {
-          await fetchCompletionRequests(expertProfile.indExptId)
-        }
       } else {
         const errorText = await res.text()
         console.error("Failed to reject project completion:", res.status, errorText)
@@ -705,7 +781,7 @@ const MilestonePage: React.FC = () => {
   }
 
   // -----------------------------
-  // 12) Handle Payment Process
+  // 15) Handle Payment Process
   // -----------------------------
   const handlePaymentProcess = () => {
     if (!projectId) {
@@ -719,20 +795,15 @@ const MilestonePage: React.FC = () => {
 
   // Manually check for completion requests
   const handleManualRefresh = async () => {
-    if (!expertProfile) {
-      toast.error("Expert profile not loaded yet")
+    if (!projectId) {
+      toast.error("Project ID is missing")
       return
     }
 
-    setDebugInfo("Manually refreshing completion requests...")
     toast.info("Refreshing completion requests...")
 
-    await fetchCompletionRequests(expertProfile.indExptId)
-
-    // Also check if the current project status is PendingCompletion
-    if (project?.status === "PendingCompletion") {
-      await fetchCompletionRequestByProject()
-    }
+    // Only fetch completion request for this specific project
+    await fetchCompletionRequestByProject()
 
     // Refresh project details to get the latest status
     const token = localStorage.getItem("jwtToken")
@@ -753,10 +824,11 @@ const MilestonePage: React.FC = () => {
     toast.success("Refresh complete")
   }
 
-  // Fetch tasks when projectId changes
+  // Fetch tasks and modules when projectId changes
   useEffect(() => {
     if (projectId) {
       fetchTasks()
+      fetchModules()
     }
   }, [projectId])
 
@@ -769,14 +841,14 @@ const MilestonePage: React.FC = () => {
 
   // Check for completion requests when project status changes to PendingCompletion
   useEffect(() => {
-    if (project?.status === "PendingCompletion" && expertProfile) {
-      // If project status is PendingCompletion, try to fetch completion requests again
-      fetchCompletionRequests(expertProfile.indExptId)
+    if (project?.status === "PendingCompletion") {
+      // Only fetch completion request for this specific project
+      fetchCompletionRequestByProject()
     }
     if (project?.status === "Completed") {
       fetchReviews()
     }
-  }, [project?.status, expertProfile])
+  }, [project?.status])
 
   if (loading) {
     return (
@@ -923,6 +995,10 @@ const MilestonePage: React.FC = () => {
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
                   </div>
+                  <div className="mt-2 text-xs text-gray-500">
+                    Tasks: {tasks.filter((t) => t.taskStatus === "COMPLETED").length}/{tasks.length} • Modules:{" "}
+                    {modules.filter((m) => m.status).length}/{modules.length}
+                  </div>
                 </div>
               </div>
             </div>
@@ -950,9 +1026,28 @@ const MilestonePage: React.FC = () => {
                       <span className="font-medium text-gray-700">Request Date:</span>{" "}
                       {new Date(currentRequest.requestDate).toLocaleString()}
                     </p>
+
+                    {/* Show deployment link if available */}
+                    {projectLink && (
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <p className="text-gray-600 mb-2">
+                          <span className="font-medium text-gray-700">Deployment Link:</span>
+                        </p>
+                        <a
+                          href={projectLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline flex items-center"
+                        >
+                          <ExternalLink className="mr-1 h-4 w-4" />
+                          {projectLink}
+                        </a>
+                      </div>
+                    )}
+
                     <p className="text-gray-600">
-                      The student has requested to mark this project as complete. Please review the project milestones
-                      and tasks before approving or rejecting this request.
+                      The student has requested to mark this project as complete. Please review the project milestones,
+                      tasks, and deployment link before approving or rejecting this request.
                     </p>
                   </div>
 
@@ -1036,6 +1131,21 @@ const MilestonePage: React.FC = () => {
                       : "This project is complete. Editing is disabled."}
                   </p>
 
+                  {/* Show deployment link for completed projects */}
+                  {isProjectComplete && projectLink && (
+                    <div className="mb-4">
+                      <a
+                        href={projectLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center mb-2"
+                      >
+                        <ExternalLink className="mr-2 h-5 w-5" />
+                        View Project
+                      </a>
+                    </div>
+                  )}
+
                   <button
                     onClick={handlePaymentProcess}
                     className={`w-full py-2 px-4 font-medium rounded-lg transition duration-200 flex items-center justify-center ${
@@ -1049,74 +1159,6 @@ const MilestonePage: React.FC = () => {
                   </button>
                 </div>
               </motion.div>
-            )}
-
-            {/* All Completion Requests Section */}
-            {completionRequests.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">All Completion Requests</h2>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead>
-                        <tr>
-                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Project
-                          </th>
-                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Student
-                          </th>
-                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date
-                          </th>
-                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-3 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {completionRequests.map((request) => (
-                          <tr key={request.id} className={request.projectId === projectId ? "bg-blue-50" : ""}>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {request.projectTitle}
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">{request.studentName}</td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {new Date(request.requestDate).toLocaleDateString()}
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap">
-                              <span
-                                className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                  request.status === "PENDING"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : request.status === "ACCEPTED"
-                                      ? "bg-green-100 text-green-800"
-                                      : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {request.status}
-                              </span>
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm">
-                              {request.projectId !== projectId && (
-                                <button
-                                  onClick={() => router.push(`/industryexpert/projects/milestone/${request.projectId}`)}
-                                  className="text-blue-600 hover:text-blue-900 font-medium"
-                                >
-                                  View
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
             )}
           </div>
 
@@ -1145,6 +1187,16 @@ const MilestonePage: React.FC = () => {
                     }`}
                   >
                     Tasks
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("modules")}
+                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      activeTab === "modules"
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    }`}
+                  >
+                    Modules
                   </button>
                   {isProjectComplete && (
                     <button
@@ -1423,6 +1475,123 @@ const MilestonePage: React.FC = () => {
                   </div>
                 )}
 
+                {/* Modules Tab */}
+                {activeTab === "modules" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-800">Project Modules</h2>
+                    </div>
+
+                    {/* Add Module Form */}
+                    {!isProjectComplete && !isPaymentPending && (
+                      <div className="bg-gray-50 rounded-lg p-5 mb-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Add New Module</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label htmlFor="module-name" className="block text-sm font-medium text-gray-700 mb-1">
+                              Module Name
+                            </label>
+                            <input
+                              id="module-name"
+                              type="text"
+                              value={newModuleName}
+                              onChange={(e) => setNewModuleName(e.target.value)}
+                              placeholder="Enter module name"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label
+                              htmlFor="module-description"
+                              className="block text-sm font-medium text-gray-700 mb-1"
+                            >
+                              Module Description
+                            </label>
+                            <textarea
+                              id="module-description"
+                              value={newModuleDescription}
+                              onChange={(e) => setNewModuleDescription(e.target.value)}
+                              placeholder="Enter module description"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              rows={3}
+                            />
+                          </div>
+
+                          <button
+                            onClick={handleAddModule}
+                            className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center"
+                          >
+                            <Plus className="mr-2 h-5 w-5" />
+                            Add Module
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* List of Modules */}
+                    {modules.length === 0 ? (
+                      <div className="bg-gray-50 rounded-lg p-6 text-center">
+                        <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">No modules assigned to this project yet.</p>
+                      </div>
+                    ) : (
+                      <div className="bg-white rounded-lg border border-gray-200">
+                        <ul className="divide-y divide-gray-200">
+                          {modules.map((module, index) => (
+                            <motion.li
+                              key={module.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="p-4 hover:bg-gray-50"
+                            >
+                              <div className="flex items-start">
+                                <div className="flex-shrink-0 pt-1">
+                                  <div className="focus:outline-none">
+                                    {module.status ? (
+                                      <CheckSquare className="h-5 w-5 text-green-500" />
+                                    ) : (
+                                      <Square className="h-5 w-5 text-gray-400" />
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="ml-3 flex-1">
+                                  <p
+                                    className={`font-medium ${
+                                      module.status ? "line-through text-gray-500" : "text-gray-800"
+                                    }`}
+                                  >
+                                    {module.name}
+                                  </p>
+                                  {module.description && (
+                                    <p
+                                      className={`mt-1 text-sm ${
+                                        module.status ? "line-through text-gray-400" : "text-gray-600"
+                                      }`}
+                                    >
+                                      {module.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="ml-2 flex-shrink-0">
+                                  <span
+                                    className={`px-2 py-1 text-xs rounded-full ${
+                                      module.status ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                                    }`}
+                                  >
+                                    {module.status ? "COMPLETED" : "PENDING"}
+                                  </span>
+                                </div>
+                              </div>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Reviews Tab */}
                 {activeTab === "reviews" && isProjectComplete && (
                   <div>
@@ -1549,24 +1718,6 @@ const MilestonePage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Debug Information (only visible during development) */}
-      {debugInfo && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-bold text-yellow-600">Debug Information</h3>
-              <button
-                onClick={() => setDebugInfo(null)}
-                className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300"
-              >
-                Clear Debug Info
-              </button>
-            </div>
-            <pre className="whitespace-pre-wrap text-xs text-gray-600 bg-gray-50 p-3 rounded">{debugInfo}</pre>
-          </div>
-        </div>
-      )}
 
       <ToastContainer position="bottom-right" />
     </div>
