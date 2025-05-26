@@ -8,26 +8,7 @@ import { motion } from "framer-motion"
 import ChatForIndustry from "@/app/common_components/ChatforIndustry"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import {
-  Calendar,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  FileText,
-  Flag,
-  MessageSquare,
-  RefreshCw,
-  Star,
-  User,
-  X,
-  CheckSquare,
-  Square,
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  Send,
-  ArrowLeft,
-} from "lucide-react"
+import { Calendar, CheckCircle, Clock, DollarSign, FileText, Flag, MessageSquare, RefreshCw, Star, User, X, CheckSquare, Square, ChevronDown, ChevronUp, Plus, Send, ArrowLeft } from 'lucide-react'
 
 // --------- Interfaces ---------
 interface IndustryExpertProfile {
@@ -1102,116 +1083,112 @@ const MilestonePage: React.FC = () => {
             </div>
 
             {/* Project Deployment Link */}
-            {(project?.status === "Completed" ||
-              project?.status === "PendingCompletion" ||
-              project?.status === "PaymentPending") && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl shadow-sm overflow-hidden mb-6"
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-gray-800">Project Deployment</h3>
-                    {!isProjectComplete && (
-                      <button
-                        onClick={() => setShowLinkForm(!showLinkForm)}
-                        className="text-blue-600 hover:text-blue-800 font-medium text-sm"
-                      >
-                        {showLinkForm ? "Cancel" : projectLink ? "Update Link" : "Add Link"}
-                      </button>
-                    )}
-                  </div>
-
-                  {projectLink ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="bg-green-100 rounded-full p-2 mr-3">
-                          <CheckCircle className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-500">Deployment URL</p>
-                          <a
-                            href={projectLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium text-blue-600 hover:text-blue-800 break-all"
-                          >
-                            {projectLink}
-                          </a>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => window.open(projectLink, "_blank")}
-                        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
-                      >
-                        <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                        View Live Project
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center py-4">
-                      <div className="bg-gray-100 rounded-full p-3 mx-auto w-fit mb-3">
-                        <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                          />
-                        </svg>
-                      </div>
-                      <p className="text-gray-500 text-sm">No deployment link available yet</p>
-                    </div>
-                  )}
-
-                  {/* Add/Update Link Form */}
-                  {showLinkForm && !isProjectComplete && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="project-link" className="block text-sm font-medium text-gray-700 mb-1">
-                            Deployment URL
-                          </label>
-                          <input
-                            id="project-link"
-                            type="url"
-                            value={newProjectLink}
-                            onChange={(e) => setNewProjectLink(e.target.value)}
-                            placeholder="https://your-project-deployment.com"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          />
-                        </div>
-                        <div className="flex space-x-3">
-                          <button
-                            onClick={handleUpdateProjectLink}
-                            className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200"
-                          >
-                            {projectLink ? "Update Link" : "Add Link"}
-                          </button>
-                          <button
-                            onClick={() => {
-                              setShowLinkForm(false)
-                              setNewProjectLink("")
-                            }}
-                            className="flex-1 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition duration-200"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl shadow-sm overflow-hidden mb-6"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-gray-800">Project Deployment</h3>
+                  {!isProjectComplete && (
+                    <button
+                      onClick={() => setShowLinkForm(!showLinkForm)}
+                      className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                    >
+                      {showLinkForm ? "Cancel" : projectLink ? "Update Link" : "Add Link"}
+                    </button>
                   )}
                 </div>
-              </motion.div>
-            )}
+
+                {projectLink ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="bg-green-100 rounded-full p-2 mr-3">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Deployment URL</p>
+                        <a
+                          href={projectLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-blue-600 hover:text-blue-800 break-all"
+                        >
+                          {projectLink}
+                        </a>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => window.open(projectLink, "_blank")}
+                      className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                    >
+                      <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                      View Live Project
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="bg-gray-100 rounded-full p-3 mx-auto w-fit mb-3">
+                      <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-gray-500 text-sm">No deployment link available yet</p>
+                  </div>
+                )}
+
+                {/* Add/Update Link Form */}
+                {showLinkForm && !isProjectComplete && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="space-y-4">
+                      <div>
+                        <label htmlFor="project-link" className="block text-sm font-medium text-gray-700 mb-1">
+                          Deployment URL
+                        </label>
+                        <input
+                          id="project-link"
+                          type="url"
+                          value={newProjectLink}
+                          onChange={(e) => setNewProjectLink(e.target.value)}
+                          placeholder="https://your-project-deployment.com"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={handleUpdateProjectLink}
+                          className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200"
+                        >
+                          {projectLink ? "Update Link" : "Add Link"}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowLinkForm(false)
+                            setNewProjectLink("")
+                          }}
+                          className="flex-1 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition duration-200"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
 
             {/* Project Completion Request Actions */}
             {currentRequest && (

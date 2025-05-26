@@ -209,13 +209,33 @@ const ProjectProgressTracker: React.FC = () => {
       })
       if (res.ok) {
         const link = await res.text()
-        const cleanLink = link.replace(/"/g, "")
-        setProjectLink(cleanLink)
-        setDeploymentLink(cleanLink)
-        setTempDeploymentLink(cleanLink)
+        // Clean the response - remove quotes and trim whitespace
+        const cleanLink = link.replace(/^"|"$/g, "").trim()
+        console.log("Fetched deployment link:", cleanLink) // Debug log
+        if (cleanLink && cleanLink !== "" && cleanLink !== "null") {
+          setProjectLink(cleanLink)
+          setDeploymentLink(cleanLink)
+          setTempDeploymentLink(cleanLink)
+          console.log("Deployment link set in state:", cleanLink) // Debug log
+        } else {
+          console.log("No valid deployment link found") // Debug log
+          setProjectLink("")
+          setDeploymentLink("")
+          setTempDeploymentLink("")
+        }
+      } else {
+        // Handle different error cases
+        const errorText = await res.text()
+        console.log("Deployment link fetch response:", res.status, errorText)
+        setProjectLink("")
+        setDeploymentLink("")
+        setTempDeploymentLink("")
       }
     } catch (err) {
       console.error("Error fetching deployment link:", err)
+      setProjectLink("")
+      setDeploymentLink("")
+      setTempDeploymentLink("")
     }
   }
 
@@ -244,20 +264,56 @@ const ProjectProgressTracker: React.FC = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(tempDeploymentLink),
+        // Fix: Properly stringify the string for the API
+        body: JSON.stringify(tempDeploymentLink.trim()),
       })
 
       if (res.ok) {
-        setDeploymentLink(tempDeploymentLink)
-        setProjectLink(tempDeploymentLink)
+        const responseText = await res.text()
+        console.log("Update response:", responseText) // Debug log
+
+        // Immediately update the state
+        const cleanLink = tempDeploymentLink.trim()
+        setDeploymentLink(cleanLink)
+        setProjectLink(cleanLink)
         setIsEditingLink(false)
+
         toast.success("Deployment link updated successfully! Expert can now see your project.")
+
+        // Wait a moment then refresh from server to confirm
+        setTimeout(async () => {
+          await fetchDeploymentLink()
+          await debugDeploymentLink()
+        }, 1000)
       } else {
-        toast.error("Failed to update deployment link")
+        const errorText = await res.text()
+        console.error("Failed to update deployment link:", res.status, errorText)
+        toast.error(`Failed to update deployment link: ${errorText || res.status}`)
       }
     } catch (err) {
       console.error("Error updating deployment link:", err)
       toast.error("Error updating deployment link")
+    }
+  }
+
+  // Add this debug function
+  const debugDeploymentLink = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+
+    console.log("Debug: Checking project status and link...")
+    try {
+      const res = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const projectData = await res.json()
+        console.log("Debug: Project data:", projectData)
+        console.log("Debug: Project status:", projectData.status)
+        console.log("Debug: Project link:", projectData.link)
+      }
+    } catch (err) {
+      console.error("Debug error:", err)
     }
   }
 
@@ -1125,7 +1181,7 @@ const ProjectProgressTracker: React.FC = () => {
                     </div>
 
                     {/* Current Deployment Link Display */}
-                    {deploymentLink && !isEditingLink && (
+                    {(deploymentLink || projectLink) && !isEditingLink && (
                       <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
@@ -1133,12 +1189,12 @@ const ProjectProgressTracker: React.FC = () => {
                             <div className="flex items-center mb-3">
                               <ExternalLink className="h-4 w-4 text-gray-500 mr-2" />
                               <a
-                                href={deploymentLink}
+                                href={deploymentLink || projectLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 underline break-all"
                               >
-                                {deploymentLink}
+                                {deploymentLink || projectLink}
                               </a>
                             </div>
                             <div className="flex items-center text-sm text-green-600">
@@ -1150,7 +1206,7 @@ const ProjectProgressTracker: React.FC = () => {
                             <button
                               onClick={() => {
                                 setIsEditingLink(true)
-                                setTempDeploymentLink(deploymentLink)
+                                setTempDeploymentLink(deploymentLink || projectLink)
                               }}
                               className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition duration-200 flex items-center"
                             >
@@ -1244,6 +1300,34 @@ const ProjectProgressTracker: React.FC = () => {
                               completed.
                             </p>
                           </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Add this debug section in the deployment tab, right after the deployment guidelines */}
+                    {process.env.NODE_ENV === "development" && (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+                        <h3 className="font-medium text-yellow-800 mb-2">Debug Information</h3>
+                        <div className="text-sm text-yellow-700 space-y-1">
+                          <p>Deployment Link State: {deploymentLink || "Empty"}</p>
+                          <p>Project Link State: {projectLink || "Empty"}</p>
+                          <p>Temp Link State: {tempDeploymentLink || "Empty"}</p>
+                          <p>Project ID: {projectId}</p>
+                          <p>Is Editing: {isEditingLink ? "Yes" : "No"}</p>
+                        </div>
+                        <div className="mt-3 space-x-2">
+                          <button
+                            onClick={fetchDeploymentLink}
+                            className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded"
+                          >
+                            Refresh Link
+                          </button>
+                          <button
+                            onClick={debugDeploymentLink}
+                            className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded"
+                          >
+                            Debug Project
+                          </button>
                         </div>
                       </div>
                     )}
