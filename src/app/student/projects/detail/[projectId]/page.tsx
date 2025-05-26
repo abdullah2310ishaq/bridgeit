@@ -5,7 +5,25 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { CalendarDays, Award, Star, CheckCircle, MessageSquare, Download, Printer, ChevronDown, ChevronUp, Code, FileCheck, Clock, User, BarChart, Briefcase, Share2, ExternalLink } from 'lucide-react'
+import {
+  CalendarDays,
+  Award,
+  Star,
+  CheckCircle,
+  MessageSquare,
+  Download,
+  Printer,
+  ChevronDown,
+  ChevronUp,
+  Code,
+  FileCheck,
+  Clock,
+  User,
+  BarChart,
+  Briefcase,
+  Share2,
+  ExternalLink,
+} from "lucide-react"
 
 // Types
 interface ProgressItem {
@@ -54,6 +72,15 @@ interface Review {
   reviewerName: string
 }
 
+interface ProjectModule {
+  id: string
+  projectId: string
+  name: string
+  description: string
+  status: boolean
+  projectName?: string
+}
+
 const CompletedProjectDetails = () => {
   const { projectId } = useParams()
   const router = useRouter()
@@ -67,17 +94,19 @@ const CompletedProjectDetails = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [expandedMilestone, setExpandedMilestone] = useState<string | null>(null)
+  const [modules, setModules] = useState<ProjectModule[]>([])
+  const [projectLink, setProjectLink] = useState<string>("")
 
   // Calculate project stats
   const getProjectStats = () => {
     return {
       totalMilestones: milestones.length,
       totalTasks: tasks.length,
-      completedTasks: tasks.filter(t => t.taskStatus === "COMPLETED").length,
-      averageRating: reviews.length 
-        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) 
+      completedTasks: tasks.filter((t) => t.taskStatus === "COMPLETED").length,
+      averageRating: reviews.length
+        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
         : "N/A",
-      projectDuration: project ? calculateDuration(project.endDate) : "N/A"
+      projectDuration: project ? calculateDuration(project.endDate) : "N/A",
     }
   }
 
@@ -87,7 +116,7 @@ const CompletedProjectDetails = () => {
     // Assume start date is 3 months before end date for demo purposes
     const start = new Date(end)
     start.setMonth(start.getMonth() - 3)
-    
+
     const diffTime = Math.abs(end.getTime() - start.getTime())
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
@@ -104,10 +133,9 @@ const CompletedProjectDetails = () => {
 
       try {
         // Fetch project details
-        const projectRes = await fetch(
-          `https://localhost:7053/api/projects/get-project-by-id/${projectId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (!projectRes.ok) {
           throw new Error("Failed to fetch project details")
@@ -123,10 +151,9 @@ const CompletedProjectDetails = () => {
         }
 
         // Fetch milestones
-        const milestonesRes = await fetch(
-          `https://localhost:7053/api/milestone/get-project-milestones/${projectId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const milestonesRes = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (milestonesRes.ok) {
           const milestonesData = await milestonesRes.json()
@@ -144,10 +171,9 @@ const CompletedProjectDetails = () => {
         }
 
         // Fetch tasks
-        const tasksRes = await fetch(
-          `https://localhost:7053/api/project-progress/get-tasks/${projectId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const tasksRes = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (tasksRes.ok) {
           const tasksData = await tasksRes.json()
@@ -155,15 +181,20 @@ const CompletedProjectDetails = () => {
         }
 
         // Fetch reviews
-        const reviewsRes = await fetch(
-          `https://localhost:7053/api/reviews/get-reviews/${projectId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
+        const reviewsRes = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         if (reviewsRes.ok) {
           const reviewsData = await reviewsRes.json()
           setReviews(reviewsData)
         }
+
+        // Fetch modules
+        await fetchModules()
+
+        // Fetch project link
+        await fetchProjectLink()
       } catch (err) {
         console.error("Error fetching project data:", err)
         setError("Failed to load project data")
@@ -198,6 +229,45 @@ const CompletedProjectDetails = () => {
       }
     } catch (err) {
       console.error("Error fetching comments:", err)
+    }
+  }
+
+  // Fetch project modules
+  const fetchModules = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+    try {
+      const res = await fetch(`https://localhost:7053/api/project-module/get-all/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setModules(data)
+      }
+    } catch (err) {
+      console.error("Error fetching modules:", err)
+    }
+  }
+
+  // Fetch project deployment link
+  const fetchProjectLink = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+
+    try {
+      const res = await fetch(`https://localhost:7053/api/projects/get-link/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const link = await res.text()
+        setProjectLink(link.replace(/"/g, "")) // Remove quotes from response
+      } else {
+        console.log("No deployment link available")
+        setProjectLink("")
+      }
+    } catch (err) {
+      console.error("Error fetching project link:", err)
+      setProjectLink("")
     }
   }
 
@@ -280,9 +350,7 @@ const CompletedProjectDetails = () => {
             <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Certified</div>
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">{project.title}</h1>
-          <p className="text-blue-100 text-lg max-w-2xl">
-            Successfully completed project with industry expert
-          </p>
+          <p className="text-blue-100 text-lg max-w-2xl">Successfully completed project with industry expert</p>
         </div>
       </div>
 
@@ -375,7 +443,7 @@ const CompletedProjectDetails = () => {
             <p className="text-2xl font-bold text-gray-800">{stats.totalMilestones}</p>
             <p className="text-sm text-gray-500">Milestones Completed</p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200 flex flex-col items-center">
             <div className="bg-green-100 p-2 rounded-full mb-2">
               <CheckCircle className="w-6 h-6 text-green-600" />
@@ -383,7 +451,7 @@ const CompletedProjectDetails = () => {
             <p className="text-2xl font-bold text-gray-800">{stats.completedTasks}</p>
             <p className="text-sm text-gray-500">Tasks Completed</p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200 flex flex-col items-center">
             <div className="bg-yellow-100 p-2 rounded-full mb-2">
               <Star className="w-6 h-6 text-yellow-600" />
@@ -391,7 +459,7 @@ const CompletedProjectDetails = () => {
             <p className="text-2xl font-bold text-gray-800">{stats.averageRating}</p>
             <p className="text-sm text-gray-500">Average Rating</p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200 flex flex-col items-center">
             <div className="bg-purple-100 p-2 rounded-full mb-2">
               <Clock className="w-6 h-6 text-purple-600" />
@@ -442,9 +510,7 @@ const CompletedProjectDetails = () => {
                           </div>
                         </div>
                         <div className="flex items-center">
-                          <div className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-3">
-                            Completed
-                          </div>
+                          <div className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-3">Completed</div>
                           {expandedMilestone === milestone.id ? (
                             <ChevronUp className="w-5 h-5 text-gray-400" />
                           ) : (
@@ -461,7 +527,7 @@ const CompletedProjectDetails = () => {
                             <MessageSquare className="w-4 h-4 mr-1 text-blue-500" />
                             Expert Comments
                           </h4>
-                          
+
                           {comments[milestone.id]?.length > 0 ? (
                             <div className="space-y-3">
                               {comments[milestone.id].map((comment) => (
@@ -521,6 +587,67 @@ const CompletedProjectDetails = () => {
                 </div>
               )}
             </div>
+
+            {/* Project Modules Section */}
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                  <Code className="w-5 h-5 mr-2 text-blue-500" />
+                  Project Modules
+                </h2>
+              </div>
+
+              {modules.length === 0 ? (
+                <div className="p-12 text-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="No modules"
+                    className="w-32 h-32 mx-auto mb-4 rounded-full object-cover opacity-50"
+                  />
+                  <p className="text-gray-500">No modules were created for this project.</p>
+                </div>
+              ) : (
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {modules.map((module) => (
+                      <div
+                        key={module.id}
+                        className={`border rounded-lg p-4 ${
+                          module.status ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start">
+                            <div
+                              className={`flex-shrink-0 rounded-full p-2 mr-3 ${
+                                module.status ? "bg-green-100" : "bg-gray-100"
+                              }`}
+                            >
+                              {module.status ? (
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              ) : (
+                                <Clock className="h-5 w-5 text-gray-600" />
+                              )}
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-800">{module.name}</h3>
+                              <p className="text-gray-600 mt-1">{module.description}</p>
+                            </div>
+                          </div>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              module.status ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {module.status ? "Active" : "Inactive"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -547,6 +674,43 @@ const CompletedProjectDetails = () => {
                 </div>
               </div>
             </div>
+
+            {/* Project Deployment Link */}
+            {projectLink && (
+              <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                    <ExternalLink className="w-5 h-5 mr-2 text-blue-500" />
+                    Live Project
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-green-100 rounded-full p-2 mr-3">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-500">Deployment URL</p>
+                      <a
+                        href={projectLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-blue-600 hover:text-blue-800 break-all text-sm"
+                      >
+                        {projectLink}
+                      </a>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => window.open(projectLink, "_blank")}
+                    className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    <ExternalLink className="mr-2 h-5 w-5" />
+                    View Live Project
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Reviews Section */}
             <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
