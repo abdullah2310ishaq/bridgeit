@@ -61,7 +61,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://localhost:7053/api/auth/login", {
+      const response = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,7 @@ const LoginPage: React.FC = () => {
 
         try {
           const profileResponse = await fetch(
-            "https://localhost:7053/api/auth/authorized-user-info",
+            "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
             {
               method: "GET",
               headers: {

@@ -31,7 +31,7 @@ const ExpertProfilePage: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${expertId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${expertId}`,
           {
             method: "GET",
             headers: {

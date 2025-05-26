@@ -218,7 +218,7 @@ const MilestonePage: React.FC = () => {
 
       try {
         // Get authorized user info
-        const authRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const authRes = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!authRes.ok) throw new Error("Failed to get authorized user info.")
@@ -226,7 +226,7 @@ const MilestonePage: React.FC = () => {
 
         // Fetch industry expert profile using logged-in user ID
         const expertRes = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${authData.userId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         )
         if (!expertRes.ok) throw new Error("Failed to fetch industry expert profile.")
@@ -240,7 +240,7 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch project details (includes student info)
-        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+        const projectRes = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!projectRes.ok) throw new Error("Failed to fetch project details.")
@@ -254,7 +254,7 @@ const MilestonePage: React.FC = () => {
         })
 
         // Fetch milestones
-        const milestonesRes = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
+        const milestonesRes = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!milestonesRes.ok) throw new Error("Failed to fetch milestones.")
@@ -307,7 +307,7 @@ const MilestonePage: React.FC = () => {
     try {
       // First, try to fetch using the expert ID
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-completion-request/${expertId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-completion-request/${expertId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -371,7 +371,7 @@ const MilestonePage: React.FC = () => {
     try {
       // Try to fetch the specific request for this project
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/get-project-request/${projectId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/get-project-request/${projectId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -414,7 +414,7 @@ const MilestonePage: React.FC = () => {
     if (!token) return
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/get-milestone-comments/?milestoneId=${milestoneId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (res.ok) {
@@ -442,7 +442,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone-comment/add-milestone-comment?milestoneId=${currentMilestoneId}&expertId=${expertProfile.indExptId}`,
         {
           method: "POST",
           headers: {
@@ -473,7 +473,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/get-tasks/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/get-tasks/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -503,7 +503,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       // Use the marks-as-complete endpoint from the controller
-      const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -535,7 +535,7 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/project-progress/add-tasks/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-progress/add-tasks/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -565,7 +565,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/get-reviews/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/get-reviews/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -590,7 +590,7 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/reviews/add-review/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/reviews/add-review/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -634,7 +634,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/handle-request/${currentRequest.id}`,
         {
           method: "PATCH",
           headers: {
@@ -687,7 +687,7 @@ const MilestonePage: React.FC = () => {
 
     try {
       const res = await fetch(
-        `https://localhost:7053/api/request-for-project-completion/handle-request/${currentRequest.id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/request-for-project-completion/handle-request/${currentRequest.id}`,
         {
           method: "PATCH",
           headers: {
@@ -740,7 +740,7 @@ const MilestonePage: React.FC = () => {
     if (!token || !projectId) return
 
     try {
-      const res = await fetch(`https://localhost:7053/api/projects/get-link/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-link/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -765,7 +765,7 @@ const MilestonePage: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`https://localhost:7053/api/projects/deployement/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/deployement/${projectId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -809,7 +809,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (token && projectId) {
       try {
-        const projectRes = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
+        const projectRes = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (projectRes.ok) {
@@ -856,7 +856,7 @@ const MilestonePage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
     try {
-      const res = await fetch(`https://localhost:7053/api/project-module/get-all/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-module/get-all/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -878,7 +878,7 @@ const MilestonePage: React.FC = () => {
       return
     }
     try {
-      const res = await fetch(`https://localhost:7053/api/project-module/add/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-module/add/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -911,7 +911,7 @@ const MilestonePage: React.FC = () => {
     try {
       const newStatus = !module.status
       const res = await fetch(
-        `https://localhost:7053/api/project-module/update-status/${module.id}?status=${newStatus}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-module/update-status/${module.id}?status=${newStatus}`,
         {
           method: "PATCH",
           headers: {

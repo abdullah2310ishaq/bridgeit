@@ -27,7 +27,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`https://localhost:7053/api/edit-user-profile/forgot-password/${email}`, {
+      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/forgot-password/${email}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

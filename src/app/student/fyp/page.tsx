@@ -141,7 +141,7 @@ const RegisterFypPage: React.FC = () => {
 
       try {
         // 1) Auth info
-        const authResp = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const authResp = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (authResp.status === 401 || authResp.status === 403) {
@@ -152,7 +152,7 @@ const RegisterFypPage: React.FC = () => {
         const { userId } = await authResp.json()
 
         // 2) Student profile
-        const studentResp = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+        const studentResp = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (studentResp.status === 401 || studentResp.status === 403) {
@@ -167,7 +167,7 @@ const RegisterFypPage: React.FC = () => {
         localStorage.setItem("studentId", studentData.id)
 
         // 3) Faculties list
-        const facResp = await fetch("https://localhost:7053/api/get-faculty/faculties", {
+        const facResp = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculties", {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (facResp.status === 401 || facResp.status === 403) {
@@ -251,7 +251,7 @@ const RegisterFypPage: React.FC = () => {
         payload.YearOfCompletion = formData.yearOfCompletion
       }
 
-      const res = await fetch(`https://localhost:7053/api/fyp/register-fyp?studentId=${studentId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/register-fyp?studentId=${studentId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

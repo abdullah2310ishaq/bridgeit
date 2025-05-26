@@ -28,7 +28,7 @@ const StudentProposalStatusPage: React.FC = () => {
 
       try {
         // Step 1: Fetch authorized user info
-        const authResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const authResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ const StudentProposalStatusPage: React.FC = () => {
         const userId = authData.userId
 
         // Step 2: Fetch student profile using userId
-        const studentResponse = await fetch(`https://localhost:7053/api/get-student/student-by-id/${userId}`, {
+        const studentResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

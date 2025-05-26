@@ -76,7 +76,7 @@ export default function PurchasedProjectDetailPage() {
 
       try {
         // Step 1: Get user info to get the industry expert ID
-        const userResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const userResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -87,7 +87,7 @@ export default function PurchasedProjectDetailPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -99,13 +99,13 @@ export default function PurchasedProjectDetailPage() {
         const indExpertId = expertData.indExptId
 
         // Step 3: Fetch the bought FYP record
-        const boughtFypResponse = await fetch(`https://localhost:7053/api/bought-fyp/by-id/${fypId}`, {
+        const boughtFypResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/by-id/${fypId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
         if (!boughtFypResponse.ok) {
           // Try to find by FYP ID instead
-          const allBoughtFypsResponse = await fetch("https://localhost:7053/api/bought-fyp/get-all", {
+          const allBoughtFypsResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/get-all", {
             headers: { Authorization: `Bearer ${token}` },
           })
           
@@ -118,7 +118,7 @@ export default function PurchasedProjectDetailPage() {
           // Check each bought FYP to find one matching this FYP ID and expert
           let foundBoughtFyp = null
           for (const id of boughtFypIds) {
-            const response = await fetch(`https://localhost:7053/api/bought-fyp/by-id/${id}`, {
+            const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/by-id/${id}`, {
               headers: { Authorization: `Bearer ${token}` },
             })
             
@@ -148,7 +148,7 @@ export default function PurchasedProjectDetailPage() {
         }
 
         // Step 4: Fetch detailed FYP info
-        const fypResponse = await fetch(`https://localhost:7053/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
+        const fypResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         
@@ -162,7 +162,7 @@ export default function PurchasedProjectDetailPage() {
         // Step 5: Fetch project files (if you have an API for this)
         // This is a placeholder - you would need to implement this API
         try {
-          const filesResponse = await fetch(`https://localhost:7053/api/fyp-files/get-by-fyp/${fypId}`, {
+          const filesResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-files/get-by-fyp/${fypId}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
           
@@ -178,7 +178,7 @@ export default function PurchasedProjectDetailPage() {
         // Step 6: Fetch project links (if available)
         // These are placeholders - you would need to implement these APIs
         try {
-          const linksResponse = await fetch(`https://localhost:7053/api/fyp-links/get-by-fyp/${fypId}`, {
+          const linksResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-links/get-by-fyp/${fypId}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
           
@@ -215,7 +215,7 @@ export default function PurchasedProjectDetailPage() {
 
     try {
       // This endpoint would need to be implemented to return the agreement document
-      const response = await fetch(`https://localhost:7053/api/bought-fyp/get-agreement/${boughtFyp.id}`, {
+      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/get-agreement/${boughtFyp.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Fetch user profile information
-    const profileResponse = await fetch('https://localhost:7053/api/auth/authorized-user-info', {
+    const profileResponse = await fetch('http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

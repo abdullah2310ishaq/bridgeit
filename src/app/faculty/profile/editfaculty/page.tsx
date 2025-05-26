@@ -52,7 +52,7 @@ const UpdateFacultyPage: React.FC = () => {
       try {
         /* 1️⃣ authorized‑user (get userId) */
         const authRes = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!authRes.ok) throw new Error("profile fetch failed");
@@ -61,7 +61,7 @@ const UpdateFacultyPage: React.FC = () => {
 
         /* 2️⃣ faculty details */
         const facRes = await fetch(
-          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!facRes.ok) throw new Error("faculty fetch failed");
@@ -115,7 +115,7 @@ const UpdateFacultyPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const res = await fetch(
-        `https://localhost:7053/api/faculties/update-faculty/${userId}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/faculties/update-faculty/${userId}`,
         {
           method: "PUT",
           headers: {

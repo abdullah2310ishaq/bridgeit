@@ -34,7 +34,7 @@ const NotificationsPage: React.FC = () => {
       }
 
       try {
-        const profileResponse = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const profileResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const NotificationsPage: React.FC = () => {
         const userId = profileData.userId
 
         const expertResponse = await fetch(
-          `https://localhost:7053/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: {
@@ -62,7 +62,7 @@ const NotificationsPage: React.FC = () => {
         const expertId = expertData.indExptId
 
         const proposalsResponse = await fetch(
-          `https://localhost:7053/api/project-proposals/get-proposal-for-expert/${expertId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-proposals/get-proposal-for-expert/${expertId}`,
           {
             method: "GET",
             headers: {
@@ -109,7 +109,7 @@ const NotificationsPage: React.FC = () => {
   const handleAcceptProposal = async (proposalId: string) => {
     try {
       const token = localStorage.getItem("jwtToken")
-      const response = await fetch(`https://localhost:7053/api/project-proposals/accept-proposal/${proposalId}`, {
+      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-proposals/accept-proposal/${proposalId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -134,7 +134,7 @@ const NotificationsPage: React.FC = () => {
   const handleRejectProposal = async (proposalId: string) => {
     try {
       const token = localStorage.getItem("jwtToken")
-      const response = await fetch(`https://localhost:7053/api/project-proposals/reject-proposal/${proposalId}`, {
+      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-proposals/reject-proposal/${proposalId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,

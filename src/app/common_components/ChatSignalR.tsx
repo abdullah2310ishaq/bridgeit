@@ -32,7 +32,7 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7053/chathub", {
+      .withUrl("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/chathub", {
         accessTokenFactory: () => token,
       })
       .withAutomaticReconnect()
@@ -90,7 +90,7 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
 
       try {
         const response = await fetch(
-          `https://localhost:7053/api/chats/message-history/${senderId}/${receiverId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/chats/message-history/${senderId}/${receiverId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ const ChatSignalR: React.FC<ChatSignalRProps> = ({ senderId, receiverId }) => {
     }
 
     try {
-      const response = await fetch("https://localhost:7053/api/chats/send-message", {
+      const response = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/chats/send-message", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

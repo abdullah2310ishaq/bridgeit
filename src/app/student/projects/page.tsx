@@ -28,7 +28,7 @@ const ProjectsPage: React.FC = () => {
       }
 
       try {
-        const userRes = await fetch("https://localhost:7053/api/auth/authorized-user-info", {
+        const userRes = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -36,7 +36,7 @@ const ProjectsPage: React.FC = () => {
         if (userRes.ok) {
           const userData = await userRes.json();
           const studentRes = await fetch(
-            `https://localhost:7053/api/get-student/student-by-id/${userData.userId}`,
+            `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userData.userId}`,
             {
               method: "GET",
               headers: { Authorization: `Bearer ${token}` },
@@ -46,7 +46,7 @@ const ProjectsPage: React.FC = () => {
           if (studentRes.ok) {
             const studentData = await studentRes.json();
             const projectRes = await fetch(
-              `https://localhost:7053/api/projects/get-student-projects-by-id/${studentData.id}`,
+              `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects-by-id/${studentData.id}`,
               {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },

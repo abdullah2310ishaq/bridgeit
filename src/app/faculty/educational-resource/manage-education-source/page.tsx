@@ -46,7 +46,7 @@ const ManageEducationalResources: React.FC = () => {
 
         // Get profile
         const profileRes = await fetch(
-          "https://localhost:7053/api/auth/authorized-user-info",
+          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         )
         if (!profileRes.ok) throw new Error("Failed to fetch user profile")
@@ -54,7 +54,7 @@ const ManageEducationalResources: React.FC = () => {
 
         // Get faculty
         const facultyRes = await fetch(
-          `https://localhost:7053/api/get-faculty/faculty-by-id/${userId}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
         if (!facultyRes.ok) throw new Error("Failed to fetch faculty details")
@@ -63,7 +63,7 @@ const ManageEducationalResources: React.FC = () => {
 
         // Get resources
         const resourcesRes = await fetch(
-          `https://localhost:7053/api/educational-resources/get-by-id/${id}`,
+          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-by-id/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
         if (resourcesRes.status === 404) {
@@ -93,7 +93,7 @@ const ManageEducationalResources: React.FC = () => {
         return
       }
       const res = await fetch(
-        `https://localhost:7053/api/educational-resources/delete/${id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/delete/${id}`,
         { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
       )
       if (!res.ok) throw new Error("Failed to delete resource")
@@ -130,7 +130,7 @@ const ManageEducationalResources: React.FC = () => {
         return
       }
       const res = await fetch(
-        `https://localhost:7053/api/educational-resources/update/${editingResource.id}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/update/${editingResource.id}`,
         {
           method: "PUT",
           headers: {

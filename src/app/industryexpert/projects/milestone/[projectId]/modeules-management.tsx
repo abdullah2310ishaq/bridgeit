@@ -37,7 +37,7 @@ const ModulesManagement: React.FC<ModulesManagementProps> = ({
     if (!token || !projectId) return
 
     try {
-      const res = await fetch(`https://localhost:7053/api/project-module/get-all/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-module/get-all/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -64,7 +64,7 @@ const ModulesManagement: React.FC<ModulesManagementProps> = ({
 
     setLoading(true)
     try {
-      const res = await fetch(`https://localhost:7053/api/project-module/add/${projectId}`, {
+      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-module/add/${projectId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const ModulesManagement: React.FC<ModulesManagementProps> = ({
     try {
       const newStatus = !module.status
       const res = await fetch(
-        `https://localhost:7053/api/project-module/update-status/${module.id}?status=${newStatus}`,
+        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-module/update-status/${module.id}?status=${newStatus}`,
         {
           method: "PATCH",
           headers: {

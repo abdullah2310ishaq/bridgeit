@@ -40,7 +40,7 @@ const ChatForStudent: React.FC<ChatForStudentProps> = ({ studentId, expertId, ex
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`https://localhost:7053/chathub?userId=${studentId}`, {
+      .withUrl(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/chathub?userId=${studentId}`, {
         // Pass studentId in query string
         accessTokenFactory: () => token,
       })
@@ -95,7 +95,7 @@ const ChatForStudent: React.FC<ChatForStudentProps> = ({ studentId, expertId, ex
       if (!token) return
 
       try {
-        const response = await fetch(`https://localhost:7053/api/chats/message-history/${studentId}/${expertId}`, {
+        const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/chats/message-history/${studentId}/${expertId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 

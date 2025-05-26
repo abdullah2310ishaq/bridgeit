@@ -131,7 +131,7 @@ const EducationalResourcesCard: React.FC<{ goToEducationalResources: () => void 
           return
         }
 
-        const allResourcesResponse = await fetch("https://localhost:7053/api/educational-resources/get-all", {
+        const allResourcesResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/educational-resources/get-all", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
