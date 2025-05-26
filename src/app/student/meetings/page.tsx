@@ -264,7 +264,7 @@ export default function StudentMeetingsPage() {
               <Calendar className="h-12 w-12 text-indigo-400 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-gray-800">No FYP Assigned</h3>
               <p className="text-gray-600 mt-2">
-                You donot have a Final Year Project assigned yet. Once you have a FYP, you'll be able to schedule
+                You donot have a Final Year Project assigned yet. Once you have a FYP, you ll be able to schedule
                 meetings with industry experts.
               </p>
               <button
