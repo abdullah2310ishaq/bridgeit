@@ -27,8 +27,11 @@ import {
   MessageSquare,
   ExternalLink,
   Package,
-  LinkIcon,
+  Edit3,
+  Save,
+  Globe,
 } from "lucide-react"
+import RejectedRequestCard from "./rejected-request-card"
 
 // --------- Interfaces ---------
 interface ProgressUpdate {
@@ -82,7 +85,6 @@ interface Review {
   reviewerName: string
 }
 
-// New interface for Project Modules
 interface ProjectModule {
   id: string
   name: string
@@ -92,7 +94,6 @@ interface ProjectModule {
   projectName: string
 }
 
-// This interface extends project details with student info
 interface ProjectDetailsExtended extends ProjectDetails {
   studentId: string
   stdUserId: string
@@ -110,17 +111,17 @@ const ProjectProgressTracker: React.FC = () => {
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([])
   const [comments, setComments] = useState<Record<string, MilestoneComment[]>>({})
   const [currentCommentItem, setCurrentCommentItem] = useState<ProgressItem | null>(null)
-  // Tasks state – tasks can be added by the expert and toggled by both expert and student (if allowed)
   const [tasks, setTasks] = useState<TaskItem[]>([])
-  // New state for Project Modules
   const [modules, setModules] = useState<ProjectModule[]>([])
-  // Review state (displayed when project is completed)
   const [reviews, setReviews] = useState<Review[]>([])
   const [newReviewText, setNewReviewText] = useState("")
   const [newReviewRating, setNewReviewRating] = useState<number>(0)
-  // Deployment link state
+
+  // Deployment link state - ENHANCED
   const [deploymentLink, setDeploymentLink] = useState("")
   const [projectLink, setProjectLink] = useState("")
+  const [isEditingLink, setIsEditingLink] = useState(false)
+  const [tempDeploymentLink, setTempDeploymentLink] = useState("")
 
   // Modal state for add/edit milestone
   const [showModal, setShowModal] = useState(false)
@@ -130,24 +131,21 @@ const ProjectProgressTracker: React.FC = () => {
     description: "",
     achievementDate: "",
   })
-  // New Task inputs (visible only to industry experts)
   const [newTask, setNewTask] = useState("")
   const [newTaskDescription, setNewTaskDescription] = useState("")
-  // Completion request modal state
   const [showCompletionModal, setShowCompletionModal] = useState(false)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Active tab state - added modules tab
-  const [activeTab, setActiveTab] = useState<"milestones" | "tasks" | "modules" | "reviews" | "chat">("milestones")
+  const [activeTab, setActiveTab] = useState<"milestones" | "tasks" | "modules" | "reviews" | "chat" | "deployment">(
+    "milestones",
+  )
 
   // Determine if project is completed, pending completion, or payment pending
   const isProjectComplete = project?.status === "Completed"
   const isPendingCompletion = project?.status === "PendingCompletion"
   const isPaymentPending = project?.status === "PaymentPending"
-
-  // Any of these statuses means the project is in final stages and editing should be disabled
   const isEditingDisabled = isProjectComplete || isPendingCompletion || isPaymentPending
 
   // Calculate project progress including modules
@@ -164,7 +162,6 @@ const ProjectProgressTracker: React.FC = () => {
     return Math.round((completedItems / totalItems) * 100)
   }
 
-  // Get project image based on title or description
   const getProjectImage = () => {
     if (!project) return "/project-management-teamwork.png"
 
@@ -194,9 +191,86 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
+  const [hasRejectedRequest, setHasRejectedRequest] = useState(false)
+  const [rejectedRequestId, setRejectedRequestId] = useState<string | null>(null)
+
   // -----------------------------
-  // 1) Fetch Project Details, Milestones, and Authorized User Info
+  // NEW: Deployment Link Management Functions
   // -----------------------------
+
+  // Fetch current deployment link
+  const fetchDeploymentLink = async () => {
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+
+    try {
+      const res = await fetch(`https://localhost:7053/api/projects/get-link/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const link = await res.text()
+        const cleanLink = link.replace(/"/g, "")
+        setProjectLink(cleanLink)
+        setDeploymentLink(cleanLink)
+        setTempDeploymentLink(cleanLink)
+      }
+    } catch (err) {
+      console.error("Error fetching deployment link:", err)
+    }
+  }
+
+  // Update deployment link
+  const handleUpdateDeploymentLink = async () => {
+    if (!tempDeploymentLink.trim()) {
+      toast.error("Please enter a valid deployment link")
+      return
+    }
+
+    // Basic URL validation
+    try {
+      new URL(tempDeploymentLink)
+    } catch {
+      toast.error("Please enter a valid URL")
+      return
+    }
+
+    const token = localStorage.getItem("jwtToken")
+    if (!token || !projectId) return
+
+    try {
+      const res = await fetch(`https://localhost:7053/api/projects/deployement/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tempDeploymentLink),
+      })
+
+      if (res.ok) {
+        setDeploymentLink(tempDeploymentLink)
+        setProjectLink(tempDeploymentLink)
+        setIsEditingLink(false)
+        toast.success("Deployment link updated successfully! Expert can now see your project.")
+      } else {
+        toast.error("Failed to update deployment link")
+      }
+    } catch (err) {
+      console.error("Error updating deployment link:", err)
+      toast.error("Error updating deployment link")
+    }
+  }
+
+  // Cancel editing deployment link
+  const handleCancelEditLink = () => {
+    setTempDeploymentLink(deploymentLink)
+    setIsEditingLink(false)
+  }
+
+  // -----------------------------
+  // Existing Functions (keeping all the original functionality)
+  // -----------------------------
+
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("jwtToken")
@@ -214,7 +288,8 @@ const ProjectProgressTracker: React.FC = () => {
           const authData = await authRes.json()
           setStudentUserId(authData.userId)
         }
-        // Fetch project details (which includes student info and expert info)
+
+        // Fetch project details
         const resProject = await fetch(`https://localhost:7053/api/projects/get-project-by-id/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -223,6 +298,7 @@ const ProjectProgressTracker: React.FC = () => {
           setProject(projectData)
           setExpertUserId(projectData.iExptUserId)
         }
+
         // Fetch milestones
         const resMilestones = await fetch(`https://localhost:7053/api/milestone/get-project-milestones/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -237,7 +313,6 @@ const ProjectProgressTracker: React.FC = () => {
           }))
           setProgressItems(items)
 
-          // Fetch comments for each milestone
           for (const milestone of items) {
             await fetchComments(milestone.id)
           }
@@ -245,19 +320,15 @@ const ProjectProgressTracker: React.FC = () => {
           setProgressItems([])
         }
 
-        // Check completion request status
         await checkCompletionRequestStatus()
-
-        // Fetch tasks
         await fetchTasks()
-
-        // Fetch modules
         await fetchModules()
 
-        // If project is completed, fetch reviews and project link
+        // NEW: Fetch deployment link
+        await fetchDeploymentLink()
+
         if (project && (project.status === "Completed" || project.status === "PaymentPending")) {
           await fetchReviews()
-          await fetchProjectLink()
         }
       } catch (err) {
         console.error("Error:", err)
@@ -269,9 +340,7 @@ const ProjectProgressTracker: React.FC = () => {
     if (projectId) fetchData()
   }, [projectId, router])
 
-  // -----------------------------
-  // 2) Refresh Milestones
-  // -----------------------------
+  // All other existing functions remain the same...
   const refreshProgressItems = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
@@ -292,7 +361,6 @@ const ProjectProgressTracker: React.FC = () => {
         })
         setProgressItems(updated)
 
-        // Refresh comments for each milestone
         for (const milestone of updated) {
           await fetchComments(milestone.id)
         }
@@ -304,11 +372,7 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 3) Milestone Modal: Add / Edit
-  // -----------------------------
   const handleOpenModal = (item?: ProgressItem) => {
-    // Prevent editing if project is completed, pending completion, or payment pending
     if (isEditingDisabled) {
       toast.info("Editing is disabled while the project is pending completion, payment, or completed.")
       return
@@ -329,7 +393,6 @@ const ProjectProgressTracker: React.FC = () => {
   }
 
   const handleSaveItem = async () => {
-    // Prevent saving if project is completed, pending completion, or payment pending
     if (isEditingDisabled) {
       toast.info("Editing is disabled while the project is pending completion, payment, or completed.")
       return
@@ -338,7 +401,6 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
 
-    // Validate form data
     if (!itemFormData.title.trim()) {
       toast.error("Milestone title is required")
       return
@@ -350,7 +412,6 @@ const ProjectProgressTracker: React.FC = () => {
 
     try {
       if (editItemId) {
-        // Edit milestone
         const res = await fetch(`https://localhost:7053/api/milestone/update-milestone?milesstoneId=${editItemId}`, {
           method: "PUT",
           headers: {
@@ -367,7 +428,6 @@ const ProjectProgressTracker: React.FC = () => {
           await refreshProgressItems()
         }
       } else {
-        // Add milestone
         const res = await fetch(`https://localhost:7053/api/milestone/add-milestone/${projectId}`, {
           method: "POST",
           headers: {
@@ -393,9 +453,6 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 4) Fetch Comments for a Milestone
-  // -----------------------------
   const fetchComments = async (milestoneId: string) => {
     const token = localStorage.getItem("jwtToken")
     if (!token) return
@@ -416,9 +473,6 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 5) Fetch Tasks
-  // -----------------------------
   const fetchTasks = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
@@ -437,9 +491,6 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 6) Fetch Modules
-  // -----------------------------
   const fetchModules = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
@@ -452,19 +503,15 @@ const ProjectProgressTracker: React.FC = () => {
         setModules(data)
       } else {
         console.error("Failed to fetch modules:", res.status)
-        setModules([]) // Set empty array if no modules found
+        setModules([])
       }
     } catch (err) {
       console.error("Error fetching modules:", err)
-      setModules([]) // Set empty array on error
+      setModules([])
     }
   }
 
-  // -----------------------------
-  // 7) Handle Task Toggle (Update Task Status)
-  // -----------------------------
   const handleTaskToggle = async (task: TaskItem) => {
-    // Prevent toggling if project is completed, pending completion, or payment pending
     if (isEditingDisabled) {
       toast.info("Task updates are disabled while the project is pending completion, payment, or completed.")
       return
@@ -473,15 +520,12 @@ const ProjectProgressTracker: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
 
-    // Only allow marking tasks as complete (not toggling back to pending)
-    // This matches the controller's functionality
     if (task.taskStatus === "COMPLETED") {
       toast.info("Task is already completed")
       return
     }
 
     try {
-      // Use the marks-as-complete endpoint from the controller
       const res = await fetch(`https://localhost:7053/api/project-progress/marks-as-complete/${projectId}/${task.id}`, {
         method: "PUT",
         headers: {
@@ -490,7 +534,6 @@ const ProjectProgressTracker: React.FC = () => {
       })
 
       if (res.ok) {
-        // Update local state to show task as completed
         setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, taskStatus: "COMPLETED" } : t)))
         toast.success("Task marked as completed")
       } else {
@@ -503,11 +546,7 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 8) Handle Module Toggle (Update Module Status)
-  // -----------------------------
   const handleModuleToggle = async (module: ProjectModule) => {
-    // Prevent toggling if project is completed, pending completion, or payment pending
     if (isEditingDisabled) {
       toast.info("Module updates are disabled while the project is pending completion, payment, or completed.")
       return
@@ -529,7 +568,6 @@ const ProjectProgressTracker: React.FC = () => {
       )
 
       if (res.ok) {
-        // Update local state
         setModules((prev) => prev.map((m) => (m.id === module.id ? { ...m, status: newStatus } : m)))
         toast.success(`Module ${newStatus ? "completed" : "marked as incomplete"}`)
       } else {
@@ -542,9 +580,6 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 9) Handle Add Review (Student adds review)
-  // -----------------------------
   const handleAddReview = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
@@ -579,9 +614,6 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 10) Fetch Reviews (if project is completed)
-  // -----------------------------
   const fetchReviews = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId) return
@@ -600,43 +632,16 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // -----------------------------
-  // 11) Fetch Project Link (if project is completed)
-  // -----------------------------
-  const fetchProjectLink = async () => {
-    const token = localStorage.getItem("jwtToken")
-    if (!token || !projectId) return
-    try {
-      const res = await fetch(`https://localhost:7053/api/projects/get-link/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (res.ok) {
-        const link = await res.text()
-        setProjectLink(link.replace(/"/g, "")) // Remove quotes if any
-      } else {
-        console.error("Failed to fetch project link:", res.status)
-      }
-    } catch (err) {
-      console.error("Error fetching project link:", err)
-    }
-  }
-
-  // -----------------------------
-  // 12) Handle Request Project Completion with Deployment Link
-  // -----------------------------
   const handleRequestCompletion = async () => {
-    // Prevent sending another request if one is already pending
     if (isPendingCompletion || isPaymentPending || isProjectComplete) {
       toast.info("A completion request is already pending or the project is already completed.")
       return
     }
 
-    setShowCompletionModal(true)
-  }
-
-  const handleSubmitCompletion = async () => {
+    // Check if deployment link exists
     if (!deploymentLink.trim()) {
-      toast.error("Please provide a deployment link.")
+      toast.error("Please add a deployment link before requesting completion.")
+      setActiveTab("deployment")
       return
     }
 
@@ -644,22 +649,6 @@ const ProjectProgressTracker: React.FC = () => {
     if (!token || !projectId) return
 
     try {
-      // First, submit the deployment link
-      const linkRes = await fetch(`https://localhost:7053/api/projects/deployement/${projectId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(deploymentLink),
-      })
-
-      if (!linkRes.ok) {
-        toast.error("Failed to submit deployment link.")
-        return
-      }
-
-      // Then, submit the completion request
       const completionRes = await fetch(
         `https://localhost:7053/api/request-for-project-completion/put-completion-request`,
         {
@@ -673,10 +662,10 @@ const ProjectProgressTracker: React.FC = () => {
       )
 
       if (completionRes.ok) {
-        toast.success("Completion request sent with deployment link. Awaiting industry expert approval.")
+        toast.success("Completion request sent successfully. Awaiting industry expert approval.")
         setProject((prev) => (prev ? { ...prev, status: "PendingCompletion" } : prev))
-        setShowCompletionModal(false)
-        setDeploymentLink("")
+        setHasRejectedRequest(false)
+        setRejectedRequestId(null)
       } else {
         const errorText = await completionRes.text()
         console.error("Failed to request project completion:", completionRes.status, errorText)
@@ -688,7 +677,6 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // Add a function to check completion request status on component load
   const checkCompletionRequestStatus = async () => {
     const token = localStorage.getItem("jwtToken")
     if (!token || !projectId || !studentUserId) return
@@ -703,13 +691,28 @@ const ProjectProgressTracker: React.FC = () => {
 
       if (res.ok) {
         const data = await res.json()
-        // Check if there's a pending request for this project
+
         const pendingRequest =
           Array.isArray(data) && data.find((req: any) => req.projectId === projectId && req.status === "PENDING")
 
         if (pendingRequest) {
-          // Update local state to reflect pending completion status
           setProject((prev) => (prev ? { ...prev, status: "PendingCompletion" } : prev))
+          setHasRejectedRequest(false)
+          setRejectedRequestId(null)
+          return
+        }
+
+        const rejectedRequest =
+          Array.isArray(data) && data.find((req: any) => req.projectId === projectId && req.status === "REJECTED")
+
+        if (rejectedRequest) {
+          setHasRejectedRequest(true)
+          setRejectedRequestId(rejectedRequest.id)
+          setProject((prev) => (prev ? { ...prev, status: "Active" } : prev))
+          toast.info("Your completion request was rejected. You can submit a new request after making improvements.")
+        } else {
+          setHasRejectedRequest(false)
+          setRejectedRequestId(null)
         }
       }
     } catch (err) {
@@ -717,7 +720,12 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }
 
-  // Fetch tasks and modules when projectId changes
+  const handleSendNewRequestAfterRejection = () => {
+    setHasRejectedRequest(false)
+    setRejectedRequestId(null)
+    handleRequestCompletion()
+  }
+
   useEffect(() => {
     if (projectId) {
       fetchTasks()
@@ -725,13 +733,21 @@ const ProjectProgressTracker: React.FC = () => {
     }
   }, [projectId])
 
-  // When project becomes complete or payment pending, fetch reviews and project link
   useEffect(() => {
     if (project?.status === "Completed" || project?.status === "PaymentPending") {
       fetchReviews()
-      fetchProjectLink()
     }
   }, [project])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (projectId && studentUserId && !isProjectComplete && !isPaymentPending) {
+        checkCompletionRequestStatus()
+      }
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [projectId, studentUserId, isProjectComplete, isPaymentPending])
 
   if (loading) {
     return (
@@ -866,6 +882,26 @@ const ProjectProgressTracker: React.FC = () => {
                       </p>
                     </div>
                   </div>
+
+                  {/* NEW: Deployment Link Display in Sidebar */}
+                  {deploymentLink && (
+                    <div className="flex items-center">
+                      <div className="bg-green-100 rounded-full p-2 mr-3">
+                        <Globe className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Deployment Link</p>
+                        <a
+                          href={deploymentLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-blue-600 hover:text-blue-800 underline text-sm break-all"
+                        >
+                          {deploymentLink.length > 30 ? `${deploymentLink.substring(0, 30)}...` : deploymentLink}
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -886,8 +922,8 @@ const ProjectProgressTracker: React.FC = () => {
               </div>
             </div>
 
-            {/* Project Status Actions */}
-            {!isEditingDisabled && (
+            {/* Project Actions */}
+            {!isEditingDisabled && !hasRejectedRequest && (
               <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border border-gray-200">
                 <div className="p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Project Actions</h3>
@@ -898,9 +934,16 @@ const ProjectProgressTracker: React.FC = () => {
                     <CheckCircle className="mr-2 h-5 w-5" />
                     Request Project Completion
                   </button>
+                  {!deploymentLink && (
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Add deployment link first in the Deployment tab
+                    </p>
+                  )}
                 </div>
               </div>
             )}
+
+            {hasRejectedRequest && <RejectedRequestCard onSendNewRequest={handleSendNewRequestAfterRejection} />}
 
             {isPendingCompletion && (
               <motion.div
@@ -958,7 +1001,6 @@ const ProjectProgressTracker: React.FC = () => {
                   </div>
                   <p className="text-gray-600 mb-4">This project is complete. Editing is disabled.</p>
 
-                  {/* Show project link if available */}
                   {projectLink && (
                     <div className="mb-4">
                       <a
@@ -990,10 +1032,10 @@ const ProjectProgressTracker: React.FC = () => {
             {/* Tabs */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6 border border-gray-200">
               <div className="border-b border-gray-200">
-                <nav className="flex -mb-px">
+                <nav className="flex -mb-px overflow-x-auto">
                   <button
                     onClick={() => setActiveTab("milestones")}
-                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                    className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
                       activeTab === "milestones"
                         ? "border-blue-500 text-blue-600"
                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1003,7 +1045,7 @@ const ProjectProgressTracker: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveTab("tasks")}
-                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                    className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
                       activeTab === "tasks"
                         ? "border-blue-500 text-blue-600"
                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1013,7 +1055,7 @@ const ProjectProgressTracker: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveTab("modules")}
-                    className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                    className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
                       activeTab === "modules"
                         ? "border-blue-500 text-blue-600"
                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1021,10 +1063,22 @@ const ProjectProgressTracker: React.FC = () => {
                   >
                     Modules
                   </button>
+                  {/* NEW: Deployment Tab */}
+                  <button
+                    onClick={() => setActiveTab("deployment")}
+                    className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
+                      activeTab === "deployment"
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    }`}
+                  >
+                    <Globe className="inline-block w-4 h-4 mr-1" />
+                    Deployment
+                  </button>
                   {(isProjectComplete || isPaymentPending) && (
                     <button
                       onClick={() => setActiveTab("reviews")}
-                      className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
                         activeTab === "reviews"
                           ? "border-blue-500 text-blue-600"
                           : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1036,7 +1090,7 @@ const ProjectProgressTracker: React.FC = () => {
                   {studentUserId && expertUserId && (
                     <button
                       onClick={() => setActiveTab("chat")}
-                      className={`py-4 px-6 font-medium text-sm border-b-2 ${
+                      className={`py-4 px-6 font-medium text-sm border-b-2 whitespace-nowrap ${
                         activeTab === "chat"
                           ? "border-blue-500 text-blue-600"
                           : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1050,7 +1104,153 @@ const ProjectProgressTracker: React.FC = () => {
 
               {/* Tab Content */}
               <div className="p-6">
-                {/* Milestones Tab */}
+                {/* NEW: Deployment Tab */}
+                {activeTab === "deployment" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-gray-800">Project Deployment</h2>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-start">
+                        <Globe className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+                        <div>
+                          <h3 className="font-medium text-blue-800">Deployment Link</h3>
+                          <p className="text-blue-700 text-sm mt-1">
+                            Add your project's deployment link here. Your industry expert will be able to see and review
+                            your live project immediately.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Current Deployment Link Display */}
+                    {deploymentLink && !isEditingLink && (
+                      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">Current Deployment</h3>
+                            <div className="flex items-center mb-3">
+                              <ExternalLink className="h-4 w-4 text-gray-500 mr-2" />
+                              <a
+                                href={deploymentLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 underline break-all"
+                              >
+                                {deploymentLink}
+                              </a>
+                            </div>
+                            <div className="flex items-center text-sm text-green-600">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              <span>Visible to your industry expert</span>
+                            </div>
+                          </div>
+                          {!isEditingDisabled && (
+                            <button
+                              onClick={() => {
+                                setIsEditingLink(true)
+                                setTempDeploymentLink(deploymentLink)
+                              }}
+                              className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition duration-200 flex items-center"
+                            >
+                              <Edit3 className="h-4 w-4 mr-1" />
+                              Edit
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Add/Edit Deployment Link Form */}
+                    {(!deploymentLink || isEditingLink) && !isEditingDisabled && (
+                      <div className="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                          {deploymentLink ? "Update Deployment Link" : "Add Deployment Link"}
+                        </h3>
+
+                        <div className="space-y-4">
+                          <div>
+                            <label htmlFor="deployment-url" className="block text-sm font-medium text-gray-700 mb-2">
+                              Deployment URL <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              id="deployment-url"
+                              type="url"
+                              value={tempDeploymentLink}
+                              onChange={(e) => setTempDeploymentLink(e.target.value)}
+                              placeholder="https://your-project.vercel.app"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Enter the complete URL where your project is deployed (e.g., Vercel, Netlify, Heroku,
+                              etc.)
+                            </p>
+                          </div>
+
+                          <div className="flex gap-3">
+                            <button
+                              onClick={handleUpdateDeploymentLink}
+                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center"
+                            >
+                              <Save className="h-4 w-4 mr-2" />
+                              {deploymentLink ? "Update Link" : "Save Link"}
+                            </button>
+
+                            {isEditingLink && (
+                              <button
+                                onClick={handleCancelEditLink}
+                                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition duration-200"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Deployment Guidelines */}
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-6">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Deployment Guidelines</h3>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-start">
+                          <span className="text-blue-600 mr-2">•</span>
+                          <span>Ensure your project is fully functional and accessible via the provided URL</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-600 mr-2">•</span>
+                          <span>Test all features before submitting the deployment link</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-600 mr-2">•</span>
+                          <span>Your industry expert will review the live project using this link</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-600 mr-2">•</span>
+                          <span>You can update the deployment link anytime before project completion</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {isEditingDisabled && (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+                        <div className="flex items-start">
+                          <Clock className="h-5 w-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" />
+                          <div>
+                            <h3 className="font-medium text-yellow-800">Editing Disabled</h3>
+                            <p className="text-yellow-700 text-sm mt-1">
+                              Deployment link cannot be modified while the project is pending completion, payment, or
+                              completed.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Existing tabs remain the same... */}
                 {activeTab === "milestones" && (
                   <div>
                     <div className="flex justify-between items-center mb-6">
@@ -1073,7 +1273,6 @@ const ProjectProgressTracker: React.FC = () => {
                           <MilestoneTimeline milestones={progressItems} />
                         </div>
 
-                        {/* Individual Milestones with Comments */}
                         <div className="space-y-6">
                           {progressItems.map((milestone, index) => (
                             <motion.div
@@ -1129,7 +1328,6 @@ const ProjectProgressTracker: React.FC = () => {
                                   </div>
                                 </div>
 
-                                {/* Comments Section */}
                                 <div className="mt-4 pt-4 border-t border-gray-200">
                                   <h4 className="text-sm font-semibold text-blue-600 mb-2">Expert Comments</h4>
                                   {comments[milestone.id] && comments[milestone.id].length > 0 ? (
@@ -1329,7 +1527,6 @@ const ProjectProgressTracker: React.FC = () => {
                       <h2 className="text-xl font-bold text-gray-800">Project Reviews</h2>
                     </div>
 
-                    {/* Existing Reviews */}
                     {reviews.length === 0 ? (
                       <div className="bg-white rounded-lg p-6 text-center mb-6 border border-gray-200">
                         <Star className="h-12 w-12 text-gray-400 mx-auto mb-3" />
@@ -1370,7 +1567,6 @@ const ProjectProgressTracker: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Add Review Form */}
                     <div className="bg-white rounded-lg p-5 border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-800 mb-4">Add a Review</h3>
                       <div className="space-y-4">
@@ -1516,55 +1712,6 @@ const ProjectProgressTracker: React.FC = () => {
                 className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white"
               >
                 {editItemId ? "Update" : "Save"}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Completion Request Modal */}
-      {showCompletionModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white p-6 w-full max-w-md rounded-lg shadow-xl border border-gray-200"
-          >
-            <h3 className="text-xl font-bold text-blue-600 mb-4">Request Project Completion</h3>
-            <p className="text-gray-600 mb-4">
-              Please provide the deployment link for your project before requesting completion.
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Deployment Link <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://your-project-deployment.com"
-                  value={deploymentLink}
-                  onChange={(e) => setDeploymentLink(e.target.value)}
-                  className="w-full p-3 bg-white rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowCompletionModal(false)
-                  setDeploymentLink("")
-                }}
-                className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-gray-700"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitCompletion}
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white flex items-center"
-              >
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Submit Request
               </button>
             </div>
           </motion.div>
