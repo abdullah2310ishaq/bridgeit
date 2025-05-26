@@ -36,7 +36,7 @@ export default function MyRequestsPage() {
       try {
         // Step 1: Get user info
         const profileResponse = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -49,7 +49,7 @@ export default function MyRequestsPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +62,7 @@ export default function MyRequestsPage() {
 
         // Step 3: Fetch FYP requests for this industry expert
         const requestsResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/get-by-id/${expertData.indExptId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ind-expert-request-fyp/get-by-id/${expertData.indExptId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

@@ -27,7 +27,7 @@ const IndustryExpertProfileManagement: React.FC = () => {
 
     async function fetchUserProfile() {
       try {
-        const profileResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const profileResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ const IndustryExpertProfileManagement: React.FC = () => {
 
     try {
       const confirmResponse = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/confirm-current-password/${userId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/confirm-current-password/${userId}`,
         {
           method: "POST",
           headers: {
@@ -84,7 +84,7 @@ const IndustryExpertProfileManagement: React.FC = () => {
         return
       }
 
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/change-password/${userId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/change-password/${userId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -129,7 +129,7 @@ const IndustryExpertProfileManagement: React.FC = () => {
 
     try {
       const base64Image = imageData.split(",")[1] // Ensure we send only the base64 part
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/set-profile-image/${userId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/set-profile-image/${userId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,

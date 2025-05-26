@@ -21,7 +21,7 @@ const ViewCompaniesPage: React.FC = () => {
     const fetchCompanies = async () => {
       try {
         const response = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/companies/get-all-companies",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/companies/get-all-companies",
           {
             method: "GET",
           }

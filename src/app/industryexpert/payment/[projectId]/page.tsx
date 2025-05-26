@@ -33,7 +33,7 @@ const PaymentPage = () => {
     }
 
     try {
-      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`, {
+      const res = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) {
@@ -67,7 +67,7 @@ const PaymentPage = () => {
     setProcessing(true)
 
     try {
-      const res = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/${projectId}`, {
+      const res = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/${projectId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

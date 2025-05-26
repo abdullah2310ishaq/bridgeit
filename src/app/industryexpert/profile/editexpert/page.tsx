@@ -41,7 +41,7 @@ const EditIndustryExpertProfile: React.FC = () => {
       }
 
       try {
-        const response = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const response = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -53,7 +53,7 @@ const EditIndustryExpertProfile: React.FC = () => {
         const { userId } = await response.json()
 
         const profileResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -102,7 +102,7 @@ const EditIndustryExpertProfile: React.FC = () => {
     setSaving(true)
 
     try {
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/update-user-data/${profile.userId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/update-user-data/${profile.userId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,

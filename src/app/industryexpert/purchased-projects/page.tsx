@@ -58,7 +58,7 @@ export default function PurchasedProjectsPage() {
 
       try {
         // Step 1: Get user info to get the industry expert ID
-        const userResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const userResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -69,7 +69,7 @@ export default function PurchasedProjectsPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -81,7 +81,7 @@ export default function PurchasedProjectsPage() {
         setIndustryExpertId(expertData.indExptId)
 
         // Step 3: Fetch all bought FYPs
-        const boughtFypsResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/get-all", {
+        const boughtFypsResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/get-all", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -103,7 +103,7 @@ export default function PurchasedProjectsPage() {
         
         for (const id of boughtFypIds) {
           // Get bought FYP details
-          const boughtFypResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/by-id/${id}`, {
+          const boughtFypResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/by-id/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
           
@@ -115,7 +115,7 @@ export default function PurchasedProjectsPage() {
               boughtFypsDetails.push(boughtFypData)
               
               // Get detailed FYP info
-              const fypResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${boughtFypData.fypId}`, {
+              const fypResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${boughtFypData.fypId}`, {
                 headers: { Authorization: `Bearer ${token}` },
               })
               
@@ -201,7 +201,7 @@ export default function PurchasedProjectsPage() {
 
     try {
       // This endpoint would need to be implemented to return the agreement document
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/get-agreement/${boughtFypId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/bought-fyp/get-agreement/${boughtFypId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

@@ -53,21 +53,21 @@ const IdeaNotificationsPage: React.FC = () => {
       }
       try {
         const profileRes = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!profileRes.ok) throw new Error("Auth failed");
         const { userId } = await profileRes.json();
 
         const facultyRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!facultyRes.ok) throw new Error("Faculty not found");
         const { id: facultyId } = await facultyRes.json();
 
         const reqRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/get-interested-students-requests/${facultyId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/get-interested-students-requests/${facultyId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!reqRes.ok) {
@@ -111,7 +111,7 @@ const IdeaNotificationsPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     const payload = { meetPlace: meetingPlace, meetTime: meetingTime };
     const res = await fetch(
-      `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/accept-request/${selectedRequestId}`,
+      `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/accept-request/${selectedRequestId}`,
       {
         method: "PUT",
         headers: {
@@ -140,7 +140,7 @@ const IdeaNotificationsPage: React.FC = () => {
   const handleReject = async (requestId: string) => {
     const token = localStorage.getItem("jwtToken");
     const res = await fetch(
-      `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/reject-request/${requestId}`,
+      `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/reject-request/${requestId}`,
       {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },

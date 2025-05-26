@@ -50,7 +50,7 @@ export default function ProjectDetailPage() {
       try {
         // 1) fetch base project
         const prjRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${id}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-project-by-id/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!prjRes.ok) throw new Error("Project not found");
@@ -59,14 +59,14 @@ export default function ProjectDetailPage() {
 
         // 2) fetch student info
         const stuRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${proj.studentId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${proj.studentId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const student: StudentInfo = stuRes.ok ? await stuRes.json() : { id: "", name: "", email: "", department: "" };
 
         // 3) fetch milestones
         const msRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${id}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/milestone/get-project-milestones/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const milestones: Milestone[] = msRes.ok ? await msRes.json() : [];

@@ -33,7 +33,7 @@ const VerifyOtp: React.FC = () => {
 
     try {
       const otpResponse = await fetch(
-        "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/verify-otp",
+        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/verify-otp",
         {
           method: "POST",
           headers: {
@@ -51,22 +51,22 @@ const VerifyOtp: React.FC = () => {
           case "faculty":
             storageKey = "facultyRegistrationData";
             registerEndpoint =
-              "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/faculty";
+              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/faculty";
             break;
           case "industryExpert":
             storageKey = "industryExpertRegistrationData";
             registerEndpoint =
-              "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/industry-expert";
+              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/industry-expert";
             break;
           case "universityAdmin":
             storageKey = "universityAdminRegistrationData";
             registerEndpoint =
-              "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/university-admin";
+              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/university-admin";
             break;
           default:
             storageKey = "registrationData";
             registerEndpoint =
-              "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/student";
+              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/student";
         }
 
         const registrationData = JSON.parse(
@@ -117,7 +117,7 @@ const VerifyOtp: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/regenerate-otp",
+        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/regenerate-otp",
         {
           method: "PATCH",
           headers: {

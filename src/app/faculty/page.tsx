@@ -62,7 +62,7 @@ const FacultyPage: React.FC = () => {
       try {
         // Fetch user info to get role and userId
         const profileResponse = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           {
             method: "GET",
             headers: {
@@ -77,7 +77,7 @@ const FacultyPage: React.FC = () => {
 
           // Fetch faculty data using userId
           const facultyResponse = await fetch(
-            `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
             {
               method: "GET",
               headers: {
@@ -111,7 +111,7 @@ const FacultyPage: React.FC = () => {
 
             // Fetch research papers using the faculty ID
             const researchResponse = await fetch(
-              `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ResearchWork/get-researchwork-by-id/${facultyId}`,
+              `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ResearchWork/get-researchwork-by-id/${facultyId}`,
               {
                 method: "GET",
                 headers: {
@@ -127,7 +127,7 @@ const FacultyPage: React.FC = () => {
 
             // Fetch all events
             const eventsResponse = await fetch(
-              "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events",
+              "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/Events/get-events",
               {
                 method: "GET",
                 headers: {

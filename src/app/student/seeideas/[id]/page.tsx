@@ -129,7 +129,7 @@ const IdeaDetailsPage: React.FC = () => {
 
       try {
         // 1) Fetch idea details
-        const ideaResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-idea-by-id/${id}`, {
+        const ideaResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-idea-by-id/${id}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ const IdeaDetailsPage: React.FC = () => {
 
           // Fetch related ideas (ideas with similar technology)
           const allIdeasResponse = await fetch(
-            `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-ideas-by-uni/${ideaData[0].uniName}`,
+            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/get-ideas-by-uni/${ideaData[0].uniName}`,
             {
               method: "GET",
               headers: {
@@ -174,7 +174,7 @@ const IdeaDetailsPage: React.FC = () => {
         }
 
         // 2) Fetch user profile (to get stdId)
-        const profileRes = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const profileRes = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -189,7 +189,7 @@ const IdeaDetailsPage: React.FC = () => {
         const userId = profileData.userId
 
         // 3) Fetch student details
-        const studentResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
+        const studentResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -211,7 +211,7 @@ const IdeaDetailsPage: React.FC = () => {
 
         // 4) Check if request is already placed
         const interestResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/get-interested-students/${id}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/get-interested-students/${id}`,
           {
             method: "GET",
             headers: {
@@ -248,7 +248,7 @@ const IdeaDetailsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/student-interested-for-idea/${userProfile.stdId}/${idea.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/interested-for-idea/student-interested-for-idea/${userProfile.stdId}/${idea.id}`,
         {
           method: "POST",
           headers: {

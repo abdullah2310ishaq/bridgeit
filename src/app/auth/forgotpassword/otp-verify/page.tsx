@@ -24,7 +24,7 @@ const VerifyOtp = () => {
     }
 
     try {
-      const response = await fetch('http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/forgot-password/verify-forgotpassword-otp', {
+      const response = await fetch('https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/forgot-password/verify-forgotpassword-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

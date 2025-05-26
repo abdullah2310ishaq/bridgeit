@@ -40,7 +40,7 @@ const UpdateStudentPage: React.FC = () => {
 
       try {
         // Fetch authenticated user info
-        const profileResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const profileResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ const UpdateStudentPage: React.FC = () => {
           setUserId(userId)
 
           // Fetch student-specific data
-          const studentResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
+          const studentResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ const UpdateStudentPage: React.FC = () => {
     const token = localStorage.getItem("jwtToken")
     try {
       // Update student basic info
-      const updateStudentResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/students/update-student/${studentId}`, {
+      const updateStudentResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/students/update-student/${studentId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -128,7 +128,7 @@ const UpdateStudentPage: React.FC = () => {
 
       // Update user description
       const updateDescriptionResponse = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/update-user-data/${userId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/edit-user-profile/update-user-data/${userId}`,
         {
           method: "PUT",
           headers: {

@@ -89,14 +89,14 @@ const CreateIdea: React.FC = () => {
 
       try {
         const authRes = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!authRes.ok) throw new Error("Authorization failed.");
         const { userId } = await authRes.json();
 
         const facRes = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-faculty/faculty-by-id/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!facRes.ok) throw new Error("Faculty lookup failed.");
@@ -130,7 +130,7 @@ const CreateIdea: React.FC = () => {
 
     try {
       const res = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/add-idea/${facultyId}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/ideas/add-idea/${facultyId}`,
         {
           method: "POST",
           headers: {

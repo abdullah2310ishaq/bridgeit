@@ -26,7 +26,7 @@ export default function AllProjectsList() {
       try {
         // 1) student projects
         const sRes = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!sRes.ok) throw new Error("Failed to load student projects");
@@ -34,7 +34,7 @@ export default function AllProjectsList() {
 
         // 2) expert projects
         const eRes = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-expert-projects",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-expert-projects",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!eRes.ok) throw new Error("Failed to load expert projects");

@@ -37,7 +37,7 @@ export default function SelectMeetingTimePage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const userResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -47,7 +47,7 @@ export default function SelectMeetingTimePage() {
         const userId = userData.userId
 
         // Step 2: Get student details
-        const studentResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
+        const studentResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -57,7 +57,7 @@ export default function SelectMeetingTimePage() {
         setStudentId(studentData.id)
 
         // Step 3: Fetch meeting request details
-        const meetingResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/request/${requestId}`, {
+        const meetingResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/request/${requestId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -68,7 +68,7 @@ export default function SelectMeetingTimePage() {
         const meetingData = await meetingResponse.json()
 
         // Fetch detailed FYP information
-        const fypResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${meetingData.fypId}`, {
+        const fypResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${meetingData.fypId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -85,7 +85,7 @@ export default function SelectMeetingTimePage() {
         // Fetch industry expert name
         try {
           const expertResponse = await fetch(
-            `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${meetingData.indExpertId}`,
+            `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${meetingData.indExpertId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -136,7 +136,7 @@ export default function SelectMeetingTimePage() {
         timeSlot: selectedTimeSlot,
       })
 
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/add/${meetingRequest.fypId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp-meeting/add/${meetingRequest.fypId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

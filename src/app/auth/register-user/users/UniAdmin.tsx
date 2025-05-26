@@ -33,8 +33,8 @@ const UniversityAdminRegistration: React.FC = () => {
     const fetchData = async () => {
       try {
         const [universitiesRes, emailsRes] = await Promise.all([
-          fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities"),
-          fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/get-all-emails"),
+          fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-all-universities"),
+          fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/register-user/get-all-emails"),
         ]);
 
         if (universitiesRes.ok) {
@@ -167,7 +167,7 @@ const UniversityAdminRegistration: React.FC = () => {
       );
 
       const generateOtpResponse = await fetch(
-        "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/generate-otp",
+        "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/generate-otp",
         {
           method: "POST",
           headers: {
@@ -179,7 +179,7 @@ const UniversityAdminRegistration: React.FC = () => {
 
       if (generateOtpResponse.ok) {
         const sendOtpResponse = await fetch(
-          "http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/send-otp",
+          "https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/otp/send-otp",
           {
             method: "POST",
             headers: {

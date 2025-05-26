@@ -72,7 +72,7 @@ const ProposalModal: React.FC<ProposalModalProps> = ({
         proposal: base64File,
       };
 
-      const resp = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-proposals/send-proposal", {
+      const resp = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/project-proposals/send-proposal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

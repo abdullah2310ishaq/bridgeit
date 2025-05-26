@@ -36,7 +36,7 @@ export default function PaymentHistoryPage() {
 
       try {
         // Get user info to get the industry expert ID
-        const userResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const userResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -47,7 +47,7 @@ export default function PaymentHistoryPage() {
 
         // Get industry expert details
         const expertResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -60,7 +60,7 @@ export default function PaymentHistoryPage() {
 
         // Fetch payment history
         const paymentsResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/expert-history/${indExpertId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/expert-history/${indExpertId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -85,7 +85,7 @@ export default function PaymentHistoryPage() {
     if (!token) return
 
     try {
-      const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/receipt/${paymentId}`, {
+      const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/receipt/${paymentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

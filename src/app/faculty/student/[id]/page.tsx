@@ -31,7 +31,7 @@ const StudentProfilePage: React.FC = () => {
 
       try {
         const response = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${id}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${id}`,
           {
             method: "GET",
             headers: {

@@ -56,7 +56,7 @@ export default function PurchaseAgreementPage() {
 
       try {
         // Step 1: Get user info
-        const userResponse = await fetch("http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
+        const userResponse = await fetch("https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/auth/authorized-user-info", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -67,7 +67,7 @@ export default function PurchaseAgreementPage() {
 
         // Step 2: Get industry expert details
         const expertResponse = await fetch(
-          `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
+          `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-industry-expert/industry-expert-by-id/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -80,7 +80,7 @@ export default function PurchaseAgreementPage() {
         setIndustryExpertName(`${expertData.firstName} ${expertData.lastName}`)
 
         // Step 3: Fetch FYP details
-        const fypResponse = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
+        const fypResponse = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/fyp/get-detailed-fyp-by-id/${fypId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -228,7 +228,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
       
       // Create checkout session for payment
       const checkoutResponse = await fetch(
-        `http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/fyp/${fyp.id}`,
+        `https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/payments/create-checkout-session/fyp/${fyp.id}`,
         {
           method: "POST",
           headers: {

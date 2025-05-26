@@ -65,13 +65,13 @@ export default function StudentDetailsPage() {
 
       try {
         // First try to fetch by userId
-        let response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${id}`, {
+        let response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-id/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
         // If that fails, try by studentId
         if (!response.ok) {
-          response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${id}`, {
+          response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/get-student/student-by-student-id/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         }
@@ -129,7 +129,7 @@ export default function StudentDetailsPage() {
       if (!token) return
 
       try {
-        const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-university-by-id/${universityId}`, {
+        const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/universities/get-university-by-id/${universityId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -163,7 +163,7 @@ export default function StudentDetailsPage() {
       if (!token) return
 
       try {
-        const response = await fetch(`http://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects-by-id/${studentId}`, {
+        const response = await fetch(`https://api-bridgeit-htb0fpcee0ajb7a2.westindia-01.azurewebsites.net/api/projects/get-student-projects-by-id/${studentId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
