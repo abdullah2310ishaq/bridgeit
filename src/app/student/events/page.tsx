@@ -1,9 +1,7 @@
 "use client"
-
-import type React from "react"
 import { useEffect, useState, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { FaCalendarAlt, FaMapMarkerAlt, FaChevronLeft, FaChevronRight, FaUser } from "react-icons/fa"
+import { FaCalendarAlt, FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import { motion } from "framer-motion"
 
 export interface Event {
@@ -12,15 +10,6 @@ export interface Event {
   speakerName: string
   eventDate: string
   venue: string
-}
-
-export interface EventsProps {
-  initialEvents?: Event[]
-  events?: Event[] // Add this line to fix the type error
-  showTitle?: boolean
-  maxEvents?: number
-  defaultTab?: "past" | "upcoming"
-  isDashboard?: boolean
 }
 
 // Calendar helper functions
@@ -36,17 +25,10 @@ const formatDate = (date: Date) => {
   return date.toISOString().split("T")[0]
 }
 
-const EventsComponent: React.FC<EventsProps> = ({
-  initialEvents,
-  events, // Add this to the destructuring
-  showTitle = true,
-  maxEvents,
-  defaultTab = "upcoming",
-  isDashboard = false,
-}) => {
-  const [eventsData, setEventsData] = useState<Event[]>(events || initialEvents || [])
-  const [activeTab, setActiveTab] = useState<"past" | "upcoming">(defaultTab)
-  const [loading, setLoading] = useState(!initialEvents && !events)
+export default function EventsPage() {
+  const [eventsData, setEventsData] = useState<Event[]>([])
+  const [activeTab, setActiveTab] = useState<"past" | "upcoming">("upcoming")
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   // Calendar state
@@ -85,19 +67,6 @@ const EventsComponent: React.FC<EventsProps> = ({
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   useEffect(() => {
-    // If events or initialEvents is provided, use those instead of fetching
-    if (events) {
-      setEventsData(events)
-      setLoading(false)
-      return
-    }
-    
-    if (initialEvents) {
-      setEventsData(initialEvents)
-      setLoading(false)
-      return
-    }
-
     async function fetchEvents() {
       const token = localStorage.getItem("jwtToken")
       if (!token) {
@@ -128,7 +97,7 @@ const EventsComponent: React.FC<EventsProps> = ({
     }
 
     fetchEvents()
-  }, [router, initialEvents, events])
+  }, [router])
 
   // Create a map of dates with events for quick lookup
   const eventDates = useMemo(() => {
@@ -210,10 +179,6 @@ const EventsComponent: React.FC<EventsProps> = ({
         filteredList = []
     }
 
-    // Apply maxEvents limit if provided
-    if (maxEvents && filteredList.length > maxEvents) {
-      return filteredList.slice(0, maxEvents)
-    }
     return filteredList
   }
 
@@ -252,200 +217,197 @@ const EventsComponent: React.FC<EventsProps> = ({
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     )
   }
 
-  // For mobile view, we'll stack the components
-  const isMobileView = isDashboard
-
   return (
-    <div className="w-full">
-      {/* Title Section - Only show if showTitle is true */}
-      {showTitle && (
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Page Title */}
         <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-center mb-10">
           University Events
         </h1>
-      )}
 
-      {/* Main content - Side by side on desktop, stacked on mobile */}
-      <div className={`${isMobileView ? "flex flex-col space-y-6" : "flex flex-col md:flex-row md:space-x-6"}`}>
-        {/* Left side - Event List */}
-        <div className={`${isMobileView ? "w-full" : "w-full md:w-3/5"}`}>
-          {/* Tab Switcher */}
-          <div className="flex justify-center md:justify-start space-x-4 mb-6">
-            <button
-              onClick={() => setActiveTab("upcoming")}
-              className={`px-4 py-2 text-sm md:text-base rounded-full ${
-                activeTab === "upcoming" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              } transition-colors duration-200`}
-            >
-              Upcoming Events
-            </button>
+        {/* Main content - Side by side on desktop, stacked on mobile */}
+        <div className="flex flex-col md:flex-row md:space-x-6">
+          {/* Left side - Event List */}
+          <div className="w-full md:w-3/5">
+            {/* Tab Switcher */}
+            <div className="flex justify-center md:justify-start space-x-4 mb-6">
+              <button
+                onClick={() => setActiveTab("upcoming")}
+                className={`px-4 py-2 text-sm md:text-base rounded-full ${
+                  activeTab === "upcoming" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                } transition-colors duration-200`}
+              >
+                Upcoming Events
+              </button>
 
-            <button
-              onClick={() => setActiveTab("past")}
-              className={`px-4 py-2 text-sm md:text-base rounded-full ${
-                activeTab === "past" ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              } transition-colors duration-200`}
-            >
-              Past Events
-            </button>
+              <button
+                onClick={() => setActiveTab("past")}
+                className={`px-4 py-2 text-sm md:text-base rounded-full ${
+                  activeTab === "past" ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                } transition-colors duration-200`}
+              >
+                Past Events
+              </button>
+            </div>
+
+            {/* Event Cards */}
+            <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-200px)] pr-2">
+              {filteredEvents.length > 0 ? (
+                filteredEvents.map((event) => (
+                  <motion.div
+                    key={event.id}
+                    ref={(el) => {
+                      eventRefs.current[event.id] = el
+                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
+                      selectedEventId === event.id ? "border-blue-500" : "border-gray-200"
+                    }`}
+                    onClick={() => setSelectedEventId(event.id)}
+                  >
+                    {/* Event Title */}
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">{event.title}</h2>
+
+                    {/* Speaker Name */}
+                    <p className="text-gray-600 mb-3">
+                      <span className="font-medium">Speaker:</span> {event.speakerName}
+                    </p>
+
+                    {/* Event Date and Venue */}
+                    <div className="flex flex-col gap-2">
+                      {/* Event Date */}
+                      <div className="flex items-center text-gray-500">
+                        <FaCalendarAlt className="mr-2 text-blue-500 flex-shrink-0" />
+                        <p className="text-sm">
+                          <span className="font-medium">Date:</span> {new Date(event.eventDate).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      {/* Event Venue */}
+                      <div className="flex items-center text-gray-500">
+                        <FaMapMarkerAlt className="mr-2 text-red-500 flex-shrink-0" />
+                        <p className="text-sm">
+                          <span className="font-medium">Venue:</span> {event.venue}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="bg-white rounded-xl p-8 text-center shadow-md">
+                  <FaCalendarAlt className="mx-auto text-gray-300 text-4xl mb-3" />
+                  <p className="text-xl font-semibold text-gray-500">No {activeTab} events available at the moment.</p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Event Cards */}
-          <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-200px)] pr-2">
-            {filteredEvents.length > 0 ? (
-              filteredEvents.map((event) => (
-                <motion.div
-                  key={event.id}
-                  ref={(el) => {
-                    eventRefs.current[event.id] = el;
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
-                    selectedEventId === event.id ? "border-blue-500" : "border-gray-200"
-                  }`}
-                  onClick={() => setSelectedEventId(event.id)}
+          {/* Right side - Calendar */}
+          <div className="w-full md:w-2/5 mt-6 md:mt-0">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden sticky top-4">
+              {/* Calendar Header */}
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white flex justify-between items-center">
+                <button
+                  onClick={goToPreviousMonth}
+                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Previous month"
                 >
-                  {/* Event Title */}
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">{event.title}</h2>
+                  <FaChevronLeft />
+                </button>
+                <h2 className="text-xl font-bold">
+                  {monthNames[currentMonth]} {currentYear}
+                </h2>
+                <button
+                  onClick={goToNextMonth}
+                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Next month"
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
 
-                  {/* Speaker Name */}
-                  <p className="text-gray-600 mb-3">
-                    <span className="font-medium">Speaker:</span> {event.speakerName}
-                  </p>
-
-                  {/* Event Date and Venue */}
-                  <div className="flex flex-col gap-2">
-                    {/* Event Date */}
-                    <div className="flex items-center text-gray-500">
-                      <FaCalendarAlt className="mr-2 text-blue-500 flex-shrink-0" />
-                      <p className="text-sm">
-                        <span className="font-medium">Date:</span> {new Date(event.eventDate).toLocaleDateString()}
-                      </p>
+              {/* Calendar Grid */}
+              <div className="p-4">
+                {/* Day names */}
+                <div className="grid grid-cols-7 mb-2">
+                  {dayNames.map((day) => (
+                    <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                      {day}
                     </div>
-
-                    {/* Event Venue */}
-                    <div className="flex items-center text-gray-500">
-                      <FaMapMarkerAlt className="mr-2 text-red-500 flex-shrink-0" />
-                      <p className="text-sm">
-                        <span className="font-medium">Venue:</span> {event.venue}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <div className="bg-white rounded-xl p-8 text-center shadow-md">
-                <FaCalendarAlt className="mx-auto text-gray-300 text-4xl mb-3" />
-                <p className="text-xl font-semibold text-gray-500">No {activeTab} events available at the moment.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right side - Calendar */}
-        <div className={`${isMobileView ? "w-full" : "w-full md:w-2/5"}`}>
-          <div className="bg-white rounded-xl shadow-md overflow-hidden sticky top-4">
-            {/* Calendar Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white flex justify-between items-center">
-              <button
-                onClick={goToPreviousMonth}
-                className="p-2 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Previous month"
-              >
-                <FaChevronLeft />
-              </button>
-              <h2 className="text-xl font-bold">
-                {monthNames[currentMonth]} {currentYear}
-              </h2>
-              <button
-                onClick={goToNextMonth}
-                className="p-2 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Next month"
-              >
-                <FaChevronRight />
-              </button>
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="p-4">
-              {/* Day names */}
-              <div className="grid grid-cols-7 mb-2">
-                {dayNames.map((day) => (
-                  <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              {/* Calendar days */}
-              <div className="grid grid-cols-7 gap-1">
-                {/* Empty cells for days before the first day of month */}
-                {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-                  <div key={`empty-${index}`} className="h-12 rounded-md"></div>
-                ))}
-
-                {/* Actual days of the month */}
-                {Array.from({ length: daysInMonth }).map((_, index) => {
-                  const day = index + 1
-                  const hasEventOnDay = hasEvents(day)
-                  const isSelectedDay = isSelected(day)
-                  const isTodayDay = isToday(day)
-                  const dayEvents = getEventsForDay(day)
-                  const eventCount = dayEvents.length
-
-                  return (
-                    <button
-                      key={`day-${day}`}
-                      onClick={() => handleDateClick(day)}
-                      className={`h-12 rounded-md flex flex-col items-center justify-center relative transition-all ${
-                        isSelectedDay
-                          ? "bg-blue-500 text-white"
-                          : isTodayDay
-                            ? "bg-blue-100 text-blue-800"
-                            : hasEventOnDay
-                              ? "hover:bg-blue-50"
-                              : "hover:bg-gray-100"
-                      }`}
-                    >
-                      <span className={`text-sm ${isSelectedDay ? "font-bold" : ""}`}>{day}</span>
-                      {hasEventOnDay && !isSelectedDay && (
-                        <div className="absolute bottom-1 flex space-x-0.5">
-                          {eventCount > 3 ? (
-                            <div className="text-xs text-blue-500 font-medium">{eventCount}</div>
-                          ) : (
-                            Array.from({ length: Math.min(eventCount, 3) }).map((_, i) => (
-                              <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                            ))
-                          )}
-                        </div>
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Calendar Legend */}
-            <div className="px-4 pb-4 pt-2 border-t border-gray-100">
-              <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 rounded-full bg-blue-100 mr-1"></div>
-                  <span>Today</span>
+                  ))}
                 </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-                  <span>Selected</span>
+
+                {/* Calendar days */}
+                <div className="grid grid-cols-7 gap-1">
+                  {/* Empty cells for days before the first day of month */}
+                  {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+                    <div key={`empty-${index}`} className="h-12 rounded-md"></div>
+                  ))}
+
+                  {/* Actual days of the month */}
+                  {Array.from({ length: daysInMonth }).map((_, index) => {
+                    const day = index + 1
+                    const hasEventOnDay = hasEvents(day)
+                    const isSelectedDay = isSelected(day)
+                    const isTodayDay = isToday(day)
+                    const dayEvents = getEventsForDay(day)
+                    const eventCount = dayEvents.length
+
+                    return (
+                      <button
+                        key={`day-${day}`}
+                        onClick={() => handleDateClick(day)}
+                        className={`h-12 rounded-md flex flex-col items-center justify-center relative transition-all ${
+                          isSelectedDay
+                            ? "bg-blue-500 text-white"
+                            : isTodayDay
+                              ? "bg-blue-100 text-blue-800"
+                              : hasEventOnDay
+                                ? "hover:bg-blue-50"
+                                : "hover:bg-gray-100"
+                        }`}
+                      >
+                        <span className={`text-sm ${isSelectedDay ? "font-bold" : ""}`}>{day}</span>
+                        {hasEventOnDay && !isSelectedDay && (
+                          <div className="absolute bottom-1 flex space-x-0.5">
+                            {eventCount > 3 ? (
+                              <div className="text-xs text-blue-500 font-medium">{eventCount}</div>
+                            ) : (
+                              Array.from({ length: Math.min(eventCount, 3) }).map((_, i) => (
+                                <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
-                <div className="flex items-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1"></div>
-                  <span>Has Events</span>
+              </div>
+
+              {/* Calendar Legend */}
+              <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-blue-100 mr-1"></div>
+                    <span>Today</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
+                    <span>Selected</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1"></div>
+                    <span>Has Events</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -455,5 +417,3 @@ const EventsComponent: React.FC<EventsProps> = ({
     </div>
   )
 }
-
-export default Event
