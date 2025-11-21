@@ -278,7 +278,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
           <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
           <p className="text-gray-700">{error || "Failed to load project details"}</p>
           <button
-            onClick={() => router.push("/industry-expert/approved-requests")}
+            onClick={() => router.push("/industryexpert/approved-requests")}
             className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
           >
             Return to Approved Requests
@@ -294,7 +294,7 @@ By proceeding with this purchase, all parties acknowledge their agreement to the
       <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <button
-            onClick={() => router.push("/industry-expert/approved-requests")}
+            onClick={() => router.push("/industryexpert/approved-requests")}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />

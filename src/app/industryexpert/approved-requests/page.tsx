@@ -269,7 +269,7 @@ export default function ApprovedRequestsPage() {
           <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
           <p className="text-gray-300">{error}</p>
           <button
-            onClick={() => router.push("/industry-expert")}
+            onClick={() => router.push("/industryexpert")}
             className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
           >
             Return to Dashboard
@@ -443,7 +443,7 @@ export default function ApprovedRequestsPage() {
                 will appear here.
               </p>
               <button
-                onClick={() => router.push("/industry-expert/fyp-marketplace")}
+                onClick={() => router.push("/industryexpert/fyp-marketplace")}
                 className="mt-6 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md transition-colors"
               >
                 Browse FYP Marketplace

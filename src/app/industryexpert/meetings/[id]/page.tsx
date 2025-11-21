@@ -192,12 +192,12 @@ export default function MeetingDetailsPage() {
 
   const handleSponsorProject = () => {
     if (!fyp) return
-    router.push(`/industry-expert/sponsor-agreement/${fyp.id}`)
+    router.push(`/industryexpert/sponsor-agreement/${fyp.id}`)
   }
 
   const handleBuyProject = () => {
     if (!fyp) return
-    router.push(`/industry-expert/purchase-agreement/${fyp.id}`)
+    router.push(`/industryexpert/purchase-agreement/${fyp.id}`)
   }
 
   if (loading) {
@@ -218,7 +218,7 @@ export default function MeetingDetailsPage() {
           <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
           <p className="text-gray-300">{error || "Failed to load meeting details"}</p>
           <button
-            onClick={() => router.push("/industry-expert/meetings")}
+            onClick={() => router.push("/industryexpert/meetings")}
             className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
           >
             Return to Meetings
@@ -234,7 +234,7 @@ export default function MeetingDetailsPage() {
       <header className="bg-gray-800 border-b border-gray-700 py-6 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <button
-            onClick={() => router.push("/industry-expert/meetings")}
+            onClick={() => router.push("/industryexpert/meetings")}
             className="flex items-center gap-2 text-gray-400 hover:text-white mb-4"
           >
             <ArrowLeft className="h-4 w-4" />

@@ -96,7 +96,7 @@ const QuickAccessSection: React.FC<QuickAccessProps> = ({ className, apiLinks = 
       title: "Payment History",
       description: "View your transaction records",
       icon: "CreditCard",
-      href: "/students/payment-history",
+      href: "/student/payment-history",
       color: "teal",
     },
     {

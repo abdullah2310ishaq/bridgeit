@@ -142,7 +142,7 @@ export default function MyRequestsPage() {
           <h2 className="text-xl font-bold text-red-700 mb-2">Error</h2>
           <p className="text-gray-700">{error}</p>
           <button
-            onClick={() => router.push("/industry-expert")}
+            onClick={() => router.push("/industryexpert")}
             className="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700"
           >
             Return to Dashboard
@@ -203,7 +203,7 @@ export default function MyRequestsPage() {
                     </div>
                     <button
                       onClick={() =>
-                        router.push(`/industry-expert/fyp-details/${request.fypId}`)
+                        router.push(`/industryexpert/fyp/${request.fypId}`)
                       }
                       className="flex items-center gap-1 text-purple-600 hover:text-purple-500"
                     >
@@ -222,7 +222,7 @@ export default function MyRequestsPage() {
                     {request.status === 1 && (
                       <button
                         onClick={() =>
-                          router.push("/industry-expert/approved-requests")
+                          router.push("/industryexpert/approved-requests")
                         }
                         className="px-4 py-2 bg-green-500 hover:bg-green-400 text-white rounded-md"
                       >

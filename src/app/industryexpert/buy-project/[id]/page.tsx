@@ -175,7 +175,7 @@ export default function BuyProjectPage() {
           <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
           <p className="text-gray-300">{error || "Failed to load project details"}</p>
           <button
-            onClick={() => router.push("/industry-expert/approved-requests")}
+            onClick={() => router.push("/industryexpert/approved-requests")}
             className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
           >
             Return to Approved Requests

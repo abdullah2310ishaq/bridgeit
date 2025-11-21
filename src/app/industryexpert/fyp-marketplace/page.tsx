@@ -405,7 +405,7 @@ export default function FYPMarketplacePage() {
           <h2 className="text-2xl font-bold text-white mb-2">Error</h2>
           <p className="text-blue-100 mb-6">{error}</p>
           <button
-            onClick={() => router.push("/industry-expert")}
+            onClick={() => router.push("/industryexpert")}
             className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg shadow-blue-600/30 transition"
           >
             Return to Dashboard

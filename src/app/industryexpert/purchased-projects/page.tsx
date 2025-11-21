@@ -225,7 +225,7 @@ export default function PurchasedProjectsPage() {
   }
 
   const handleViewProject = (fypId: string) => {
-    router.push(`/industry-expert/purchased-project/${fypId}`)
+    router.push(`/industryexpert/purchased-projects/${fypId}`)
   }
 
   if (loading) {
@@ -246,7 +246,7 @@ export default function PurchasedProjectsPage() {
           <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
           <p className="text-gray-700">{error}</p>
           <button
-            onClick={() => router.push("/industry-expert/dashboard")}
+            onClick={() => router.push("/industryexpert")}
             className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
           >
             Return to Dashboard
@@ -379,7 +379,7 @@ export default function PurchasedProjectsPage() {
               You havenot purchased any Final Year Projects yet.
             </p>
             <button
-              onClick={() => router.push("/industry-expert/marketplace")}
+              onClick={() => router.push("/industryexpert/fyp-marketplace")}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
             >
               Browse Marketplace

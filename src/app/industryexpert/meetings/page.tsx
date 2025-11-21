@@ -156,7 +156,7 @@ export default function IndustryExpertMeetingsPage() {
           <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
           <p className="text-gray-300">{error}</p>
           <button
-            onClick={() => router.push("/industry-expert/dashboard")}
+            onClick={() => router.push("/industryexpert")}
             className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-200"
           >
             Return to Dashboard
@@ -244,7 +244,7 @@ export default function IndustryExpertMeetingsPage() {
             </p>
             {meetings.length === 0 && (
               <button
-                onClick={() => router.push("/industry-expert/approved-requests")}
+                onClick={() => router.push("/industryexpert/approved-requests")}
                 className="mt-4 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-md"
               >
                 View Approved Requests
@@ -257,7 +257,7 @@ export default function IndustryExpertMeetingsPage() {
               <div
                 key={meeting.id}
                 className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-purple-500 transition-colors cursor-pointer"
-                onClick={() => router.push(`/industry-expert/meetings/${meeting.id}`)}
+                onClick={() => router.push(`/industryexpert/meetings/${meeting.id}`)}
               >
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">

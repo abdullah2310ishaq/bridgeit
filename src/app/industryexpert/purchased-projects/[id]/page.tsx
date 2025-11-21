@@ -1,4 +1,4 @@
-// File: /app/industry-expert/purchased-project/[id]/page.tsx
+// File: /app/industryexpert/purchased-projects/[id]/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -272,7 +272,7 @@ export default function PurchasedProjectDetailPage() {
 
   const handleContactStudent = (studentId: string) => {
     // Navigate to a chat or contact page with this student
-    router.push(`/industry-expert/contact-student/${studentId}`)
+    router.push(`/industryexpert/contact-student/${studentId}`)
   }
 
   if (loading) {
@@ -293,7 +293,7 @@ export default function PurchasedProjectDetailPage() {
           <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
           <p className="text-gray-700">{error || "Failed to load project details"}</p>
           <button
-            onClick={() => router.push("/industry-expert/purchased-projects")}
+            onClick={() => router.push("/industryexpert/purchased-projects")}
             className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white"
           >
             Return to Purchased Projects
@@ -309,7 +309,7 @@ export default function PurchasedProjectDetailPage() {
       <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <button
-            onClick={() => router.push("/industry-expert/purchased-projects")}
+            onClick={() => router.push("/industryexpert/purchased-projects")}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -726,7 +726,7 @@ export default function PurchasedProjectDetailPage() {
                             Reach out to the student team for technical questions about the project.
                           </p>
                           <button
-                            onClick={() => router.push("/industry-expert/contact-team/" + fypId)}
+                            onClick={() => router.push("/industryexpert/contact-team/" + fypId)}
                             className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-2"
                           >
                             <MessageSquare className="h-4 w-4" />
@@ -743,7 +743,7 @@ export default function PurchasedProjectDetailPage() {
                             Contact the faculty supervisor for questions about the project academic aspects.
                           </p>
                           <button
-                            onClick={() => router.push("/industry-expert/contact-faculty/" + (detailedFyp.faculty?.id || ""))}
+                            onClick={() => router.push("/industryexpert/contact-faculty/" + (detailedFyp.faculty?.id || ""))}
                             className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-2"
                           >
                             <MessageSquare className="h-4 w-4" />

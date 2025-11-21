@@ -1,4 +1,4 @@
-// File: /app/industry-expert/payment-history/page.tsx
+// File: /app/industryexpert/payment-history/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -147,7 +147,7 @@ export default function PaymentHistoryPage() {
       <header className="bg-white border-b border-gray-200 py-6 px-4 md:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <button
-            onClick={() => router.push("/industry-expert/dashboard")}
+            onClick={() => router.push("/industryexpert")}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -289,7 +289,7 @@ export default function PaymentHistoryPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {payment.projectTitle ? (
                           <button
-                            onClick={() => router.push(`/industry-expert/purchased-project/${payment.projectId}`)}
+                            onClick={() => router.push(`/industryexpert/purchased-projects/${payment.projectId}`)}
                             className="text-blue-600 hover:text-blue-800 font-medium text-sm"
                           >
                             {payment.projectTitle}
