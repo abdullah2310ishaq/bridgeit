@@ -20,7 +20,7 @@ export default function HeroSection() {
         className="text-center md:text-left md:w-1/2 z-10"
       >
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-6 leading-tight">
-          Welcome to LinkedIT!
+          Welcome to BridgeIT!
         </h1>
         <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-xl mx-auto md:mx-0">
           Bridge the gap between academia and industry with our platform, where universities and experts connect

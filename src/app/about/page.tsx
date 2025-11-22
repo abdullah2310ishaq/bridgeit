@@ -70,7 +70,7 @@ const AboutPage: React.FC = () => {
               transition={{ duration: 1 }}
               className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500"
             >
-              Welcome to LinkedIT
+              Welcome to BridgeIT
             </motion.h1>
             <motion.p
               initial={{ y: 50, opacity: 0 }}
