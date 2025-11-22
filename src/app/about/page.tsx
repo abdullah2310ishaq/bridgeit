@@ -16,44 +16,19 @@ const AboutPage: React.FC = () => {
 
   const team = [
     {
-      name: "Muhammad Faizan Asghar",
+      name: "Umar Habib",
       role: "Backend Guy",
-      imgSrc: "/faizi.jpg",
-      funFact: "I Love Ice Cream Shakes 🥳",
-      linkedin: "https://linkedin.com/in/muhammad-faizan-asghar",
-      github: "https://github.com/MfaizanA21",
+      imgSrc: "/umar.jpg",
+      funFact: "I Love Ice Cream Shakes",
+
     },
+
     {
-      name: "Warda Butt",
-      role: "Mockups and FrontEnd Lady",
-      imgSrc: "/warda.png",
-      funFact: "",
-      linkedin: "https://linkedin.com/warda",
-      github: "https://github.com/warda",
-    },
-    {
-      name: "Warda Aslam",
-      role: "Project Supervisor",
-      imgSrc: "/madam.png",
-      funFact: "I am not kharoos as I seem on first interaction",
-      linkedin: "https://linkedin.com/warda-aslam",
-      github: "https://github.com/warda-aslam",
-    },
-    {
-      name: "Abdullah Ishaq",
-      role: "Documentation Guy",
-      imgSrc: "/heroimage.png",
-      funFact: "I chatgpt everything and I dont know how to code",
-      linkedin: "https://linkedin.com/ahmed",
-      github: "https://github.com/ahmed",
-    },
-    {
-      name: "Aesyem Ali Fayyaz",
-      role: "Co - Supervisor",
-      imgSrc: "/aesyem.png",
-      funFact: "Need a Sponsor? Aesyem Institute of Research is at your service",
-      linkedin: "https://linkedin.com/zain",
-      github: "https://github.com/zain",
+      name: "Ateeb ",
+      role: "FrontEnd Developer",
+      imgSrc: "/dusra.jpg",
+      funFact: "I chatgpt everything",
+ 
     },
   ];
 
@@ -95,7 +70,7 @@ const AboutPage: React.FC = () => {
               transition={{ duration: 1 }}
               className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-teal-400 to-blue-500"
             >
-              Welcome to BridgeIT
+              Welcome to LinkedIT
             </motion.h1>
             <motion.p
               initial={{ y: 50, opacity: 0 }}
@@ -156,22 +131,7 @@ const AboutPage: React.FC = () => {
                 Fun Fact
               </button>
               <div className="flex space-x-4 mt-6">
-                <a
-                  href={member.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-500"
-                >
-                  <FaLinkedin size={24} />
-                </a>
-                <a
-                  href={member.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-500"
-                >
-                  <FaGithub size={24} />
-                </a>
+              
               </div>
             </motion.div>
           ))}

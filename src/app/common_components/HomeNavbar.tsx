@@ -31,7 +31,7 @@ export default function Navbar() {
       <div className="flex items-center">
         <Image src="/logo.jpg" alt="BridgeIT Logo" width={50} height={50} className="rounded-full" />
         <span className="ml-3 text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
-          BridgeIT
+         LinkedIT
         </span>
       </div>
 

@@ -18,7 +18,7 @@ export default function ContactSection() {
     setResult("Sending...")
 
     const formData = new FormData(event.target as HTMLFormElement)
-    formData.append("access_key", "cf10bcb0-9a81-4467-86fc-cde2595377ae") // Replace with your actual access key
+    formData.append("access_key", "edd717f4-6dcf-43d3-ba85-25a3518e24e2") // Replace with your actual access key
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -79,10 +79,10 @@ export default function ContactSection() {
                 <FaEnvelope className="text-blue-500 text-xl" />
               </div>
               <a
-                href="mailto:contact@bridgeit.com"
+                href="mailto:umarhab8b231@gmail.com"
                 className="text-gray-600 hover:text-blue-500 transition-colors duration-300"
               >
-                contact@bridgeit.com
+                umarhab8b231@gmail.com
               </a>
             </div>
             <div className="flex items-center space-x-4">
@@ -90,17 +90,17 @@ export default function ContactSection() {
                 <FaPhone className="text-blue-500 text-xl" />
               </div>
               <a
-                href="tel:+92-346-2207429"
+                href="tel:++923410439344"
                 className="text-gray-600 hover:text-blue-500 transition-colors duration-300"
               >
-                +92-346-2207429
+                +923410439344
               </a>
             </div>
             <div className="flex items-center space-x-4">
               <div className="bg-white p-3 rounded-full shadow-sm">
                 <FaMapMarkerAlt className="text-blue-500 text-xl" />
               </div>
-              <span className="text-gray-600">Air University, Islamabad</span>
+              <span className="text-gray-600">University of Poonch, Rawalakot</span>
             </div>
           </motion.div>
 

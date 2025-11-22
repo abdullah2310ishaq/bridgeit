@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "BridgeIT",
+  title: "Linked    IT",
   description: "Your platform for connecting academia and industry.",
 };
 
